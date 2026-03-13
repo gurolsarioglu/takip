@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B-5 Bankroll Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+
+<body>
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <span class="toolbar-brand"><i class="fa-solid fa-chart-line"></i> B-5 Dashboard</span>
+        </div>
+        <div class="toolbar-right">
+            <span class="status-indicator active" id="ws-status">Bağlı</span>
+            <button class="toolbar-btn" id="btn-reset-layout" title="Kolonu varsayılana sıfırla">
+                <i class="fa-solid fa-rotate-left"></i> Sıfırla
+            </button>
+            <button class="toolbar-btn" id="btn-fullscreen" title="Tam ekran">
+                <i class="fa-solid fa-expand"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Main Resizable Layout Container -->
+        <div class="resize-container" id="resize-container">
+
+            <!-- 15m Column -->
+            <section class="signals-column glass-panel resizable-panel" id="col-15m" data-col="15m">
+                <div class="panel-header">
+                    <h2>15 Dakika</h2>
+                    <div class="filter-box" id="filter-box-15m">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="filter-input" id="filter-15m" placeholder="Coin ara..."
+                            oninput="applyFilter('15m')">
+                        <button class="filter-clear" onclick="clearFilter('15m')"
+                            title="Filtreyi temizle">&times;</button>
+                    </div>
+                </div>
+                <div class="signals-feed" id="feed-15m"></div>
+            </section>
+
+            <!-- Resizer 1 -->
+            <div class="resizer" id="resizer-1" title="Sürükle: Sütunu yeniden boyutlandır"></div>
+
+            <!-- 1H Column -->
+            <section class="signals-column glass-panel resizable-panel" id="col-1h" data-col="1h">
+                <div class="panel-header">
+                    <h2>1 Saat</h2>
+                    <div class="filter-box" id="filter-box-1h">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="filter-input" id="filter-1h" placeholder="Coin ara..."
+                            oninput="applyFilter('1h')">
+                        <button class="filter-clear" onclick="clearFilter('1h')"
+                            title="Filtreyi temizle">&times;</button>
+                    </div>
+                </div>
+                <div class="signals-feed" id="feed-1h"></div>
+            </section>
+
+            <!-- Resizer 2 -->
+            <div class="resizer" id="resizer-2" title="Sürükle: Sütunu yeniden boyutlandır"></div>
+
+            <!-- Center Panel: Bankroll -->
+            <section class="bankroll-panel glass-panel resizable-panel" id="col-bankroll" data-col="bankroll">
+                <div class="panel-header">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <h2><i class="fa-solid fa-wallet"></i> Kasa Yönetimi</h2>
+                    </div>
+                    <div class="panel-header-btns">
+                        <button class="btn btn-primary" id="add-manual-btn"><i class="fa-solid fa-plus"></i> Manuel
+                            Ekle</button>
+                        <button class="toolbar-btn" id="btn-export-excel" title="Excel olarak dışa aktar"><i
+                                class="fa-solid fa-file-excel" style="color:#4ade80"></i> Excel</button>
+                        <button class="toolbar-btn" id="btn-export-pdf" title="PDF olarak dışa aktar"><i
+                                class="fa-solid fa-file-pdf" style="color:#f87171"></i> PDF</button>
+                    </div>
+                </div>
+
+                <!-- Global Stats -->
+                <div class="global-stats">
+                    <div class="stat-box">
+                        <span class="stat-label">BAŞLANGIÇ SERMAYESİ</span>
+                        <input type="number" id="initial-capital" class="capital-input" value="100.00" step="10">
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">GÜNCEL KASA</span>
+                        <span class="stat-value text-green" id="current-capital">$100.00</span>
+                    </div>
+                    <div class="stat-box primary-stat">
+                        <span class="stat-label">NET KAZANÇ</span>
+                        <div class="stat-values">
+                            <span class="stat-value" id="net-profit-val">$0.00</span>
+                            <span class="stat-pct" id="net-profit-pct">0.00%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bankroll Table -->
+                <div class="table-container">
+                    <table class="bankroll-table" id="bankroll-table">
+                        <thead>
+                            <tr>
+                                <th>COIN</th>
+                                <th>TARİH</th>
+                                <th>SAAT</th>
+                                <th>POZ</th>
+                                <th>KAZANÇ ($)</th>
+                                <th>KASA ($)</th>
+                                <th>YÜZDE (%)</th>
+                                <th><i class="fa-solid fa-trash"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody id="bankroll-body">
+                            <!-- Rows injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Resizer 3 -->
+            <div class="resizer" id="resizer-3" title="Sürükle: Sütunu yeniden boyutlandır"></div>
+
+            <!-- 4H Column -->
+            <section class="signals-column glass-panel resizable-panel" id="col-4h" data-col="4h">
+                <div class="panel-header">
+                    <h2>4 Saat</h2>
+                    <div class="filter-box" id="filter-box-4h">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="filter-input" id="filter-4h" placeholder="Coin ara..."
+                            oninput="applyFilter('4h')">
+                        <button class="filter-clear" onclick="clearFilter('4h')"
+                            title="Filtreyi temizle">&times;</button>
+                    </div>
+                </div>
+                <div class="signals-feed" id="feed-4h"></div>
+            </section>
+
+            <!-- Resizer 4 -->
+            <div class="resizer" id="resizer-4" title="Sürükle: Sütunu yeniden boyutlandır"></div>
+
+            <!-- 1D Column -->
+            <section class="signals-column glass-panel resizable-panel" id="col-1d" data-col="1d">
+                <div class="panel-header">
+                    <h2>1 Gün</h2>
+                    <div class="filter-box" id="filter-box-1d">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="filter-input" id="filter-1d" placeholder="Coin ara..."
+                            oninput="applyFilter('1d')">
+                        <button class="filter-clear" onclick="clearFilter('1d')"
+                            title="Filtreyi temizle">&times;</button>
+                    </div>
+                </div>
+                <div class="signals-feed" id="feed-1d"></div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="js/bankroll.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/resize.js"></script>
+</body>
+
+</html>
