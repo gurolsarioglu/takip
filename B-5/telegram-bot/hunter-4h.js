@@ -1,6 +1,7 @@
 const axios = require('axios');
 const dotenv = require('dotenv');
 const path = require('path');
+const technicalService = require('../backend/services/technical.service');
 
 // Load config
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -99,13 +100,16 @@ async function checkCoin(symbol) {
 
         if (klines.length < 50) return false;
 
-        const rsi = calculateRSI(klines, 14);
-        const stoch = calculateStochRSI(klines, 14, 14, 3, 3);
+        const rsi = technicalService.calculateFullRSI(klines, 14);
+        const stoch = technicalService.calculateFullStochRSI(klines, 14, 14, 3, 3);
+        const wt = technicalService.calculateWaveTrend(klines);
 
         // Since we popped the last one, 'last' indices refer to the closed candle
         const lastRsi = rsi[rsi.length - 1];
         const lastK = stoch.k[stoch.k.length - 1];
         const lastD = stoch.d[stoch.d.length - 1];
+        const prevK = stoch.k[stoch.k.length - 2];
+        const prevD = stoch.d[stoch.d.length - 2];
 
         const price = klines[klines.length - 1].close;
 
@@ -126,7 +130,21 @@ async function checkCoin(symbol) {
                 const rsi1h = await getMTFRSI(symbol, '1h');
                 const rsi1d = await getMTFRSI(symbol, '1d');
 
-                await sendAlert(symbol, signalType, price, lastRsi, lastK, lastD, rsi15m, rsi1h, rsi1d);
+                let isKusursuz = false;
+                if (signalType === 'Buy 🟢') {
+                    if (prevK <= prevD && lastK > lastD && lastD <= 30 && wt.cross && wt.cross.includes('Yükseliş')) isKusursuz = true;
+                } else if (signalType === 'Sell 🔴') {
+                    if (prevK >= prevD && lastK < lastD && lastD >= 70 && wt.cross && wt.cross.includes('Düşüş')) isKusursuz = true;
+                }
+
+                const binanceService = require('../backend/services/binance.service');
+                const supplyData = await binanceService.getSupplyData(symbol);
+                let supplyStr = 'Bilinmiyor';
+                if (supplyData) {
+                    supplyStr = `%${supplyData.ratio}` + (supplyData.isMax ? ' !!!' : '');
+                }
+
+                await sendAlert(symbol, signalType, price, lastRsi, lastK, lastD, rsi15m, rsi1h, rsi1d, isKusursuz, supplyStr);
                 return true;
             }
         }
@@ -140,12 +158,12 @@ async function getMTFRSI(symbol, interval) {
         klines.pop(); // Consistency: use closed candle for MTF too
 
         if (klines.length < 50) return 'N/A';
-        const rsi = calculateRSI(klines, 14);
+        const rsi = technicalService.calculateFullRSI(klines, 14);
         return Math.round(rsi[rsi.length - 1]);
     } catch (e) { return 'N/A'; }
 }
 
-async function sendAlert(symbol, type, price, rsi, k, d, rsi15m, rsi1h, rsi1d) {
+async function sendAlert(symbol, type, price, rsi, k, d, rsi15m, rsi1h, rsi1d, isKusursuz = false, supplyStr = 'Bilinmiyor') {
     const now = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
     const binanceUrl = `https://www.binance.com/en/futures/${symbol}`;
 
@@ -165,10 +183,12 @@ async function sendAlert(symbol, type, price, rsi, k, d, rsi15m, rsi1h, rsi1d) {
     const direction = type.includes('Buy') ? 'LONG (AL)' : 'SHORT (SAT)';
     const cleanSymbol = symbol.replace('USDT', '');
 
+    const kusursuzTxt = isKusursuz ? ' 💎 *KUSURSUZ SİNYAL* 💎\n' : '';
+
     // 4H Style: EXTRA LARGE VISIBILITY
     const message = `\n` +
         `${trendEmoji}\n` +
-        `*🚨 4 SAATLİK DEV SİNYAL 🚨*\n` +
+        `*🚨 4 SAATLİK DEV SİNYAL 🚨*\n` + kusursuzTxt +
         `\n` +
         `#${cleanSymbol}  ➡️  *${direction}*\n` +
         `Fiyat: *${price.toFixed(4)}*\n` +
@@ -198,7 +218,9 @@ async function sendAlert(symbol, type, price, rsi, k, d, rsi15m, rsi1h, rsi1d) {
             rsi1h,
             rsi1d,
             stochK: Math.round(k),
-            stochD: Math.round(d)
+            stochD: Math.round(d),
+            isKusursuz,
+            supplyStr
         };
         await axios.post('http://localhost:3000/api/signals/emit', signalData);
     } catch (err) {
@@ -206,39 +228,7 @@ async function sendAlert(symbol, type, price, rsi, k, d, rsi15m, rsi1h, rsi1d) {
     }
 }
 
-function calculateRSI(d, p) {
-    let g = 0, l = 0;
-    for (let i = 1; i <= p; i++) {
-        let diff = d[i].close - d[i - 1].close;
-        if (diff >= 0) g += diff; else l -= diff;
-    }
-    let rsi = [100 - (100 / (1 + (g / p) / (l / p || 1)))];
-    let ag = g / p, al = l / p;
-    for (let i = p + 1; i < d.length; i++) {
-        let diff = d[i].close - d[i - 1].close;
-        ag = (ag * (p - 1) + (diff > 0 ? diff : 0)) / p;
-        al = (al * (p - 1) + (diff < 0 ? -diff : 0)) / p;
-        rsi.push(100 - (100 / (1 + (ag / (al || 1)))));
-    }
-    return rsi;
-}
-
-function calculateStochRSI(d, rP, sP, kP, dP) {
-    const r = calculateRSI(d, rP);
-    let s = [];
-    for (let i = sP; i <= r.length; i++) {
-        let w = r.slice(i - sP, i);
-        let low = Math.min(...w), h = Math.max(...w);
-        if (h === low) s.push(100);
-        else {
-            const logStoch = Math.log(Math.max(r[i - 1], 0.01) / Math.max(low, 0.01)) / Math.log(Math.max(h, 0.01) / Math.max(low, 0.01));
-            s.push(logStoch * 100);
-        }
-    }
-    const kData = s.map((v, i, a) => a.slice(Math.max(0, i - kP + 1), i + 1).reduce((p, c) => p + c, 0) / kP);
-    const dData = kData.map((v, i, a) => a.slice(Math.max(0, i - dP + 1), i + 1).reduce((p, c) => p + c, 0) / dP);
-    return { k: kData, d: dData };
-}
+// Technical indicators are now handled by technicalService
 
 function scheduleNextScan() {
     const now = Date.now();

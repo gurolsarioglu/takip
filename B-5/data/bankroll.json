@@ -1,35 +1,4 @@
 {
-  "initialCapital": 10,
-  "trades": [
-    {
-      "id": "mmnjhq7cnz545o6v88e",
-      "coin": "",
-      "date": "12 Mart 2026 Perşembe",
-      "time": "17:04",
-      "position": "Long",
-      "profit": 0.07,
-      "cumulativeBankroll": 10.07,
-      "percentageChange": 0.7000000000000028
-    },
-    {
-      "id": "mmosi5xgv2fyu1bvvy",
-      "coin": "",
-      "date": "13 Mart 2026 Cuma",
-      "time": "14:04",
-      "position": "Long",
-      "profit": 0.05,
-      "cumulativeBankroll": 10.120000000000001,
-      "percentageChange": 1.20000000000001
-    },
-    {
-      "id": "mmosia6jft88ft5iusg",
-      "coin": "",
-      "date": "13 Mart 2026 Cuma",
-      "time": "14:04",
-      "position": "Long",
-      "profit": 0.08,
-      "cumulativeBankroll": 10.200000000000001,
-      "percentageChange": 2.0000000000000107
-    }
-  ]
+  "initialCapital": 36.43,
+  "trades": []
 }

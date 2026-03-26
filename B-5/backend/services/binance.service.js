@@ -5,6 +5,8 @@ class BinanceService {
     constructor() {
         this.baseURL = config.BINANCE_API_URL;
         this.apiKey = config.BINANCE_API_KEY;
+        this.supplyCache = null;
+        this.supplyCacheTime = 0;
     }
 
     /**
@@ -144,6 +146,105 @@ class BinanceService {
         } catch (error) {
             console.error('Error fetching biggest drops:', error.message);
             throw error;
+        }
+    }
+
+    /**
+     * Get Futures Top Trader Long/Short Ratio
+     */
+    async getTopLongShortRatio(symbol, period = '5m') {
+        try {
+            const response = await axios.get(`https://fapi.binance.com/fapi/v1/topLongShortPositionRatio`, {
+                params: { symbol, period, limit: 1 }
+            });
+            if (response.data && response.data.length > 0) {
+                return {
+                    longAccount: parseFloat(response.data[0].longAccount),
+                    shortAccount: parseFloat(response.data[0].shortAccount),
+                    longShortRatio: parseFloat(response.data[0].longShortRatio)
+                };
+            }
+            return null;
+        } catch (error) {
+            console.error(`Error L/S ratio for ${symbol}:`, error.message);
+            return null;
+        }
+    }
+
+    /**
+     * Get Futures Open Interest
+     */
+    async getOpenInterest(symbol) {
+        try {
+            const response = await axios.get(`https://fapi.binance.com/fapi/v1/openInterest`, {
+                params: { symbol }
+            });
+            return response.data ? parseFloat(response.data.openInterest) : null;
+        } catch (error) {
+            console.error(`Error Open Interest for ${symbol}:`, error.message);
+            return null;
+        }
+    }
+
+    /**
+     * Get all Futures Premium Indices (Funding Rates)
+     */
+    async getAllPremiumIndices() {
+        try {
+            const response = await axios.get(`https://fapi.binance.com/fapi/v1/premiumIndex`);
+            const indexMap = {};
+            response.data.forEach(item => {
+                indexMap[item.symbol] = item;
+            });
+            return indexMap;
+        } catch (error) {
+            console.error('Error fetching all premium indices:', error.message);
+            throw new Error('Failed to fetch premium indices');
+        }
+    }
+
+    /**
+     * Fetch circulating supply from BAPI, cached for 1 hour locally.
+     */
+    async getSupplyData(symbol) {
+        try {
+            const now = Date.now();
+            if (!this.supplyCache || now - this.supplyCacheTime > 60 * 60 * 1000) {
+                const response = await axios.get('https://www.binance.com/bapi/asset/v1/public/asset-service/product/get-products', { headers: { 'User-Agent': 'Mozilla/5.0' } });
+                const data = response.data.data;
+                const map = {};
+                if (data) {
+                    data.forEach(item => {
+                        map[item.b] = {
+                            cs: parseFloat(item.cs), // circulating
+                            ts: parseFloat(item.ts)  // total
+                        };
+                    });
+                }
+                this.supplyCache = map;
+                this.supplyCacheTime = now;
+            }
+
+            const baseAsset = symbol.replace('USDT', '');
+            const info = this.supplyCache[baseAsset];
+            if (info && info.ts > 0) {
+                const ratio = (info.cs / info.ts) * 100;
+                let formattedRatio = (ratio % 1 === 0 || ratio >= 99.9) ? Math.round(ratio) : ratio.toFixed(1);
+                
+                // Account for rounding errors or exactly 100%
+                if (formattedRatio >= 99.9) {
+                    formattedRatio = 100;
+                }
+                
+                return {
+                    ratio: formattedRatio,
+                    isMax: formattedRatio === 100
+                };
+            }
+            return null;
+        } catch (error) {
+            // Silently fail to not interrupt signal sending
+            return null;
         }
     }
 }

@@ -17,10 +17,12 @@ start "B-5 Backend Server" cmd /k "cd /d %~dp0backend && node server.js"
 timeout /t 3 /nobreak >nul
 
 :: Start the Multi-Timeframe Bots in separate terminal windows
+start "B-5 Hammer New"   cmd /k "cd /d %~dp0telegram-bot && node hammer-new.js"
+start "B-5 Hunter (1m)"  cmd /k "cd /d %~dp0telegram-bot && node hunter-1m.js"
 start "B-5 Hunter (15m)" cmd /k "cd /d %~dp0telegram-bot && node hunter-15m.js"
 start "B-5 Hunter (1H)"  cmd /k "cd /d %~dp0telegram-bot && node hunter-1h.js"
 start "B-5 Hunter (4H)"  cmd /k "cd /d %~dp0telegram-bot && node hunter-4h.js"
-start "B-5 Hunter (1D)"  cmd /k "cd /d %~dp0telegram-bot && node hunter-1d.js"
+start "B-5 Hunter (FR)"  cmd /k "cd /d %~dp0telegram-bot && node hunter-fr.js"
 
 :: Give the bots a moment to connect
 timeout /t 3 /nobreak >nul

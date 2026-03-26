@@ -1,6 +1,7 @@
 const axios = require('axios');
 const dotenv = require('dotenv');
 const path = require('path');
+const technicalService = require('../backend/services/technical.service');
 
 // Load config
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -164,9 +165,9 @@ async function checkCoin(symbol) {
 
         if (klines.length < 50) return false;
 
-        const rsi = calculateRSI(klines, 14);
-        const stoch = calculateStochRSI(klines, 14, 14, 3, 3);
-        const adx = calculateADX(klines, 14);
+        const rsi = technicalService.calculateFullRSI(klines, 14);
+        const stoch = technicalService.calculateFullStochRSI(klines, 14, 14, 3, 3);
+        const adx = technicalService.calculateADX(klines, 14);
 
         // Now 'last' data points refer to the closed candle
         const lastRsi = rsi[rsi.length - 1];
@@ -199,12 +200,22 @@ async function checkCoin(symbol) {
                 const avgVol = klines.slice(-11, -1).reduce((s, k) => s + k.volume, 0) / 10;
                 let volStatus = lastVol > (avgVol * 1.05) ? "🔥 YÜKSEK HACİM" : "Normal";
 
-                // Multi-Timeframe RSI
-                const rsi15m = await getMTFRSI(symbol, '15m'); // 15m info only
-                const rsi4h = await getMTFRSI(symbol, '4h');
-                const rsi1d = await getMTFRSI(symbol, '1d');
+                // Multi-Timeframe detaylı analiz
+                const rsi15m    = await getMTFRSI(symbol, '15m');
+                const detail4h  = await getMTFDetail(symbol, '4h');
+                const detail1d  = await getMTFDetail(symbol, '1d');
+                const rsi4h     = detail4h ? detail4h.rsi : 'N/A';
+                const rsi1d     = detail1d ? detail1d.rsi : 'N/A';
+                const swingComment = generateSwingComment(signalType, detail4h, detail1d);
 
-                await sendAlert(symbol, signalType, boost, price, lastRsi, lastK, lastD, volStatus, rsi15m, rsi4h, rsi1d);
+                const binanceService = require('../backend/services/binance.service');
+                const supplyData = await binanceService.getSupplyData(symbol);
+                let supplyStr = 'Bilinmiyor';
+                if (supplyData) {
+                    supplyStr = `%${supplyData.ratio}` + (supplyData.isMax ? ' !!!' : '');
+                }
+
+                await sendAlert(symbol, signalType, boost, price, lastRsi, lastK, lastD, volStatus, rsi15m, rsi4h, rsi1d, swingComment, supplyStr);
                 return true;
             }
         }
@@ -214,19 +225,128 @@ async function checkCoin(symbol) {
 async function getMTFRSI(symbol, interval) {
     try {
         const res = await axios.get(`https://fapi.binance.com/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=500`);
-        let klines = res.data.map(k => ({
-            close: parseFloat(k[4])
-        }));
-        klines.pop(); // Use closed candle
+        let klines = res.data.map(k => ({ close: parseFloat(k[4]) }));
+        klines.pop();
         if (klines.length < 50) return null;
-        const rsi = calculateRSI(klines, 14);
+        const rsi = technicalService.calculateFullRSI(klines, 14);
         return Math.round(rsi[rsi.length - 1]);
-    } catch (e) {
-        return 'N/A';
-    }
+    } catch (e) { return 'N/A'; }
 }
 
-async function sendAlert(symbol, type, boost, price, rsi, k, d, vol, rsi15m, rsi4h, rsi1d) {
+async function getMTFDetail(symbol, interval) {
+    try {
+        const res = await axios.get(`https://fapi.binance.com/fapi/v1/klines?symbol=${symbol}&interval=${interval}&limit=100`);
+        const klines = res.data.map(k => ({
+            high:  parseFloat(k[2]),
+            low:   parseFloat(k[3]),
+            close: parseFloat(k[4]),
+            hlc3:  (parseFloat(k[2]) + parseFloat(k[3]) + parseFloat(k[4])) / 3
+        }));
+        if (klines.length < 50) return null;
+
+        const rsiArr = technicalService.calculateFullRSI(klines, 14);
+        const stoch  = technicalService.calculateFullStochRSI(klines, 14, 14, 3, 3);
+        const wt     = technicalService.calculateWaveTrend(klines);
+
+        const lastRsi  = rsiArr[rsiArr.length - 1];
+        const prevRsi1 = rsiArr[rsiArr.length - 2];
+        const rsiSlope = lastRsi - prevRsi1;
+        const rsiDir   = rsiSlope > 1 ? '↑' : rsiSlope < -1 ? '↓' : '→';
+
+        let periodsOB = 0;
+        for (let i = rsiArr.length - 1; i >= 0; i--) {
+            if (lastRsi >= 70 && rsiArr[i] >= 70) periodsOB++;
+            else if (lastRsi <= 30 && rsiArr[i] <= 30) periodsOB++;
+            else break;
+        }
+
+        const lastK = stoch.k[stoch.k.length - 1];
+        const lastD = stoch.d[stoch.d.length - 1];
+        const prevK = stoch.k[stoch.k.length - 2];
+        const prevD = stoch.d[stoch.d.length - 2];
+        const stochColor = lastK < lastD ? 'kırmızı' : 'yeşil';
+        const stochJustFlipped = (prevK >= prevD && lastK < lastD) || (prevK <= prevD && lastK > lastD);
+
+        return {
+            rsi: Math.round(lastRsi),
+            rsiDir, periodsOB,
+            stochK: Math.round(lastK),
+            stochD: Math.round(lastD),
+            stochColor, stochJustFlipped,
+            wtLevel: Math.round(wt.wt1),
+            wtCross: wt.cross
+        };
+    } catch (e) { return null; }
+}
+
+function generateSwingComment(signalType, d4h, d1d) {
+    if (!d4h && !d1d) return null;
+    const isShort = signalType.toLowerCase().includes('sell');
+    const lines   = [];
+
+    if (d4h) {
+        const e4h   = d4h.stochColor === 'kırmızı' ? '🔴' : '🟢';
+        const wt4h  = d4h.wtCross ? ` | WT ${d4h.wtLevel} (${d4h.wtCross.includes('Düşüş') ? 'cross kırmızı' : 'cross yeşil'})` : ` | WT ${d4h.wtLevel}`;
+        let l4h     = `📊 4H: RSI ${d4h.rsi}${d4h.rsiDir} | SRSI ${e4h} (K:${d4h.stochK}/D:${d4h.stochD})${wt4h}`;
+        if (d4h.stochJustFlipped) l4h += d4h.stochColor === 'kırmızı' ? ' ⚡kırmızıya döndü' : ' ⚡yeşile döndü';
+        lines.push(l4h);
+    }
+    if (d1d) {
+        const e1d   = d1d.stochColor === 'kırmızı' ? '🔴' : '🟢';
+        const obStr = d1d.periodsOB >= 2 ? ` (${d1d.periodsOB} muddur)` : '';
+        const obLbl = (isShort && d1d.rsi >= 70) ? ` OB${obStr}` : (!isShort && d1d.rsi <= 30) ? ` OS${obStr}` : '';
+        const wt1d  = d1d.wtCross ? ` | WT ${d1d.wtLevel} (${d1d.wtCross.includes('Düşüş') ? 'cross kırmızı' : 'cross yeşil'})` : ` | WT ${d1d.wtLevel}`;
+        let l1d     = `📅 1D: RSI ${d1d.rsi}${d1d.rsiDir}${obLbl} | SRSI ${e1d} (K:${d1d.stochK}/D:${d1d.stochD})${wt1d}`;
+        if (d1d.stochJustFlipped) l1d += d1d.stochColor === 'kırmızı' ? ' ⚡kırmızıya döndü' : ' ⚡yeşile döndü';
+        lines.push(l1d);
+    }
+
+    const strong = [];
+    if (isShort) {
+        if (d1d && d1d.rsi >= 75 && d1d.rsiDir === '↓')      strong.push('1D RSI aşağı kıvrılıyor');
+        if (d1d && d1d.stochColor === 'kırmızı')              strong.push('1D SRSI kırmızı');
+        if (d1d && d1d.periodsOB >= 3)                        strong.push(`1D ${d1d.periodsOB} muddur OB`);
+        if (d4h && d4h.rsiDir === '↓' && d4h.rsi >= 55)       strong.push('4H momentum kırılıyor');
+        if (d4h && d4h.wtCross && d4h.wtCross.includes('Düşüş')) strong.push('4H WT kırmızı cross');
+        if (d1d && d1d.wtCross && d1d.wtCross.includes('Düşüş')) strong.push('1D WT kırmızı cross');
+    } else {
+        if (d1d && d1d.rsi <= 25 && d1d.rsiDir === '↑')      strong.push('1D RSI yukarı kıvrılıyor');
+        if (d1d && d1d.stochColor === 'yeşil')                strong.push('1D SRSI yeşil');
+        if (d1d && d1d.periodsOB >= 3)                        strong.push(`1D ${d1d.periodsOB} muddur OS`);
+        if (d4h && d4h.rsiDir === '↑' && d4h.rsi <= 45)       strong.push('4H momentum dönüyor');
+        if (d4h && d4h.wtCross && d4h.wtCross.includes('Yükseliş')) strong.push('4H WT yeşil cross');
+        if (d1d && d1d.wtCross && d1d.wtCross.includes('Yükseliş')) strong.push('1D WT yeşil cross');
+    }
+    if (strong.length >= 3) lines.push(`⚠️ Güçlü ${isShort ? 'short' : 'long'}: ${strong.join(' + ')}`);
+    else if (strong.length >= 1) lines.push(`💡 ${strong.join(' + ')}`);
+
+    return lines.length > 0 ? lines.join('\n') : null;
+}
+
+function calculateWaveTrend(klines) {
+    const n1 = 10, n2 = 21;
+    const ap = klines.map(k => k.hlc3);
+    if (ap.length < n2) return { wt1: 0, wt2: 0, cross: null };
+    const ema = (data, len) => {
+        const k = 2 / (len + 1);
+        let res = [data[0]];
+        for (let i = 1; i < data.length; i++) res.push(data[i] * k + res[i - 1] * (1 - k));
+        return res;
+    };
+    const esa  = ema(ap, n1);
+    const d    = ema(ap.map((v, i) => Math.abs(v - esa[i])), n1);
+    const ci   = ap.map((v, i) => (v - esa[i]) / (0.015 * d[i] || 1));
+    const wt1  = ema(ci, n2);
+    const wt2  = wt1.map((v, i, a) => a.slice(Math.max(0, i - 3), i + 1).reduce((s, c) => s + c, 0) / (i < 3 ? i + 1 : 4));
+    let cross  = null;
+    const last = wt1.length - 1;
+    if (wt1[last - 1] < wt2[last - 1] && wt1[last] > wt2[last]) cross = 'Yükseliş 🟢';
+    else if (wt1[last - 1] > wt2[last - 1] && wt1[last] < wt2[last]) cross = 'Düşüş 🔴';
+    return { wt1: wt1[last], wt2: wt2[last], cross };
+}
+
+
+async function sendAlert(symbol, type, boost, price, rsi, k, d, vol, rsi15m, rsi4h, rsi1d, swingComment = null, supplyStr = 'Bilinmiyor') {
     const now = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
     const binanceUrl = `https://www.binance.com/en/futures/${symbol}`;
 
@@ -281,7 +401,9 @@ async function sendAlert(symbol, type, boost, price, rsi, k, d, vol, rsi15m, rsi
             rsi1d,
             stochK: Math.round(k),
             stochD: Math.round(d),
-            volume: vol
+            volume: vol,
+            swingComment,
+            supplyStr
         };
         await axios.post('http://localhost:3000/api/signals/emit', signalData);
     } catch (err) {
@@ -289,93 +411,7 @@ async function sendAlert(symbol, type, boost, price, rsi, k, d, vol, rsi15m, rsi
     }
 }
 
-// --- MATH HELPERS ---
-function calculateRSI(d, p) {
-    let g = 0, l = 0;
-    for (let i = 1; i <= p; i++) {
-        let diff = d[i].close - d[i - 1].close;
-        if (diff >= 0) g += diff; else l -= diff;
-    }
-    let rsi = [100 - (100 / (1 + (g / p) / (l / p || 1)))];
-    let ag = g / p, al = l / p;
-    for (let i = p + 1; i < d.length; i++) {
-        let diff = d[i].close - d[i - 1].close;
-        ag = (ag * (p - 1) + (diff > 0 ? diff : 0)) / p;
-        al = (al * (p - 1) + (diff < 0 ? -diff : 0)) / p;
-        rsi.push(100 - (100 / (1 + (ag / (al || 1)))));
-    }
-    return rsi;
-}
-
-function calculateStochRSI(d, rP, sP, kP, dP) {
-    const r = calculateRSI(d, rP);
-    let s = [];
-    for (let i = sP; i <= r.length; i++) {
-        let w = r.slice(i - sP, i);
-        let low = Math.min(...w), h = Math.max(...w);
-        if (h === low) {
-            s.push(100);
-        } else {
-            const safeR = Math.max(r[i - 1], 0.01);
-            const safeL = Math.max(low, 0.01);
-            const safeH = Math.max(h, 0.01);
-            const logStoch = Math.log(safeR / safeL) / Math.log(safeH / safeL);
-            s.push(logStoch * 100);
-        }
-    }
-    const kData = s.map((v, i, a) => a.slice(Math.max(0, i - kP + 1), i + 1).reduce((p, c) => p + c, 0) / kP);
-    const dData = kData.map((v, i, a) => a.slice(Math.max(0, i - dP + 1), i + 1).reduce((p, c) => p + c, 0) / dP);
-    return { k: kData, d: dData };
-}
-
-function calculateADX(d, p) {
-    let tr = [], dmP = [], dmM = [];
-    for (let i = 1; i < d.length; i++) {
-        let h = d[i].high, l = d[i].low, pc = d[i - 1].close, ph = d[i - 1].high, pl = d[i - 1].low;
-        tr.push(Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc)));
-        dmP.push(h - ph > pl - l && h - ph > 0 ? h - ph : 0);
-        dmM.push(pl - l > h - ph && pl - l > 0 ? pl - l : 0);
-    }
-    let smoothTR = [], smoothDMP = [], smoothDMM = [];
-    let sumTR = tr.slice(0, p).reduce((a, b) => a + b, 0), sumDMP = dmP.slice(0, p).reduce((a, b) => a + b, 0), sumDMM = dmM.slice(0, p).reduce((a, b) => a + b, 0);
-    smoothTR.push(sumTR); smoothDMP.push(sumDMP); smoothDMM.push(sumDMM);
-    for (let i = p; i < tr.length; i++) {
-        sumTR = sumTR - (sumTR / p) + tr[i];
-        sumDMP = sumDMP - (sumDMP / p) + dmP[i];
-        sumDMM = sumDMM - (sumDMM / p) + dmM[i];
-        smoothTR.push(sumTR); smoothDMP.push(sumDMP); smoothDMM.push(sumDMM);
-    }
-    let dx = [];
-    for (let i = 0; i < smoothTR.length; i++) {
-        let diP = (smoothDMP[i] / smoothTR[i]) * 100, diM = (smoothDMM[i] / smoothTR[i]) * 100;
-        dx.push(Math.abs(diP - diM) / (diP + diM) * 100);
-    }
-    let adx = [dx.slice(0, p).reduce((a, b) => a + b, 0) / p];
-    for (let i = p; i < dx.length; i++) adx.push((adx[adx.length - 1] * (p - 1) + dx[i]) / p);
-    return adx;
-}
-
-function detectDivergence(klines, rsi, stochK) {
-    const lookback = 10;
-    if (klines.length < lookback + 5 || rsi.length < lookback + 5) return null;
-    const recentPrices = klines.slice(-lookback).map(k => k.close);
-    const recentRSI = rsi.slice(-lookback);
-    const recentStochK = stochK.slice(-lookback);
-    const midPoint = Math.floor(lookback / 2);
-    const earlyPriceAvg = recentPrices.slice(0, midPoint).reduce((a, b) => a + b, 0) / midPoint;
-    const latePriceAvg = recentPrices.slice(midPoint).reduce((a, b) => a + b, 0) / (lookback - midPoint);
-    const priceTrend = latePriceAvg - earlyPriceAvg;
-    const earlyRSIAvg = recentRSI.slice(0, midPoint).reduce((a, b) => a + b, 0) / midPoint;
-    const lateRSIAvg = recentRSI.slice(midPoint).reduce((a, b) => a + b, 0) / (lookback - midPoint);
-    const rsiTrend = lateRSIAvg - earlyRSIAvg;
-    const earlyStochAvg = recentStochK.slice(0, midPoint).reduce((a, b) => a + b, 0) / midPoint;
-    const lateStochAvg = recentStochK.slice(midPoint).reduce((a, b) => a + b, 0) / (lookback - midPoint);
-    const stochTrend = lateStochAvg - earlyStochAvg;
-    const threshold = 0.001;
-    if (priceTrend < -threshold && (rsiTrend > threshold || stochTrend > threshold)) return 'bullish';
-    if (priceTrend > threshold && (rsiTrend < -threshold || stochTrend < -threshold)) return 'bearish';
-    return null;
-}
+// Backend Technical Service used instead of hard-coded logic
 
 /**
  * Schedule scan to run exactly at the beginning of every 1-hour candle

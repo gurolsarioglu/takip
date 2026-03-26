@@ -124,7 +124,14 @@ async function checkCoin(symbol) {
                 const rsi4h = await getMTFRSI(symbol, '4h');
                 const rsi1d = await getMTFRSI(symbol, '1d');
 
-                await sendAlert(symbol, signalType, boost, price, prev, lastRsi, lastK, lastD, volStatus, trendStatus, demaAlert, rsi1h, rsi4h, rsi1d);
+                const binanceService = require('../backend/services/binance.service');
+                const supplyData = await binanceService.getSupplyData(symbol);
+                let supplyStr = 'Bilinmiyor';
+                if (supplyData) {
+                    supplyStr = `%${supplyData.ratio}` + (supplyData.isMax ? ' !!!' : '');
+                }
+
+                await sendAlert(symbol, signalType, boost, price, prev, lastRsi, lastK, lastD, volStatus, trendStatus, demaAlert, rsi1h, rsi4h, rsi1d, supplyStr);
                 return true;
             }
         }
@@ -145,7 +152,7 @@ async function getMTFRSI(symbol, interval) {
     }
 }
 
-async function sendAlert(symbol, type, boost, price, prev, rsi, k, d, vol, trend, demaAlert, rsi1h, rsi4h, rsi1d) {
+async function sendAlert(symbol, type, boost, price, prev, rsi, k, d, vol, trend, demaAlert, rsi1h, rsi4h, rsi1d, supplyStr = 'Bilinmiyor') {
     const now = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
     const binanceUrl = `https://www.binance.com/en/futures/${symbol}`;
 
@@ -196,7 +203,8 @@ async function sendAlert(symbol, type, boost, price, prev, rsi, k, d, vol, trend
             volume: vol,
             trend,
             demaAlert,
-            isWTDip: type.includes('WT Dip')
+            isWTDip: type.includes('WT Dip'),
+            supplyStr
         };
         await axios.post('http://localhost:3000/api/signals/emit', signalData);
     } catch (err) {

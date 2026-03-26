@@ -2,6 +2,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 const dotenv = require('dotenv');
 const path = require('path');
+const binanceService = require('../backend/services/binance.service');
 
 // Load config
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -79,6 +80,12 @@ async function analyzeOnDemand(chatId, symbol) {
         const i15m = calculateAllIndicators(k15m);
         const i5m = calculateAllIndicators(k5m);
 
+        const supplyData = await binanceService.getSupplyData(symbol);
+        let supplyStr = 'Bilinmiyor';
+        if (supplyData) {
+            supplyStr = `%${supplyData.ratio}` + (supplyData.isMax ? ' !!!' : '');
+        }
+
         const now = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
         const binanceUrl = `https://www.binance.com/en/futures/${symbol}`;
 
@@ -93,6 +100,7 @@ async function analyzeOnDemand(chatId, symbol) {
             `----------------------------------\n` +
             `💰 *Fiyat:* ${currentPrice.toFixed(4)}\n` +
             `📢 *Uyumsuzluk:* ${divInfo}\n` +
+            `• *Dolaşım:* ${supplyStr}\n` +
             `----------------------------------\n` +
             `📉 *RSI (1sa):* ${Math.round(rsi1h[rsi1h.length - 1])}\n` +
             `📊 *RSI (15dk):* ${Math.round(i15m.rsi)}\n` +
@@ -189,6 +197,13 @@ async function sendDivergenceAlert(symbol, div, price) {
     ]);
     const i5m = calculateAllIndicators(k5m);
     const i15m = calculateAllIndicators(k15m);
+    
+    const supplyData = await binanceService.getSupplyData(symbol);
+    let supplyStr = 'Bilinmiyor';
+    if (supplyData) {
+        supplyStr = `%${supplyData.ratio}` + (supplyData.isMax ? ' !!!' : '');
+    }
+    
     const tp10 = div.target === 'SHORT' ? (price * 0.90).toFixed(4) : (price * 1.10).toFixed(4);
     const now = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
     const binanceUrl = `https://www.binance.com/en/futures/${symbol}`;
@@ -199,6 +214,7 @@ async function sendDivergenceAlert(symbol, div, price) {
         `📢 *${div.type}* | *${div.target}*\n` +
         `----------------------------------\n` +
         `💰 *Giriş:* ${price.toFixed(4)}\n` +
+        `• *Dolaşım:* ${supplyStr}\n` +
         `🎯 *Hedef (%10):* ${tp10}\n` +
         `🛑 *Stop Loss:* ${div.sl.toFixed(4)}\n` +
         `──────────────────\n` +
@@ -343,6 +359,12 @@ async function analyzeBoost(symbol, currentPrice, previousPrice, boostPercent) {
     const i5m = calculateAllIndicators(k5m);
     const i15m = calculateAllIndicators(k15m);
     const i1h = calculateAllIndicators(k1h);
+
+    const supplyData = await binanceService.getSupplyData(symbol);
+    let supplyStr = 'Bilinmiyor';
+    if (supplyData) {
+        supplyStr = `%${supplyData.ratio}` + (supplyData.isMax ? ' !!!' : '');
+    }
     const now = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
     const binanceUrl = `https://www.binance.com/en/futures/${symbol}`;
     const directionEmoji = boostPercent > 0 ? '🟢' : '🔴';
@@ -350,6 +372,7 @@ async function analyzeBoost(symbol, currentPrice, previousPrice, boostPercent) {
         `${boostPercent > 0 ? '📈' : '📉'} *[BOOST] #${symbol}* (${directionEmoji} %${boostPercent})\n` +
         `----------------------------------\n` +
         `• Fiyat: ${currentPrice}\n` +
+        `• Dolaşım: ${supplyStr}\n` +
         `• RSI (1s): ${Math.round(i1h.rsi)} | (15d): ${Math.round(i15m.rsi)}\n` +
         `• Onay (15d WT): ${i15m.wt.cross || '➖'} | 5m: ${i5m.wt.cross || '➖'}\n` +
         `----------------------------------\n` +

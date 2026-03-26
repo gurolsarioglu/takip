@@ -4,8 +4,8 @@
  * Layout (widths) is saved to localStorage and restored on reload.
  */
 
-const STORAGE_KEY = 'b5-col-widths';
-const DEFAULT_WIDTHS = { '15m': 320, '1h': 320, 'bankroll': null, '4h': 320, '1d': 320 }; // null = flex-grow
+const STORAGE_KEY = 'b5-col-widths-v3'; // v3: Kasa kaldırıldı, flex:1 devrede
+
 
 const container = document.getElementById('resize-container');
 const panels = Array.from(container.querySelectorAll('.resizable-panel'));
@@ -13,21 +13,13 @@ const resizers = Array.from(container.querySelectorAll('.resizer'));
 
 /* ─── Apply Widths ─── */
 function applyWidths(widths) {
+    if (!widths) return; // default olarak css flex: 1 1 0 devreye girer
+    
     panels.forEach(panel => {
         const col = panel.dataset.col;
-        if (col === 'bankroll') {
-            // Bankroll always fills remaining space
-            panel.style.flex = '1 1 0';
-            panel.style.minWidth = '380px';
-            panel.style.width = '';
-            if (widths && widths.bankroll) {
-                panel.style.flex = 'none';
-                panel.style.width = widths.bankroll + 'px';
-            }
-        } else {
-            const w = widths && widths[col] ? widths[col] : DEFAULT_WIDTHS[col];
+        if (widths[col]) {
             panel.style.flex = 'none';
-            panel.style.width = w + 'px';
+            panel.style.width = widths[col] + 'px';
         }
     });
 }
@@ -53,7 +45,10 @@ function loadWidths() {
 /* ─── Reset to default ─── */
 document.getElementById('btn-reset-layout').addEventListener('click', () => {
     localStorage.removeItem(STORAGE_KEY);
-    applyWidths(null);
+    panels.forEach(panel => {
+        panel.style.flex = '1 1 0';
+        panel.style.width = '';
+    });
 });
 
 /* ─── Fullscreen Toggle ─── */
@@ -94,20 +89,18 @@ resizers.forEach((resizer, idx) => {
         if (!isResizing) return;
         const dx = e.clientX - startX;
 
-        const newLeftWidth = startLeftWidth + dx;
+        const newLeftWidth  = startLeftWidth + dx;
         const newRightWidth = startRightWidth - dx;
-
         const MIN_WIDTH = 180;
+
         if (newLeftWidth < MIN_WIDTH || newRightWidth < MIN_WIDTH) return;
 
+        // Tüm kolonlar artık boyutlandırılabilir
         panelLeft.style.flex = 'none';
         panelLeft.style.width = newLeftWidth + 'px';
 
-        // Only directly constrain right side if it's NOT bankroll (bankroll flex)
-        if (panelRight.dataset.col !== 'bankroll') {
-            panelRight.style.flex = 'none';
-            panelRight.style.width = newRightWidth + 'px';
-        }
+        panelRight.style.flex = 'none';
+        panelRight.style.width = newRightWidth + 'px';
     });
 
     document.addEventListener('mouseup', () => {

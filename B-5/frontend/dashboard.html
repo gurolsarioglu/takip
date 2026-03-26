@@ -15,8 +15,25 @@
 <body>
     <!-- Toolbar -->
     <div class="toolbar">
-        <div class="toolbar-left">
+        <div class="toolbar-left" style="display:flex; align-items:center;">
             <span class="toolbar-brand"><i class="fa-solid fa-chart-line"></i> B-5 Dashboard</span>
+            
+            <!-- BTC Status -->
+            <div id="btc-status" style="margin-left: 20px; display: inline-flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.95rem; background: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); cursor: default;" title="BTC/USDT Canlı Durum">
+                <i class="fa-brands fa-bitcoin" style="color:#f7931a; font-size: 1.1rem;"></i> 
+                <span id="btc-price" style="font-family: 'JetBrains Mono', monospace;">Bekleniyor...</span>
+                <span style="opacity: 0.4;">|</span>
+                <span id="btc-pct" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;">...</span>
+            </div>
+
+            <button id="btn-open-bankroll" class="bankroll-summary-link" style="cursor: pointer; margin-left:20px; text-decoration:none; color:inherit; font-weight:600; padding:4px 10px; border-radius:4px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); display:inline-flex; align-items:center; gap:8px; transition:all 0.2s; font-family:inherit; font-size:0.9rem;">
+                <i class="fa-solid fa-wallet" style="color:#60a5fa"></i> Kasa: <span id="top-current-capital" class="text-green">$0.00</span> 
+                <span style="opacity:0.5; margin:0 4px">|</span> 
+                <span id="top-target" class="text-purple" style="font-size:0.8rem">Hedef: $0.00</span>
+            </button>
+            <button id="btn-open-watchlist" class="bankroll-summary-link" style="cursor: pointer; margin-left:10px; text-decoration:none; color:inherit; font-weight:600; padding:4px 10px; border-radius:4px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); display:inline-flex; align-items:center; gap:8px; transition:all 0.2s; font-family:inherit; font-size:0.9rem;">
+                <i class="fa-solid fa-list" style="color:#facc15"></i> İzleme Listesi
+            </button>
         </div>
         <div class="toolbar-right">
             <span class="status-indicator active" id="ws-status">Bağlı</span>
@@ -32,6 +49,42 @@
     <div class="app-container">
         <!-- Main Resizable Layout Container -->
         <div class="resize-container" id="resize-container">
+
+            <!-- Hammer New Column -->
+            <section class="signals-column glass-panel resizable-panel" id="col-hammer-new" data-col="hammer-new">
+                <div class="panel-header">
+                    <h2>Hammer New</h2>
+                    <div class="filter-box" id="filter-box-hammer-new">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="filter-input" id="filter-hammer-new" placeholder="Coin ara..."
+                            oninput="applyFilter('hammer-new')">
+                        <button class="filter-clear" onclick="clearFilter('hammer-new')"
+                            title="Filtreyi temizle">&times;</button>
+                    </div>
+                </div>
+                <div class="signals-feed" id="feed-hammer-new"></div>
+            </section>
+
+            <!-- Resizer hammer-new -->
+            <div class="resizer" id="resizer-hammer-new" title="Sürükle: Sütunu yeniden boyutlandır"></div>
+
+            <!-- 1m Column -->
+            <section class="signals-column glass-panel resizable-panel" id="col-1m" data-col="1m">
+                <div class="panel-header">
+                    <h2>1 Dakika</h2>
+                    <div class="filter-box" id="filter-box-1m">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="filter-input" id="filter-1m" placeholder="Coin ara..."
+                            oninput="applyFilter('1m')">
+                        <button class="filter-clear" onclick="clearFilter('1m')"
+                            title="Filtreyi temizle">&times;</button>
+                    </div>
+                </div>
+                <div class="signals-feed" id="feed-1m"></div>
+            </section>
+
+            <!-- Resizer 0 -->
+            <div class="resizer" id="resizer-0" title="Sürükle: Sütunu yeniden boyutlandır"></div>
 
             <!-- 15m Column -->
             <section class="signals-column glass-panel resizable-panel" id="col-15m" data-col="15m">
@@ -69,65 +122,6 @@
             <!-- Resizer 2 -->
             <div class="resizer" id="resizer-2" title="Sürükle: Sütunu yeniden boyutlandır"></div>
 
-            <!-- Center Panel: Bankroll -->
-            <section class="bankroll-panel glass-panel resizable-panel" id="col-bankroll" data-col="bankroll">
-                <div class="panel-header">
-                    <div style="display: flex; align-items: center; gap: 1rem;">
-                        <h2><i class="fa-solid fa-wallet"></i> Kasa Yönetimi</h2>
-                    </div>
-                    <div class="panel-header-btns">
-                        <button class="btn btn-primary" id="add-manual-btn"><i class="fa-solid fa-plus"></i> Manuel
-                            Ekle</button>
-                        <button class="toolbar-btn" id="btn-export-excel" title="Excel olarak dışa aktar"><i
-                                class="fa-solid fa-file-excel" style="color:#4ade80"></i> Excel</button>
-                        <button class="toolbar-btn" id="btn-export-pdf" title="PDF olarak dışa aktar"><i
-                                class="fa-solid fa-file-pdf" style="color:#f87171"></i> PDF</button>
-                    </div>
-                </div>
-
-                <!-- Global Stats -->
-                <div class="global-stats">
-                    <div class="stat-box">
-                        <span class="stat-label">BAŞLANGIÇ SERMAYESİ</span>
-                        <input type="number" id="initial-capital" class="capital-input" value="100.00" step="10">
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-label">GÜNCEL KASA</span>
-                        <span class="stat-value text-green" id="current-capital">$100.00</span>
-                    </div>
-                    <div class="stat-box primary-stat">
-                        <span class="stat-label">NET KAZANÇ</span>
-                        <div class="stat-values">
-                            <span class="stat-value" id="net-profit-val">$0.00</span>
-                            <span class="stat-pct" id="net-profit-pct">0.00%</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bankroll Table -->
-                <div class="table-container">
-                    <table class="bankroll-table" id="bankroll-table">
-                        <thead>
-                            <tr>
-                                <th>COIN</th>
-                                <th>TARİH</th>
-                                <th>SAAT</th>
-                                <th>POZ</th>
-                                <th>KAZANÇ ($)</th>
-                                <th>KASA ($)</th>
-                                <th>YÜZDE (%)</th>
-                                <th><i class="fa-solid fa-trash"></i></th>
-                            </tr>
-                        </thead>
-                        <tbody id="bankroll-body">
-                            <!-- Rows injected via JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Resizer 3 -->
-            <div class="resizer" id="resizer-3" title="Sürükle: Sütunu yeniden boyutlandır"></div>
 
             <!-- 4H Column -->
             <section class="signals-column glass-panel resizable-panel" id="col-4h" data-col="4h">
@@ -144,24 +138,119 @@
                 <div class="signals-feed" id="feed-4h"></div>
             </section>
 
-            <!-- Resizer 4 -->
-            <div class="resizer" id="resizer-4" title="Sürükle: Sütunu yeniden boyutlandır"></div>
+        </div>
+    </div>
 
-            <!-- 1D Column -->
-            <section class="signals-column glass-panel resizable-panel" id="col-1d" data-col="1d">
-                <div class="panel-header">
-                    <h2>1 Gün</h2>
-                    <div class="filter-box" id="filter-box-1d">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" class="filter-input" id="filter-1d" placeholder="Coin ara..."
-                            oninput="applyFilter('1d')">
-                        <button class="filter-clear" onclick="clearFilter('1d')"
-                            title="Filtreyi temizle">&times;</button>
+    <!-- Watchlist Modal Overlay -->
+    <div id="watchlist-modal" class="modal-overlay">
+        <div class="modal-content glass-panel" style="max-width: 900px; padding: 25px;">
+            <div class="panel-header" style="justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; margin-bottom: 25px;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <h2 style="font-size: 1.5rem; margin:0;"><i class="fa-solid fa-list" style="color:#facc15"></i> İzleme Listesi (Watchlist)</h2>
+                </div>
+                <div class="panel-header-btns">
+                    <button class="toolbar-btn" id="btn-close-watchlist" style="border-color: rgba(239, 68, 68, 0.4); color: #ef4444;"><i class="fa-solid fa-xmark"></i> Kapat</button>
+                </div>
+            </div>
+
+            <!-- Watchlist Table -->
+            <div class="table-container" style="margin-bottom: 20px; max-height: 400px; overflow-y: auto;">
+                <table class="bankroll-table" id="watchlist-table">
+                    <thead>
+                        <tr>
+                            <th onclick="sortWatchlist('symbol')" style="cursor: pointer; user-select: none;">Symbol <span id="sort-ind-symbol"></span></th>
+                            <th onclick="sortWatchlist('price')" style="cursor: pointer; user-select: none;">Price <span id="sort-ind-price"></span></th>
+                            <th onclick="sortWatchlist('fr')" style="cursor: pointer; user-select: none;">FR (%) <span id="sort-ind-fr"></span></th>
+                            <th onclick="sortWatchlist('frH')" style="cursor: pointer; user-select: none;">FR (h) <span id="sort-ind-frH"></span></th>
+                            <th onclick="sortWatchlist('chg')" style="cursor: pointer; user-select: none;">Chg% <span id="sort-ind-chg"></span></th>
+                            <th onclick="sortWatchlist('vol')" style="cursor: pointer; user-select: none;">Vol (USD) <span id="sort-ind-vol"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="watchlist-body">
+                        <!-- Rows injected by watchlist.js -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Focus Card -->
+            <div id="watchlist-focus" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 20px; display: none;">
+                <!-- Filled dynamically by watchlist.js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bankroll Modal Overlay -->
+    <div id="bankroll-modal" class="modal-overlay">
+        <div class="modal-content glass-panel">
+            <div class="panel-header" style="justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; margin-bottom: 25px;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <h2 style="font-size: 1.5rem; margin:0;"><i class="fa-solid fa-wallet" style="color:#60a5fa"></i> Kasa Yönetimi</h2>
+                </div>
+                <div class="panel-header-btns">
+                    <button class="btn btn-primary" id="add-manual-btn" style="font-size: 0.9rem; padding: 6px 14px;"><i class="fa-solid fa-plus"></i> Manuel Ekle</button>
+                    <button class="toolbar-btn" id="btn-export-excel" title="Excel olarak dışa aktar"><i class="fa-solid fa-file-excel" style="color:#4ade80"></i> Excel</button>
+                    <button class="toolbar-btn" id="btn-export-pdf" title="PDF olarak dışa aktar"><i class="fa-solid fa-file-pdf" style="color:#f87171"></i> PDF</button>
+                    <button class="toolbar-btn" id="btn-close-modal" style="margin-left: 10px; border-color: rgba(239, 68, 68, 0.4); color: #ef4444;"><i class="fa-solid fa-xmark"></i> Kapat</button>
+                </div>
+            </div>
+
+            <!-- Global Stats -->
+            <div class="global-stats">
+                <div class="stat-box">
+                    <span class="stat-label">BAŞLANGIÇ SERMAYESİ</span>
+                    <input type="number" id="initial-capital" class="capital-input" value="100.00" step="10" style="font-size: 1.3rem;">
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">GÜNCEL KASA</span>
+                    <span class="stat-value text-green" id="modal-current-capital" style="font-size: 1.6rem;">$100.00</span>
+                </div>
+                <div class="stat-box primary-stat" style="background: rgba(16, 185, 129, 0.1);">
+                    <span class="stat-label">NET KAZANÇ</span>
+                    <div class="stat-values">
+                        <span class="stat-value" id="modal-net-profit-val" style="font-size: 1.6rem;">$0.00</span>
+                        <span class="stat-pct" id="modal-net-profit-pct" style="font-size: 1.1rem; font-weight: bold;">0.00%</span>
                     </div>
                 </div>
-                <div class="signals-feed" id="feed-1d"></div>
-            </section>
+                <div class="stat-box target-stat" style="background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.3);">
+                    <span class="stat-label" style="color: #c4b5fd;">GÜNLÜK HEDEF (%30)</span>
+                    <div class="stat-values" style="display:flex; flex-direction:column; gap: 4px;">
+                        <span class="stat-value" id="modal-target-val" style="font-size: 1.3rem; color: #a78bfa;">$30.00</span>
+                        <span class="stat-detail" id="modal-target-remaining" style="font-size: 0.85rem; color: #ddd;">Kalan: $30.00</span>
+                    </div>
+                </div>
+                <div class="stat-box stats-stat" style="display: flex; flex-direction: column; justify-content: center; background: rgba(255, 255, 255, 0.05);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span class="stat-label">İŞLEM BAŞARISI</span>
+                        <span class="stat-value" id="modal-win-rate" style="font-size: 1.1rem; font-weight: bold;">%0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="stat-label" style="opacity: 0.7;">BAŞARILI / TOPLAM</span>
+                        <span class="stat-value" id="modal-trade-counts" style="font-size: 1.1rem; color: #94a3b8; font-weight: bold;">0 / 0</span>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Bankroll Table -->
+            <div class="table-container" style="flex: 1; border: 1px solid rgba(255,255,255,0.05); border-radius: 8px;">
+                <table class="bankroll-table" id="bankroll-table">
+                    <thead>
+                        <tr>
+                            <th>COIN</th>
+                            <th>TARİH</th>
+                            <th>GİRİŞ SAATİ</th>
+                            <th>ÇIKIŞ SAATİ</th>
+                            <th>POZ</th>
+                            <th>KAZANÇ ($)</th>
+                            <th>KASA ($)</th>
+                            <th>YÜZDE (%)</th>
+                            <th><i class="fa-solid fa-trash"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody id="bankroll-body">
+                        <!-- Rows injected via JS -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -172,6 +261,7 @@
     <script src="js/bankroll.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/resize.js"></script>
+    <script src="js/watchlist.js"></script>
 </body>
 
 </html>

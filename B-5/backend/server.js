@@ -8,6 +8,9 @@ const analysisService = require('./services/analysis.service');
 const cache = require('./utils/cache');
 const alertService = require('./services/alert.service'); // Import AlertService
 const bankrollService = require('./services/bankrollService');
+const firebaseService = require('./services/firebase.service');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -314,10 +317,149 @@ app.post('/api/bankroll', (req, res) => {
 });
 
 /**
+ * GET /api/watchlist
+ * Read watchlist.txt and return the coins
+ */
+app.get('/api/watchlist', (req, res) => {
+    try {
+        const filePath = path.join(__dirname, '..', 'watchlist.txt');
+        if (!fs.existsSync(filePath)) {
+            // Create default
+            fs.writeFileSync(filePath, 'BTCUSDT\nETHUSDT\nSOLUSDT\nBNBUSDT\nAVAXUSDT\nLINKUSDT', 'utf8');
+        }
+        const text = fs.readFileSync(filePath, 'utf8');
+        const coins = text.split('\n')
+            .map(c => c.trim().toUpperCase())
+            .filter(c => c && c.endsWith('USDT'));
+            
+        res.json({ success: true, count: coins.length, data: coins });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+/**
+ * GET /api/watchlist/data
+ * Return the combined ticker + funding rate for watchlist symbols via REST Polling
+ */
+app.get('/api/watchlist/data', async (req, res) => {
+    try {
+        const filePath = path.join(__dirname, '..', 'watchlist.txt');
+        if (!fs.existsSync(filePath)) return res.json({ success: true, data: {} });
+        
+        const text = fs.readFileSync(filePath, 'utf8');
+        const watchSet = new Set(text.split('\n').map(c => c.trim().toUpperCase()).filter(c => c && c.endsWith('USDT')));
+
+        if (watchSet.size === 0) return res.json({ success: true, data: {} });
+
+        const cacheKey = 'wl_data_poll';
+        let wlDataMap = cache.get(cacheKey);
+
+        if (!wlDataMap) {
+            wlDataMap = {};
+            // Fetch both sequentially to avoid rate limiting
+            const tickers = await binanceService.get24hrTickers();
+            const indicesMap = await binanceService.getAllPremiumIndices().catch(() => ({}));
+
+            // Process tickers
+            tickers.forEach(t => {
+                if (watchSet.has(t.symbol)) {
+                    wlDataMap[t.symbol] = {
+                        price: t.currentPrice.toFixed(4),
+                        chg: t.priceChangePercent.toFixed(2),
+                        volRaw: t.quoteVolume,
+                        fr: '-',
+                        frH: '-'
+                    };
+                }
+            });
+
+            // Formats and Funding rates
+            watchSet.forEach(sym => {
+                if (wlDataMap[sym]) {
+                    // Vol format
+                    let volVal = wlDataMap[sym].volRaw;
+                    if (volVal !== undefined) {
+                        if (volVal > 1_000_000) wlDataMap[sym].vol = (volVal / 1_000_000).toFixed(2) + 'M';
+                        else if (volVal > 1_000) wlDataMap[sym].vol = (volVal / 1_000).toFixed(2) + 'K';
+                        else wlDataMap[sym].vol = volVal.toFixed(2);
+                    } else {
+                        wlDataMap[sym].vol = '-';
+                    }
+
+                    // Funding format
+                    if (indicesMap[sym]) {
+                        const idx = indicesMap[sym];
+                        wlDataMap[sym].fr = (parseFloat(idx.lastFundingRate) * 100).toFixed(4);
+                        
+                        if (idx.nextFundingTime) {
+                            const nextFunding = new Date(parseInt(idx.nextFundingTime));
+                            const diff = nextFunding - new Date();
+                            if (diff > 0) {
+                                const h = Math.floor(diff / 3600000);
+                                const m = Math.floor((diff % 3600000) / 60000);
+                                const s = Math.floor((diff % 60000) / 1000);
+                                wlDataMap[sym].frH = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                            } else {
+                                wlDataMap[sym].frH = "00:00:00";
+                            }
+                        }
+                    }
+                }
+            });
+
+            cache.set(cacheKey, wlDataMap, 5); // 5 sec cache
+        }
+
+        res.json({ success: true, data: wlDataMap });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+/**
+ * GET /api/watchlist/:symbol/metrics
+ * Get Long/Short ratio and Open Interest for a specific symbol
+ */
+app.get('/api/watchlist/:symbol/metrics', async (req, res) => {
+    try {
+        const { symbol } = req.params;
+        const cacheKey = `wl_metrics_${symbol}`;
+        let metrics = cache.get(cacheKey);
+
+        if (!metrics) {
+            const [lsData, openInterest] = await Promise.all([
+                binanceService.getTopLongShortRatio(symbol, '5m'),
+                binanceService.getOpenInterest(symbol)
+            ]);
+            
+            metrics = {
+                longShortRatio: lsData ? lsData.longShortRatio : null,
+                longAccount: lsData ? lsData.longAccount : null,
+                shortAccount: lsData ? lsData.shortAccount : null,
+                openInterest: openInterest
+            };
+            
+            // Cache for 1 minute
+            cache.set(cacheKey, metrics, 60);
+        }
+
+        res.json({ success: true, data: metrics });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+/**
  * POST /api/signals/emit
  * Broadcast a signal to all connected WebSocket clients
  */
-app.post('/api/signals/emit', (req, res) => {
+app.post('/api/signals/emit', async (req, res) => {
+    // Save to Firebase asynchronously
+    firebaseService.logSignal(req.body).catch(e => {
+        console.error('Error in Firebase logging:', e.message);
+    });
+
     if (global.wss) {
         global.wss.clients.forEach(client => {
             if (client.readyState === WebSocket.OPEN) {

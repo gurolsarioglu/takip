@@ -1,0 +1,57 @@
+Yeni Hammer Botu 
+Öncelikle bilinmesi gereken, hiçbir indikatör, hiçbir bot, hiçbir yazılım fiyatın kesin olarak 
+düşeceğini ve yükseleceğini söyleyemez. Söylerim diyenler kesinlikle yalan söylemektedir. 
+İndikatörler, botlar düşecek diye gösterirken bir kişi yüklü alım yapar ve fiyat 
+yükselmeye/düşmeye başlar. 
+ 
+Bizim botlarımızın amacı, belirttiğimiz şartlar oluştuğunda bizlere haber vermektir. Örneğin 
+bu coin çok yükseldi ve şuan biraz düşmeye başladı, bir incelemek gerekiyor. Ya da bu coin 
+çok düştü ve indikatörlerde uygun yerlere geldi, bir incelemek gerekiyor gibi bilgileri bize 
+iletmekle görevlidir. Çok fazla coin olduğu için bizim tek tek bakarak göremeyeceğimiz 
+coinleri bizim yerimize sürekli tarar ve bizlere haber verir. 
+M1 Hammer Botu Kullanımı 
+“M1 Hammer” botumuzda 3-4 adet farklı stratejiler mevcuttur. Bu botumuzdaki stratejiler 
+dakikalık olduğu için, gelen alarmı hemen test etmemiz gerekmektedir. Eğer 3-4 dakika 
+sonra alarmı görürseniz o işleme geç kalmış olacaksınız. Yine 1 paragraftaki yazıyı 
+hatırlatarak, hiçbir botun ve indikatörün kesin %100 bir sonuç vermediğini anladığınızı 
+düşünerek bu botumuzun kullanımına geçelim. 
+M1 Hammer Botu Hakkında 
+ 
+Herhangi bir coinde bizim istediğimiz hacim ve volatilite var ise, stratejilerimize göre grafik 
+hareket etmeye başladığında bizlere alarm vermektedir. Ayrıca gelen alarmlarda BTC Status: 
+Volatilite uyarısı var ise , işlemlere girmiyoruz. BTC Status: Normal olduğunda işlemlere 
+giriyoruz.  
+ 
+-FR değeri var iken short girmekten kaçınıyoruz. 
+ 
+Kırmızı uyarı Short, Yeşil uyarı Long işlemi olabileceğini göstermektedir. Yıldızlar ise coinin ne 
+kadar volatiliteli olduğunu gösterir.  
+Örneğin short işleme girerken, 1dk-5dk-1s RSI ve Stoch RSI değerlerinin yüksek olması 
+önemlidir, 6 ünlemli bir short alarmı gelirse, bu ünlemsizlere göre daha sağlam bir alarmdır. 
+Tam tersi long için ise RSI ve Stoch RSI değerlerinin oldukça düşük olması gerekmektedir. 
+Son olarak her zaman yaptığımız gibi alarm gelir gelmez işleme girmeyip, coinin 1 dakikalık, 5 
+dakikalık, 1 saatlik ve 4 saatlik durumlarına hızlıca bir bakmamız gerekmektedir.  
+Belirttiğimiz şartlar sağlandığında girdiğimiz işlemlerin ekran görüntüleri aşağıdaki gibidir. 
+(PNL’ler bota ekstra özellikler eklenmeden önce alınmıştır.) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Botumuza yeni bir güncelleme yaptık.  
+ 
+Bu sayede alarma bakar bakmaz, 1d-5d-1s RSI ve SRSI değerlerini görebileceğiz.  
+Bizim bu alarmda yapacağımız, Short alarmı geldiğinde 1D-5D-1S RSI ve SRSI değerleri 
+oldukça yüksek ya da hepsi ünlemli olanlara ekstra özen göstermek olacaktır. Short alarmı 
+gelir fakat 5D ya da 1S RSI değeri 20-30 seviyelerindeyse, short girmek riskli olacaktır. 
+ 
+ 

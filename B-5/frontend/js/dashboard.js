@@ -2,10 +2,11 @@ const WS_URL = 'ws://localhost:3000';
 const statusIndicator = document.getElementById('ws-status');
 
 const feeds = {
+    'hammer-new': document.getElementById('feed-hammer-new'),
+    '1m':  document.getElementById('feed-1m'),
     '15m': document.getElementById('feed-15m'),
-    '1h': document.getElementById('feed-1h'),
-    '4h': document.getElementById('feed-4h'),
-    '1d': document.getElementById('feed-1d'),
+    '1h':  document.getElementById('feed-1h'),
+    '4h':  document.getElementById('feed-4h'),
 };
 
 // ─── Filter Logic ───
@@ -36,7 +37,6 @@ window.clearFilter = function (tf) {
 window.filterByCoin = function (tf, coinName) {
     const input = document.getElementById(`filter-${tf}`);
     if (!input) return;
-    // Toggle: if already filtered by this coin, clear it
     if (input.value.toUpperCase() === coinName.toUpperCase()) {
         input.value = '';
     } else {
@@ -47,14 +47,14 @@ window.filterByCoin = function (tf, coinName) {
 
 // ─── Signal Cache (localStorage persistence) ───
 const SIGNAL_CACHE_KEY = 'b5-signals';
-const MAX_SIGNALS_PER_TF = 20; // keep last 20 per timeframe
+const MAX_SIGNALS_PER_TF = 20;
 
 function loadSignalCache() {
     try {
         const raw = localStorage.getItem(SIGNAL_CACHE_KEY);
-        return raw ? JSON.parse(raw) : { '15m': [], '1h': [], '4h': [], '1d': [] };
+        return raw ? JSON.parse(raw) : { 'hammer-new': [], '1m': [], '15m': [], '1h': [], '4h': [] };
     } catch (_) {
-        return { '15m': [], '1h': [], '4h': [], '1d': [] };
+        return { 'hammer-new': [], '1m': [], '15m': [], '1h': [], '4h': [] };
     }
 }
 
@@ -68,10 +68,9 @@ function addToCache(signal) {
     const cache = loadSignalCache();
     const tf = signal.timeframe || '15m';
     if (!cache[tf]) cache[tf] = [];
-    // Avoid exact duplicates (same coin + time)
     const isDupe = cache[tf].some(s => s.coin === signal.coin && s.time === signal.time);
     if (!isDupe) {
-        cache[tf].unshift(signal); // newest first
+        cache[tf].unshift(signal);
         cache[tf] = cache[tf].slice(0, MAX_SIGNALS_PER_TF);
     }
     saveSignalCache(cache);
@@ -80,9 +79,8 @@ function addToCache(signal) {
 // ─── Restore all cached signals on load ───
 function restoreFromCache() {
     const cache = loadSignalCache();
-    for (const tf of ['15m', '1h', '4h', '1d']) {
+    for (const tf of ['hammer-new', '1m', '15m', '1h', '4h']) {
         const signals = cache[tf] || [];
-        // Render oldest-first so newest ends up at top (renderSignal uses prepend)
         [...signals].reverse().forEach(signal => renderSignal(signal, false));
     }
 }
@@ -100,7 +98,7 @@ function connect() {
     ws.onclose = () => {
         statusIndicator.className = 'status-indicator disconnected';
         statusIndicator.innerText = 'Bağlantı Koptu';
-        setTimeout(connect, 3000); // Reconnect
+        setTimeout(connect, 3000);
     };
 
     ws.onmessage = (event) => {
@@ -116,64 +114,263 @@ function connect() {
     };
 }
 
-// saveToCache: true for new signals (adds flash), false for restore
-function renderSignal(signal, isNew = true) {
-    const timeframe = signal.timeframe || '15m'; // default fallback
-    const targetFeed = feeds[timeframe];
-
-    if (!targetFeed) return; // Unknown timeframe
-
+// ─── FR Kart Renderer ─────────────────────────────────────────────────────────
+function renderFRCard(signal, isNew) {
     const card = document.createElement('div');
-    card.className = 'signal-card telegram-style' + (isNew ? ' signal-new' : '');
+    card.className = 'signal-card telegram-style fr-card' + (isNew ? ' signal-new' : '');
 
-    const emoji = signal.position === 'Long' ? '🟢' : '🔴';
-    const trendText = signal.position === 'Long' ? 'BUY' : 'SELL';
-    const tfText = timeframe === '15m' ? '15DK' : timeframe === '1h' ? '1 SAAT' : timeframe === '4h' ? '4 SAAT' : '1 GÜN';
-    const cleanCoin = signal.coin ? signal.coin.replace('USDT', '') + 'USDT' : 'BILINMIYOR';
-    const priceStr = signal.price ? parseFloat(signal.price).toFixed(4) : '-';
+    const isFalling     = signal.direction === 'falling';
+    const emoji         = isFalling ? '🔴' : '🟢';
+    const dirLabel      = isFalling ? '↓↓ HIZLA DÜŞÜYOR' : '↑↑ HIZLA ARTIYOR';
+    const cleanCoin     = signal.coin ? signal.coin.replace('USDT', '') + 'USDT' : 'BİLİNMİYOR';
+    const timeStr       = signal.time || new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    const binanceUrl    = `https://www.binance.com/en/futures/${cleanCoin}`;
 
-    card.dataset.coin = cleanCoin; // for filtering (must be after cleanCoin is declared)
+    const fr     = signal.fundingRate    !== undefined ? parseFloat(signal.fundingRate).toFixed(4)    : '-';
+    const prevFR = signal.prevFundingRate !== undefined ? parseFloat(signal.prevFundingRate).toFixed(4) : '-';
+    const diff   = signal.frDiff         !== undefined ? parseFloat(signal.frDiff).toFixed(6)         : '-';
+    const remain = signal.timeRemaining  || '--:--:--';
 
-    // Fallbacks
-    const rsiCurrent = signal.rsi !== undefined ? signal.rsi : '-';
-    const rsiWarning = signal.rsiWarning || '';
-    const stochK = signal.stochK !== undefined ? signal.stochK : '-';
-    const stochD = signal.stochD !== undefined ? signal.stochD : '-';
-    const vol = signal.volume || 'Normal';
-    const timeStr = signal.time || new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-    const binanceUrl = `https://www.binance.com/en/futures/${cleanCoin}`;
-
-    const rsi15mStr = timeframe === '15m' ? `• 15dk RSI: ${rsiCurrent} ${rsiWarning} (Sinyal)\n` : `• 15dk RSI: ${signal.rsi15m || '-'}\n`;
-    const rsi1hStr = timeframe === '1h' ? `• 1 Saatlik RSI: ${rsiCurrent} ${rsiWarning} (Sinyal)\n` : `• 1 Saatlik RSI: ${signal.rsi1h || '-'}\n`;
-    const rsi4hStr = timeframe === '4h' ? `• 4 Saatlik RSI: ${rsiCurrent} ${rsiWarning} (Sinyal)\n` : `• 4 Saatlik RSI: ${signal.rsi4h || '-'}\n`;
-    const rsi1dStr = timeframe === '1d' ? `• Günlük RSI: ${rsiCurrent} ${rsiWarning} (Sinyal)\n` : `• Günlük RSI: ${signal.rsi1d || '-'}\n`;
-
-    const extraAlert1 = signal.demaAlert ? '• 🧘 Yana Mum / DEMA Tespiti\n' : '';
-    const extraAlert2 = signal.isWTDip ? '• 🌊 WaveTrend Dip + Alt Bant Teması\n' : '';
-    const extraAlert = extraAlert1 + extraAlert2;
+    card.dataset.coin = cleanCoin;
 
     const signalJsonStr = JSON.stringify(signal).replace(/'/g, "&#39;");
 
-    // Strictly match user requested format
     card.innerHTML = `
-        <div class="telegram-text"><span class="signal-coin-link" onclick="filterByCoin('${timeframe}', '${cleanCoin}')" title="Bu coini filtrele">[${tfText}] #${cleanCoin}</span> ${trendText} ${emoji}
+        <div class="telegram-text"><span class="signal-coin-link fr-label">FR</span>
+<span class="signal-coin-link" onclick="filterByCoin('fr', '${cleanCoin}')" title="Bu coini filtrele">${emoji} #${cleanCoin}</span>
+${dirLabel}
+──────────────────
+• Funding Rate: ${fr}%
+• Önceki FR: ${prevFR}%
+• Fark: ${diff}%
+• Kalan Süre: ${remain}
+──────────────────
+🔗 <a href="${binanceUrl}" target="_blank">Binance Futures</a> | ⏰ ${timeStr}</div>
+    `;
+
+    return card;
+}
+
+// ─── Genel Signal Renderer ────────────────────────────────────────────────────
+function renderSignal(signal, isNew = true) {
+    const timeframe  = signal.timeframe || '15m';
+    const targetFeed = feeds[timeframe];
+
+    if (!targetFeed) return;
+
+    // FR sinyalleri özel kart ile render
+    if (timeframe === 'fr') {
+        const card = renderFRCard(signal, isNew);
+        targetFeed.prepend(card);
+        applyFilter('fr');
+        return;
+    }
+
+    if (timeframe === 'hammer-new') {
+        const existingCard = targetFeed.querySelector(`.signal-card[data-coin="${signal.coin}"]`);
+        
+        const isLong = signal.position === 'Long';
+        const emoji = isLong ? '🟢' : '🔴';
+        const cleanCoin = signal.coin ? signal.coin.replace('USDT', '') + 'USDT' : 'BİLİNMİYOR';
+        
+        const boostVal = parseFloat(signal.boost);
+        const boostStr = boostVal > 0 ? `Artış Değeri: +${signal.boost}%` : `Düşüş Değeri: ${signal.boost}%`;
+        
+        const binanceUrl = `https://www.binance.com/en/futures/${cleanCoin}`;
+        const tvUrl = `https://www.tradingview.com/chart/?symbol=BINANCE:${cleanCoin}`;
+
+        const signalJsonStr = JSON.stringify(signal).replace(/'/g, "&#39;");
+
+        let timeframesStr = ``;
+        if (signal.d1m) timeframesStr += `RSI: ${signal.d1m.rsi}${signal.d1m.rsiAlert}<br>Stokastik (K/D): ${signal.d1m.k}/${signal.d1m.d} ${signal.d1m.stochAlert}<br>`;
+        if (signal.d5m) timeframesStr += `5dk -> RSI: ${signal.d5m.rsi}${signal.d5m.rsiAlert} | Stokastik: ${signal.d5m.k}/${signal.d5m.d} ${signal.d5m.stochAlert}<br>`;
+        if (signal.d1h) timeframesStr += `1 Saat -> RSI: ${signal.d1h.rsi}${signal.d1h.rsiAlert} | Stokastik: ${signal.d1h.k}/${signal.d1h.d} ${signal.d1h.stochAlert}<br>`;
+
+        const innerHTML = `
+            <div class="telegram-text" style="line-height: 1.4;">
+<span class="signal-coin-link" onclick="filterByCoin('hammer-new', '${cleanCoin}')" style="font-weight: 500;">${emoji} #${cleanCoin} ${signal.starsStr || ''}</span>
+${boostStr}
+Anlık Fiyat: ${signal.price}
+Önceki Fiyat: ${signal.prevPrice}
+Hacim: ${signal.volBoost}%
+Dolaşım: ${signal.supplyStr || '-'}
+${timeframesStr}
+                <div style="margin-top:2px;">
+<a href="${binanceUrl}" target="_blank" style="color:#9f9ffb;">Binance</a> | <a href="${tvUrl}" target="_blank" style="color:#9f9ffb;">Tradingview</a> <span style="float:right; opacity:0.6; font-size: 0.85em; margin-top:2px;">${signal.time}</span>
+                </div>
+            </div>
+        `;
+
+        if (existingCard) {
+            existingCard.innerHTML = innerHTML;
+            if (isNew) existingCard.classList.add('signal-new');
+        } else {
+            const card = document.createElement('div');
+            card.className = 'signal-card telegram-style hammer-card' + (isNew ? ' signal-new' : '');
+            card.dataset.coin = cleanCoin;
+            card.innerHTML = innerHTML;
+            targetFeed.prepend(card);
+            applyFilter('hammer-new');
+        }
+        return;
+    }
+
+    // 1 Dakikalık özel Telegram Formatı Renderer
+    if (timeframe === '1m') {
+        const existingCard = targetFeed.querySelector(`.signal-card[data-coin="${signal.coin}"]`);
+        
+        const isLong = signal.position === 'Long';
+        const emoji = isLong ? '🟢' : '🔴';
+        const cleanCoin = signal.coin ? signal.coin.replace('USDT', '') + 'USDT' : 'BİLİNMİYOR';
+        
+        const boostVal = parseFloat(signal.boost);
+        const boostStr = boostVal > 0 ? `Artış Değeri: +${signal.boost}%` : `Düşüş Değeri: ${signal.boost}%`;
+        
+        const rsiVal = parseFloat(signal.rsi);
+        const kVal = signal.stochK;
+        const rsiAlert = (rsiVal >= 70 || rsiVal <= 30) ? '⚠️' : '';
+        const stochAlert = (kVal >= 80 || kVal <= 20) ? ' ⚠️' : '';
+        
+        const binanceUrl = `https://www.binance.com/en/futures/${cleanCoin}`;
+        const tvUrl = `https://www.tradingview.com/chart/?symbol=BINANCE:${cleanCoin}`;
+
+        const signalJsonStr = JSON.stringify(signal).replace(/'/g, "&#39;");
+
+        const innerHTML = `
+            <div class="telegram-text" style="line-height: 1.4;">
+<span class="signal-coin-link" onclick="filterByCoin('1m', '${cleanCoin}')" style="font-weight: 500;">${emoji} #${cleanCoin}</span>
+${boostStr}
+Anlık Fiyat: ${signal.price}
+Önceki Fiyat: ${signal.prevPrice}
+Hacim: ${signal.volBoost}%
+Dolaşım: ${signal.supplyStr || '-'}
+RSI: ${signal.rsi}${rsiAlert}
+Stokastik (K/D): ${signal.stochK}/${signal.stochD}${stochAlert}
+                <div style="margin-top:2px;">
+<a href="${binanceUrl}" target="_blank" style="color:#9f9ffb;">Binance</a> | <a href="${tvUrl}" target="_blank" style="color:#9f9ffb;">Tradingview</a> <span style="float:right; opacity:0.6; font-size: 0.85em; margin-top:2px;">${signal.time}</span>
+                </div>
+            </div>
+        `;
+
+        if (existingCard) {
+            existingCard.innerHTML = innerHTML;
+            if (isNew) existingCard.classList.add('signal-new');
+        } else {
+            const card = document.createElement('div');
+            card.className = 'signal-card telegram-style m1-card' + (isNew ? ' signal-new' : '');
+            card.dataset.coin = cleanCoin;
+            card.innerHTML = innerHTML;
+            targetFeed.prepend(card);
+            applyFilter('1m');
+        }
+        return;
+    }
+
+    // ─── RSI tabanlı sinyaller (15m / 1h / 4h) ───
+    const existingCard = targetFeed.querySelector(`.signal-card[data-coin="${signal.coin}"]`);
+
+    const emoji     = signal.position === 'Long' ? '🟢' : '🔴';
+    const trendText = signal.position === 'Long' ? 'BUY' : 'SELL';
+    
+    let tfText = timeframe.toUpperCase();
+    if (timeframe === '1m') tfText = '1DK';
+    else if (timeframe === '15m') tfText = '15DK';
+    else if (timeframe === '1h') tfText = '1 SAAT';
+    else if (timeframe === '4h') tfText = '4 SAAT';
+    const cleanCoin = signal.coin ? signal.coin.replace('USDT', '') + 'USDT' : 'BİLİNMİYOR';
+    const priceStr  = signal.price ? parseFloat(signal.price).toFixed(4) : '-';
+
+    const kusursuzBadge = signal.isKusursuz ? ' <span style="background:#ffc107;color:#000;padding:2px 6px;border-radius:4px;font-size:0.75rem;font-weight:bold;margin-left:5px;box-shadow:0 0 5px rgba(255,193,7,0.5);">💎 KUSURSUZ</span>' : '';
+
+    const rsiCurrent = signal.rsi !== undefined ? signal.rsi : '-';
+    const rsiWarning = signal.rsiWarning || '';
+    const stochK     = signal.stochK !== undefined ? signal.stochK : '-';
+    const stochD     = signal.stochD !== undefined ? signal.stochD : '-';
+    const vol        = signal.volume || 'Normal';
+    const timeStr    = signal.time || new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    const binanceUrl = `https://www.binance.com/en/futures/${cleanCoin}`;
+
+    const rsi15mStr = timeframe === '15m' ? `• 15dk RSI: ${rsiCurrent} ${rsiWarning} (Sinyal)\n` : `• 15dk RSI: ${signal.rsi15m || '-'}\n`;
+    const rsi1hStr  = timeframe === '1h'  ? `• 1 Saatlik RSI: ${rsiCurrent} ${rsiWarning} (Sinyal)\n` : `• 1 Saatlik RSI: ${signal.rsi1h || '-'}\n`;
+    const rsi4hStr  = timeframe === '4h'  ? `• 4 Saatlik RSI: ${rsiCurrent} ${rsiWarning} (Sinyal)\n` : `• 4 Saatlik RSI: ${signal.rsi4h || '-'}\n`;
+
+    const rsi1dVal   = signal.rsi1d !== undefined && signal.rsi1d !== null ? signal.rsi1d : '-';
+    const rsi1dAlert = (rsi1dVal !== '-' && parseInt(rsi1dVal) >= 70) ? ' ❗'
+                     : (rsi1dVal !== '-' && parseInt(rsi1dVal) <= 30) ? ' ❗' : '';
+    const rsi1dStr   = `• Günlük RSI: ${rsi1dVal}${rsi1dAlert}\n`;
+
+    const extraAlert1 = signal.demaAlert ? '• 🧘 Yana Mum / DEMA Tespiti\n' : '';
+    const extraAlert2 = signal.isWTDip   ? '• 🌊 WaveTrend Dip + Alt Bant Teması\n' : '';
+    const extraAlert  = extraAlert1 + extraAlert2;
+
+    // YENİ: Sinyalin tarihini (bugün değilse) göstermek için
+    const todayStr = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' });
+    const dateStr = (signal.date && signal.date !== todayStr) ? `${signal.date} | ` : '';
+
+    // Swing Yorum Bloğu
+    const commentHtml = signal.swingComment
+        ? `<div class="swing-comment">${signal.swingComment.replace(/\n/g, '<br>')}</div>`
+        : '';
+
+    const signalJsonStr = JSON.stringify(signal).replace(/'/g, "&#39;");
+
+    const innerHTML = `
+        <div class="telegram-text"><span class="signal-coin-link" onclick="filterByCoin('${timeframe}', '${cleanCoin}')" title="Bu coini filtrele">[${tfText}] #${cleanCoin}</span>${kusursuzBadge} ${trendText} ${emoji}
 ──────────────────
 • Fiyat: ${priceStr}
 ${rsi15mStr}${rsi1hStr}${rsi4hStr}${rsi1dStr}• Stoch: ${stochK}(K)/${stochD}(D)
 • Hacim: ${vol}
+• Dolaşım: ${signal.supplyStr || '-'}
 ${extraAlert}──────────────────
-🔗 <a href="${binanceUrl}" target="_blank">Binance Futures</a> | ⏰ ${timeStr}</div>
-        <button class="btn btn-add" onclick='addToTable(${signalJsonStr})'>
-            <i class="fa-solid fa-plus"></i> Ekle
-        </button>
+🔗 <a href="${binanceUrl}" target="_blank">Binance Futures</a> | ⏰ ${dateStr}${timeStr}</div>
+        ${commentHtml}
     `;
 
-    targetFeed.prepend(card);
+    if (existingCard) {
+        existingCard.innerHTML = innerHTML;
+        if (isNew) existingCard.classList.add('signal-new');
+    } else {
+        const card = document.createElement('div');
+        card.className = 'signal-card telegram-style' + (isNew ? ' signal-new' : '');
+        card.dataset.coin = cleanCoin;
+        card.innerHTML = innerHTML;
+        targetFeed.prepend(card);
+        applyFilter(timeframe);
+    }
+}
 
-    // Re-apply filter in case this column has an active filter
-    applyFilter(timeframe);
+function initBtcTicker() {
+    const wsBtc = new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@ticker');
+    const btcPriceEl = document.getElementById('btc-price');
+    const btcPctEl = document.getElementById('btc-pct');
+
+    wsBtc.onmessage = (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            const price = parseFloat(data.c).toFixed(2);
+            const pct = parseFloat(data.P);
+            
+            if (btcPriceEl) btcPriceEl.innerText = `$${price}`;
+            
+            if (btcPctEl) {
+                const isPos = pct >= 0;
+                let trendText = 'Yatay ⚪';
+                if (pct > 2) trendText = 'Yükselişte 🟢';
+                else if (pct < -2) trendText = 'Düşüşte 🔴';
+                
+                btcPctEl.innerHTML = `<span style="color: ${isPos ? '#4ade80' : '#f87171'}">${isPos ? '+' : ''}${pct.toFixed(2)}%</span> <span style="opacity:0.8; font-size: 0.9em; margin-left: 4px;">(${trendText})</span>`;
+            }
+        } catch (e) {
+            console.error('BTC ws error', e);
+        }
+    };
+    wsBtc.onerror = () => console.log("BTC ws error");
+    wsBtc.onclose = () => setTimeout(initBtcTicker, 5000);
 }
 
 // ─── Start ───
-restoreFromCache();
-connect();
+document.addEventListener('DOMContentLoaded', () => {
+    restoreFromCache();
+    connect();
+    initBtcTicker();
+});
