@@ -34,6 +34,22 @@
             <button id="btn-open-watchlist" class="bankroll-summary-link" style="cursor: pointer; margin-left:10px; text-decoration:none; color:inherit; font-weight:600; padding:4px 10px; border-radius:4px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); display:inline-flex; align-items:center; gap:8px; transition:all 0.2s; font-family:inherit; font-size:0.9rem;">
                 <i class="fa-solid fa-list" style="color:#facc15"></i> İzleme Listesi
             </button>
+
+            <!-- Bot Manager Dropdown -->
+            <div class="bot-manager-dropdown" style="position: relative; margin-left: 10px;">
+                <button id="btn-bot-manager" class="toolbar-btn" title="Botları Göster/Gizle">
+                    <i class="fa-solid fa-robot" style="color:#a78bfa"></i> Botları Yönet
+                </button>
+                <div id="bot-selector-menu" class="bot-selector-menu glass-panel">
+                    <div class="bot-selector-header">Sütunları Seç (Max 5)</div>
+                    <label class="bot-option"><input type="checkbox" data-col="hammer-new" checked> Hammer New</label>
+                    <label class="bot-option"><input type="checkbox" data-col="1m" checked> 1 Dakika</label>
+                    <label class="bot-option"><input type="checkbox" data-col="15m" checked> 15 Dakika</label>
+                    <label class="bot-option"><input type="checkbox" data-col="1h" checked> 1 Saat</label>
+                    <label class="bot-option"><input type="checkbox" data-col="4h" checked> 4 Saat</label>
+                    <label class="bot-option"><input type="checkbox" data-col="rsi-div"> RSI Divergence (SüperSwing)</label>
+                </div>
+            </div>
         </div>
         <div class="toolbar-right">
             <span class="status-indicator active" id="ws-status">Bağlı</span>
@@ -136,6 +152,24 @@
                     </div>
                 </div>
                 <div class="signals-feed" id="feed-4h"></div>
+            </section>
+
+            <!-- Resizer 3 -->
+            <div class="resizer" id="resizer-3" title="Sürükle: Sütunu yeniden boyutlandır"></div>
+
+            <!-- RSI Div Column (SüperSwing) -->
+            <section class="signals-column glass-panel resizable-panel" id="col-rsi-div" data-col="rsi-div" style="display:none;">
+                <div class="panel-header">
+                    <h2>SüperSwing (RSI Div)</h2>
+                    <div class="filter-box" id="filter-box-rsi-div">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="filter-input" id="filter-rsi-div" placeholder="Coin ara..."
+                            oninput="applyFilter('rsi-div')">
+                        <button class="filter-clear" onclick="clearFilter('rsi-div')"
+                            title="Filtreyi temizle">&times;</button>
+                    </div>
+                </div>
+                <div class="signals-feed" id="feed-rsi-div"></div>
             </section>
 
         </div>

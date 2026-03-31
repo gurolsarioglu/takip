@@ -7,6 +7,7 @@ const feeds = {
     '15m': document.getElementById('feed-15m'),
     '1h':  document.getElementById('feed-1h'),
     '4h':  document.getElementById('feed-4h'),
+    'rsi-div': document.getElementById('feed-rsi-div'),
 };
 
 // ─── Filter Logic ───
@@ -52,9 +53,9 @@ const MAX_SIGNALS_PER_TF = 20;
 function loadSignalCache() {
     try {
         const raw = localStorage.getItem(SIGNAL_CACHE_KEY);
-        return raw ? JSON.parse(raw) : { 'hammer-new': [], '1m': [], '15m': [], '1h': [], '4h': [] };
+        return raw ? JSON.parse(raw) : { 'hammer-new': [], '1m': [], '15m': [], '1h': [], '4h': [], 'rsi-div': [] };
     } catch (_) {
-        return { 'hammer-new': [], '1m': [], '15m': [], '1h': [], '4h': [] };
+        return { 'hammer-new': [], '1m': [], '15m': [], '1h': [], '4h': [], 'rsi-div': [] };
     }
 }
 
@@ -79,7 +80,7 @@ function addToCache(signal) {
 // ─── Restore all cached signals on load ───
 function restoreFromCache() {
     const cache = loadSignalCache();
-    for (const tf of ['hammer-new', '1m', '15m', '1h', '4h']) {
+    for (const tf in feeds) {
         const signals = cache[tf] || [];
         [...signals].reverse().forEach(signal => renderSignal(signal, false));
     }
@@ -163,6 +164,51 @@ function renderSignal(signal, isNew = true) {
         const card = renderFRCard(signal, isNew);
         targetFeed.prepend(card);
         applyFilter('fr');
+        return;
+    }
+
+    // RSI Div (SüperSwing) Renderer
+    if (timeframe === 'rsi-div') {
+        const existingCard = targetFeed.querySelector(`.signal-card[data-coin="${signal.coin}"]`);
+        const isLong = signal.position === 'Long';
+        const emoji = isLong ? '🟢' : '🔴';
+        const cleanCoin = signal.coin.replace('USDT', '') + 'USDT';
+        const binanceUrl = `https://www.binance.com/en/futures/${signal.coin}`;
+        
+        const divInfo = signal.divergence ? `
+            <div style="background: rgba(59, 130, 246, 0.1); padding: 8px; border-left: 2px solid #3b82f6; margin: 8px 0; border-radius: 4px;">
+                <b style="color:#60a5fa; font-size: 0.75rem;">${signal.divergence.type.toUpperCase()} DIV TESPİT EDİLDİ!</b><br>
+                <small style="opacity:0.8;">Başlangıç: ${signal.divergence.startDate}</small><br>
+                <small>Fiyat: ${signal.divergence.priceDiff}</small><br>
+                <small>RSI: ${signal.divergence.rsiDiff}</small>
+            </div>
+        ` : '';
+
+        const innerHTML = `
+            <div class="telegram-text">
+<span class="signal-coin-link" style="color:#a78bfa;">[SüperSwing]</span> 
+<span class="signal-coin-link" onclick="filterByCoin('rsi-div', '${cleanCoin}')">#${cleanCoin}</span> ${emoji}
+──────────────────
+• Fiyat: ${signal.price}
+• 4H RSI: ${signal.rsi} ${signal.rsiWarning || ''}
+• Güncel Günlük RSI: ${signal.rsi1d}
+• 3G: ${signal.rsi3d} | 5G: ${signal.rsi5d} | 1H: ${signal.rsi7d}
+${divInfo}
+──────────────────
+🔗 <a href="${binanceUrl}" target="_blank">Binance Futures</a> | ⏰ ${signal.time}</div>
+        `;
+
+        if (existingCard) {
+            existingCard.innerHTML = innerHTML;
+            if (isNew) existingCard.classList.add('signal-new');
+        } else {
+            const card = document.createElement('div');
+            card.className = 'signal-card telegram-style rsi-div-card' + (isNew ? ' signal-new' : '');
+            card.dataset.coin = cleanCoin;
+            card.innerHTML = innerHTML;
+            targetFeed.prepend(card);
+            applyFilter('rsi-div');
+        }
         return;
     }
 
@@ -368,9 +414,79 @@ function initBtcTicker() {
     wsBtc.onclose = () => setTimeout(initBtcTicker, 5000);
 }
 
+// ─── Bot Selector Logic ───
+const BOT_VISIBILITY_KEY = 'b5-bot-visibility';
+const btnBotManager = document.getElementById('btn-bot-manager');
+const botSelectorMenu = document.getElementById('bot-selector-menu');
+
+btnBotManager.addEventListener('click', (e) => {
+    e.stopPropagation();
+    botSelectorMenu.classList.toggle('active');
+});
+
+document.addEventListener('click', () => {
+    botSelectorMenu.classList.remove('active');
+});
+
+botSelectorMenu.addEventListener('click', (e) => e.stopPropagation());
+
+function updateColumnVisibility() {
+    const checkboxes = botSelectorMenu.querySelectorAll('input[type="checkbox"]');
+    const visibility = {};
+    let visibleCount = 0;
+
+    checkboxes.forEach(cb => {
+        const colId = cb.dataset.col;
+        const column = document.getElementById(`col-${colId}`);
+        const resizer = column.nextElementSibling?.classList.contains('resizer') ? column.nextElementSibling : null;
+
+        if (cb.checked) {
+            if (visibleCount < 5) {
+                column.style.display = 'flex';
+                if (resizer) resizer.style.display = 'flex';
+                visibility[colId] = true;
+                visibleCount++;
+            } else {
+                cb.checked = false; // Limit reached
+                visibility[colId] = false;
+            }
+        } else {
+            column.style.display = 'none';
+            if (resizer) resizer.style.display = 'none';
+            visibility[colId] = false;
+        }
+    });
+
+    localStorage.setItem(BOT_VISIBILITY_KEY, JSON.stringify(visibility));
+    
+    // Refresh widths to handle the layout change
+    if (window.applyWidths && window.loadWidths) {
+        window.applyWidths(window.loadWidths());
+    }
+}
+
+function initBotSelector() {
+    let saved;
+    try {
+        saved = JSON.parse(localStorage.getItem(BOT_VISIBILITY_KEY));
+    } catch (_) { }
+
+    const checkboxes = botSelectorMenu.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+        const colId = cb.dataset.col;
+        if (saved && saved[colId] !== undefined) {
+            cb.checked = saved[colId];
+        }
+        cb.addEventListener('change', updateColumnVisibility);
+    });
+
+    updateColumnVisibility();
+}
+
 // ─── Start ───
 document.addEventListener('DOMContentLoaded', () => {
     restoreFromCache();
     connect();
     initBtcTicker();
+    initBotSelector();
 });

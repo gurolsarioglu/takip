@@ -13,6 +13,57 @@
     --row-border: rgba(255, 255, 255, 0.05);
 }
 
+/* ─── Bot Selector Menu ─── */
+.bot-selector-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 10px;
+    width: 250px;
+    z-index: 1000;
+    padding: 10px !important;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.bot-selector-menu.active {
+    display: flex;
+}
+
+.bot-selector-header {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--accent);
+    padding: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 5px;
+}
+
+.bot-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s;
+    font-size: 0.85rem;
+    user-select: none;
+}
+
+.bot-option:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.bot-option input {
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
