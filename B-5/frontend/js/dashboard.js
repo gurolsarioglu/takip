@@ -175,9 +175,15 @@ function renderSignal(signal, isNew = true) {
         const cleanCoin = signal.coin.replace('USDT', '') + 'USDT';
         const binanceUrl = `https://www.binance.com/en/futures/${signal.coin}`;
         
+        const getWarn = (val) => {
+            if (val === '-' || val === undefined || val === null) return '';
+            const n = parseInt(val);
+            return (n <= 30 || n >= 70) ? '❗' : '';
+        };
+
         const divInfo = signal.divergence ? `
             <div style="background: rgba(59, 130, 246, 0.1); padding: 8px; border-left: 2px solid #3b82f6; margin: 8px 0; border-radius: 4px;">
-                <b style="color:#60a5fa; font-size: 0.75rem;">${signal.divergence.type.toUpperCase()} DIV TESPİT EDİLDİ!</b><br>
+                <b style="color:#60a5fa; font-size: 0.75rem;">${signal.divergence.type.toUpperCase()} DIV TESPİT EDİLDİ! (GÜNLÜK)</b><br>
                 <small style="opacity:0.8;">Başlangıç: ${signal.divergence.startDate}</small><br>
                 <small>Fiyat: ${signal.divergence.priceDiff}</small><br>
                 <small>RSI: ${signal.divergence.rsiDiff}</small>
@@ -191,8 +197,8 @@ function renderSignal(signal, isNew = true) {
 ──────────────────
 • Fiyat: ${signal.price}
 • 4H RSI: ${signal.rsi} ${signal.rsiWarning || ''}
-• Güncel Günlük RSI: ${signal.rsi1d}
-• 3G: ${signal.rsi3d} | 5G: ${signal.rsi5d} | 1H: ${signal.rsi7d}
+• Güncel Günlük RSI: ${signal.rsi1d} ${getWarn(signal.rsi1d)}
+• 3G: ${signal.rsi3d}${getWarn(signal.rsi3d)} | 5G: ${signal.rsi5d}${getWarn(signal.rsi5d)} | 1H: ${signal.rsi7d}${getWarn(signal.rsi7d)}
 ${divInfo}
 ──────────────────
 🔗 <a href="${binanceUrl}" target="_blank">Binance Futures</a> | ⏰ ${signal.time}</div>
@@ -414,30 +420,42 @@ function initBtcTicker() {
     wsBtc.onclose = () => setTimeout(initBtcTicker, 5000);
 }
 
-// ─── Bot Selector Logic ───
+// ─── Bot Selector Logic (Modal) ───
 const BOT_VISIBILITY_KEY = 'b5-bot-visibility';
 const btnBotManager = document.getElementById('btn-bot-manager');
-const botSelectorMenu = document.getElementById('bot-selector-menu');
+const btnCloseBotManager = document.getElementById('btn-close-bot-manager');
+const btnSaveBots = document.getElementById('btn-save-bots');
+const botManagerModal = document.getElementById('bot-manager-modal');
+const botSelectorList = document.getElementById('bot-selector-list');
 
-btnBotManager.addEventListener('click', (e) => {
-    e.stopPropagation();
-    botSelectorMenu.classList.toggle('active');
+btnBotManager.addEventListener('click', () => {
+    botManagerModal.classList.add('active');
 });
 
-document.addEventListener('click', () => {
-    botSelectorMenu.classList.remove('active');
+btnCloseBotManager.addEventListener('click', () => {
+    botManagerModal.classList.remove('active');
 });
 
-botSelectorMenu.addEventListener('click', (e) => e.stopPropagation());
+btnSaveBots.addEventListener('click', () => {
+    updateColumnVisibility();
+    botManagerModal.classList.remove('active');
+});
+
+// Close on outside click
+botManagerModal.addEventListener('click', (e) => {
+    if (e.target === botManagerModal) botManagerModal.classList.remove('active');
+});
 
 function updateColumnVisibility() {
-    const checkboxes = botSelectorMenu.querySelectorAll('input[type="checkbox"]');
+    const checkboxes = botSelectorList.querySelectorAll('input[type="checkbox"]');
     const visibility = {};
     let visibleCount = 0;
 
     checkboxes.forEach(cb => {
         const colId = cb.dataset.col;
         const column = document.getElementById(`col-${colId}`);
+        if (!column) return;
+        
         const resizer = column.nextElementSibling?.classList.contains('resizer') ? column.nextElementSibling : null;
 
         if (cb.checked) {
@@ -471,13 +489,12 @@ function initBotSelector() {
         saved = JSON.parse(localStorage.getItem(BOT_VISIBILITY_KEY));
     } catch (_) { }
 
-    const checkboxes = botSelectorMenu.querySelectorAll('input[type="checkbox"]');
+    const checkboxes = botSelectorList.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(cb => {
         const colId = cb.dataset.col;
         if (saved && saved[colId] !== undefined) {
             cb.checked = saved[colId];
         }
-        cb.addEventListener('change', updateColumnVisibility);
     });
 
     updateColumnVisibility();

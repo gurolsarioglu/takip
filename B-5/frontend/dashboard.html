@@ -35,21 +35,10 @@
                 <i class="fa-solid fa-list" style="color:#facc15"></i> İzleme Listesi
             </button>
 
-            <!-- Bot Manager Dropdown -->
-            <div class="bot-manager-dropdown" style="position: relative; margin-left: 10px;">
-                <button id="btn-bot-manager" class="toolbar-btn" title="Botları Göster/Gizle">
-                    <i class="fa-solid fa-robot" style="color:#a78bfa"></i> Botları Yönet
-                </button>
-                <div id="bot-selector-menu" class="bot-selector-menu glass-panel">
-                    <div class="bot-selector-header">Sütunları Seç (Max 5)</div>
-                    <label class="bot-option"><input type="checkbox" data-col="hammer-new" checked> Hammer New</label>
-                    <label class="bot-option"><input type="checkbox" data-col="1m" checked> 1 Dakika</label>
-                    <label class="bot-option"><input type="checkbox" data-col="15m" checked> 15 Dakika</label>
-                    <label class="bot-option"><input type="checkbox" data-col="1h" checked> 1 Saat</label>
-                    <label class="bot-option"><input type="checkbox" data-col="4h" checked> 4 Saat</label>
-                    <label class="bot-option"><input type="checkbox" data-col="rsi-div"> RSI Divergence (SüperSwing)</label>
-                </div>
-            </div>
+            <!-- Bot Manager -->
+            <button id="btn-bot-manager" class="toolbar-btn" title="Botları Göster/Gizle">
+                <i class="fa-solid fa-robot" style="color:#a78bfa"></i> Botları Yönet
+            </button>
         </div>
         <div class="toolbar-right">
             <span class="status-indicator active" id="ws-status">Bağlı</span>
@@ -167,49 +156,85 @@
                             oninput="applyFilter('rsi-div')">
                         <button class="filter-clear" onclick="clearFilter('rsi-div')"
                             title="Filtreyi temizle">&times;</button>
-                    </div>
-                </div>
-                <div class="signals-feed" id="feed-rsi-div"></div>
             </section>
-
         </div>
     </div>
 
     <!-- Watchlist Modal Overlay -->
     <div id="watchlist-modal" class="modal-overlay">
-        <div class="modal-content glass-panel" style="max-width: 900px; padding: 25px;">
-            <div class="panel-header" style="justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; margin-bottom: 25px;">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <h2 style="font-size: 1.5rem; margin:0;"><i class="fa-solid fa-list" style="color:#facc15"></i> İzleme Listesi (Watchlist)</h2>
+        <div class="modal-content glass-panel" style="max-width: 1300px; padding: 30px; height: 85vh; display: flex; flex-direction: column;">
+            <div class="panel-header" style="justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 1.5rem;">
+                    <h2 style="font-size: 1.8rem; margin:0;"><i class="fa-solid fa-list" style="color:#facc15"></i> İzleme Listesi (Watchlist)</h2>
+                    <span id="wl-update-time" style="font-size:0.9rem; opacity:0.6; font-family:'JetBrains Mono'; background: rgba(255,255,255,0.05); padding: 4px 12px; border-radius: 20px;">--:--:--</span>
                 </div>
                 <div class="panel-header-btns">
-                    <button class="toolbar-btn" id="btn-close-watchlist" style="border-color: rgba(239, 68, 68, 0.4); color: #ef4444;"><i class="fa-solid fa-xmark"></i> Kapat</button>
+                    <button class="toolbar-btn" id="btn-close-watchlist" style="padding: 8px 20px; font-weight: 600; border-color: rgba(239, 68, 68, 0.4); color: #ef4444;"><i class="fa-solid fa-xmark"></i> KAPAT</button>
                 </div>
             </div>
 
-            <!-- Watchlist Table -->
-            <div class="table-container" style="margin-bottom: 20px; max-height: 400px; overflow-y: auto;">
-                <table class="bankroll-table" id="watchlist-table">
-                    <thead>
-                        <tr>
-                            <th onclick="sortWatchlist('symbol')" style="cursor: pointer; user-select: none;">Symbol <span id="sort-ind-symbol"></span></th>
-                            <th onclick="sortWatchlist('price')" style="cursor: pointer; user-select: none;">Price <span id="sort-ind-price"></span></th>
-                            <th onclick="sortWatchlist('fr')" style="cursor: pointer; user-select: none;">FR (%) <span id="sort-ind-fr"></span></th>
-                            <th onclick="sortWatchlist('frH')" style="cursor: pointer; user-select: none;">FR (h) <span id="sort-ind-frH"></span></th>
-                            <th onclick="sortWatchlist('chg')" style="cursor: pointer; user-select: none;">Chg% <span id="sort-ind-chg"></span></th>
-                            <th onclick="sortWatchlist('vol')" style="cursor: pointer; user-select: none;">Vol (USD) <span id="sort-ind-vol"></span></th>
-                        </tr>
-                    </thead>
-                    <tbody id="watchlist-body">
-                        <!-- Rows injected by watchlist.js -->
-                    </tbody>
-                </table>
+            <div style="display: flex; gap: 30px; flex: 1; overflow: hidden;">
+                <!-- Left Side: Hot List Panel (Always visible priority) -->
+                <div style="width: 320px; display: flex; flex-direction: column; gap: 20px;">
+                    <div class="glass-panel" style="padding: 20px; border-color: rgba(250, 204, 21, 0.3); background: rgba(250, 204, 21, 0.05); flex: 1; overflow-y: auto;">
+                        <h3 style="font-size: 1rem; color: #facc15; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(250, 204, 21, 0.2); padding-bottom: 10px;">
+                            <i class="fa-solid fa-fire"></i> SICAK LİSTE ❗
+                        </h3>
+                        <div id="hot-list-container" style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="text-align:center; opacity:0.3; font-size: 0.85rem; padding: 30px;">Takip ediliyor...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side: Main Table (Desktop Focus) -->
+                <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden; background: rgba(0,0,0,0.25); border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
+                    <div class="table-container" style="flex: 1; overflow-y: auto; padding: 5px;">
+                        <table class="bankroll-table" id="watchlist-table" style="width: 100%;">
+                            <thead>
+                                <tr style="background: rgba(0,0,0,0.4);">
+                                    <th onclick="sortWatchlist('symbol')" style="cursor: pointer; padding: 18px 15px;">SYMBOL</th>
+                                    <th onclick="sortWatchlist('price')" style="cursor: pointer; padding: 18px 15px;">PRICE</th>
+                                    <th onclick="sortWatchlist('fr')" style="cursor: pointer; padding: 18px 15px;">FR (%)</th>
+                                    <th onclick="sortWatchlist('frH')" style="cursor: pointer; padding: 18px 15px;">VADE</th>
+                                    <th onclick="sortWatchlist('chg')" style="cursor: pointer; padding: 18px 15px; text-align: right;">DEĞİŞİM</th>
+                                    <th onclick="sortWatchlist('vol')" style="cursor: pointer; padding: 18px 15px; text-align: right;">HACİM</th>
+                                </tr>
+                            </thead>
+                            <tbody id="watchlist-body">
+                                <!-- Rows injected by watchlist.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <!-- Focus Card -->
-            <div id="watchlist-focus" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 20px; display: none;">
-                <!-- Filled dynamically by watchlist.js -->
+            <!-- Focus Detail (Footer focus) -->
+            <div id="watchlist-focus" class="glass-panel" style="margin-top: 20px; padding: 20px; background: rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.2); display: none;">
+                <!-- Content from watchlist.js -->
             </div>
+        </div>
+    </div>
+
+    <!-- Bot Manager Modal Overlay -->
+    <div id="bot-manager-modal" class="modal-overlay">
+        <div class="modal-content glass-panel" style="max-width: 500px; padding: 30px; height: auto; max-height: 80vh;">
+            <div class="panel-header" style="justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px;">
+                <h2 style="font-size: 1.4rem; margin:0;"><i class="fa-solid fa-robot" style="color:#a78bfa"></i> Botları Yönet</h2>
+                <button class="btn-icon" id="btn-close-bot-manager" style="font-size: 1.5rem;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <p style="font-size: 0.9rem; opacity: 0.7; margin-bottom: 20px;">Ekranda görmek istediğiniz botları seçin. (Maksimum 5 sütun)</p>
+            
+            <div id="bot-selector-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;">
+                <label class="bot-option"><input type="checkbox" data-col="hammer-new"> Hammer New</label>
+                <label class="bot-option"><input type="checkbox" data-col="1m"> 1 Dakika</label>
+                <label class="bot-option"><input type="checkbox" data-col="15m"> 15 Dakika</label>
+                <label class="bot-option"><input type="checkbox" data-col="1h"> 1 Saat</label>
+                <label class="bot-option"><input type="checkbox" data-col="4h"> 4 Saat</label>
+                <label class="bot-option"><input type="checkbox" data-col="rsi-div"> SüperSwing (RSI Div)</label>
+            </div>
+
+            <button id="btn-save-bots" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: 600;">AYARLARI KAYDET</button>
         </div>
     </div>
 

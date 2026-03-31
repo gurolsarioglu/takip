@@ -13,6 +13,66 @@
     --row-border: rgba(255, 255, 255, 0.05);
 }
 
+/* ─── Watchlist Upgrade Styles ─── */
+.hot-item {
+    background: rgba(250, 204, 21, 0.1);
+    border: 1px solid rgba(250, 204, 21, 0.2);
+    border-radius: 8px;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    animation: slideIn 0.3s ease-out;
+}
+
+.hot-item:hover {
+    background: rgba(250, 204, 21, 0.15);
+    transform: translateX(5px);
+}
+
+.hot-item .coin-name {
+    font-weight: bold;
+    color: #facc15;
+}
+
+.hot-item .reason {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    background: rgba(255,255,255,0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.indicator-flash {
+    animation: flash 1s infinite alternate;
+    font-weight: bold;
+    color: #facc15;
+}
+
+@keyframes flash {
+    from { opacity: 0.3; transform: scale(1); }
+    to { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+#watchlist-table th {
+    padding: 15px 10px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    background: rgba(10, 11, 16, 0.5);
+}
+
+#watchlist-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
 /* ─── Bot Selector Menu ─── */
 .bot-selector-menu {
     position: absolute;

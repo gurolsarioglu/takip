@@ -2,7 +2,8 @@
 // Fetches the coins, handles REST polling, and updates UI
 
 let wlCoins = [];
-let wlData = {}; // Format: { BTCUSDT: { price, fr, frH, chg, vol, longShortRatio, openInterest } }
+let wlData = {}; // Format: { BTCUSDT: { price, fr, frH, chg, vol, longShortRatio, openInterest, indicators } }
+let prevWlData = {}; // Buffer for comparison
 let selectedWlCoin = null;
 
 // Sorting state
@@ -37,13 +38,19 @@ async function pollWatchlistData() {
         if (data.success && data.data) {
             const isFirstLoad = wlCoins.length === 0;
             
+            // Move current to prev for comparison
+            prevWlData = JSON.parse(JSON.stringify(wlData));
+
             // Merge new data
             for (const [coin, metrics] of Object.entries(data.data)) {
                 if (!wlData[coin]) {
-                    wlData[coin] = { ...metrics, longShortRatio: '-', openInterest: '-' };
+                    wlData[coin] = { ...metrics, longShortRatio: '-', openInterest: '-', indicators: [] };
                 } else {
                     wlData[coin] = { ...wlData[coin], ...metrics };
                 }
+                
+                // Detection Logic
+                detectRapidChanges(coin);
             }
 
             const newCoins = Object.keys(data.data);
@@ -51,17 +58,20 @@ async function pollWatchlistData() {
             if (isFirstLoad || wlCoins.length !== newCoins.length) {
                 wlCoins = newCoins;
                 sortAndRenderTable();
-                
-                // Fetch extra metrics (L/S, OI) slowly in the background for new coins
                 fetchRestMetrics();
             } else {
                 if (currentSortCol) {
-                    sortAndRenderTable(); // Maintain sort order dynamically
+                    sortAndRenderTable();
                 } else {
                     wlCoins.forEach(coin => updateWlRow(coin));
                 }
             }
             
+            renderHotList();
+            
+            const timeEl = document.getElementById('wl-update-time');
+            if (timeEl) timeEl.innerText = `Son güncelleme: ${new Date().toLocaleTimeString()}`;
+
             if (selectedWlCoin) {
                 renderFocusCard();
             }
@@ -156,11 +166,15 @@ function renderWatchlistTable() {
         const bgClass = pd.chg !== '-' ? (isPos ? 'bg-green' : 'bg-red') : '';
         const symbolFormat = coin.replace('USDT', '');
         
+        const indicators = (pd.indicators && pd.indicators.length > 0) 
+            ? `<span class="indicator-flash" title="${pd.indicators.join(', ')}">❗</span>` 
+            : '';
+
         html += `<tr class="wl-row ${bgClass} ${selectedWlCoin === coin ? 'selected' : ''}" onclick="selectWlCoin('${coin}')" data-coin="${coin}">
             <td style="font-weight: 500;">
                 <img src="https://raw.githubusercontent.com/Pymmdrza/Cryptocurrency_Logos/main/PNG/${symbolFormat.toLowerCase()}.png" 
                      onerror="this.style.display='none'" style="width:16px; height:16px; vertical-align:middle; border-radius:50%; margin-right:5px;">
-                ${symbolFormat}
+                ${symbolFormat} ${indicators}
             </td>
             <td style="font-family: 'JetBrains Mono';" id="wl-p-${coin}">${pd.price}</td>
             <td class="${parseFloat(pd.fr) > 0 ? 'text-green' : 'text-red'}" id="wl-fr-${coin}">${pd.fr}</td>
@@ -295,6 +309,69 @@ async function fetchRestMetrics() {
         // Small delay to prevent API spamming
         await new Promise(r => setTimeout(r, 200));
     }
+}
+
+function renderHotList() {
+    const container = document.getElementById('hot-list-container');
+    if (!container) return;
+
+    const hotCoins = wlCoins
+        .filter(c => wlData[c].indicators && wlData[c].indicators.length > 0)
+        .slice(0, 8); // Top 8 hot coins
+
+    if (hotCoins.length === 0) {
+        container.innerHTML = `<div style="text-align:center; opacity:0.3; font-size: 0.8rem; padding: 20px;">Sinyal bekleniyor... ❗</div>`;
+        return;
+    }
+
+    let html = '';
+    hotCoins.forEach(coin => {
+        const pd = wlData[coin];
+        html += `
+            <div class="hot-item" onclick="selectWlCoin('${coin}')">
+                <div>
+                    <span class="coin-name">${coin.replace('USDT', '')}</span>
+                    <span class="reason">${pd.indicators[0]}</span>
+                </div>
+                <div style="font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                    ${pd.price}
+                </div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+function detectRapidChanges(coin) {
+    const fresh = wlData[coin];
+    const prev = prevWlData[coin];
+    const indicators = [];
+
+    // 1. Funding Warn (Extreme level)
+    if (fresh.fr !== '-') {
+        const frVal = parseFloat(fresh.fr);
+        if (Math.abs(frVal) >= 0.1) {
+            indicators.push(`Yüksek FR: ${frVal}%`);
+        }
+    }
+
+    // 2. Volume Jump Detection
+    if (prev && prev.volRaw && fresh.volRaw) {
+        const volJump = ((fresh.volRaw - prev.volRaw) / prev.volRaw) * 100;
+        if (volJump >= 5) { // 5% jump in 5 seconds is massive
+            indicators.push(`Hacim Patlaması: +%${volJump.toFixed(1)}`);
+        }
+    }
+
+    // 3. Price Move
+    if (prev && prev.price && fresh.price) {
+        const priceMove = Math.abs(((parseFloat(fresh.price) - parseFloat(prev.price)) / parseFloat(prev.price)) * 100);
+        if (priceMove >= 0.5) { // 0.5% move in 5 seconds
+            indicators.push(`Sert Hareket: %${priceMove.toFixed(2)}`);
+        }
+    }
+
+    wlData[coin].indicators = indicators;
 }
 
 // Keep it auto-started
