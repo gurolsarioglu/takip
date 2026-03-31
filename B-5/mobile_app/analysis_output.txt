@@ -1,0 +1,29 @@
+﻿Analyzing mobile_app...                                         
+
+   info - Don't invoke 'print' in production code - lib\main.dart:27:5 - avoid_print
+  error - The argument type 'CardTheme' can't be assigned to the parameter type 'CardThemeData?'.  - lib\main.dart:51:20 - argument_type_not_assignable
+warning - The value of the local variable 'service' isn't used - lib\screens\home_screen.dart:27:11 - unused_local_variable
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\home_screen.dart:85:67 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\kasa_screen.dart:66:51 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\login_screen.dart:63:45 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\screens\login_screen.dart:73:45 - deprecated_member_use
+   info - Don't invoke 'print' in production code - lib\services\firebase_service.dart:27:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\notification_service.dart:15:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\notification_service.dart:20:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\notification_service.dart:27:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\notification_service.dart:28:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\notification_service.dart:31:9 - avoid_print
+   info - Don't invoke 'print' in production code - lib\services\notification_service.dart:38:3 - avoid_print
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\widgets\signal_card.dart:41:58 - deprecated_member_use
+
+C:\flutter\bin\flutter.bat : 15 issues found. (ran in 5.
+8s)
+At line:1 char:1
++ C:\flutter\bin\flutter.bat analyze --no-fatal-warnings
+ 2>&1 | Out-Fil ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo          : NotSpecified: (15 issues  
+   found. (ran in 5.8s):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

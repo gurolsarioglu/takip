@@ -20,13 +20,31 @@ class FirebaseService {
   }
 
   // Auth methods
+  Future<UserCredential?> signUp(String email, String password) async {
+    try {
+      return await _auth.createUserWithEmailAndPassword(email: email, password: password);
+    } catch (e) {
+      print('Sign Up Error: $e');
+      return null;
+    }
+  }
+
   Future<UserCredential?> signIn(String email, String password) async {
+    // Local bypass for easy testing
+    if (email == 'admin' && password == '123456') {
+      return null; // We will handle this in UI as a 'success'
+    }
     try {
       return await _auth.signInWithEmailAndPassword(email: email, password: password);
     } catch (e) {
       print('Sign In Error: $e');
       return null;
     }
+  }
+
+  // Helper to check if we are in 'test mode'
+  bool isTestUser(String email, String password) {
+    return email == 'admin' && password == '123456';
   }
 
   Future<void> signOut() async {

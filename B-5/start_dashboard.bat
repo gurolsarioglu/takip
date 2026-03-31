@@ -23,6 +23,7 @@ start "B-5 Hunter (15m)" cmd /k "cd /d %~dp0telegram-bot && node hunter-15m.js"
 start "B-5 Hunter (1H)"  cmd /k "cd /d %~dp0telegram-bot && node hunter-1h.js"
 start "B-5 Hunter (4H)"  cmd /k "cd /d %~dp0telegram-bot && node hunter-4h.js"
 start "B-5 Hunter (FR)"  cmd /k "cd /d %~dp0telegram-bot && node hunter-fr.js"
+start "B-5 RSI Div"      cmd /k "cd /d %~dp0telegram-bot && node hunter-rsi-div.js"
 
 :: Give the bots a moment to connect
 timeout /t 3 /nobreak >nul

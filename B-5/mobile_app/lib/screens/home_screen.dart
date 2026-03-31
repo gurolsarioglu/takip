@@ -24,7 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final service = Provider.of<FirebaseService>(context, listen: false);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0F172A),
