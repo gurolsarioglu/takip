@@ -1,4 +1,16 @@
 {
   "initialCapital": 36.43,
-  "trades": []
+  "trades": [
+    {
+      "id": "mnfnnni4uqpo9ubj6kc",
+      "coin": "ssdfdsf",
+      "date": "2026-04-01",
+      "timeIn": "09:18",
+      "timeOut": "10:19",
+      "position": "Long",
+      "profit": 1.2,
+      "cumulativeBankroll": 37.63,
+      "percentageChange": 3.2939884710403593
+    }
+  ]
 }

@@ -146,16 +146,37 @@
             <!-- Resizer 3 -->
             <div class="resizer" id="resizer-3" title="Sürükle: Sütunu yeniden boyutlandır"></div>
 
+            <!-- FR Column -->
+            <section class="signals-column glass-panel resizable-panel" id="col-fr" data-col="fr" style="display:none;">
+                <div class="panel-header">
+                    <h2>FR Takibi</h2>
+                    <div class="filter-box" id="filter-box-fr">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" class="filter-input" id="filter-fr" placeholder="Coin ara..."
+                            oninput="applyFilter('fr')">
+                        <button class="filter-clear" onclick="clearFilter('fr')"
+                            title="Filtreyi temizle">&times;</button>
+                    </div>
+                </div>
+                <div class="signals-feed" id="feed-fr"></div>
+            </section>
+
+            <!-- Resizer FR -->
+            <div class="resizer" id="resizer-fr" title="Sürükle: Sütunu yeniden boyutlandır" style="display:none;"></div>
+
             <!-- RSI Div Column (SüperSwing) -->
             <section class="signals-column glass-panel resizable-panel" id="col-rsi-div" data-col="rsi-div" style="display:none;">
                 <div class="panel-header">
-                    <h2>SüperSwing (RSI Div)</h2>
+                    <h2>SüperSwing (4H & 1D)</h2>
                     <div class="filter-box" id="filter-box-rsi-div">
                         <i class="fa-solid fa-magnifying-glass"></i>
                         <input type="text" class="filter-input" id="filter-rsi-div" placeholder="Coin ara..."
                             oninput="applyFilter('rsi-div')">
                         <button class="filter-clear" onclick="clearFilter('rsi-div')"
                             title="Filtreyi temizle">&times;</button>
+                    </div>
+                </div>
+                <div class="signals-feed" id="feed-rsi-div"></div>
             </section>
         </div>
     </div>
@@ -225,13 +246,61 @@
             
             <p style="font-size: 0.9rem; opacity: 0.7; margin-bottom: 20px;">Ekranda görmek istediğiniz botları seçin. (Maksimum 5 sütun)</p>
             
+            <!-- HAMZA AUTO-TRADER SECTION -->
+            <div class="glass-panel" style="margin-bottom: 25px; padding: 15px; border-color: rgba(167, 139, 250, 0.4); background: rgba(167, 139, 250, 0.05); border-radius: 12px;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; background: #a78bfa; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #fff;">
+                            <i class="fa-solid fa-bolt-lightning"></i>
+                        </div>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.1rem; color: #a78bfa;">HAMZA <span id="hamza-badge" class="hamza-status-badge hamza-status-paused">OFF</span></h3>
+                            <p style="margin: 0; font-size: 0.75rem; opacity: 0.6;">Sinyalleri Otomatik İşleme Alır</p>
+                        </div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="hamza-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
             <div id="bot-selector-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px;">
-                <label class="bot-option"><input type="checkbox" data-col="hammer-new"> Hammer New</label>
-                <label class="bot-option"><input type="checkbox" data-col="1m"> 1 Dakika</label>
-                <label class="bot-option"><input type="checkbox" data-col="15m"> 15 Dakika</label>
-                <label class="bot-option"><input type="checkbox" data-col="1h"> 1 Saat</label>
-                <label class="bot-option"><input type="checkbox" data-col="4h"> 4 Saat</label>
-                <label class="bot-option"><input type="checkbox" data-col="rsi-div"> SüperSwing (RSI Div)</label>
+                <label class="bot-option">
+                    <input type="checkbox" data-col="hammer-new"> 
+                    <span>Hammer New</span>
+                    <i class="fa-solid fa-circle-info help-icon" title="DEMA 20/50 kesişimleri ve hacim patlamalarını takip eder."></i>
+                </label>
+                <label class="bot-option">
+                    <input type="checkbox" data-col="1m"> 
+                    <span>1 Dakika Tarayıcı</span>
+                    <i class="fa-solid fa-circle-info help-icon" title="1 dakikalık periyotta aşırı satım ve yön değişimlerini anlık yakalar."></i>
+                </label>
+                <label class="bot-option">
+                    <input type="checkbox" data-col="15m"> 
+                    <span>15 Dakika Tarayıcı</span>
+                    <i class="fa-solid fa-circle-info help-icon" title="15 dakikalık periyotta trend dönüşlerini ve RSI uyumsuzluklarını tarar."></i>
+                </label>
+                <label class="bot-option">
+                    <input type="checkbox" data-col="1h"> 
+                    <span>1 Saat Tarayıcı</span>
+                    <i class="fa-solid fa-circle-info help-icon" title="Saatlik grafikte güçlü destek/direnç kırılımlarını takip eder."></i>
+                </label>
+                <label class="bot-option">
+                    <input type="checkbox" data-col="4h"> 
+                    <span>4 Saat Tarayıcı</span>
+                    <i class="fa-solid fa-circle-info help-icon" title="4 saatlik periyotta major trend değişimlerini yakalar."></i>
+                </label>
+                <label class="bot-option">
+                    <input type="checkbox" data-col="rsi-div"> 
+                    <span>SüperSwing (4H & 1D)</span>
+                    <i class="fa-solid fa-circle-info help-icon" title="4H RSI seviyelerini (20/30/70/80) takip eder and 1D grafikte fiyat-RSI uyumsuzluğu (Divergence) arar."></i>
+                </label>
+                <label class="bot-option">
+                    <input type="checkbox" data-col="fr"> 
+                    <span>FR Takip Botu</span>
+                    <i class="fa-solid fa-circle-info help-icon" title="Funding Rate oranlarındaki ani değişimleri ve Long/Short baskısını takip eder."></i>
+                </label>
             </div>
 
             <button id="btn-save-bots" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: 600;">AYARLARI KAYDET</button>

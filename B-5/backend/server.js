@@ -9,6 +9,7 @@ const cache = require('./utils/cache');
 const alertService = require('./services/alert.service'); // Import AlertService
 const bankrollService = require('./services/bankrollService');
 const firebaseService = require('./services/firebase.service');
+const hamzaService = require('./services/hamza.service');
 const fs = require('fs');
 const path = require('path');
 
@@ -455,9 +456,15 @@ app.get('/api/watchlist/:symbol/metrics', async (req, res) => {
  * Broadcast a signal to all connected WebSocket clients
  */
 app.post('/api/signals/emit', async (req, res) => {
-    // Save to Firebase asynchronously
+    /* 📱 Firebase Logging (Disabled for now to clean up terminal errors)
     firebaseService.logSignal(req.body).catch(e => {
         console.error('Error in Firebase logging:', e.message);
+    });
+    */
+
+    // Pass signal to Hamza (Auto-Trader)
+    hamzaService.handleSignal(req.body).catch(e => {
+        console.error('Hamza processing error:', e.message);
     });
 
     if (global.wss) {
@@ -469,6 +476,29 @@ app.post('/api/signals/emit', async (req, res) => {
     }
     res.json({ success: true });
 });
+
+// ─── HAMZA Bot Endpoints ──────────────────────────────────────────────────────
+
+/**
+ * GET /api/bots/hamza/status
+ */
+app.get('/api/bots/hamza/status', (req, res) => {
+    res.json({ success: true, data: hamzaService.getStatus() });
+});
+
+/**
+ * POST /api/bots/hamza/toggle
+ */
+app.post('/api/bots/hamza/toggle', (req, res) => {
+    const { status } = req.body;
+    hamzaService.setEnabled(status);
+    res.json({ success: true, enabled: status });
+});
+
+// Start HAMZA position monitor (runs every 60 seconds)
+setInterval(() => {
+    hamzaService.monitorPositions();
+}, 60 * 1000);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

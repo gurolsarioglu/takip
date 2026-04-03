@@ -1,12 +1,90 @@
 const axios = require('axios');
+const crypto = require('crypto');
 const config = require('../config/binance.config');
 
 class BinanceService {
     constructor() {
         this.baseURL = config.BINANCE_API_URL;
         this.apiKey = config.BINANCE_API_KEY;
+        this.apiSecret = config.BINANCE_API_SECRET;
         this.supplyCache = null;
         this.supplyCacheTime = 0;
+    }
+
+    /**
+     * Signed request helper for private endpoints
+     */
+    async signedRequest(path, params = {}, method = 'GET') {
+        const timestamp = Date.now();
+        const queryString = Object.keys(params)
+            .map(key => `${key}=${encodeURIComponent(params[key])}`)
+            .join('&') + `&timestamp=${timestamp}`;
+
+        const signature = crypto
+            .createHmac('sha256', this.apiSecret)
+            .update(queryString)
+            .digest('hex');
+
+        const url = `https://fapi.binance.com${path}?${queryString}&signature=${signature}`;
+
+        const options = {
+            method,
+            url,
+            headers: {
+                'X-MBX-APIKEY': this.apiKey
+            }
+        };
+
+        try {
+            const response = await axios(options);
+            return response.data;
+        } catch (error) {
+            console.error(`Binance signed ${method} error to ${path}:`, error.response ? error.response.data : error.message);
+            throw error;
+        }
+    }
+
+    /**
+     * Place a Market Order on Futures
+     */
+    async placeMarketOrder(symbol, side, quantity) {
+        try {
+            return await this.signedRequest('/fapi/v1/order', {
+                symbol,
+                side: side.toUpperCase(),
+                type: 'MARKET',
+                quantity
+            }, 'POST');
+        } catch (error) {
+            return null;
+        }
+    }
+
+    /**
+     * Set leverage for a symbol
+     */
+    async setLeverage(symbol, leverage) {
+        try {
+            return await this.signedRequest('/fapi/v1/leverage', {
+                symbol,
+                leverage
+            }, 'POST');
+        } catch (error) {
+            return null;
+        }
+    }
+
+    /**
+     * Get Futures USDT Balance
+     */
+    async getFuturesBalance() {
+        try {
+            const data = await this.signedRequest('/fapi/v2/account');
+            const usdtAsset = data.assets.find(a => a.asset === 'USDT');
+            return usdtAsset ? parseFloat(usdtAsset.availableBalance) : 0;
+        } catch (error) {
+            return 0;
+        }
     }
 
     /**
@@ -46,19 +124,39 @@ class BinanceService {
     }
 
     /**
-     * Get kline/candlestick data for technical analysis
-     * @param {string} symbol - Trading pair symbol (e.g., 'BTCUSDT')
-     * @param {string} interval - Kline interval (1m, 5m, 1h, 1d, etc.)
-     * @param {number} limit - Number of klines to return
+     * Get all Futures USDT trading pairs with 24h statistics
+     */
+    async getFutures24hrTickers() {
+        try {
+            const response = await axios.get(`https://fapi.binance.com/fapi/v1/ticker/24hr`);
+            
+            return response.data.map(ticker => ({
+                symbol: ticker.symbol,
+                coinName: ticker.symbol.replace('USDT', ''),
+                currentPrice: parseFloat(ticker.lastPrice),
+                previousPrice: parseFloat(ticker.openPrice),
+                priceChange: parseFloat(ticker.priceChange),
+                priceChangePercent: parseFloat(ticker.priceChangePercent),
+                volume: parseFloat(ticker.volume),
+                quoteVolume: parseFloat(ticker.quoteVolume),
+                volumeChangePercent: 0, // Not available directly in fapi
+                high24h: parseFloat(ticker.highPrice),
+                low24h: parseFloat(ticker.lowPrice),
+                trades: ticker.count
+            }));
+        } catch (error) {
+            console.error('Error fetching Futures 24hr tickers:', error.message);
+            throw new Error('Failed to fetch futures market data');
+        }
+    }
+
+    /**
+     * Get kline/candlestick data for technical analysis (SPOT)
      */
     async getKlines(symbol, interval = config.KLINE_INTERVAL, limit = config.KLINE_LIMIT) {
         try {
             const response = await axios.get(`${this.baseURL}/api/v3/klines`, {
-                params: {
-                    symbol,
-                    interval,
-                    limit
-                }
+                params: { symbol, interval, limit }
             });
 
             return response.data.map(kline => ({
@@ -73,13 +171,39 @@ class BinanceService {
                 trades: kline[8]
             }));
         } catch (error) {
-            console.error(`Error fetching klines for ${symbol}:`, error.message);
+            console.error(`Error fetching SPOT klines for ${symbol}:`, error.message);
             throw new Error(`Failed to fetch kline data for ${symbol}`);
         }
     }
 
     /**
-     * Get current price for a specific symbol
+     * Get kline/candlestick data for technical analysis (FUTURES)
+     */
+    async getFuturesKlines(symbol, interval = config.KLINE_INTERVAL, limit = config.KLINE_LIMIT) {
+        try {
+            const response = await axios.get(`https://fapi.binance.com/fapi/v1/klines`, {
+                params: { symbol, interval, limit }
+            });
+
+            return response.data.map(kline => ({
+                openTime: kline[0],
+                open: parseFloat(kline[1]),
+                high: parseFloat(kline[2]),
+                low: parseFloat(kline[3]),
+                close: parseFloat(kline[4]),
+                volume: parseFloat(kline[5]),
+                closeTime: kline[6],
+                quoteVolume: parseFloat(kline[7]),
+                trades: kline[8]
+            }));
+        } catch (error) {
+            console.error(`Error fetching FUTURES klines for ${symbol}:`, error.message);
+            throw new Error(`Failed to fetch futures kline data for ${symbol}`);
+        }
+    }
+
+    /**
+     * Get current price for a specific symbol (Try Spot then Futures)
      */
     async getCurrentPrice(symbol) {
         try {
@@ -88,8 +212,16 @@ class BinanceService {
             });
             return parseFloat(response.data.price);
         } catch (error) {
-            console.error(`Error fetching price for ${symbol}:`, error.message);
-            throw new Error(`Failed to fetch price for ${symbol}`);
+            try {
+                // Fallback to Futures if Spot fails
+                const response = await axios.get(`https://fapi.binance.com/fapi/v1/ticker/price`, {
+                    params: { symbol }
+                });
+                return parseFloat(response.data.price);
+            } catch (fErr) {
+                console.error(`Error fetching price for ${symbol} on both Spot and Futures:`, fErr.message);
+                throw new Error(`Failed to fetch price for ${symbol}`);
+            }
         }
     }
 
@@ -154,7 +286,8 @@ class BinanceService {
      */
     async getTopLongShortRatio(symbol, period = '5m') {
         try {
-            const response = await axios.get(`https://fapi.binance.com/fapi/v1/topLongShortPositionRatio`, {
+            // Correct endpoint for Binance Futures Data Statistics
+            const response = await axios.get(`https://fapi.binance.com/futures/data/topLongShortPositionRatio`, {
                 params: { symbol, period, limit: 1 }
             });
             if (response.data && response.data.length > 0) {
@@ -166,7 +299,10 @@ class BinanceService {
             }
             return null;
         } catch (error) {
-            console.error(`Error L/S ratio for ${symbol}:`, error.message);
+            // Only log if it's not a 404 (some symbols don't have L/S data)
+            if (error.response && error.response.status !== 404) {
+                console.error(`Error L/S ratio for ${symbol}:`, error.message);
+            }
             return null;
         }
     }
@@ -181,8 +317,86 @@ class BinanceService {
             });
             return response.data ? parseFloat(response.data.openInterest) : null;
         } catch (error) {
-            console.error(`Error Open Interest for ${symbol}:`, error.message);
+            // Only log if it's not a 404
+            if (error.response && error.response.status !== 404) {
+                console.error(`Error Open Interest for ${symbol}:`, error.message);
+            }
             return null;
+        }
+    }
+
+    /**
+     * Get Futures Open Interest Delta
+     * Compares current OI with OI from a few minutes ago
+     */
+    async getOpenInterestDelta(symbol) {
+        try {
+            // Get current OI
+            const currentOI = await this.getOpenInterest(symbol);
+            if (currentOI === null) return null;
+
+            // Get historical OI (e.g., from 15 minutes ago)
+            const endTime = Date.now();
+            const startTime = endTime - 15 * 60 * 1000;
+            
+            const response = await axios.get(`https://fapi.binance.com/fapi/v1/openInterestHist`, {
+                params: { symbol, period: '5m', limit: 4, startTime, endTime }
+            });
+
+            if (response.data && response.data.length > 0) {
+                const prevOI = parseFloat(response.data[0].sumOpenInterest);
+                const delta = ((currentOI - prevOI) / prevOI) * 100;
+                return {
+                    current: currentOI,
+                    previous: prevOI,
+                    delta: parseFloat(delta.toFixed(2))
+                };
+            }
+            return { current: currentOI, previous: null, delta: 0 };
+        } catch (error) {
+            return null;
+        }
+    }
+
+    /**
+     * Get Premium Index (Funding Rate + Mark Price + Index Price)
+     */
+    async getPremiumIndex(symbol) {
+        try {
+            const response = await axios.get(`https://fapi.binance.com/fapi/v1/premiumIndex`, {
+                params: { symbol }
+            });
+            const data = response.data;
+            const markPrice = parseFloat(data.markPrice);
+            const indexPrice = parseFloat(data.indexPrice);
+            const basis = ((markPrice - indexPrice) / indexPrice) * 100;
+
+            return {
+                symbol: data.symbol,
+                markPrice,
+                indexPrice, // Spot equivalent
+                lastFundingRate: parseFloat(data.lastFundingRate),
+                nextFundingTime: parseInt(data.nextFundingTime),
+                basis: parseFloat(basis.toFixed(4)) // Premium/Discount %
+            };
+        } catch (error) {
+            return null;
+        }
+    }
+
+    /**
+     * Get data for multiple timeframes (FUTURES)
+     */
+    async getMultiTimeframeData(symbol) {
+        try {
+            const [k4h, k1d] = await Promise.all([
+                this.getFuturesKlines(symbol, '4h', 10),
+                this.getFuturesKlines(symbol, '1d', 10)
+            ]);
+            
+            return { k4h, k1d };
+        } catch (error) {
+            return { k4h: [], k1d: [] };
         }
     }
 

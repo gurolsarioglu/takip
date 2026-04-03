@@ -8,6 +8,7 @@ const feeds = {
     '1h':  document.getElementById('feed-1h'),
     '4h':  document.getElementById('feed-4h'),
     'rsi-div': document.getElementById('feed-rsi-div'),
+    'fr': document.getElementById('feed-fr'),
 };
 
 // ─── Filter Logic ───
@@ -53,9 +54,9 @@ const MAX_SIGNALS_PER_TF = 20;
 function loadSignalCache() {
     try {
         const raw = localStorage.getItem(SIGNAL_CACHE_KEY);
-        return raw ? JSON.parse(raw) : { 'hammer-new': [], '1m': [], '15m': [], '1h': [], '4h': [], 'rsi-div': [] };
+        return raw ? JSON.parse(raw) : { 'hammer-new': [], '1m': [], '15m': [], '1h': [], '4h': [], 'rsi-div': [], 'fr': [] };
     } catch (_) {
-        return { 'hammer-new': [], '1m': [], '15m': [], '1h': [], '4h': [], 'rsi-div': [] };
+        return { 'hammer-new': [], '1m': [], '15m': [], '1h': [], '4h': [], 'rsi-div': [], 'fr': [] };
     }
 }
 
@@ -181,12 +182,16 @@ function renderSignal(signal, isNew = true) {
             return (n <= 30 || n >= 70) ? '❗' : '';
         };
 
+        const divTypeTr = signal.divergence ? (signal.divergence.type === 'bullish' ? 'BOĞA (BULLISH)' : 'AYI (BEARISH)') : '';
+
         const divInfo = signal.divergence ? `
-            <div style="background: rgba(59, 130, 246, 0.1); padding: 8px; border-left: 2px solid #3b82f6; margin: 8px 0; border-radius: 4px;">
-                <b style="color:#60a5fa; font-size: 0.75rem;">${signal.divergence.type.toUpperCase()} DIV TESPİT EDİLDİ! (GÜNLÜK)</b><br>
-                <small style="opacity:0.8;">Başlangıç: ${signal.divergence.startDate}</small><br>
-                <small>Fiyat: ${signal.divergence.priceDiff}</small><br>
-                <small>RSI: ${signal.divergence.rsiDiff}</small>
+            <div style="background: rgba(59, 130, 246, 0.1); padding: 12px; border-left: 3px solid #3b82f6; margin: 10px 0; border-radius: 4px; text-align: left;">
+                <b style="color:#60a5fa; font-size: 0.8rem; display: block; margin-bottom: 8px;">${divTypeTr} UYUMSUZLUK TESPİT EDİLDİ! (GÜNLÜK)</b>
+                <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; opacity: 0.9;">
+                    <span>• Başlangıç: ${signal.divergence.startDate}</span>
+                    <span>• Fiyat: ${signal.divergence.priceDiff}</span>
+                    <span>• RSI: ${signal.divergence.rsiDiff}</span>
+                </div>
             </div>
         ` : '';
 
@@ -428,7 +433,39 @@ const btnSaveBots = document.getElementById('btn-save-bots');
 const botManagerModal = document.getElementById('bot-manager-modal');
 const botSelectorList = document.getElementById('bot-selector-list');
 
+// HAMZA UI Elements
+const hamzaToggle = document.getElementById('hamza-toggle');
+const hamzaBadge = document.getElementById('hamza-badge');
+
+async function updateHamzaStatusUI() {
+    try {
+        const response = await fetch('/api/bots/hamza/status');
+        const { data } = await response.json();
+        
+        hamzaToggle.checked = data.isEnabled;
+        hamzaBadge.innerText = data.isEnabled ? 'ACTIVE' : 'OFF';
+        hamzaBadge.className = `hamza-status-badge ${data.isEnabled ? 'hamza-status-active' : 'hamza-status-paused'}`;
+    } catch (e) {
+        console.error('Hamza status fetch error:', e);
+    }
+}
+
+hamzaToggle.addEventListener('change', async () => {
+    const status = hamzaToggle.checked;
+    try {
+        await fetch('/api/bots/hamza/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+        });
+        updateHamzaStatusUI();
+    } catch (e) {
+        console.error('Hamza toggle error:', e);
+    }
+});
+
 btnBotManager.addEventListener('click', () => {
+    updateHamzaStatusUI();
     botManagerModal.classList.add('active');
 });
 

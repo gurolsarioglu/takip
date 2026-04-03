@@ -18,6 +18,7 @@ class FirebaseService {
             this.app = initializeApp(firebaseConfig);
             this.db = getFirestore(this.app);
             this.isInitialized = true;
+            this.apiDisabled = false; // Flag to track if Firestore API is disabled in GCP
             console.log('✅ Firebase Service initialized successfully with Web Config (Firestore ready)');
         } catch (error) {
             console.error('❌ Failed to initialize Firebase:', error.message);
@@ -26,7 +27,8 @@ class FirebaseService {
     }
 
     async logSignal(signalData) {
-        if (!this.isInitialized || !this.db) {
+        // Skip if not initialized or if we've already detected the API is disabled
+        if (!this.isInitialized || !this.db || this.apiDisabled) {
             return false;
         }
 
@@ -45,7 +47,15 @@ class FirebaseService {
             console.log(`☁️ Signal saved to Firebase: ${signalData.coin} (${signalData.timeframe}) -> DocID: ${result.id}`);
             return true;
         } catch (error) {
-            console.error('❌ Error saving signal to Firebase:', error.message);
+            // Check if it's the "API not enabled" error
+            if (error.message && error.message.includes('PERMISSION_DENIED') && error.message.includes('API has not been used')) {
+                this.apiDisabled = true;
+                console.warn('\n⚠️ [Firebase Notice]: Cloud Firestore API is not enabled for project "b-5-takip".');
+                console.warn('👉 To enable it, visit: https://console.developers.google.com/apis/api/firestore.googleapis.com/overview?project=b-5-takip');
+                console.warn('🔇 Firebase logging has been temporarily disabled to reduce log noise.\n');
+            } else {
+                console.error('❌ Error saving signal to Firebase:', error.message);
+            }
             return false;
         }
     }

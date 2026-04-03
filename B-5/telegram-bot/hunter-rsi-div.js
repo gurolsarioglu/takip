@@ -120,12 +120,14 @@ function detectDailyDivergence(klines1d, rsiArray) {
 
                 // Price makes lower low but RSI makes higher low
                 if (last.price < prev.price && lastRSI > prevRSI && lastRSI < 50) {
+                    const startDateStr = new Date(prev.time).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
                     allBullish.push({
                         type: 'bullish',
-                        startDate: new Date(prev.time).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+                        startDate: startDateStr,
+                        dateRange: `${startDateStr} ➔ GÜNCEL`,
                         startTimestamp: prev.time,
                         endTimestamp: last.time,
-                        description: `Fiyat düşerken RSI yükseliyor → Potansiyel yukarı atılım`,
+                        description: `Fiyat düşerken RSI yükseliyor → Potansiyel yukarı atılım (MEVCUT DURUM)`,
                         priceDiff: `${prev.price.toFixed(4)} → ${last.price.toFixed(4)} (↓)`,
                         rsiDiff: `${prevRSI.toFixed(1)} → ${lastRSI.toFixed(1)} (↑)`,
                         // Score: recency + RSI difference magnitude
@@ -146,12 +148,14 @@ function detectDailyDivergence(klines1d, rsiArray) {
 
                 // Price makes higher high but RSI makes lower high
                 if (last.price > prev.price && lastRSI < prevRSI && lastRSI > 50) {
+                    const startDateStr = new Date(prev.time).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
                     allBearish.push({
                         type: 'bearish',
-                        startDate: new Date(prev.time).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+                        startDate: startDateStr,
+                        dateRange: `${startDateStr} ➔ GÜNCEL`,
                         startTimestamp: prev.time,
                         endTimestamp: last.time,
-                        description: `Fiyat yükselirken RSI düşüyor → Potansiyel aşağı kırılım`,
+                        description: `Fiyat yükselirken RSI düşüyor → Potansiyel aşağı kırılım (MEVCUT DURUM)`,
                         priceDiff: `${prev.price.toFixed(4)} → ${last.price.toFixed(4)} (↑)`,
                         rsiDiff: `${prevRSI.toFixed(1)} → ${lastRSI.toFixed(1)} (↓)`,
                         score: (last.index / recentCount) + Math.abs(lastRSI - prevRSI) / 100
@@ -377,10 +381,10 @@ async function sendAlert(symbol, type, side, price, rsi, stars, dailyData) {
             divSection =
                 `\n── Uyumsuzluk Tespiti ──\n` +
                 `${divEmoji} ${divLabel} TESPİT EDİLDİ!\n` +
-                `Başlangıç: ${div.startDate}\n` +
+                `Dönem: ${div.dateRange}\n` +
                 `Fiyat: ${div.priceDiff}\n` +
                 `RSI: ${div.rsiDiff}\n` +
-                `${div.description}\n`;
+                `Durum: ${div.description}\n`;
         }
     }
 
@@ -421,6 +425,7 @@ async function sendAlert(symbol, type, side, price, rsi, stars, dailyData) {
             divergence: dailyData && dailyData.divergence ? {
                 type: dailyData.divergence.type,
                 startDate: dailyData.divergence.startDate,
+                dateRange: dailyData.divergence.dateRange,
                 description: dailyData.divergence.description,
                 priceDiff: dailyData.divergence.priceDiff,
                 rsiDiff: dailyData.divergence.rsiDiff

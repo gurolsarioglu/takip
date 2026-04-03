@@ -318,35 +318,144 @@ class TechnicalService {
     /**
      * Calculate WaveTrend
      */
+    /**
+     * Calculate WaveTrend
+     */
     calculateWaveTrend(klines) {
-        const n1 = 10, n2 = 21;
-        // ensure hlc3 exists, otherwise estimate from high/low/close
-        const ap = klines.map(k => k.hlc3 !== undefined ? k.hlc3 : (k.high + k.low + k.close) / 3 || k.close);
-        
-        if (ap.length < n2 + 10) return { wt1: 0, wt2: 0, cross: null };
-        
-        const ema = (data, len) => {
-            const k = 2 / (len + 1);
-            let res = [data[0]];
-            for (let i = 1; i < data.length; i++) res.push(data[i] * k + res[i - 1] * (1 - k));
-            return res;
-        };
-        
-        const esa  = ema(ap, n1);
-        const d    = ema(ap.map((v, i) => Math.abs(v - esa[i])), n1);
-        const ci   = ap.map((v, i) => (v - esa[i]) / (0.015 * d[i] || 1));
-        const wt1  = ema(ci, n2);
-        const wt2  = wt1.map((v, i, a) => a.slice(Math.max(0, i - 3), i + 1).reduce((s, c) => s + c, 0) / (i < 3 ? i + 1 : 4));
-        
-        let cross  = null;
-        const last = wt1.length - 1;
-        
-        if (last > 0) {
-            if (wt1[last - 1] < wt2[last - 1] && wt1[last] > wt2[last]) cross = 'Yükseliş 🟢';
-            else if (wt1[last - 1] > wt2[last - 1] && wt1[last] < wt2[last]) cross = 'Düşüş 🔴';
+        try {
+            const n1 = 10, n2 = 21;
+            // ensure hlc3 exists, otherwise estimate from high/low/close
+            const ap = klines.map(k => k.hlc3 !== undefined ? k.hlc3 : (k.high + k.low + k.close) / 3 || k.close);
+            
+            if (ap.length < n2 + 10) return { wt1: 0, wt2: 0, cross: null };
+            
+            const ema = (data, len) => {
+                const k = 2 / (len + 1);
+                let res = [data[0]];
+                for (let i = 1; i < data.length; i++) res.push(data[i] * k + res[i - 1] * (1 - k));
+                return res;
+            };
+            
+            const esa  = ema(ap, n1);
+            const d    = ema(ap.map((v, i) => Math.abs(v - esa[i])), n1);
+            const ci   = ap.map((v, i) => (v - esa[i]) / (0.015 * d[i] || 1));
+            const wt1  = ema(ci, n2);
+            const wt2  = wt1.map((v, i, a) => a.slice(Math.max(0, i - 3), i + 1).reduce((s, c) => s + c, 0) / (i < 3 ? i + 1 : 4));
+            
+            let cross  = null;
+            const last = wt1.length - 1;
+            
+            if (last > 0) {
+                if (wt1[last - 1] < wt2[last - 1] && wt1[last] > wt2[last]) cross = 'Bullish 🟢';
+                else if (wt1[last - 1] > wt2[last - 1] && wt1[last] < wt2[last]) cross = 'Bearish 🔴';
+            }
+            
+            return { wt1: wt1[last], wt2: wt2[last], cross };
+        } catch (error) {
+            return { wt1: 0, wt2: 0, cross: null };
         }
-        
-        return { wt1: wt1[last], wt2: wt2[last], cross };
+    }
+
+    /**
+     * Aggregate multiple klines into larger timeframe (e.g. 5D from 5 1D)
+     * @param {Array} klines - Array of standard kline objects
+     * @param {number} count - Number of candles to merge
+     */
+    aggregateKlines(klines, count) {
+        try {
+            if (!klines || klines.length < count) return null;
+            
+            const lastSlice = klines.slice(-count);
+            return {
+                open: parseFloat(lastSlice[0].open),
+                close: parseFloat(lastSlice[lastSlice.length - 1].close),
+                high: Math.max(...lastSlice.map(k => parseFloat(k.high))),
+                low: Math.min(...lastSlice.map(k => parseFloat(k.low))),
+                volume: lastSlice.reduce((sum, k) => sum + parseFloat(k.volume), 0),
+                timestamp: lastSlice[0].openTime || lastSlice[0].timestamp
+            };
+        } catch (error) {
+            return null;
+        }
+    }
+
+    /**
+     * Check for Doji pattern (Indecision)
+     * Body is less than 10% of total candle range
+     */
+    isDoji(candle) {
+        try {
+            if (!candle) return false;
+            const open = parseFloat(candle.open);
+            const close = parseFloat(candle.close);
+            const high = parseFloat(candle.high);
+            const low = parseFloat(candle.low);
+            
+            const body = Math.abs(open - close);
+            const range = high - low;
+            
+            if (range === 0) return true;
+            return body <= range * 0.1;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * Calculate Heikin Ashi candles
+     * @param {Array} klines - Array of standard kline objects
+     */
+    calculateHeikinAshi(klines) {
+        try {
+            if (!klines || klines.length === 0) return [];
+
+            const haKlines = [];
+            
+            // First HA candle initialization
+            const first = klines[0];
+            haKlines.push({
+                open: parseFloat(first.open),
+                close: (parseFloat(first.open) + parseFloat(first.high) + parseFloat(first.low) + parseFloat(first.close)) / 4,
+                high: parseFloat(first.high),
+                low: parseFloat(first.low),
+                timestamp: first.openTime || first.timestamp
+            });
+
+            // Calculate subsequent HA candles
+            for (let i = 1; i < klines.length; i++) {
+                const current = klines[i];
+                const prevHA = haKlines[i - 1];
+
+                const haClose = (parseFloat(current.open) + parseFloat(current.high) + parseFloat(current.low) + parseFloat(current.close)) / 4;
+                const haOpen = (prevHA.open + prevHA.close) / 2;
+                const haHigh = Math.max(parseFloat(current.high), haOpen, haClose);
+                const haLow = Math.min(parseFloat(current.low), haOpen, haClose);
+
+                haKlines.push({
+                    open: haOpen,
+                    close: haClose,
+                    high: haHigh,
+                    low: haLow,
+                    timestamp: current.openTime || current.timestamp
+                });
+            }
+
+            return haKlines;
+        } catch (error) {
+            console.error('Error calculating Heikin Ashi:', error.message);
+            return [];
+        }
+    }
+
+    /**
+     * Check if the latest candle is a green Heikin Ashi
+     * @param {Array} klines - Array of standard klines
+     */
+    isHeikinAshiGreen(klines) {
+        const ha = this.calculateHeikinAshi(klines);
+        if (ha.length === 0) return false;
+        const last = ha[ha.length - 1];
+        return last.close > last.open;
     }
 }
 
