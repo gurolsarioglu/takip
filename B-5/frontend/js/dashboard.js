@@ -109,11 +109,16 @@ function connect() {
             if (data.type === 'signal') {
                 addToCache(data.data);
                 renderSignal(data.data, true);
+            } else if (data.type === 'TICK') {
+                // High-speed update for Watchlist Focus Card
+                if (window.handleWlTick) window.handleWlTick(data);
             }
         } catch (e) {
             console.error('Invalid message', e);
         }
     };
+    
+    window.ws = ws; // Expose globally for subscriptions
 }
 
 // ─── FR Kart Renderer ─────────────────────────────────────────────────────────

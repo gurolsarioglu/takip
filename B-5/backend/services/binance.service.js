@@ -385,18 +385,25 @@ class BinanceService {
     }
 
     /**
-     * Get data for multiple timeframes (FUTURES)
+     * Get Taker Buy/Sell Volume Ratio (Aggression)
+     * Returns { buyVol, sellVol, buySellRatio }
      */
-    async getMultiTimeframeData(symbol) {
+    async getTakerVolumeRatio(symbol) {
         try {
-            const [k4h, k1d] = await Promise.all([
-                this.getFuturesKlines(symbol, '4h', 10),
-                this.getFuturesKlines(symbol, '1d', 10)
-            ]);
-            
-            return { k4h, k1d };
+            const response = await axios.get(`https://fapi.binance.com/futures/data/takerbuySellVol`, {
+                params: { symbol, period: '5m', limit: 1 }
+            });
+            if (response.data && response.data.length > 0) {
+                const data = response.data[0];
+                return {
+                    buyVol: parseFloat(data.buyVol),
+                    sellVol: parseFloat(data.sellVol),
+                    ratio: parseFloat(data.buySellRatio)
+                };
+            }
+            return null;
         } catch (error) {
-            return { k4h: [], k1d: [] };
+            return null;
         }
     }
 

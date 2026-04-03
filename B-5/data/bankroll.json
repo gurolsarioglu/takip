@@ -2,6 +2,136 @@
   "initialCapital": 36.43,
   "trades": [
     {
+      "id": "mnitxgnjtvymvqmifo8",
+      "coin": "ONTUSDT",
+      "date": "2026-04-03",
+      "timeIn": "14:04",
+      "timeOut": "14:37",
+      "position": "Long",
+      "profit": "0.51",
+      "isHamza": true
+    },
+    {
+      "id": "mnitlvxuhq5lwpmyfia",
+      "coin": "ONGUSDT",
+      "date": "2026-04-03",
+      "timeIn": "14:19",
+      "timeOut": "14:28",
+      "position": "Long",
+      "profit": "0.49",
+      "isHamza": true
+    },
+    {
+      "id": "mnitklnm8iykwcrxjnf",
+      "coin": "CFGUSDT",
+      "date": "2026-04-03",
+      "timeIn": "14:03",
+      "timeOut": "14:27",
+      "position": "Long",
+      "profit": "-0.28",
+      "isHamza": true
+    },
+    {
+      "id": "mnit7r2e8vdtrbas0rn",
+      "coin": "GASUSDT",
+      "date": "2026-04-03",
+      "timeIn": "14:03",
+      "timeOut": "14:17",
+      "position": "Long",
+      "profit": "1.03",
+      "isHamza": true
+    },
+    {
+      "id": "mnit6gl00ohahkfg1rmd",
+      "coin": "ONGUSDT",
+      "date": "2026-04-03",
+      "timeIn": "14:04",
+      "timeOut": "14:16",
+      "position": "Long",
+      "profit": "-0.33",
+      "isHamza": true
+    },
+    {
+      "id": "mnit3vmgqhmciwhocx",
+      "coin": "AEVOUSDT",
+      "date": "2026-04-03",
+      "timeIn": "14:04",
+      "timeOut": "14:14",
+      "position": "Long",
+      "profit": "-0.30",
+      "isHamza": true
+    },
+    {
+      "id": "mnit1b0k8lpj4by40go",
+      "coin": "YBUSDT",
+      "date": "2026-04-03",
+      "timeIn": "14:04",
+      "timeOut": "14:12",
+      "position": "Long",
+      "profit": "-0.36",
+      "isHamza": true
+    },
+    {
+      "id": "mnit00pvg4ii7caxgki",
+      "coin": "MAGICUSDT",
+      "date": "2026-04-03",
+      "timeIn": "14:04",
+      "timeOut": "14:11",
+      "position": "Long",
+      "profit": "-0.36",
+      "isHamza": true
+    },
+    {
+      "id": "mnisoum7hoh4d0zymt",
+      "coin": "NOMUSDT",
+      "date": "2026-04-03",
+      "timeIn": "13:58",
+      "timeOut": "14:03",
+      "position": "Long",
+      "profit": "-0.53",
+      "isHamza": true
+    },
+    {
+      "id": "mnisgbkjijzzcb8fdni",
+      "coin": "FIDAUSDT",
+      "date": "2026-04-03",
+      "timeIn": "13:46",
+      "timeOut": "13:56",
+      "position": "Long",
+      "profit": "-0.29",
+      "isHamza": true
+    },
+    {
+      "id": "mniscgs3uj6hvnqdcx",
+      "coin": "NOMUSDT",
+      "date": "2026-04-03",
+      "timeIn": "13:46",
+      "timeOut": "13:53",
+      "position": "Long",
+      "profit": "-0.27",
+      "isHamza": true
+    },
+    {
+      "id": "mnis9w5itc2p3knult",
+      "coin": "MAGICUSDT",
+      "date": "2026-04-03",
+      "timeIn": "13:46",
+      "timeOut": "13:51",
+      "position": "Long",
+      "profit": "0.73",
+      "isHamza": true
+    },
+    {
+      "id": "mnis8meewrdecexb97",
+      "coin": "YBUSDT",
+      "date": "2026-04-03",
+      "timeIn": "13:46",
+      "timeOut": "13:50",
+      "position": "Long",
+      "profit": "-0.35",
+      "isHamza": true
+    },
+    {
       "id": "mnfnnni4uqpo9ubj6kc",
       "coin": "ssdfdsf",
       "date": "2026-04-01",

@@ -66,31 +66,43 @@ class HamzaService {
     async handleSignal(signal) {
         if (!this.isEnabled) return;
         
-        // Only trade high score FR signals (e.g. Skor >= 3)
         const score = signal.score || 0;
         if (signal.timeframe !== 'fr' || score < 3) return;
 
         const symbol = signal.coin;
         if (this.activePositions.has(symbol)) return;
 
-        // Dynamic Leverage based on Conviction (Score)
-        let leverage = 3; 
-        if (score === 4) leverage = 5;
-        if (score >= 5) leverage = 10;
+        console.log(`💎 [HAMZA BRAIN] Analyzing ${symbol} | Initial Score: ${score}...`);
+        
+        // 🛡️ Conviction Check (High-Speed Analysis)
+        const conviction = await this.validateConviction(symbol, signal);
+        const finalScore = score + conviction.bonus;
 
-        console.log(`💎 [SIMULATION] HAMZA analyzing ${symbol} | Score: ${score} | Target: ${leverage}x`);
+        console.log(`🧠 [HAMZA THOUGHT] ${symbol}: Conviction +${conviction.bonus} | Total: ${finalScore} | Reasons: ${conviction.reasons.join(', ') || 'None'}`);
+
+        // Selective Entry: A total score of 5 is required to "Pull the trigger"
+        if (finalScore < 5) {
+            console.log(`⏸️ [HAMZA] Skipping ${symbol}. Conviction too low (${finalScore}/5)`);
+            return;
+        }
+
+        // Dynamic Leverage based on Final Conviction
+        let leverage = 5;
+        if (finalScore >= 6) leverage = 10; // High conviction moon shot
 
         try {
             // Fetch simulated capital
             const bankroll = bankrollService.getBankroll();
             const balance = bankroll.initialCapital; 
 
-            // Calculate simulated quantity
-            const price = await binanceService.getCurrentPrice(symbol);
+            // High-speed Price check from memory
+            const streamData = streamService.getSymbolMetrics(symbol);
+            const price = streamData ? streamData.price : await binanceService.getCurrentPrice(symbol);
+            
             const margin = balance * this.riskPerTrade;
             const quantity = (margin * leverage) / price;
 
-            console.log(`🚀 [SIMULATION] HAMZA: Position OPENED [${signal.position}] for ${symbol} at ${price} (${leverage}x)`);
+            console.log(`🚀 [SIMULATION] HAMZA: Position OPENED [${signal.position}] for ${symbol} at ${price} (${leverage}x) - Score: ${finalScore}`);
             
             this.activePositions.set(symbol, {
                 symbol,
@@ -100,13 +112,62 @@ class HamzaService {
                 leverage,
                 margin,
                 openedAt: Date.now(),
-                targetTP: this.tp1Percent,
+                maxPnlReached: 0,
                 status: 'MONITORING'
             });
             
         } catch (error) {
-            console.error(`❌ HAMZA simulation entry error for ${symbol}:`, error.message);
+            console.error(`❌ HAMZA entry error for ${symbol}:`, error.message);
         }
+    }
+
+    /**
+     * Hamza's High-Speed Analysis ("The Glasses")
+     */
+    async validateConviction(symbol, signal) {
+        let bonus = 0;
+        const reasons = [];
+
+        try {
+            // 1. Get Real-time Metrics from StreamService (Memory)
+            const metrics = streamService.getSymbolMetrics(symbol);
+            
+            // 2. Fetch Fresh OI snapshot (Instant Probe)
+            const oiData = await binanceService.getOpenInterest(symbol);
+            
+            // --- CONVICTION RULES ---
+
+            // A. Squeeze Potential (The "Wood/Odun" Scenario)
+            const fr = metrics ? parseFloat(metrics.fr) : 0;
+            if (signal.position === 'Long' && fr < -0.05) {
+                bonus += 1;
+                reasons.push('SHORT SQUEEZE FUEL (Neg FR)');
+            } else if (signal.position === 'Short' && fr > 0.05) {
+                bonus += 1;
+                reasons.push('LONG SQUEEZE FUEL (Pos FR)');
+            }
+
+            // B. Volume Acceleration
+            if (metrics && metrics.volJumpPct > 5) {
+                bonus += 1;
+                reasons.push(`VOL JUMP (+${metrics.volJumpPct}%)`);
+            }
+
+            // C. OI Momentum (The new 'Time-Aware' vision)
+            if (metrics && metrics.oiDeltaPct > 1.0) {
+                bonus += 1;
+                reasons.push(`OI MOMENTUM (+${metrics.oiDeltaPct}%)`);
+            } else if (oiData) {
+                // Fallback to simple engagement if history not ready
+                bonus += 0.5; // Half point for basic presence
+                reasons.push('OI ENGAGEMENT');
+            }
+
+        } catch (e) {
+            console.warn(`⚠️ [HAMZA] Conviction probe failed for ${symbol}: ${e.message}`);
+        }
+
+        return { bonus, reasons };
     }
 
     /**

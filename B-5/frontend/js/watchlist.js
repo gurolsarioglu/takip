@@ -304,6 +304,113 @@ function updateWlRow(symbol) {
     if(frhEl) frhEl.innerText = pd.frH;
 }
 
+// REAL-TIME FEED SETTINGS
+window.USE_REALTIME_WS = true;
+
+let convictionTimeLeft = 300; // 5 minutes in seconds
+setInterval(() => {
+    if (convictionTimeLeft > 0) convictionTimeLeft--;
+    else convictionTimeLeft = 300;
+    
+    const cdEl = document.getElementById('focus-conviction-cd');
+    if (cdEl) {
+        const mins = Math.floor(convictionTimeLeft / 60);
+        const secs = convictionTimeLeft % 60;
+        cdEl.innerText = `Trend Gelişimi: ${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+}, 1000);
+
+window.handleWlTick = function(data) {
+    if (!window.USE_REALTIME_WS || !selectedWlCoin || data.symbol !== selectedWlCoin) return;
+
+    // 🏆 High-Speed UI Update (Partial DOM)
+    
+    // 1. Update Price
+    const priceEl = document.getElementById('focus-price-val');
+    if (priceEl && data.price) {
+        const oldPrice = parseFloat(priceEl.dataset.val);
+        const newPrice = data.price;
+        const color = parseFloat(wlData[selectedWlCoin].chg) >= 0 ? '#10b981' : '#ef4444';
+        
+        if (newPrice !== oldPrice) {
+            const flashClass = newPrice > oldPrice ? 'price-up' : 'price-down';
+            priceEl.innerText = newPrice;
+            priceEl.dataset.val = newPrice;
+            priceEl.style.color = color;
+            
+            priceEl.classList.remove('price-up', 'price-down');
+            void priceEl.offsetWidth; 
+            priceEl.classList.add(flashClass);
+            wlData[selectedWlCoin].price = newPrice;
+        }
+    }
+
+    // 2. Update Funding Rate
+    const frEl = document.getElementById('focus-fr-val');
+    if (frEl && data.fr && data.fr !== '-') {
+        const val = data.fr + '%';
+        if (frEl.innerText !== val) {
+            frEl.innerText = val;
+            frEl.style.color = parseFloat(data.fr) > 0 ? '#10b981' : '#ef4444';
+            wlData[selectedWlCoin].fr = data.fr;
+        }
+    }
+
+    // 3. Update Volume
+    const volEl = document.getElementById('focus-vol-val');
+    const volLongEl = document.getElementById('focus-vol-long');
+    const volShortEl = document.getElementById('focus-vol-short');
+
+    if (volEl && data.vol && data.vol !== '-') {
+        if (volEl.innerText !== `Vol: ${data.vol}`) {
+            volEl.innerText = `Vol: ${data.vol}`;
+            wlData[selectedWlCoin].vol = data.vol;
+        }
+    }
+    if (volLongEl && volShortEl && data.taker) {
+        volLongEl.innerText = `B: ${data.taker.buy}`;
+        volShortEl.innerText = `S: ${data.taker.sell}`;
+        wlData[selectedWlCoin].taker = data.taker;
+    }
+
+    // 4. Update Open Interest (OI) + OI Delta
+    const oiEl = document.getElementById('focus-oi-val');
+    const oiDeltaEl = document.getElementById('focus-oi-delta');
+
+    if (oiEl && data.oi && data.oi !== '-') {
+        const val = `OI: ${data.oi} ↗`;
+        if (oiEl.innerText !== val) {
+            oiEl.innerText = val;
+            wlData[selectedWlCoin].openInterest = data.oi;
+        }
+    }
+    if (oiDeltaEl && data.oiDelta !== undefined) {
+        const val = (data.oiDelta >= 0 ? '+' : '') + data.oiDelta + '%';
+        oiDeltaEl.innerText = val;
+        oiDeltaEl.style.color = data.oiDelta >= 0 ? '#10b981' : '#ef4444';
+        wlData[selectedWlCoin].oiDelta = data.oiDelta;
+    }
+
+    // 5. Update L/S Ratio Bar
+    if (data.ls && data.ls !== '-') {
+        const lsCalc = parseFloat(data.ls);
+        const lPct = (lsCalc / (1 + lsCalc)) * 100;
+        const sPct = 100 - lPct;
+        
+        const longBar = document.getElementById('focus-ls-long');
+        const shortBar = document.getElementById('focus-ls-short');
+        const longText = document.getElementById('focus-ls-text-long');
+        const shortText = document.getElementById('focus-ls-text-short');
+
+        if (longBar) longBar.style.width = `${lPct}%`;
+        if (shortBar) shortBar.style.width = `${sPct}%`;
+        if (longText) longText.innerText = `L ${lPct.toFixed(2)}%`;
+        if (shortText) shortText.innerText = `${sPct.toFixed(2)}% S`;
+        
+        wlData[selectedWlCoin].longShortRatio = data.ls;
+    }
+};
+
 function selectWlCoin(coin) {
     selectedWlCoin = coin;
     
@@ -312,6 +419,11 @@ function selectWlCoin(coin) {
         if (row.dataset.coin === coin) row.classList.add('selected');
         else row.classList.remove('selected');
     });
+    
+    // 📡 Subscribe to Live Stream (if ready)
+    if (window.USE_REALTIME_WS && window.ws && window.ws.readyState === WebSocket.OPEN) {
+        window.ws.send(JSON.stringify({ type: 'SUBSCRIBE', symbol: coin }));
+    }
     
     renderFocusCard();
 }
@@ -345,20 +457,34 @@ function renderFocusCard() {
         
         lsHtml = `
         <div style="display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; font-weight: bold; margin-top: 15px;">
-            <span style="color: #10b981;">L ${lPct.toFixed(2)}%</span>
-            <span style="color: #ef4444;">${sPct.toFixed(2)}% S</span>
+            <span id="focus-ls-text-long" style="color: #10b981; transition: color 0.3s;">L ${lPct.toFixed(2)}%</span>
+            <span id="focus-ls-text-short" style="color: #ef4444; transition: color 0.3s;">${sPct.toFixed(2)}% S</span>
         </div>
         <div class="ls-bar-container">
-            <div class="ls-bar-long" style="width: ${lPct}%"></div>
-            <div class="ls-bar-short" style="width: ${sPct}%"></div>
+            <div id="focus-ls-long" class="ls-bar-long" style="width: ${lPct}%"></div>
+            <div id="focus-ls-short" class="ls-bar-short" style="width: ${sPct}%"></div>
         </div>
         `;
     }
 
     const oiText = pd.openInterest && pd.openInterest !== '-' ? parseFloat(pd.openInterest).toLocaleString(undefined, { maximumFractionDigits: 1 }) : 'Bekleniyor...';
-    
+    const oiDeltaVal = pd.oiDelta !== undefined ? (pd.oiDelta >= 0 ? '+' : '') + pd.oiDelta + '%' : '--%';
+    const oiDeltaColor = pd.oiDelta !== undefined ? (pd.oiDelta >= 0 ? '#10b981' : '#ef4444') : 'var(--text-muted)';
+
+    const takerBuy = pd.taker ? pd.taker.buy : '--';
+    const takerSell = pd.taker ? pd.taker.sell : '--';
+
     focusDiv.style.display = 'block';
     focusDiv.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-bottom: 10px;">
+            <div id="focus-conviction-cd" style="font-size: 0.75rem; opacity: 0.6; font-family: 'JetBrains Mono', monospace;">
+                Trend Gelişimi: 05:00
+            </div>
+            <div style="font-size: 0.75rem; opacity: 0.4;">
+                Hamza Live Intelligence 🛡️
+            </div>
+        </div>
+
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
             <div>
                 <a href="https://www.binance.com/en/futures/${selectedWlCoin}" target="_blank" style="text-decoration:none; color:var(--text-secondary); font-size: 0.8rem; display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${selectedWlCoin}</a>
@@ -368,7 +494,7 @@ function renderFocusCard() {
             </div>
             <div style="text-align: right;">
                 <div style="font-size: 0.9rem; opacity: 0.7; margin-bottom: 5px;">Funding (${pd.frH})</div>
-                <div style="font-size: 1.5rem; font-weight: bold; color: ${isPosFr ? '#10b981' : '#ef4444'}; font-family: 'JetBrains Mono', monospace;">
+                <div id="focus-fr-val" style="font-size: 1.5rem; font-weight: bold; color: ${isPosFr ? '#10b981' : '#ef4444'}; font-family: 'JetBrains Mono', monospace;">
                     ${pd.fr !== '-' ? pd.fr + '%' : '...'}
                 </div>
             </div>
@@ -377,11 +503,17 @@ function renderFocusCard() {
         ${lsHtml}
         
         <div style="display: flex; align-items: center; margin-top: 15px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-            <div style="color: #60a5fa; flex: 1;">
-                OI: ${oiText} ↗
+            <div style="flex: 1.2; display: flex; flex-direction: column; gap: 2px;">
+                <div id="focus-oi-val" style="color: #60a5fa;">OI: ${oiText} ↗</div>
+                <div id="focus-oi-delta" style="font-size: 0.75rem; color: ${oiDeltaColor}; font-weight: bold;">${oiDeltaVal} (5m)</div>
             </div>
-            <div style="opacity: 0.6; text-align: right; flex: 1;">
-                Vol: ${pd.vol}
+            <div style="flex: 2; text-align: right;">
+                <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; font-weight: bold;">
+                    <span id="focus-vol-val" style="opacity: 0.9;">Vol: ${pd.vol}</span>
+                    <span style="opacity: 0.3;">|</span>
+                    <span id="focus-vol-long" style="color: #10b981;">B: ${takerBuy}</span>
+                    <span id="focus-vol-short" style="color: #ef4444;">S: ${takerSell}</span>
+                </div>
             </div>
         </div>
     `;

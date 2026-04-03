@@ -495,6 +495,8 @@ app.post('/api/bots/hamza/toggle', (req, res) => {
     res.json({ success: true, enabled: status });
 });
 
+const streamService = require('./services/stream.service');
+
 // Start HAMZA position monitor (runs every 60 seconds)
 setInterval(() => {
     hamzaService.monitorPositions();
@@ -534,13 +536,26 @@ const server = app.listen(port, () => {
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
   `);
+    // Connect to Binance Stream
+    streamService.connect();
 });
 
 const wss = new WebSocket.Server({ server });
 global.wss = wss;
+
 wss.on('connection', (ws) => {
-    console.log('Client connected to WebSocket');
-    ws.on('close', () => console.log('Client disconnected'));
+    console.log('Client connected to WebSocket 🛰️');
+    
+    ws.on('message', (message) => {
+        try {
+            const data = JSON.parse(message);
+            if (data.type === 'SUBSCRIBE') {
+                streamService.subscribeClient(ws, data.symbol);
+            }
+        } catch (e) { }
+    });
+
+    ws.on('close', () => console.log('Client disconnected 🔌'));
 });
 
 // Graceful shutdown
