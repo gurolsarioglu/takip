@@ -386,10 +386,10 @@ window.handleWlTick = function(data) {
     }
     if (oiDeltaEl && data.oiDelta !== undefined) {
         if (data.oiDelta === null) {
-            oiDeltaEl.innerText = 'Hesaplanıyor... (5dk)';
+            oiDeltaEl.innerText = 'Hesaplanıyor...';
             oiDeltaEl.style.color = 'var(--text-muted)';
         } else {
-            const val = (data.oiDelta >= 0 ? '+' : '') + data.oiDelta + '%';
+            const val = (data.oiDelta >= 0 ? '+' : '') + data.oiDelta + '% (5m)';
             oiDeltaEl.innerText = val;
             oiDeltaEl.style.color = data.oiDelta >= 0 ? '#10b981' : '#ef4444';
             wlData[selectedWlCoin].oiDelta = data.oiDelta;
@@ -473,10 +473,10 @@ function renderFocusCard() {
     }
 
     const oiText = pd.openInterest && pd.openInterest !== '-' ? parseFloat(pd.openInterest).toLocaleString(undefined, { maximumFractionDigits: 1 }) : 'Bekleniyor...';
-    let oiDeltaVal = 'Hesaplanıyor... (5m)';
+    let oiDeltaVal = 'Hesaplanıyor...';
     let oiDeltaColor = 'var(--text-muted)';
     if (pd.oiDelta !== undefined && pd.oiDelta !== null) {
-        oiDeltaVal = (pd.oiDelta >= 0 ? '+' : '') + pd.oiDelta + '%';
+        oiDeltaVal = (pd.oiDelta >= 0 ? '+' : '') + pd.oiDelta + '% (5m)';
         oiDeltaColor = pd.oiDelta >= 0 ? '#10b981' : '#ef4444';
     }
 

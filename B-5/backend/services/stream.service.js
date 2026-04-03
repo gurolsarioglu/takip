@@ -11,9 +11,12 @@ class StreamService {
         this.subscribedSymbol = null; // Currently selected coin in UI across all clients (simplification)
         this.symbolData = new Map(); // symbol -> { price, fr, vol, oi, ls }
         this.symbolHistory = new Map(); // symbol -> Array of snapshots [{time, price, vol}]
-        this.focusedPoller = null;
+        this.convictionTimeLeft = 300;
+        this.focusedVolume = { buy: 0, sell: 0 }; // Real-time Focus Aggregator
         
-        // Take a snapshot every 60 seconds for all symbols
+        setInterval(() => this.updateConvictionTimer(), 1000);
+        
+        // Take a snapshot every 60 seconds for all symbols (General health)
         setInterval(() => this.takeSnapshot(), 60 * 1000);
     }
 
@@ -54,6 +57,28 @@ class StreamService {
             priceMovePct: parseFloat(priceMove.toFixed(2)),
             oiDeltaPct: parseFloat(oiDelta.toFixed(2))
         };
+    }
+
+    /**
+     * Precision Clock Sync: Matches Binance 5-min candles (e.g. 05, 10, 15...)
+     */
+    updateConvictionTimer() {
+        const now = new Date();
+        const mins = now.getMinutes();
+        const secs = now.getSeconds();
+        
+        // Find next 5-minute mark (00, 05, 10, 15...)
+        const nextMark = Math.ceil((mins + 1) / 5) * 5;
+        const diffMins = nextMark - mins - 1;
+        const diffSecs = 60 - secs;
+        
+        this.convictionTimeLeft = (diffMins * 60) + diffSecs;
+
+        // If timer hit exactly 00:00 (new 5-min block)
+        if (this.convictionTimeLeft === 300) {
+            this.takeSnapshot();
+            this.focusedVolume = { buy: 0, sell: 0 }; // Reset aggression with the candle
+        }
     }
 
     connect() {
@@ -105,19 +130,10 @@ class StreamService {
             const data = this.symbolData.get(symbol);
             const metrics = this.getSymbolMetrics(symbol); // Fetch history-aware metrics
 
-            // Calculate Taker Buy/Sell Absolute Values relative to Total 24h Volume
-            let buyVolVal = '-', sellVolVal = '-';
-            if (data.taker && data.vol) {
-                const totalRadio = data.taker.buyVol + data.taker.sellVol;
-                if (totalRadio > 0) {
-                    const buyPctRaw = data.taker.buyVol / totalRadio;
-                    const sellPctRaw = 1 - buyPctRaw;
-                    
-                    buyVolVal = ((data.vol * buyPctRaw) / 1000000).toFixed(2) + 'M';
-                    sellVolVal = ((data.vol * sellPctRaw) / 1000000).toFixed(2) + 'M';
-                }
-            }
-
+            // Calculate Taker Buy/Sell Values based on manual aggregation
+            const buyVolM = (this.focusedVolume.buy / 1e6).toFixed(2);
+            const sellVolM = (this.focusedVolume.sell / 1e6).toFixed(2);
+            
             const msg = JSON.stringify({
                 type: 'TICK',
                 symbol,
@@ -127,8 +143,8 @@ class StreamService {
                 oi: data.oi ? data.oi.toLocaleString() : '-',
                 ls: data.ls || '-',
                 taker: { 
-                    buy: buyVolVal, 
-                    sell: sellVolVal
+                    buy: buyVolM + 'M', 
+                    sell: sellVolM + 'M'
                 },
                 oiDelta: metrics ? metrics.oiDeltaPct : null // null = Calculating
             });
@@ -145,7 +161,22 @@ class StreamService {
      */
     startFocusedPoll(symbol) {
         if (this.focusedPoller) clearInterval(this.focusedPoller);
+        if (this.focusedAggTradeWs) this.focusedAggTradeWs.terminate();
+        
         this.subscribedSymbol = symbol;
+        console.log(`📡 [FOCUS] Monitoring ${symbol} (Clock-Sync Mode)`);
+        
+        // Reset Real-Time Volume Aggregator
+        this.focusedVolume = { buy: 0, sell: 0 };
+        
+        // Connect Live High-Speed Trade Stream for Focus
+        this.focusedAggTradeWs = new WebSocket(`wss://fstream.binance.com/ws/${symbol.toLowerCase()}@aggTrade`);
+        this.focusedAggTradeWs.on('message', (raw) => {
+            const t = JSON.parse(raw);
+            const val = parseFloat(t.q) * parseFloat(t.p);
+            if (t.m) this.focusedVolume.sell += val; // m=true -> Taker Sell
+            else this.focusedVolume.buy += val;      // m=false -> Taker Buy
+        });
 
         const poll = async () => {
             if (this.subscribedSymbol !== symbol) return clearInterval(this.focusedPoller);
@@ -160,7 +191,7 @@ class StreamService {
                 const d = this.symbolData.get(symbol) || {};
                 d.oi = oi;
                 d.ls = ls;
-                d.taker = taker; // { buyVol, sellVol, ratio }
+                d.taker = taker; 
                 this.symbolData.set(symbol, d);
                 this.broadcastIfSubscribed(symbol);
             } catch (e) {
