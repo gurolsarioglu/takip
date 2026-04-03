@@ -36,7 +36,7 @@ class StreamService {
         const current = this.symbolData.get(symbol);
         const history = this.symbolHistory.get(symbol);
         
-        if (!current || !history || history.length === 0) return null;
+        if (!current || !history || history.length < 5) return null; // Wait for full 5-min history
         
         const oldest = history[0];
         const volJump = oldest.vol ? ((current.vol - oldest.vol) / oldest.vol) * 100 : 0;
@@ -130,7 +130,7 @@ class StreamService {
                     buy: buyVolVal, 
                     sell: sellVolVal
                 },
-                oiDelta: metrics ? metrics.oiDeltaPct : 0
+                oiDelta: metrics ? metrics.oiDeltaPct : null // null = Calculating
             });
             global.wss.clients.forEach(c => {
                 if (c.readyState === WebSocket.OPEN && c.subscribedSymbol === symbol) {

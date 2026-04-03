@@ -385,10 +385,15 @@ window.handleWlTick = function(data) {
         }
     }
     if (oiDeltaEl && data.oiDelta !== undefined) {
-        const val = (data.oiDelta >= 0 ? '+' : '') + data.oiDelta + '%';
-        oiDeltaEl.innerText = val;
-        oiDeltaEl.style.color = data.oiDelta >= 0 ? '#10b981' : '#ef4444';
-        wlData[selectedWlCoin].oiDelta = data.oiDelta;
+        if (data.oiDelta === null) {
+            oiDeltaEl.innerText = 'Hesaplanıyor... (5dk)';
+            oiDeltaEl.style.color = 'var(--text-muted)';
+        } else {
+            const val = (data.oiDelta >= 0 ? '+' : '') + data.oiDelta + '%';
+            oiDeltaEl.innerText = val;
+            oiDeltaEl.style.color = data.oiDelta >= 0 ? '#10b981' : '#ef4444';
+            wlData[selectedWlCoin].oiDelta = data.oiDelta;
+        }
     }
 
     // 5. Update L/S Ratio Bar
@@ -468,8 +473,12 @@ function renderFocusCard() {
     }
 
     const oiText = pd.openInterest && pd.openInterest !== '-' ? parseFloat(pd.openInterest).toLocaleString(undefined, { maximumFractionDigits: 1 }) : 'Bekleniyor...';
-    const oiDeltaVal = pd.oiDelta !== undefined ? (pd.oiDelta >= 0 ? '+' : '') + pd.oiDelta + '%' : '--%';
-    const oiDeltaColor = pd.oiDelta !== undefined ? (pd.oiDelta >= 0 ? '#10b981' : '#ef4444') : 'var(--text-muted)';
+    let oiDeltaVal = 'Hesaplanıyor... (5m)';
+    let oiDeltaColor = 'var(--text-muted)';
+    if (pd.oiDelta !== undefined && pd.oiDelta !== null) {
+        oiDeltaVal = (pd.oiDelta >= 0 ? '+' : '') + pd.oiDelta + '%';
+        oiDeltaColor = pd.oiDelta >= 0 ? '#10b981' : '#ef4444';
+    }
 
     const takerBuy = pd.taker ? pd.taker.buy : '--';
     const takerSell = pd.taker ? pd.taker.sell : '--';

@@ -390,7 +390,7 @@ class BinanceService {
      */
     async getTakerVolumeRatio(symbol) {
         try {
-            const response = await axios.get(`https://fapi.binance.com/futures/data/takerbuySellVol`, {
+            const response = await axios.get(`https://fapi.binance.com/futures/data/takerBuySellVol`, {
                 params: { symbol, period: '5m', limit: 1 }
             });
             if (response.data && response.data.length > 0) {
@@ -403,6 +403,7 @@ class BinanceService {
             }
             return null;
         } catch (error) {
+            console.error(`❌ [BINANCE] Taker Vol Error (${symbol}):`, error.response?.status || error.message);
             return null;
         }
     }
