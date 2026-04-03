@@ -483,11 +483,15 @@ function renderFocusCard() {
     const takerBuy = pd.taker ? pd.taker.buy : '--';
     const takerSell = pd.taker ? pd.taker.sell : '--';
 
+    const mins = Math.floor(convictionTimeLeft / 60);
+    const secs = convictionTimeLeft % 60;
+    const initialTimer = `${mins}:${secs.toString().padStart(2, '0')}`;
+
     focusDiv.style.display = 'block';
     focusDiv.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-bottom: 10px;">
             <div id="focus-conviction-cd" style="font-size: 0.75rem; opacity: 0.6; font-family: 'JetBrains Mono', monospace;">
-                Trend Gelişimi: 05:00
+                Trend Gelişimi: ${initialTimer}
             </div>
             <div style="font-size: 0.75rem; opacity: 0.4;">
                 Hamza Live Intelligence 🛡️
