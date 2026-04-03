@@ -361,11 +361,9 @@ window.handleWlTick = function(data) {
     const volLongEl = document.getElementById('focus-vol-long');
     const volShortEl = document.getElementById('focus-vol-short');
 
-    if (volEl && data.vol && data.vol !== '-') {
-        if (volEl.innerText !== `Vol: ${data.vol}`) {
-            volEl.innerText = `Vol: ${data.vol}`;
-            wlData[selectedWlCoin].vol = data.vol;
-        }
+    if (volEl && data.volFocus !== undefined) {
+        volEl.innerText = 'Vol: ' + data.volFocus;
+        wlData[selectedWlCoin].vol = data.volFocus;
     }
     if (volLongEl && volShortEl && data.taker) {
         volLongEl.innerText = `B: ${data.taker.buy}`;
@@ -476,7 +474,7 @@ function renderFocusCard() {
     let oiDeltaVal = 'Hesaplanıyor...';
     let oiDeltaColor = 'var(--text-muted)';
     if (pd.oiDelta !== undefined && pd.oiDelta !== null) {
-        oiDeltaVal = (pd.oiDelta >= 0 ? '+' : '') + pd.oiDelta + '% (5m)';
+        oiDeltaVal = (pd.oiDelta >= 0 ? '+' : '') + pd.oiDelta + '%';
         oiDeltaColor = pd.oiDelta >= 0 ? '#10b981' : '#ef4444';
     }
 
@@ -522,7 +520,7 @@ function renderFocusCard() {
             </div>
             <div style="flex: 2; text-align: right;">
                 <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; font-weight: bold;">
-                    <span id="focus-vol-val" style="opacity: 0.9;">Vol: ${pd.vol}</span>
+                    <span id="focus-vol-val" style="opacity: 0.9;">Vol: ${pd.vol || '0.00M'}</span>
                     <span style="opacity: 0.3;">|</span>
                     <span id="focus-vol-long" style="color: #10b981;">B: ${takerBuy}</span>
                     <span id="focus-vol-short" style="color: #ef4444;">S: ${takerSell}</span>

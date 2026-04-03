@@ -131,20 +131,22 @@ class StreamService {
             const metrics = this.getSymbolMetrics(symbol); // Fetch history-aware metrics
 
             // Calculate Taker Buy/Sell Values based on manual aggregation
-            const buyVolM = (this.focusedVolume.buy / 1e6).toFixed(2);
-            const sellVolM = (this.focusedVolume.sell / 1e6).toFixed(2);
+            const buyVolRaw = this.focusedVolume.buy;
+            const sellVolRaw = this.focusedVolume.sell;
+            const focusVolRaw = buyVolRaw + sellVolRaw;
             
             const msg = JSON.stringify({
                 type: 'TICK',
                 symbol,
                 price: data.price,
                 fr: data.fr,
-                vol: data.vol ? (data.vol / 1000000).toFixed(2) + 'M' : '-',
+                vol24h: data.vol ? (data.vol / 1000000).toFixed(2) + 'M' : '-',
+                volFocus: (focusVolRaw / 1e6).toFixed(2) + 'M',
                 oi: data.oi ? data.oi.toLocaleString() : '-',
                 ls: data.ls || '-',
                 taker: { 
-                    buy: buyVolM + 'M', 
-                    sell: sellVolM + 'M'
+                    buy: (buyVolRaw / 1e6).toFixed(2) + 'M', 
+                    sell: (sellVolRaw / 1e6).toFixed(2) + 'M'
                 },
                 oiDelta: metrics ? metrics.oiDeltaPct : null // null = Calculating
             });
