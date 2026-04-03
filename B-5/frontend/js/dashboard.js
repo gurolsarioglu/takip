@@ -433,34 +433,40 @@ const btnSaveBots = document.getElementById('btn-save-bots');
 const botManagerModal = document.getElementById('bot-manager-modal');
 const botSelectorList = document.getElementById('bot-selector-list');
 
-// HAMZA UI Elements
-const hamzaToggle = document.getElementById('hamza-toggle');
-const hamzaBadge = document.getElementById('hamza-badge');
-
 async function updateHamzaStatusUI() {
+    const toggle = document.getElementById('hamza-toggle');
+    const badge = document.getElementById('hamza-badge');
+    if (!toggle || !badge) return;
+
     try {
-        const response = await fetch('/api/bots/hamza/status');
+        const response = await fetch('http://localhost:3000/api/bots/hamza/status');
         const { data } = await response.json();
         
-        hamzaToggle.checked = data.isEnabled;
-        hamzaBadge.innerText = data.isEnabled ? 'ACTIVE' : 'OFF';
-        hamzaBadge.className = `hamza-status-badge ${data.isEnabled ? 'hamza-status-active' : 'hamza-status-paused'}`;
+        toggle.checked = data.isEnabled;
+        badge.innerText = data.isEnabled ? 'ACTIVE' : 'OFF';
+        badge.className = `hamza-status-badge ${data.isEnabled ? 'hamza-status-active' : 'hamza-status-paused'}`;
     } catch (e) {
         console.error('Hamza status fetch error:', e);
     }
 }
 
-hamzaToggle.addEventListener('change', async () => {
-    const status = hamzaToggle.checked;
-    try {
-        await fetch('/api/bots/hamza/toggle', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status })
+// Attach listener once elements are ready
+document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('hamza-toggle');
+    if (toggle) {
+        toggle.addEventListener('change', async () => {
+            const status = toggle.checked;
+            try {
+                await fetch('http://localhost:3000/api/bots/hamza/toggle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                updateHamzaStatusUI();
+            } catch (e) {
+                console.error('Hamza toggle error:', e);
+            }
         });
-        updateHamzaStatusUI();
-    } catch (e) {
-        console.error('Hamza toggle error:', e);
     }
 });
 
@@ -543,4 +549,5 @@ document.addEventListener('DOMContentLoaded', () => {
     connect();
     initBtcTicker();
     initBotSelector();
+    updateHamzaStatusUI(); // 🛡️ Sync Hamza status on page load
 });

@@ -23,8 +23,47 @@
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    transition: all 0.2s;
-    animation: slideIn 0.3s ease-out;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.hot-item-new {
+    animation: hotItemFadeIn 0.5s ease-out forwards;
+}
+
+.hot-item-remove {
+    animation: hotItemFadeOut 0.4s ease-in forwards;
+    pointer-events: none;
+}
+
+@keyframes hotItemFadeIn {
+    0% { opacity: 0; transform: translateY(-10px); background: rgba(250, 204, 21, 0.3); }
+    100% { opacity: 1; transform: translateY(0); background: rgba(250, 204, 21, 0.1); }
+}
+
+@keyframes hotItemFadeOut {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.9); }
+}
+
+/* 🟢 Price Flash Animations */
+.price-up {
+    animation: flashGreen 0.8s ease-out;
+}
+
+.price-down {
+    animation: flashRed 0.8s ease-out;
+}
+
+@keyframes flashGreen {
+    0% { background: rgba(16, 185, 129, 0.3); }
+    100% { background: transparent; }
+}
+
+@keyframes flashRed {
+    0% { background: rgba(239, 68, 68, 0.3); }
+    100% { background: transparent; }
 }
 
 .hot-item:hover {

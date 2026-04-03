@@ -1,8 +1,11 @@
+const fs = require('fs');
+const path = require('path');
 const binanceService = require('./binance.service');
 const bankrollService = require('./bankrollService');
 
 class HamzaService {
     constructor() {
+        this.configPath = path.join(__dirname, '../../data/hamza_config.json');
         this.isEnabled = false;
         this.isSimulation = true; // 🛡️ Simulation Mode (Paper Trading)
         this.activePositions = new Map(); // symbol -> positionData
@@ -10,11 +13,42 @@ class HamzaService {
         this.riskPerTrade = 0.05; // 5% of balance per trade
         this.tp1Percent = 30;     // Initial take profit %
         this.tpMaxPercent = 120;  // Moon bag target %
+
+        this.loadConfig();
+    }
+
+    loadConfig() {
+        try {
+            if (fs.existsSync(this.configPath)) {
+                const rawData = fs.readFileSync(this.configPath, 'utf8');
+                const data = JSON.parse(rawData);
+                this.isEnabled = data.isEnabled ?? false;
+                console.log(`🛡️ HAMZA [CONFIG LOADED]: isEnabled = ${this.isEnabled} (from ${this.configPath})`);
+            } else {
+                console.log(`🛡️ HAMZA [CONFIG NOT FOUND]: Using default isEnabled = ${this.isEnabled}`);
+                this.saveConfig(); // Create initial file
+            }
+        } catch (e) {
+            console.error('❌ HAMZA [CONFIG LOAD ERROR]:', e.message);
+        }
+    }
+
+    saveConfig() {
+        try {
+            const configDir = path.dirname(this.configPath);
+            if (!fs.existsSync(configDir)) fs.mkdirSync(configDir, { recursive: true });
+            
+            fs.writeFileSync(this.configPath, JSON.stringify({ isEnabled: this.isEnabled }, null, 2));
+            console.log(`🛡️ HAMZA [CONFIG SAVED]: isEnabled = ${this.isEnabled}`);
+        } catch (e) {
+            console.error('❌ HAMZA [CONFIG SAVE ERROR]:', e.message);
+        }
     }
 
     setEnabled(status) {
         this.isEnabled = status;
-        console.log(`🛡️ HAMZA Bot status: ${this.isEnabled ? 'SIMULATION ACTIVE ⚔️' : 'PAUSED 💤'}`);
+        this.saveConfig();
+        console.log(`🛡️ HAMZA Bot status updated: ${this.isEnabled ? 'SIMULATION ACTIVE ⚔️' : 'PAUSED 💤'}`);
     }
 
     getStatus() {
@@ -92,22 +126,38 @@ class HamzaService {
                 ? ((currentPrice - pos.entryPrice) / pos.entryPrice) * 100 * pos.leverage
                 : ((pos.entryPrice - currentPrice) / pos.entryPrice) * 100 * pos.leverage;
 
-            console.log(`📊 [SIMULATION] ${symbol}: ${pnl.toFixed(2)}% PnL (Conviction: ${pos.leverage}x)`);
-
-            // Logic: TP1 hit
-            if (pnl >= this.tp1Percent && pos.status === 'MONITORING') {
-                console.log(`🎯 [SIMULATION] TP1 HIT (+${pnl.toFixed(2)}%) for ${symbol}. Moving stop to break-even.`);
-                pos.status = 'MOON_BAG';
-                pos.targetTP = this.tpMaxPercent;
+            // Track Max PnL for Trailing Stop
+            if (!pos.maxPnlReached || pnl > pos.maxPnlReached) {
+                pos.maxPnlReached = pnl;
             }
 
-            // Logic: Close conditions
-            if (pnl >= this.tpMaxPercent) {
-                this.closePosition(symbol, `🌕 [SIMULATION] Moon Target Hit! (+${pnl.toFixed(2)}%)`, pnl);
-            } else if (pnl <= -15) { 
+            console.log(`📊 [SIMULATION] ${symbol}: ${pnl.toFixed(2)}% PnL | Peak: ${pos.maxPnlReached.toFixed(2)}% (${pos.leverage}x)`);
+
+            // Logic: TP1 hit (Locking in profit)
+            if (pnl >= this.tp1Percent && pos.status === 'MONITORING') {
+                console.log(`🎯 [SIMULATION] TP1 HIT (+${pnl.toFixed(2)}%) for ${symbol}. Locking profit at +10% and starting Trailing Stop.`);
+                pos.status = 'MOON_BAG';
+                pos.profitLocked = 10; // Guaranteed minimum profit after TP1
+            }
+
+            // Logic: Dynamic Close Conditions
+            
+            // 🛑 Hard Stop Loss (Initial)
+            if (pnl <= -15 && pos.status === 'MONITORING') { 
                 this.closePosition(symbol, `🛑 [SIMULATION] Stop Loss Hit (-15%)`, pnl);
-            } else if (pos.status === 'MOON_BAG' && pnl < 10) {
-                this.closePosition(symbol, `📉 [SIMULATION] Trailing Stop Hit after TP1 (+${pnl.toFixed(2)}%)`, pnl);
+                continue;
+            }
+
+            // 📉 Trailing Stop Logic (MOON_BAG mode)
+            if (pos.status === 'MOON_BAG') {
+                // If it hits 30%, we trail the peak. 
+                // Rule: If it drops 20% from the peak profit (relative to the peak), OR drops below locked profit.
+                const pullBackDistance = pos.maxPnlReached * 0.2; // 20% pullback from peak
+                const trailingStopTrigger = Math.max(pos.maxPnlReached - pullBackDistance, pos.profitLocked);
+
+                if (pnl < trailingStopTrigger) {
+                    this.closePosition(symbol, `📉 [SIMULATION] Trailing Stop Triggered at ${pnl.toFixed(2)}% (Peak was ${pos.maxPnlReached.toFixed(2)}%)`, pnl);
+                }
             }
         }
     }

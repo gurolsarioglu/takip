@@ -46,6 +46,7 @@ async function pollWatchlistData() {
                 if (!wlData[coin]) {
                     wlData[coin] = { ...metrics, longShortRatio: '-', openInterest: '-', indicators: [] };
                 } else {
+                    // Update only primary metrics
                     wlData[coin] = { ...wlData[coin], ...metrics };
                 }
                 
@@ -67,18 +68,104 @@ async function pollWatchlistData() {
                 }
             }
             
+            // 🟢 Smart Refresh Hot List (No Blinking)
             renderHotList();
             
             const timeEl = document.getElementById('wl-update-time');
             if (timeEl) timeEl.innerText = `Son güncelleme: ${new Date().toLocaleTimeString()}`;
 
+            // 🔵 Real-time Detail Panel Update
             if (selectedWlCoin) {
                 renderFocusCard();
+                updateSingleMetric(selectedWlCoin);
             }
         }
     } catch (e) {
         console.error("Watchlist poll error:", e);
     }
+}
+
+async function updateSingleMetric(coin) {
+    try {
+        const res = await fetch(`http://localhost:3000/api/watchlist/${coin}/metrics`);
+        const data = await res.json();
+        if (data.success && data.data) {
+            if (wlData[coin]) {
+                wlData[coin].longShortRatio = data.data.longShortRatio;
+                wlData[coin].openInterest = data.data.openInterest;
+                if (selectedWlCoin === coin) renderFocusCard();
+            }
+        }
+    } catch (e) { }
+}
+
+function renderHotList() {
+    const container = document.getElementById('hot-list-container');
+    if (!container) return;
+
+    const hotCoins = wlCoins
+        .filter(c => wlData[c].indicators && wlData[c].indicators.length > 0)
+        .slice(0, 8); // Top 8 hot coins
+
+    if (hotCoins.length === 0) {
+        container.innerHTML = `<div style="text-align:center; opacity:0.3; font-size: 0.8rem; padding: 20px;">Sinyal bekleniyor... ❗</div>`;
+        return;
+    }
+
+    // ──────────────── Smart DOM Diffing (Anti-Blink) ─────────────────
+    // 1. Identify which coins SHOULD be there
+    const incomingCoins = new Set(hotCoins);
+
+    // 2. Remove items that are no longer in the top 8
+    Array.from(container.children).forEach(el => {
+        if (el.classList.contains('hot-item')) {
+            const coin = el.dataset.coin;
+            if (!incomingCoins.has(coin)) {
+                el.classList.add('hot-item-remove');
+                setTimeout(() => el.remove(), 400);
+            }
+        } else {
+            el.remove(); // Remove placeholder
+        }
+    });
+
+    // 3. Update or Add new items
+    hotCoins.forEach((coin, index) => {
+        const pd = wlData[coin];
+        let existing = container.querySelector(`.hot-item[data-coin="${coin}"]`);
+        
+        const html = `
+            <div>
+                <span class="coin-name">${coin.replace('USDT', '')}</span>
+                <span class="reason">${pd.indicators[0]}</span>
+            </div>
+            <div class="price-val" style="font-family: 'JetBrains Mono'; font-size: 0.8rem;">
+                ${pd.price}
+            </div>
+        `;
+
+        if (existing) {
+            // Update existing values check if changed to avoid reflow
+            if (existing.innerHTML !== html) {
+                existing.innerHTML = html;
+            }
+            // Ensure order (optional, but keep it simple for now)
+        } else {
+            // Create new
+            const newItem = document.createElement('div');
+            newItem.className = 'hot-item hot-item-new';
+            newItem.dataset.coin = coin;
+            newItem.onclick = () => selectWlCoin(coin);
+            newItem.innerHTML = html;
+            
+            // Insert at the right position or just append
+            if (container.children[index]) {
+                container.insertBefore(newItem, container.children[index]);
+            } else {
+                container.appendChild(newItem);
+            }
+        }
+    });
 }
 
 function sortWatchlist(col) {
@@ -237,6 +324,16 @@ function renderFocusCard() {
     const isPosChg = parseFloat(pd.chg) >= 0;
     const isPosFr = parseFloat(pd.fr) > 0;
     
+    // 🟢 Price Change Detection for Flash Effect
+    const prevPriceEl = document.getElementById('focus-price-val');
+    let flashTask = '';
+    if (prevPriceEl) {
+        const oldPrice = parseFloat(prevPriceEl.dataset.val);
+        const newPrice = parseFloat(pd.price);
+        if (newPrice > oldPrice) flashTask = 'price-up';
+        else if (newPrice < oldPrice) flashTask = 'price-down';
+    }
+
     // L/S Logic
     let lPct = 50, sPct = 50;
     let lsHtml = `<div style="text-align:center; opacity:0.5; font-size: 0.9em; margin: 15px 0;">Binance Verisi Bekleniyor...</div>`;
@@ -265,7 +362,7 @@ function renderFocusCard() {
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
             <div>
                 <a href="https://www.binance.com/en/futures/${selectedWlCoin}" target="_blank" style="text-decoration:none; color:var(--text-secondary); font-size: 0.8rem; display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${selectedWlCoin}</a>
-                <div style="font-size: 2.5rem; font-weight: bold; color: ${isPosChg ? '#10b981' : '#ef4444'}; font-family: 'JetBrains Mono', monospace; margin: 10px 0;">
+                <div id="focus-price-val" data-val="${pd.price}" class="${flashTask}" style="font-size: 2.5rem; font-weight: bold; color: ${isPosChg ? '#10b981' : '#ef4444'}; font-family: 'JetBrains Mono', monospace; margin: 10px 0; border-radius: 6px; transition: background 0.5s;">
                     ${pd.price}
                 </div>
             </div>
