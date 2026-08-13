@@ -111,6 +111,13 @@ class APIService {
             volume: parseFloat(candle[5])
         }));
     }
+
+    /**
+     * Run on-demand daily (1D) screening
+     */
+    async runDetayScan() {
+        return this.request('/scan/detay');
+    }
 }
 
 // Export singleton instance

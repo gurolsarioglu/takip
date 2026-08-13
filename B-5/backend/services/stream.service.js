@@ -1,6 +1,7 @@
 const WebSocket = require('ws');
 const axios = require('axios');
 const binanceService = require('./binance.service');
+const formatter = require('../utils/formatter');
 
 class StreamService {
     constructor() {
@@ -138,15 +139,15 @@ class StreamService {
             const msg = JSON.stringify({
                 type: 'TICK',
                 symbol,
-                price: data.price,
+                price: formatter.formatPrice(data.price),
                 fr: data.fr,
-                vol24h: data.vol ? (data.vol / 1000000).toFixed(2) + 'M' : '-',
-                volFocus: (focusVolRaw / 1e6).toFixed(2) + 'M',
+                vol24h: formatter.formatVolume(data.vol),
+                volFocus: focusVolRaw > 0 ? formatter.formatVolume(focusVolRaw) : 'Toplanıyor...',
                 oi: data.oi ? data.oi.toLocaleString() : '-',
                 ls: data.ls || '-',
                 taker: { 
-                    buy: (buyVolRaw / 1e6).toFixed(2) + 'M', 
-                    sell: (sellVolRaw / 1e6).toFixed(2) + 'M'
+                    buy: formatter.formatVolume(buyVolRaw), 
+                    sell: formatter.formatVolume(sellVolRaw)
                 },
                 oiDelta: metrics ? metrics.oiDeltaPct : null // null = Calculating
             });

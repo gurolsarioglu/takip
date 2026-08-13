@@ -10,6 +10,8 @@ const alertService = require('./services/alert.service'); // Import AlertService
 const bankrollService = require('./services/bankrollService');
 const firebaseService = require('./services/firebase.service');
 const hamzaService = require('./services/hamza.service');
+const detayScanService = require('./services/detayScan.service');
+const formatter = require('./utils/formatter');
 const fs = require('fs');
 const path = require('path');
 
@@ -188,6 +190,38 @@ app.get('/api/coins-with-indicators', async (req, res) => {
             count: data.length,
             data,
             cached: !!cache.get(cacheKey)
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
+/**
+ * GET /api/scan/detay
+ * Triggers on-demand daily (1D) scanner for divergence + RSI-SMA crossover
+ */
+app.get('/api/scan/detay', async (req, res) => {
+    try {
+        const matches = await detayScanService.performScan((scanned, total) => {
+            // Broadcast progress to WebSocket clients
+            if (global.wss) {
+                global.wss.clients.forEach(client => {
+                    if (client.readyState === WebSocket.OPEN) {
+                        client.send(JSON.stringify({
+                            type: 'DETAY_SCAN_PROGRESS',
+                            data: { scanned, total }
+                        }));
+                    }
+                });
+            }
+        });
+        res.json({
+            success: true,
+            count: matches.length,
+            data: matches
         });
     } catch (error) {
         res.status(500).json({
@@ -378,15 +412,11 @@ app.get('/api/watchlist/data', async (req, res) => {
             // Formats and Funding rates
             watchSet.forEach(sym => {
                 if (wlDataMap[sym]) {
-                    // Vol format
-                    let volVal = wlDataMap[sym].volRaw;
-                    if (volVal !== undefined) {
-                        if (volVal > 1_000_000) wlDataMap[sym].vol = (volVal / 1_000_000).toFixed(2) + 'M';
-                        else if (volVal > 1_000) wlDataMap[sym].vol = (volVal / 1_000).toFixed(2) + 'K';
-                        else wlDataMap[sym].vol = volVal.toFixed(2);
-                    } else {
-                        wlDataMap[sym].vol = '-';
-                    }
+                    // Price format using smart utility
+                    wlDataMap[sym].price = formatter.formatPrice(wlDataMap[sym].price);
+                    
+                    // Vol format using smart utility
+                    wlDataMap[sym].vol = formatter.formatVolume(wlDataMap[sym].volRaw);
 
                     // Funding format
                     if (indicesMap[sym]) {
@@ -394,6 +424,7 @@ app.get('/api/watchlist/data', async (req, res) => {
                         wlDataMap[sym].fr = (parseFloat(idx.lastFundingRate) * 100).toFixed(4);
                         
                         if (idx.nextFundingTime) {
+                            wlDataMap[sym].nextFundingTime = parseInt(idx.nextFundingTime);
                             const nextFunding = new Date(parseInt(idx.nextFundingTime));
                             const diff = nextFunding - new Date();
                             if (diff > 0) {
@@ -446,6 +477,24 @@ app.get('/api/watchlist/:symbol/metrics', async (req, res) => {
         }
 
         res.json({ success: true, data: metrics });
+    } catch (e) {
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+/**
+ * POST /api/subscribe
+ * Subscribe a Telegram Chat ID to automatic alerts
+ */
+app.post('/api/subscribe', (req, res) => {
+    try {
+        const { chatId } = req.body;
+        if (chatId) {
+            alertService.addSubscription(chatId);
+            res.json({ success: true, message: 'Subscribed successfully' });
+        } else {
+            res.status(400).json({ success: false, error: 'chatId is required' });
+        }
     } catch (e) {
         res.status(500).json({ success: false, error: e.message });
     }

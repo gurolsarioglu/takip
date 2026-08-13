@@ -11,6 +11,7 @@ const SCAN_INTERVAL_MS   = 60 * 1000;          // Her 1 dakikada bir tara
 const COOLDOWN_MS        = 15 * 60 * 1000;     // Aynı coin 15 dk cooldown
 const FR_DIFF_THRESHOLD  = 0.003;              // |Δ FR| eşiği (0.3 baz puan) - Daha hassas
 const FR_ABS_THRESHOLD   = 0.1;                // |FR| > %0.1 ise her türlü incele
+const FR_EXTREME_THRESHOLD = 0.5;              // |FR| > %0.5 ise MUCIZE (Miracle) bölgesi
 const DASHBOARD_URL      = 'http://localhost:3000/api/signals/emit';
 
 // ─── State ───────────────────────────────────────────────────────────────────
@@ -66,14 +67,17 @@ async function performScan() {
             // Filtre: Ya FR farkı yüksek ya da FR mutlak değeri çok yüksek
             if (absDiff >= FR_DIFF_THRESHOLD || absFR >= FR_ABS_THRESHOLD) {
                 
-                // Cooldown kontrolü (Hızlıca geçmek için)
+                // Cooldown kontrolü (Extreme durumda cooldown'ı bypass et)
                 const direction = diff >= 0 ? 'rising' : 'falling';
                 const cooldownKey = `${symbol}_${direction}`;
                 const lastAlert = processedSignals.get(cooldownKey) || 0;
                 
-                if (Date.now() - lastAlert > COOLDOWN_MS) {
+                const isExtremeMove = absFR >= FR_EXTREME_THRESHOLD || absDiff >= 0.01;
+                const cooldownTime = isExtremeMove ? 5 * 60 * 1000 : COOLDOWN_MS; // Extreme ise 5 dk'ya düşür
+
+                if (Date.now() - lastAlert > cooldownTime) {
                     // Detaylı analiz başlasın (Nokta Atış Kuralları)
-                    process.stdout.write(`Analyzing ${symbol}... `);
+                    process.stdout.write(`Analyzing ${symbol}${isExtremeMove ? ' 🔥' : ''}... `);
                     await processDetailedSignal(item, prevFR, diff, direction);
                     processedSignals.set(cooldownKey, Date.now());
                     signalCount++;
@@ -128,11 +132,16 @@ async function processDetailedSignal(item, prevFR, diff, direction) {
     const premiumData = await binanceService.getPremiumIndex(symbol);
     const basis = premiumData ? premiumData.basis : 0;
 
+    // 5. Taker Volume Ratio (Aggression)
+    const takerData = await binanceService.getTakerVolumeRatio(symbol);
+    const takerRatio = takerData ? takerData.ratio : 1.0;
+
     // ─── SCORING LOGIC (Nokta Atış Professional) ───
     let score = 0;
     let strategy = 'Nötr';
     let details = [];
 
+    const absFR = Math.abs(currentFR * 100);
     const isNegativeFR = currentFR < 0;
     const isFRGettingMoreNegative = diff < 0 && isNegativeFR;
 
@@ -156,17 +165,30 @@ async function processDetailedSignal(item, prevFR, diff, direction) {
         details.push('⚠️ Pik Yapmış (Over-extended)');
     }
 
-    // C. OI vs FR Diverjans (Z Koşulu)
+    // C. OI vs FR Diverjans (Z Koşulu) + Taker Conf
+    const isExtreme = absFR >= FR_EXTREME_THRESHOLD;
+
     if (oiDelta < -2) {
         if (isNegativeFR || Math.abs(currentFR) > 0.01) {
             score -= 3;
-            strategy = 'SHORT (Exhaustion)';
+            strategy = isExtreme ? 'MUCIZE (Short Flush)' : 'SHORT (Exhaustion)';
             details.push('OI Düşüyor + FR Beklemede (Boşalma)');
+            if (takerRatio < 0.8) {
+                score -= 1;
+                details.push('Satıcı Baskısı Onaylı (Taker) 🔴');
+            }
         }
     } else if (oiDelta > 2 && isFRGettingMoreNegative) {
         score += 3;
-        strategy = 'LONG (Squeeze Potansiyeli)';
+        strategy = isExtreme ? 'MUCIZE (Long Squeeze)' : 'LONG (Squeeze Potansiyeli)';
         details.push('OI Artıyor + -FR Artıyor (Sıkışma)');
+        if (takerRatio > 1.2) {
+            score += 1;
+            details.push('Alıcı Baskısı Onaylı (Taker) 🟢');
+        }
+    } else if (isExtreme) {
+        strategy = currentFR < 0 ? 'MUCIZE (Extreme Negative)' : 'MUCIZE (Extreme Positive)';
+        score += (currentFR < 0 ? 2 : -2);
     }
 
     // D. Teknik İndikatörler
@@ -206,6 +228,8 @@ async function processDetailedSignal(item, prevFR, diff, direction) {
             priceChange24h,
             rsi4H: rsi4H ? rsi4H.toFixed(1) : 'N/A',
             wt4H: wt4H.cross || 'Normal',
+            takerRatio: takerRatio.toFixed(2),
+            isExtreme,
             nextFundingTime: parseInt(item.nextFundingTime)
         });
     }
@@ -232,6 +256,7 @@ async function sendAdvancedSignal(data) {
         time: now,
         position: position,
         fundingRate: parseFloat(frPct),
+        prevFundingRate: (data.prevFR * 100).toFixed(4),
         frDiff: parseFloat(diffPct),
         oiDelta: data.oiDelta,
         score: data.score,
@@ -240,6 +265,8 @@ async function sendAdvancedSignal(data) {
         priceChange24h: data.priceChange24h,
         rsi4H: data.rsi4H,
         wt4H: data.wt4H,
+        takerRatio: data.takerRatio,
+        isExtreme: data.isExtreme,
         timeRemaining,
         supplyStr: supplyData ? `%${supplyData.ratio}` : 'N/A'
     };

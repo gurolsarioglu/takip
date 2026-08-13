@@ -47,24 +47,68 @@
     100% { opacity: 0; transform: scale(0.9); }
 }
 
-/* 🟢 Price Flash Animations */
-.price-up {
-    animation: flashGreen 0.8s ease-out;
+/* 🟢 Row & Cell Flash Animations for Live Updates - Smoothed Transition */
+.flash-row-green {
+    animation: flashGreenPulse 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.price-down {
-    animation: flashRed 0.8s ease-out;
+.flash-row-red {
+    animation: flashRedPulse 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes flashGreen {
-    0% { background: rgba(16, 185, 129, 0.3); }
+/* Cell-specific flashes now only target text or subtle indicators if needed, 
+   but we remove row-overlapping background to ensure uniformity */
+.flash-green-cell, .flash-red-cell {
+    /* Background removed to prevent stacking with row flash */
+}
+
+.flash-vol {
+    animation: flashVolPulse 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes flashGreenPulse {
+    0% { background: rgba(16, 185, 129, 0.25); }
     100% { background: transparent; }
 }
 
-@keyframes flashRed {
-    0% { background: rgba(239, 68, 68, 0.3); }
+@keyframes flashRedPulse {
+    0% { background: rgba(239, 68, 68, 0.25); }
     100% { background: transparent; }
 }
+
+@keyframes flashVolPulse {
+    0% { background: rgba(16, 185, 129, 0.15); box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.05); }
+    100% { background: transparent; }
+}
+
+/* Ensure table cells don't have their own backgrounds that block the row flash */
+.wl-table td {
+    background: transparent !important;
+}
+
+
+
+/* 🟢 Status Dots */
+.status-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.status-dot-green {
+    background: #10b981;
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+}
+
+.status-dot-red {
+    background: #ef4444;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+
 
 .hot-item:hover {
     background: rgba(250, 204, 21, 0.15);
@@ -88,6 +132,36 @@
     animation: flash 1s infinite alternate;
     font-weight: bold;
     color: #facc15;
+}
+
+/* 🟢 Live Update Indicator */
+.live-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: #10b981;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.live-pulse {
+    width: 6px;
+    height: 6px;
+    background: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
 @keyframes flash {

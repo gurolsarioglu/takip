@@ -469,6 +469,22 @@ class BinanceService {
             return null;
         }
     }
+
+    /**
+     * Get Multi-Timeframe Data (4H and 1D) for technical analysis
+     */
+    async getMultiTimeframeData(symbol) {
+        try {
+            const [k4h, k1d] = await Promise.all([
+                this.getFuturesKlines(symbol, '4h', 30),
+                this.getFuturesKlines(symbol, '1d', 30)
+            ]);
+            return { k4h, k1d };
+        } catch (error) {
+            console.error(`❌ [BINANCE] MTF Error (${symbol}):`, error.message);
+            return { k4h: [], k1d: [] };
+        }
+    }
 }
 
 module.exports = new BinanceService();

@@ -13,8 +13,44 @@ let sortDesc = true;
 async function initWatchlist() {
     setupWatchlistModal();
     pollWatchlistData();
-    setInterval(pollWatchlistData, 5000); // Poll every 5 seconds
+    setInterval(pollWatchlistData, 5000); // 🔄 Poll every 5 seconds
+    
+    // ⏱️ Real-time Clock & Countdown Updates
+    setInterval(() => {
+        const timeEl = document.getElementById('wl-update-time');
+        if (timeEl) timeEl.innerText = `LIVE: ${new Date().toLocaleTimeString()}`;
+        
+        // 🕒 Real-time Funding (VADE) Countdowns
+        updateFundingCountdowns();
+    }, 1000);
 }
+
+function updateFundingCountdowns() {
+    wlCoins.forEach(coin => {
+        const pd = wlData[coin];
+        if (!pd || !pd.nextFundingTime) return;
+        
+        const diff = pd.nextFundingTime - Date.now();
+        let frH = "00:00:00";
+        if (diff > 0) {
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            frH = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+        
+        // Update Table Cell
+        const tableCell = document.getElementById(`wl-frh-${coin}`);
+        if (tableCell) tableCell.innerText = frH;
+        
+        // Update Focus Card Detail (if selected)
+        if (selectedWlCoin === coin) {
+            const focusHeader = document.querySelector('#focus-card .funding-header');
+            if (focusHeader) focusHeader.innerText = `Funding (${frH})`;
+        }
+    });
+}
+
 
 function setupWatchlistModal() {
     const btnOpen = document.getElementById('btn-open-watchlist');
@@ -71,8 +107,9 @@ async function pollWatchlistData() {
             // 🟢 Smart Refresh Hot List (No Blinking)
             renderHotList();
             
+            // ⏱️ Data update feedback
             const timeEl = document.getElementById('wl-update-time');
-            if (timeEl) timeEl.innerText = `Son güncelleme: ${new Date().toLocaleTimeString()}`;
+            if (timeEl) timeEl.innerText = `LIVE: ${new Date().toLocaleTimeString()}`;
 
             // 🔵 Real-time Detail Panel Update
             if (selectedWlCoin) {
@@ -250,15 +287,16 @@ function renderWatchlistTable() {
         const pd = wlData[coin];
         const isPos = parseFloat(pd.chg) >= 0;
         const colorClass = isPos ? 'text-green' : 'text-red';
-        const bgClass = pd.chg !== '-' ? (isPos ? 'bg-green' : 'bg-red') : '';
+        const dotClass = isPos ? 'status-dot-green' : 'status-dot-red';
         const symbolFormat = coin.replace('USDT', '');
         
         const indicators = (pd.indicators && pd.indicators.length > 0) 
             ? `<span class="indicator-flash" title="${pd.indicators.join(', ')}">❗</span>` 
             : '';
 
-        html += `<tr class="wl-row ${bgClass} ${selectedWlCoin === coin ? 'selected' : ''}" onclick="selectWlCoin('${coin}')" data-coin="${coin}">
+        html += `<tr class="wl-row ${selectedWlCoin === coin ? 'selected' : ''}" onclick="selectWlCoin('${coin}')" data-coin="${coin}">
             <td style="font-weight: 500;">
+                <span class="status-dot ${dotClass}"></span>
                 <img src="https://raw.githubusercontent.com/Pymmdrza/Cryptocurrency_Logos/main/PNG/${symbolFormat.toLowerCase()}.png" 
                      onerror="this.style.display='none'" style="width:16px; height:16px; vertical-align:middle; border-radius:50%; margin-right:5px;">
                 ${symbolFormat} ${indicators}
@@ -274,8 +312,10 @@ function renderWatchlistTable() {
     tbody.innerHTML = html;
 }
 
+
 function updateWlRow(symbol) {
     const pd = wlData[symbol];
+    const prev = prevWlData[symbol];
     if (!pd) return;
     
     const pEl = document.getElementById(`wl-p-${symbol}`);
@@ -283,26 +323,71 @@ function updateWlRow(symbol) {
     const vEl = document.getElementById(`wl-vol-${symbol}`);
     const frEl = document.getElementById(`wl-fr-${symbol}`);
     const frhEl = document.getElementById(`wl-frh-${symbol}`);
+    const row = pEl ? pEl.closest('tr') : null;
     
-    if(pEl) pEl.innerText = pd.price;
+    if(pEl) {
+        const currentVal = parseFloat(pd.price);
+        const prevVal = prev ? parseFloat(prev.price) : null;
+        
+        if (prev && currentVal !== prevVal) {
+            const isUp = currentVal > prevVal;
+            const flashClass = isUp ? 'flash-green-cell' : 'flash-red-cell';
+            const rowFlashClass = isUp ? 'flash-row-green' : 'flash-row-red';
+            
+            triggerFlash(pEl, flashClass);
+            if (row) triggerFlash(row, rowFlashClass);
+        }
+        pEl.innerText = pd.price;
+    }
+
     if(cEl) {
         const isPos = parseFloat(pd.chg) >= 0;
         cEl.innerText = `${isPos ? '+' : ''}${pd.chg}%`;
         cEl.className = isPos ? 'text-green' : 'text-red';
-        
-        const row = pEl.closest('tr');
-        if (row) {
-            row.classList.remove('bg-green', 'bg-red');
-            row.classList.add(isPos ? 'bg-green' : 'bg-red');
-        }
     }
-    if(vEl) vEl.innerText = pd.vol;
+
+    if(vEl) {
+        if (prev && pd.vol !== prev.vol) {
+            triggerFlash(vEl, 'flash-vol');
+        }
+        vEl.innerText = pd.vol;
+    }
+
     if(frEl) {
         frEl.innerText = pd.fr;
         frEl.className = parseFloat(pd.fr) > 0 ? 'text-green' : 'text-red';
     }
     if(frhEl) frhEl.innerText = pd.frH;
 }
+
+const flashCooldowns = new Map();
+
+function triggerFlash(el, className) {
+    const now = Date.now();
+    const key = (el.id || (el.dataset ? el.dataset.coin : null) || el.innerHTML.substring(0, 20));
+    
+    // 🛡️ Flash Cooldown System
+    // Row-wide flashes have a 1.5s cooldown to prevent "jitter"
+    // Cell flashes have an 800ms cooldown for better visibility
+    const isRow = className.includes('row');
+    const cooldown = isRow ? 1500 : 800;
+    
+    const last = flashCooldowns.get(key + className) || 0;
+    if (now - last < cooldown) return;
+    
+    flashCooldowns.set(key + className, now);
+
+    el.classList.remove('flash-green-cell', 'flash-red-cell', 'flash-vol', 'flash-row-green', 'flash-row-red');
+    void el.offsetWidth; // trigger reflow
+    el.classList.add(className);
+    setTimeout(() => {
+        el.classList.remove(className);
+    }, 850);
+}
+
+
+
+
 
 // REAL-TIME FEED SETTINGS
 window.USE_REALTIME_WS = true;
@@ -324,26 +409,39 @@ window.handleWlTick = function(data) {
     if (!window.USE_REALTIME_WS || !selectedWlCoin || data.symbol !== selectedWlCoin) return;
 
     // 🏆 High-Speed UI Update (Partial DOM)
+    const timeEl = document.getElementById('wl-update-time');
+    if (timeEl) timeEl.innerText = `LIVE: ${new Date().toLocaleTimeString()}`;
     
     // 1. Update Price
     const priceEl = document.getElementById('focus-price-val');
+    const tablePriceCell = document.getElementById(`wl-p-${data.symbol}`);
     if (priceEl && data.price) {
-        const oldPrice = parseFloat(priceEl.dataset.val);
-        const newPrice = data.price;
+        const oldPriceVal = parseFloat(priceEl.dataset.val);
+        const newPriceStr = data.price;
+        const newPriceVal = parseFloat(newPriceStr);
         const color = parseFloat(wlData[selectedWlCoin].chg) >= 0 ? '#10b981' : '#ef4444';
         
-        if (newPrice !== oldPrice) {
-            const flashClass = newPrice > oldPrice ? 'price-up' : 'price-down';
-            priceEl.innerText = newPrice;
-            priceEl.dataset.val = newPrice;
+        if (newPriceVal !== oldPriceVal) {
+            const isUp = newPriceVal > oldPriceVal;
+            const flashClass = isUp ? 'flash-green-cell' : 'flash-red-cell';
+            const rowFlashClass = isUp ? 'flash-row-green' : 'flash-row-red';
+            
+            priceEl.innerText = newPriceStr;
+            priceEl.dataset.val = newPriceStr;
             priceEl.style.color = color;
             
-            priceEl.classList.remove('price-up', 'price-down');
-            void priceEl.offsetWidth; 
-            priceEl.classList.add(flashClass);
-            wlData[selectedWlCoin].price = newPrice;
+            triggerFlash(priceEl, flashClass);
+            if (tablePriceCell) {
+                const row = tablePriceCell.closest('tr');
+                tablePriceCell.innerText = newPriceStr;
+                triggerFlash(tablePriceCell, flashClass);
+                if (row) triggerFlash(row, rowFlashClass);
+            }
+
+            wlData[selectedWlCoin].price = newPriceStr;
         }
     }
+
 
     // 2. Update Funding Rate
     const frEl = document.getElementById('focus-fr-val');
@@ -357,19 +455,34 @@ window.handleWlTick = function(data) {
     }
 
     // 3. Update Volume
-    const volEl = document.getElementById('focus-vol-val');
+    const vol24hEl = document.getElementById('focus-vol-24h');
+    const volFocusEl = document.getElementById('focus-vol-focus');
     const volLongEl = document.getElementById('focus-vol-long');
     const volShortEl = document.getElementById('focus-vol-short');
+    const tableVolCell = document.getElementById(`wl-vol-${data.symbol}`);
 
-    if (volEl && data.volFocus !== undefined) {
-        volEl.innerText = 'Vol: ' + data.volFocus;
-        wlData[selectedWlCoin].vol = data.volFocus;
+    if (vol24hEl && data.vol24h !== undefined) {
+        vol24hEl.innerText = data.vol24h;
     }
+    if (volFocusEl && data.volFocus !== undefined) {
+        volFocusEl.innerText = data.volFocus;
+    }
+    
+    if (tableVolCell && data.vol24h !== undefined) {
+        if (tableVolCell.innerText !== data.vol24h) {
+            tableVolCell.innerText = data.vol24h;
+            triggerFlash(tableVolCell, 'flash-vol');
+            wlData[data.symbol].vol = data.vol24h;
+        }
+    }
+
     if (volLongEl && volShortEl && data.taker) {
         volLongEl.innerText = `B: ${data.taker.buy}`;
         volShortEl.innerText = `S: ${data.taker.sell}`;
         wlData[selectedWlCoin].taker = data.taker;
     }
+
+
 
     // 4. Update Open Interest (OI) + OI Delta
     const oiEl = document.getElementById('focus-oi-val');
@@ -487,47 +600,71 @@ function renderFocusCard() {
 
     focusDiv.style.display = 'block';
     focusDiv.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 10px; margin-bottom: 10px;">
-            <div id="focus-conviction-cd" style="font-size: 0.75rem; opacity: 0.6; font-family: 'JetBrains Mono', monospace;">
-                Trend Gelişimi: ${initialTimer}
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; margin-bottom: 12px;">
+            <div id="focus-conviction-cd" style="font-size: 0.75rem; opacity: 0.6; font-family: 'JetBrains Mono', monospace; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-clock-rotate-left"></i> Trend Gelişimi: ${initialTimer}
             </div>
-            <div style="font-size: 0.75rem; opacity: 0.4;">
-                Hamza Live Intelligence 🛡️
+            <div style="font-size: 0.72rem; opacity: 0.4; font-weight: 500; letter-spacing: 0.5px;">
+                B-5 LIVE INTELLIGENCE 🛡️
             </div>
         </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
-                <a href="https://www.binance.com/en/futures/${selectedWlCoin}" target="_blank" style="text-decoration:none; color:var(--text-secondary); font-size: 0.8rem; display:flex; align-items:center; gap:5px;"><i class="fa-solid fa-arrow-up-right-from-square"></i> ${selectedWlCoin}</a>
-                <div id="focus-price-val" data-val="${pd.price}" class="${flashTask}" style="font-size: 2.5rem; font-weight: bold; color: ${isPosChg ? '#10b981' : '#ef4444'}; font-family: 'JetBrains Mono', monospace; margin: 10px 0; border-radius: 6px; transition: background 0.5s;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+            <div style="flex: 2;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <a href="https://www.binance.com/en/futures/${selectedWlCoin}" target="_blank" style="text-decoration:none; color:var(--text-secondary); font-size: 0.85rem; display:flex; align-items:center; gap:6px; font-weight: 600; opacity: 0.8;">
+                        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.75rem;"></i> ${selectedWlCoin}
+                    </a>
+                    <span style="background: rgba(243, 186, 47, 0.1); color: #f3ba2f; font-size: 0.65rem; padding: 1px 6px; border-radius: 4px; font-weight: bold; border: 1px solid rgba(243, 186, 47, 0.2);">BINANCE FUTURES</span>
+                </div>
+                <div id="focus-price-val" data-val="${pd.price}" class="${flashTask}" style="font-size: 2.8rem; font-weight: 800; color: ${isPosChg ? '#10b981' : '#ef4444'}; font-family: 'JetBrains Mono', monospace; margin: 12px 0; line-height: 1; letter-spacing: -1.5px;">
                     ${pd.price}
                 </div>
             </div>
-            <div style="text-align: right;">
-                <div style="font-size: 0.9rem; opacity: 0.7; margin-bottom: 5px;">Funding (${pd.frH})</div>
-                <div id="focus-fr-val" style="font-size: 1.5rem; font-weight: bold; color: ${isPosFr ? '#10b981' : '#ef4444'}; font-family: 'JetBrains Mono', monospace;">
-                    ${pd.fr !== '-' ? pd.fr + '%' : '...'}
+            
+            <div style="flex: 1; text-align: right; display: flex; flex-direction: column; gap: 6px;">
+                <div class="funding-header" style="font-size: 0.8rem; opacity: 0.5; font-weight: 500;">Funding (${pd.frH})</div>
+                <div id="focus-fr-val" style="font-size: 1.6rem; font-weight: 700; color: ${isPosFr ? '#10b981' : '#ef4444'}; font-family: 'JetBrains Mono', monospace; letter-spacing: -0.5px;">
+                    ${pd.fr !== '-' ? pd.fr + '%' : '---'}
                 </div>
             </div>
         </div>
         
         ${lsHtml}
         
-        <div style="display: flex; align-items: center; margin-top: 15px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-            <div style="flex: 1.2; display: flex; flex-direction: column; gap: 2px;">
-                <div id="focus-oi-val" style="color: #60a5fa;">OI: ${oiText} ↗</div>
+        <div style="display: flex; align-items: stretch; margin-top: 18px; font-family: 'JetBrains Mono', monospace; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px; gap: 20px;">
+            <!-- OI Section -->
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 5px; border-right: 1px solid rgba(255,255,255,0.05);">
+                <div style="font-size: 0.65rem; opacity: 0.4; text-transform: uppercase; font-weight: bold;">Open Interest</div>
+                <div id="focus-oi-val" style="color: #60a5fa; font-size: 1.1rem; font-weight: 700;">${oiText}</div>
                 <div id="focus-oi-delta" style="font-size: 0.75rem; color: ${oiDeltaColor}; font-weight: bold;">${oiDeltaVal} (5m)</div>
             </div>
-            <div style="flex: 2; text-align: right;">
-                <div style="display: flex; justify-content: flex-end; align-items: center; gap: 8px; font-weight: bold;">
-                    <span id="focus-vol-val" style="opacity: 0.9;">Vol: ${pd.vol || '0.00M'}</span>
-                    <span style="opacity: 0.3;">|</span>
-                    <span id="focus-vol-long" style="color: #10b981;">B: ${takerBuy}</span>
-                    <span id="focus-vol-short" style="color: #ef4444;">S: ${takerSell}</span>
+            
+            <!-- Volume Metrics -->
+            <div style="flex: 2; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                        <span style="font-size: 0.65rem; opacity: 0.4; text-transform: uppercase;">24h Volume (Usdt)</span>
+                        <span id="focus-vol-24h" style="font-size: 1.1rem; font-weight: 700; color: #fff;">${pd.vol || '---'}</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 2px; text-align: right;">
+                        <span style="font-size: 0.65rem; opacity: 0.4; text-transform: uppercase;">5m Surge / Focus</span>
+                        <span id="focus-vol-focus" style="font-size: 1.1rem; font-weight: 700; color: #facc15;">---</span>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
+                    <span style="font-size: 0.7rem; opacity: 0.5;">AGRESSION (TAKER)</span>
+                    <div style="display: flex; gap: 12px; font-weight: bold; font-size: 0.85rem;">
+                        <span id="focus-vol-long" style="color: #10b981;">B: ${takerBuy}</span>
+                        <span style="opacity: 0.2;">|</span>
+                        <span id="focus-vol-short" style="color: #ef4444;">S: ${takerSell}</span>
+                    </div>
                 </div>
             </div>
         </div>
     `;
+
 }
 
 async function fetchRestMetrics() {

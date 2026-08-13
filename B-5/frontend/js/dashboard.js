@@ -9,6 +9,7 @@ const feeds = {
     '4h':  document.getElementById('feed-4h'),
     'rsi-div': document.getElementById('feed-rsi-div'),
     'fr': document.getElementById('feed-fr'),
+    'volume': document.getElementById('feed-volume'),
 };
 
 // ─── Filter Logic ───
@@ -54,9 +55,9 @@ const MAX_SIGNALS_PER_TF = 20;
 function loadSignalCache() {
     try {
         const raw = localStorage.getItem(SIGNAL_CACHE_KEY);
-        return raw ? JSON.parse(raw) : { 'hammer-new': [], '1m': [], '15m': [], '1h': [], '4h': [], 'rsi-div': [], 'fr': [] };
+        return raw ? JSON.parse(raw) : { 'hammer-new': [], '1m': [], '15m': [], '1h': [], '4h': [], 'rsi-div': [], 'fr': [], 'volume': [] };
     } catch (_) {
-        return { 'hammer-new': [], '1m': [], '15m': [], '1h': [], '4h': [], 'rsi-div': [], 'fr': [] };
+        return { 'hammer-new': [], '1m': [], '15m': [], '1h': [], '4h': [], 'rsi-div': [], 'fr': [], 'volume': [] };
     }
 }
 
@@ -112,6 +113,8 @@ function connect() {
             } else if (data.type === 'TICK') {
                 // High-speed update for Watchlist Focus Card
                 if (window.handleWlTick) window.handleWlTick(data);
+            } else if (data.type === 'DETAY_SCAN_PROGRESS') {
+                updateDetayScanProgress(data.data.scanned, data.data.total);
             }
         } catch (e) {
             console.error('Invalid message', e);
@@ -127,32 +130,81 @@ function renderFRCard(signal, isNew) {
     card.className = 'signal-card telegram-style fr-card' + (isNew ? ' signal-new' : '');
 
     const isFalling     = signal.direction === 'falling';
-    const emoji         = isFalling ? '🔴' : '🟢';
-    const dirLabel      = isFalling ? '↓↓ HIZLA DÜŞÜYOR' : '↑↑ HIZLA ARTIYOR';
+    const directionEmoji = isFalling ? '🔴' : '🟢';
+    const dirLabel      = isFalling ? '↓↓ ŞORT BASKISI ARTIYOR' : '↑↑ LONG BASKISI ARTIYOR';
     const cleanCoin     = signal.coin ? signal.coin.replace('USDT', '') + 'USDT' : 'BİLİNMİYOR';
     const timeStr       = signal.time || new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
     const binanceUrl    = `https://www.binance.com/en/futures/${cleanCoin}`;
+    const tvUrl         = `https://www.tradingview.com/chart/?symbol=BINANCE:${cleanCoin}`;
 
     const fr     = signal.fundingRate    !== undefined ? parseFloat(signal.fundingRate).toFixed(4)    : '-';
     const prevFR = signal.prevFundingRate !== undefined ? parseFloat(signal.prevFundingRate).toFixed(4) : '-';
     const diff   = signal.frDiff         !== undefined ? parseFloat(signal.frDiff).toFixed(6)         : '-';
     const remain = signal.timeRemaining  || '--:--:--';
+    const taker  = signal.takerRatio     || '1.00';
+
+    // Miracle / Strategy logic
+    const isMiracle = signal.isExtreme || signal.strategy?.includes('MUCIZE');
+    const miracleBadge = isMiracle ? '<span style="background:#a78bfa; color:#fff; padding:1px 6px; border-radius:4px; font-weight:bold; font-size:0.75rem; margin-left:5px; box-shadow: 0 0 10px rgba(167, 139, 250, 0.4);">✨ MUCİZE</span>' : '';
+    const strategyText = signal.strategy ? `<div style="color:#a78bfa; font-weight:bold; font-size:0.85rem; margin-top:5px;">🎯 ${signal.strategy}</div>` : '';
+
+    // Difference color logic
+    const diffVal = parseFloat(diff);
+    let diffColor = 'inherit';
+    let diffEmoji = '';
+    if (!isNaN(diffVal)) {
+        if (diffVal > 0) { diffColor = '#4ade80'; diffEmoji = '📈'; }
+        else if (diffVal < 0) { diffColor = '#f87171'; diffEmoji = '📉'; }
+    }
+
+    card.dataset.coin = cleanCoin;
+    if (isMiracle) card.classList.add('miracle-card');
+
+    card.innerHTML = `
+        <div class="telegram-text"><span class="signal-coin-link fr-label" style="background:#facc15; color:#000; padding:1px 6px; border-radius:4px; font-weight:bold; font-size:0.75rem; margin-right:5px;">FR</span><span class="signal-coin-link" onclick="filterByCoin('fr', '${cleanCoin}')" title="Bu coini filtrele">${directionEmoji} #${cleanCoin}</span>${miracleBadge}
+<span style="font-size:0.8rem; opacity:0.8; font-weight:bold;">${dirLabel}</span>
+${strategyText}
+──────────────────
+• <span style="opacity:0.8;">Funding Rate:</span> <b style="color:#fff;">${fr}%</b>
+• <span style="opacity:0.8;">Önceki Funding:</span> ${prevFR}%
+• <span style="opacity:0.8;">Fark (Değişim):</span> <b style="color:${diffColor};">${diff > 0 ? '+' : ''}${diff}% ${diffEmoji}</b>
+• <span style="opacity:0.8;">Piyasa Agresyonu:</span> <b style="color:#fff;">${taker}</b>
+• <span style="opacity:0.8;">Kalan Süre:</span> <span style="font-family:'JetBrains Mono'; color:#fbbf24;">${remain}</span>
+──────────────────
+🔗 <a href="${binanceUrl}" target="_blank" style="color:#9f9ffb;">Binance</a> | <a href="${tvUrl}" target="_blank" style="color:#9f9ffb;">Tradingview</a> <span style="float:right; opacity:0.6; font-size: 0.85em;">${timeStr}</span></div>
+    `;
+
+    return card;
+}
+
+function renderVolumeCard(signal, isNew) {
+    const card = document.createElement('div');
+    card.className = 'signal-card telegram-style volume-card' + (isNew ? ' signal-new' : '');
+
+    const isLong = signal.position === 'Long';
+    const emoji = isLong ? '🟢' : '🔴';
+    const cleanCoin = signal.coin ? signal.coin.replace('USDT', '') + 'USDT' : 'BİLİNMİYOR';
+    const timeStr = signal.time || new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    const binanceUrl = `https://www.binance.com/en/futures/${cleanCoin}`;
 
     card.dataset.coin = cleanCoin;
 
-    const signalJsonStr = JSON.stringify(signal).replace(/'/g, "&#39;");
-
     card.innerHTML = `
-        <div class="telegram-text"><span class="signal-coin-link fr-label">FR</span>
-<span class="signal-coin-link" onclick="filterByCoin('fr', '${cleanCoin}')" title="Bu coini filtrele">${emoji} #${cleanCoin}</span>
-${dirLabel}
-──────────────────
-• Funding Rate: ${fr}%
-• Önceki FR: ${prevFR}%
-• Fark: ${diff}%
-• Kalan Süre: ${remain}
-──────────────────
-🔗 <a href="${binanceUrl}" target="_blank">Binance Futures</a> | ⏰ ${timeStr}</div>
+        <div class="telegram-text">
+            <span class="signal-coin-link" style="background:#facc15; color:#000; padding:1px 6px; border-radius:4px; font-weight:bold; font-size:0.75rem; margin-right:5px;">VOL</span>
+            <span class="signal-coin-link" onclick="filterByCoin('volume', '${cleanCoin}')">#${cleanCoin}</span> ${emoji}
+            <div style="color:#facc15; font-weight:bold; font-size:0.85rem; margin-top:5px;">🚀 ${signal.strategy}</div>
+            ──────────────────
+            • Durum: <b style="color:#fff;">${signal.pivotStatus}</b>
+            • Hacim Gücü: <b style="color:#4ade80;">x${signal.relVol}</b>
+            • Giriş Fiyatı: ${signal.price}
+            <div style="background:rgba(16, 185, 129, 0.1); padding:8px; border-radius:6px; border:1px solid rgba(16, 185, 129, 0.2); margin-top:10px;">
+                <b style="color:#4ade80; font-size:0.9rem;">🔥 HEDEF ÇIKIŞ (%${signal.tpPercent}):</b><br>
+                <span style="font-family:'JetBrains Mono'; font-size:1.1rem; color:#fff;">$${signal.targetPrice}</span>
+            </div>
+            ──────────────────
+            🔗 <a href="${binanceUrl}" target="_blank" style="color:#9f9ffb;">Binance</a> <span style="float:right; opacity:0.6; font-size: 0.85em;">${timeStr}</span>
+        </div>
     `;
 
     return card;
@@ -170,6 +222,14 @@ function renderSignal(signal, isNew = true) {
         const card = renderFRCard(signal, isNew);
         targetFeed.prepend(card);
         applyFilter('fr');
+        return;
+    }
+
+    // Volume Hunter sinyalleri
+    if (timeframe === 'volume') {
+        const card = renderVolumeCard(signal, isNew);
+        targetFeed.prepend(card);
+        applyFilter('volume');
         return;
     }
 
@@ -548,6 +608,123 @@ function initBotSelector() {
     updateColumnVisibility();
 }
 
+// ─── Detay Scan UI Logic ───
+function updateDetayScanProgress(scanned, total) {
+    const pct = Math.round((scanned / total) * 100);
+    const progressText = document.getElementById('scan-progress-text');
+    if (progressText) {
+        progressText.innerText = `Taranıyor: ${scanned} / ${total} (%${pct})`;
+    }
+}
+
+async function startDetayScan() {
+    const progressContainer = document.getElementById('scan-progress-container');
+    const progressText = document.getElementById('scan-progress-text');
+    const btnRun = document.getElementById('btn-run-detay-scan');
+    const tableBody = document.getElementById('detay-scan-body');
+
+    if (progressContainer) progressContainer.style.display = 'flex';
+    if (progressText) progressText.innerText = 'Hazırlanıyor...';
+    if (btnRun) btnRun.disabled = true;
+
+    if (tableBody) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 60px;">
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px;">
+                        <i class="fa-solid fa-arrows-spin fa-spin" style="font-size: 2.5rem; color: #60a5fa;"></i>
+                        <span style="font-weight: 500; font-size: 1rem; color: var(--text-primary);">Binance Futures 1 Günlük verileri taranıyor...</span>
+                        <span style="opacity: 0.6; font-size: 0.85rem;">Bu işlem yaklaşık 5-10 saniye sürebilir.</span>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    try {
+        const response = await api.runDetayScan();
+        if (btnRun) btnRun.disabled = false;
+        if (progressContainer) progressContainer.style.display = 'none';
+
+        if (response.success && response.data && response.data.length > 0) {
+            tableBody.innerHTML = response.data.map(match => renderDetayScanRow(match)).join('');
+        } else {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 60px; opacity: 0.5;">
+                        <i class="fa-solid fa-circle-info" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                        Uyumsuzluk veya RSI-SMA dipten/tepeden kesişim kriterlerine uygun coin bulunamadı.
+                    </td>
+                </tr>
+            `;
+        }
+    } catch (err) {
+        if (btnRun) btnRun.disabled = false;
+        if (progressContainer) progressContainer.style.display = 'none';
+        if (tableBody) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 60px; color: var(--red);">
+                        <i class="fa-solid fa-circle-exclamation" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                        Tarama sırasında hata oluştu: ${err.message}
+                    </td>
+                </tr>
+            `;
+        }
+    }
+}
+
+function renderDetayScanRow(match) {
+    const isLong = match.signalType === 'Long';
+    const directionBadge = isLong 
+        ? `<span style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 10px; border-radius: 6px; font-weight: bold; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 0.8rem;"><i class="fa-solid fa-circle-up"></i> LONG</span>`
+        : `<span style="background: rgba(239, 68, 68, 0.15); color: #ef4444; padding: 4px 10px; border-radius: 6px; font-weight: bold; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 0.8rem;"><i class="fa-solid fa-circle-down"></i> SHORT</span>`;
+
+    const changeColor = parseFloat(match.dailyChange) >= 0 ? '#10b981' : '#ef4444';
+    const changeSign = parseFloat(match.dailyChange) > 0 ? '+' : '';
+    const changeBadge = `<span style="color: ${changeColor}; font-weight: bold; font-family: 'JetBrains Mono', monospace;">${changeSign}${match.dailyChange}%</span>`;
+
+    const rsiColor = isLong ? '#60a5fa' : '#f472b6';
+    const rsiBadge = `<span style="font-family: 'JetBrains Mono', monospace; font-weight: bold;"><b style="color: ${rsiColor}">${match.rsi}</b> <span style="opacity:0.3;">/</span> <span style="color: #94a3b8">${match.rsiSma}</span></span>`;
+
+    let divergenceHtml = '<span style="opacity:0.3; font-size:0.85rem;">- Uyumsuzluk Yok -</span>';
+    if (match.divergence) {
+        const divColor = match.divergence.type === 'bullish' ? '#10b981' : '#ef4444';
+        const divTypeTr = match.divergence.type === 'bullish' ? 'Pozitif (Bullish)' : 'Negatif (Bearish)';
+        divergenceHtml = `
+            <div style="text-align: left; font-size: 0.8rem; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; border-left: 3px solid ${divColor}; max-width: 320px; line-height: 1.4;">
+                <b style="color: ${divColor}; font-size:0.85rem; display: block; margin-bottom: 2px;">${divTypeTr} Uyumsuzluk</b>
+                <span style="opacity: 0.8; display: block;">• Fiyat: ${match.divergence.priceDiff}</span>
+                <span style="opacity: 0.8; display: block;">• RSI: ${match.divergence.rsiDiff}</span>
+                <span style="font-size:0.75rem; opacity:0.5; display:block; margin-top:2px;">• Dönem: ${match.divergence.dateRange}</span>
+            </div>
+        `;
+    }
+
+    const stars = match.score === 3 ? '⭐⭐⭐' : '⭐';
+    const starsHtml = `<span style="color: #fbbf24; font-size: 1.1rem; font-weight: bold; letter-spacing: 2px;">${stars}</span>`;
+
+    const cleanSymbol = match.symbol.replace('USDT', '') + 'USDT';
+    const binanceUrl = `https://www.binance.com/en/futures/${match.symbol}`;
+
+    return `
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+            <td style="padding: 15px; font-weight: bold;">
+                <a href="${binanceUrl}" target="_blank" style="color: #60a5fa; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.8rem; opacity: 0.7;"></i>
+                    ${cleanSymbol}
+                </a>
+            </td>
+            <td style="padding: 15px;">${directionBadge}</td>
+            <td style="padding: 15px; font-family: 'JetBrains Mono', monospace; font-weight: bold; color: #fff;">$${match.price}</td>
+            <td style="padding: 15px;">${changeBadge}</td>
+            <td style="padding: 15px;">${rsiBadge}</td>
+            <td style="padding: 15px;">${divergenceHtml}</td>
+            <td style="padding: 15px; text-align: center;">${starsHtml}</td>
+        </tr>
+    `;
+}
+
 // ─── Start ───
 document.addEventListener('DOMContentLoaded', () => {
     restoreFromCache();
@@ -555,4 +732,32 @@ document.addEventListener('DOMContentLoaded', () => {
     initBtcTicker();
     initBotSelector();
     updateHamzaStatusUI(); // 🛡️ Sync Hamza status on page load
+
+    // ─── Detay Scan Listeners ───
+    const btnDetayScan = document.getElementById('btn-detay-scan');
+    const detayScanModal = document.getElementById('detay-scan-modal');
+    const btnCloseDetayScan = document.getElementById('btn-close-detay-scan');
+    const btnRunDetayScan = document.getElementById('btn-run-detay-scan');
+
+    if (btnDetayScan && detayScanModal) {
+        btnDetayScan.addEventListener('click', () => {
+            detayScanModal.classList.add('active');
+            startDetayScan();
+        });
+    }
+    if (btnCloseDetayScan && detayScanModal) {
+        btnCloseDetayScan.addEventListener('click', () => {
+            detayScanModal.classList.remove('active');
+        });
+    }
+    if (btnRunDetayScan) {
+        btnRunDetayScan.addEventListener('click', () => {
+            startDetayScan();
+        });
+    }
+    if (detayScanModal) {
+        detayScanModal.addEventListener('click', (e) => {
+            if (e.target === detayScanModal) detayScanModal.classList.remove('active');
+        });
+    }
 });

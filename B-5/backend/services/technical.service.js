@@ -141,6 +141,52 @@ class TechnicalService {
     }
 
     /**
+     * Calculate Pivot Points (Traditional)
+     * @param {number} high - Previous period high
+     * @param {number} low - Previous period low
+     * @param {number} close - Previous period close
+     */
+    calculatePivotPoints(high, low, close) {
+        const p = (high + low + close) / 3;
+        const r1 = (2 * p) - low;
+        const s1 = (2 * p) - high;
+        const r2 = p + (high - low);
+        const s2 = p - (high - low);
+        const r3 = high + 2 * (p - low);
+        const s3 = low - 2 * (high - p);
+
+        return {
+            p: parseFloat(p.toFixed(8)),
+            r1: parseFloat(r1.toFixed(8)),
+            s1: parseFloat(s1.toFixed(8)),
+            r2: parseFloat(r2.toFixed(8)),
+            s2: parseFloat(s2.toFixed(8)),
+            r3: parseFloat(r3.toFixed(8)),
+            s3: parseFloat(s3.toFixed(8))
+        };
+    }
+
+    /**
+     * Calculate Relative Volume (Current vs SMA)
+     * @param {Array} volumes - Array of volume values
+     * @param {number} period - SMA period
+     */
+    calculateRelativeVolume(volumes, period = 9) {
+        try {
+            if (volumes.length < period + 1) return 1;
+
+            const baseVolumes = volumes.slice(-period - 1, -1);
+            const avgVol = this.calculateSMA(baseVolumes, period);
+            const currentVol = volumes[volumes.length - 1];
+
+            if (!avgVol || avgVol === 0) return 1;
+            return parseFloat((currentVol / avgVol).toFixed(2));
+        } catch (error) {
+            return 1;
+        }
+    }
+
+    /**
      * Get RSI interpretation
      */
     getRSIInterpretation(rsi) {
