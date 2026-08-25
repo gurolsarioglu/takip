@@ -7,7 +7,8 @@
     "start:15m": "node hunter-15m.js",
     "start:1g": "node hunter-1g.js",
     "start:1gpro": "node hunter-1gpro.js",
-    "start:4spro": "node hunter-4spro.js"
+    "start:4spro": "node hunter-4spro.js",
+    "start:trendbar": "node hunter-trendbar.js"
   },
   "dependencies": {
     "axios": "^1.6.2",

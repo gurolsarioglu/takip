@@ -503,6 +503,71 @@ class TechnicalService {
         const last = ha[ha.length - 1];
         return last.close > last.open;
     }
+
+    /**
+     * Check if a candle is a strong Trend Bar (Green)
+     * @param {Object} candle 
+     * @param {number} bodyThreshold - Minimum body to range ratio (default 0.70)
+     */
+    isTrendBar(candle, bodyThreshold = 0.70) {
+        try {
+            if (!candle) return false;
+            const open = parseFloat(candle.open);
+            const close = parseFloat(candle.close);
+            const high = parseFloat(candle.high);
+            const low = parseFloat(candle.low);
+            
+            // Must be a green candle
+            if (close <= open) return false;
+            
+            const body = close - open;
+            const range = high - low;
+            
+            if (range === 0) return false;
+            
+            const bodyRatio = body / range;
+            
+            // Optional: Check if upper wick is small (e.g. less than 15% of range)
+            const upperWick = high - close;
+            const upperWickRatio = upperWick / range;
+            
+            return bodyRatio >= bodyThreshold && upperWickRatio <= 0.15;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * Check if the preceding 'n' candles show compression/indecision
+     * @param {Array} klines - Full array of klines
+     * @param {number} trendBarIndex - The index of the trend bar
+     * @param {number} lookback - How many previous candles to check
+     */
+    checkCompression(klines, trendBarIndex, lookback = 3) {
+        try {
+            if (trendBarIndex < lookback) return false;
+            
+            const trendBar = klines[trendBarIndex];
+            const trendBarBody = Math.abs(parseFloat(trendBar.close) - parseFloat(trendBar.open));
+            
+            let smallCandlesCount = 0;
+            
+            for (let i = 1; i <= lookback; i++) {
+                const prev = klines[trendBarIndex - i];
+                const prevBody = Math.abs(parseFloat(prev.close) - parseFloat(prev.open));
+                
+                // If previous candle body is less than 40% of the trend bar body, consider it small/compressed
+                if (prevBody < trendBarBody * 0.40) {
+                    smallCandlesCount++;
+                }
+            }
+            
+            // We require at least (lookback - 1) candles to be "small"
+            return smallCandlesCount >= (lookback - 1);
+        } catch (error) {
+            return false;
+        }
+    }
 }
 
 module.exports = new TechnicalService();
