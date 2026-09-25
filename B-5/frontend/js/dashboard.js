@@ -110,6 +110,8 @@ function connect() {
             if (data.type === 'signal') {
                 addToCache(data.data);
                 renderSignal(data.data, true);
+            } else if (data.type === 'signal_feedback') {
+                updateCardFeedbackUI(data.data);
             } else if (data.type === 'TICK') {
                 // High-speed update for Watchlist Focus Card
                 if (window.handleWlTick) window.handleWlTick(data);
@@ -247,14 +249,17 @@ function renderSignal(signal, isNew = true) {
             return (n <= 30 || n >= 70) ? '❗' : '';
         };
 
-        const divTypeTr = signal.divergence ? (signal.divergence.type === 'bullish' ? 'BOĞA (BULLISH)' : 'AYI (BEARISH)') : '';
+        const signalId = signal.id || `sig_rsidiv_${cleanCoin}_${Date.now()}`;
+        signal.id = signalId;
+        window.signalsMap = window.signalsMap || new Map();
+        window.signalsMap.set(signalId, signal);
+        const feedbackHtml = typeof generateFeedbackHtml === 'function' ? generateFeedbackHtml(signal) : '';
 
         const divInfo = signal.divergence ? `
-            <div style="background: rgba(59, 130, 246, 0.1); padding: 12px; border-left: 3px solid #3b82f6; margin: 10px 0; border-radius: 4px; text-align: left;">
-                <b style="color:#60a5fa; font-size: 0.8rem; display: block; margin-bottom: 8px;">${divTypeTr} UYUMSUZLUK TESPİT EDİLDİ! (GÜNLÜK)</b>
-                <div style="display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; opacity: 0.9;">
-                    <span>• Başlangıç: ${signal.divergence.startDate}</span>
-                    <span>• Fiyat: ${signal.divergence.priceDiff}</span>
+            <div style="margin-top: 4px; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 4px; font-size: 0.85rem;">
+                <span style="color: ${emoji === '🟢' ? '#4ade80' : '#f87171'}; font-weight: bold;">${signal.divergence.badge || 'Uyumsuzluk Tespiti'}</span>
+                <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 2px;">
+                    <span>• Fiyat Farkı: ${signal.divergence.priceDiff}</span><br>
                     <span>• RSI: ${signal.divergence.rsiDiff}</span>
                 </div>
             </div>
@@ -272,15 +277,18 @@ function renderSignal(signal, isNew = true) {
 ${divInfo}
 ──────────────────
 🔗 <a href="${binanceUrl}" target="_blank">Binance Futures</a> | ⏰ ${signal.time}</div>
+            ${feedbackHtml}
         `;
 
         if (existingCard) {
             existingCard.innerHTML = innerHTML;
+            existingCard.dataset.signalId = signalId;
             if (isNew) existingCard.classList.add('signal-new');
         } else {
             const card = document.createElement('div');
             card.className = 'signal-card telegram-style rsi-div-card' + (isNew ? ' signal-new' : '');
             card.dataset.coin = cleanCoin;
+            card.dataset.signalId = signalId;
             card.innerHTML = innerHTML;
             targetFeed.prepend(card);
             applyFilter('rsi-div');
@@ -301,7 +309,11 @@ ${divInfo}
         const binanceUrl = `https://www.binance.com/en/futures/${cleanCoin}`;
         const tvUrl = `https://www.tradingview.com/chart/?symbol=BINANCE:${cleanCoin}`;
 
-        const signalJsonStr = JSON.stringify(signal).replace(/'/g, "&#39;");
+        const signalId = signal.id || `sig_hammer_${cleanCoin}_${Date.now()}`;
+        signal.id = signalId;
+        window.signalsMap = window.signalsMap || new Map();
+        window.signalsMap.set(signalId, signal);
+        const feedbackHtml = typeof generateFeedbackHtml === 'function' ? generateFeedbackHtml(signal) : '';
 
         let timeframesStr = ``;
         if (signal.d1m) timeframesStr += `RSI: ${signal.d1m.rsi}${signal.d1m.rsiAlert}<br>Stokastik (K/D): ${signal.d1m.k}/${signal.d1m.d} ${signal.d1m.stochAlert}<br>`;
@@ -321,15 +333,18 @@ ${timeframesStr}
 <a href="${binanceUrl}" target="_blank" style="color:#9f9ffb;">Binance</a> | <a href="${tvUrl}" target="_blank" style="color:#9f9ffb;">Tradingview</a> <span style="float:right; opacity:0.6; font-size: 0.85em; margin-top:2px;">${signal.time}</span>
                 </div>
             </div>
+            ${feedbackHtml}
         `;
 
         if (existingCard) {
             existingCard.innerHTML = innerHTML;
+            existingCard.dataset.signalId = signalId;
             if (isNew) existingCard.classList.add('signal-new');
         } else {
             const card = document.createElement('div');
             card.className = 'signal-card telegram-style hammer-card' + (isNew ? ' signal-new' : '');
             card.dataset.coin = cleanCoin;
+            card.dataset.signalId = signalId;
             card.innerHTML = innerHTML;
             targetFeed.prepend(card);
             applyFilter('hammer-new');
@@ -356,7 +371,11 @@ ${timeframesStr}
         const binanceUrl = `https://www.binance.com/en/futures/${cleanCoin}`;
         const tvUrl = `https://www.tradingview.com/chart/?symbol=BINANCE:${cleanCoin}`;
 
-        const signalJsonStr = JSON.stringify(signal).replace(/'/g, "&#39;");
+        const signalId = signal.id || `sig_1m_${cleanCoin}_${Date.now()}`;
+        signal.id = signalId;
+        window.signalsMap = window.signalsMap || new Map();
+        window.signalsMap.set(signalId, signal);
+        const feedbackHtml = typeof generateFeedbackHtml === 'function' ? generateFeedbackHtml(signal) : '';
 
         const innerHTML = `
             <div class="telegram-text" style="line-height: 1.4;">
@@ -372,10 +391,12 @@ Stokastik (K/D): ${signal.stochK}/${signal.stochD}${stochAlert}
 <a href="${binanceUrl}" target="_blank" style="color:#9f9ffb;">Binance</a> | <a href="${tvUrl}" target="_blank" style="color:#9f9ffb;">Tradingview</a> <span style="float:right; opacity:0.6; font-size: 0.85em; margin-top:2px;">${signal.time}</span>
                 </div>
             </div>
+            ${feedbackHtml}
         `;
 
         if (existingCard) {
             existingCard.innerHTML = innerHTML;
+            existingCard.dataset.signalId = signalId;
             if (isNew) existingCard.classList.add('signal-new');
         } else {
             const card = document.createElement('div');
@@ -434,7 +455,16 @@ Stokastik (K/D): ${signal.stochK}/${signal.stochD}${stochAlert}
         ? `<div class="swing-comment">${signal.swingComment.replace(/\n/g, '<br>')}</div>`
         : '';
 
-    const signalJsonStr = JSON.stringify(signal).replace(/'/g, "&#39;");
+    // Trader Positioning & Market Exposure
+    const traderPosStr = signal.traderPositioning ? `• Trader Positioning: ${signal.traderPositioning}\n` : '';
+    const marketExpStr = signal.marketExposure ? `• Market Exposure: ${signal.marketExposure}\n` : '';
+
+    const signalId = signal.id || `sig_${timeframe}_${cleanCoin}_${Date.now()}`;
+    signal.id = signalId;
+    window.signalsMap = window.signalsMap || new Map();
+    window.signalsMap.set(signalId, signal);
+
+    const feedbackHtml = typeof generateFeedbackHtml === 'function' ? generateFeedbackHtml(signal) : '';
 
     const innerHTML = `
         <div class="telegram-text"><span class="signal-coin-link" onclick="filterByCoin('${timeframe}', '${cleanCoin}')" title="Bu coini filtrele">[${tfText}] #${cleanCoin}</span>${kusursuzBadge} ${trendText} ${emoji}
@@ -443,18 +473,21 @@ Stokastik (K/D): ${signal.stochK}/${signal.stochD}${stochAlert}
 ${rsi15mStr}${rsi1hStr}${rsi4hStr}${rsi1dStr}• Stoch: ${stochK}(K)/${stochD}(D)
 • Hacim: ${vol}
 • Dolaşım: ${signal.supplyStr || '-'}
-${extraAlert}──────────────────
+${traderPosStr}${marketExpStr}${extraAlert}──────────────────
 🔗 <a href="${binanceUrl}" target="_blank">Binance Futures</a> | ⏰ ${dateStr}${timeStr}</div>
         ${commentHtml}
+        ${feedbackHtml}
     `;
 
     if (existingCard) {
         existingCard.innerHTML = innerHTML;
+        existingCard.dataset.signalId = signalId;
         if (isNew) existingCard.classList.add('signal-new');
     } else {
         const card = document.createElement('div');
         card.className = 'signal-card telegram-style' + (isNew ? ' signal-new' : '');
         card.dataset.coin = cleanCoin;
+        card.dataset.signalId = signalId;
         card.innerHTML = innerHTML;
         targetFeed.prepend(card);
         applyFilter(timeframe);
@@ -725,6 +758,335 @@ function renderDetayScanRow(match) {
     `;
 }
 
+// ─── Helper: Escape HTML ───
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// ─── Generate Feedback Bar HTML for Signal Cards ───
+function generateFeedbackHtml(signal) {
+    const fb = signal.feedback;
+    const signalId = signal.id || `sig_${signal.timeframe}_${signal.coin}_${Date.now()}`;
+    signal.id = signalId;
+
+    if (fb && fb.status) {
+        const isCorrect = fb.status === 'CORRECT';
+        const badgeClass = isCorrect ? 'correct' : 'wrong';
+        const badgeIcon = isCorrect ? 'fa-solid fa-check' : 'fa-solid fa-xmark';
+        const badgeText = isCorrect ? 'DOĞRU' : 'YANLIŞ';
+
+        let notesHtml = '';
+        if (fb.notes) {
+            notesHtml = `<div class="feedback-notes-preview ${isCorrect ? 'correct-note' : 'wrong-note'}">"${escapeHtml(fb.notes)}"</div>`;
+        }
+
+        let tagsHtml = '';
+        if (fb.tags && fb.tags.length > 0) {
+            tagsHtml = `<div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:4px;">` +
+                fb.tags.map(t => `<span style="font-size:0.75rem; background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:10px; color:#cbd5e1;">${escapeHtml(t)}</span>`).join('') +
+                `</div>`;
+        }
+
+        return `
+            <div class="signal-feedback-bar" id="fb-bar-${signalId}">
+                <div class="feedback-action-row">
+                    <span class="feedback-badge ${badgeClass}">
+                        <i class="${badgeIcon}"></i> ${badgeText}
+                    </span>
+                    <button class="feedback-edit-btn" onclick="openFeedbackModal('${signalId}')" title="Değerlendirmeyi Düzenle">
+                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                    </button>
+                </div>
+                ${notesHtml}
+                ${tagsHtml}
+            </div>
+        `;
+    }
+
+    // Henüz değerlendirilmemişse
+    return `
+        <div class="signal-feedback-bar" id="fb-bar-${signalId}">
+            <div class="feedback-action-row">
+                <span style="font-size:0.78rem; color:#64748b; font-weight:500;">Değerlendir:</span>
+                <div style="display:flex; gap:6px;">
+                    <button class="feedback-btn feedback-btn-correct" onclick="openFeedbackModal('${signalId}', 'CORRECT')" title="Doğru / Başarılı Sinyal">
+                        <i class="fa-solid fa-check"></i> Doğru
+                    </button>
+                    <button class="feedback-btn feedback-btn-wrong" onclick="openFeedbackModal('${signalId}', 'WRONG')" title="Yanlış / Başarısız Sinyal">
+                        <i class="fa-solid fa-xmark"></i> Yanlış
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// ─── Update Card Feedback UI in Live DOM ───
+function updateCardFeedbackUI(updatedSignal) {
+    if (!updatedSignal || !updatedSignal.id) return;
+    window.signalsMap = window.signalsMap || new Map();
+    window.signalsMap.set(updatedSignal.id, updatedSignal);
+
+    const card = document.querySelector(`.signal-card[data-signal-id="${updatedSignal.id}"]`);
+    if (card) {
+        const existingBar = card.querySelector('.signal-feedback-bar');
+        const newBarHtml = generateFeedbackHtml(updatedSignal);
+        if (existingBar) {
+            existingBar.outerHTML = newBarHtml;
+        } else {
+            card.insertAdjacentHTML('beforeend', newBarHtml);
+        }
+    }
+}
+
+// ─── Load Signal History from Server on Refresh ───
+async function loadSignalHistory() {
+    try {
+        const res = await fetch('http://localhost:3000/api/signals/history?limit=100');
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+            const reversed = [...json.data].reverse();
+            reversed.forEach(sig => {
+                renderSignal(sig, false);
+            });
+            console.log(`📂 [Dashboard] ${json.data.length} adet geçmiş sinyal ve değerlendirme yüklendi.`);
+        }
+    } catch (e) {
+        console.warn('Geçmiş sinyaller yüklenemedi:', e.message);
+    }
+}
+
+// ─── Feedback Modal Controller ───
+let currentFeedbackSignalId = null;
+let currentFeedbackStatus = 'CORRECT';
+let currentFeedbackTags = new Set();
+
+function openFeedbackModal(signalId, initialStatus) {
+    const signal = window.signalsMap ? window.signalsMap.get(signalId) : null;
+    if (!signal) return;
+
+    currentFeedbackSignalId = signalId;
+    document.getElementById('feedback-signal-id').value = signalId;
+
+    const modal = document.getElementById('signal-feedback-modal');
+    const summaryEl = document.getElementById('feedback-signal-summary');
+    const notesInput = document.getElementById('feedback-notes-input');
+
+    const emoji = (signal.position === 'Long' || (signal.type && signal.type.includes('Buy'))) ? '🟢' : '🔴';
+    const tf = (signal.timeframe || '15m').toUpperCase();
+    const pos = signal.position || 'Long';
+    const cleanCoin = (signal.coin || '').replace('USDT', '') + 'USDT';
+    const posVal = signal.traderPositioning || 'Bilinmiyor';
+    const expVal = signal.marketExposure || 'Bilinmiyor';
+
+    summaryEl.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <span style="font-weight:700; font-size:1.05rem; color:#60a5fa;">#${cleanCoin} [${tf}]</span>
+            <span style="font-weight:600;">${emoji} ${pos.toUpperCase()}</span>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:12px; font-size:0.85rem; color:#94a3b8;">
+            <span>Fiyat: <strong>${signal.price || '-'}</strong></span>
+            <span>RSI: <strong>${signal.rsi || '-'}</strong></span>
+            <span>Balina: <strong>${posVal}</strong></span>
+            <span>Exposure: <strong>${expVal}</strong></span>
+            <span>Saat: <strong>${signal.time || '-'}</strong></span>
+        </div>
+    `;
+
+    currentFeedbackTags.clear();
+    if (signal.feedback && signal.feedback.status) {
+        setFeedbackStatus(signal.feedback.status);
+        notesInput.value = signal.feedback.notes || '';
+        (signal.feedback.tags || []).forEach(t => currentFeedbackTags.add(t));
+    } else {
+        setFeedbackStatus(initialStatus || 'CORRECT');
+        notesInput.value = '';
+    }
+
+    updateFeedbackTagsUI();
+    modal.classList.add('active');
+    setTimeout(() => notesInput.focus(), 100);
+}
+
+function setFeedbackStatus(status) {
+    currentFeedbackStatus = status;
+    const btnCorrect = document.getElementById('fb-btn-correct');
+    const btnWrong = document.getElementById('fb-btn-wrong');
+    if (!btnCorrect || !btnWrong) return;
+
+    if (status === 'CORRECT') {
+        btnCorrect.classList.add('selected');
+        btnWrong.classList.remove('selected');
+    } else {
+        btnWrong.classList.add('selected');
+        btnCorrect.classList.remove('selected');
+    }
+}
+
+function toggleFeedbackTag(tagText) {
+    if (currentFeedbackTags.has(tagText)) {
+        currentFeedbackTags.delete(tagText);
+    } else {
+        currentFeedbackTags.add(tagText);
+    }
+    updateFeedbackTagsUI();
+}
+
+function updateFeedbackTagsUI() {
+    const container = document.getElementById('feedback-quick-tags');
+    if (!container) return;
+    const chips = container.querySelectorAll('.fb-tag');
+    chips.forEach(chip => {
+        const text = chip.innerText.trim();
+        if (currentFeedbackTags.has(text)) {
+            chip.classList.add('active');
+        } else {
+            chip.classList.remove('active');
+        }
+    });
+}
+
+function closeFeedbackModal() {
+    const modal = document.getElementById('signal-feedback-modal');
+    if (modal) modal.classList.remove('active');
+    currentFeedbackSignalId = null;
+}
+
+async function submitFeedback() {
+    if (!currentFeedbackSignalId) return;
+
+    const notes = (document.getElementById('feedback-notes-input').value || '').trim();
+    const tags = Array.from(currentFeedbackTags);
+    const status = currentFeedbackStatus;
+
+    const btnSave = document.getElementById('btn-save-feedback');
+    if (btnSave) {
+        btnSave.disabled = true;
+        btnSave.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...';
+    }
+
+    try {
+        const res = await fetch('http://localhost:3000/api/signals/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                signalId: currentFeedbackSignalId,
+                status,
+                notes,
+                tags
+            })
+        });
+        const json = await res.json();
+        if (json.success && json.data) {
+            updateCardFeedbackUI(json.data);
+            closeFeedbackModal();
+        } else {
+            alert('Hata: ' + (json.message || 'Geri bildirim kaydedilemedi.'));
+        }
+    } catch (e) {
+        alert('Sunucu hatası: ' + e.message);
+    } finally {
+        if (btnSave) {
+            btnSave.disabled = false;
+            btnSave.innerHTML = '<i class="fa-solid fa-save"></i> Kaydet';
+        }
+    }
+}
+
+// ─── Analytics Modal Controller ───
+async function openAnalyticsModal() {
+    const modal = document.getElementById('signal-analytics-modal');
+    if (!modal) return;
+    modal.classList.add('active');
+    await loadStats();
+}
+
+function closeAnalyticsModal() {
+    const modal = document.getElementById('signal-analytics-modal');
+    if (modal) modal.classList.remove('active');
+}
+
+async function loadStats() {
+    try {
+        const res = await fetch('http://localhost:3000/api/signals/stats');
+        const json = await res.json();
+        if (!json.success || !json.data) return;
+
+        const d = json.data;
+        document.getElementById('stat-win-rate').innerText = `%${d.winRate}`;
+        document.getElementById('stat-total-evaluated').innerText = d.totalEvaluated;
+        document.getElementById('stat-correct-count').innerText = d.correctCount;
+        document.getElementById('stat-wrong-count').innerText = d.wrongCount;
+
+        // Timeframe breakdown
+        const tfContainer = document.getElementById('stats-timeframe-breakdown');
+        if (tfContainer) {
+            const tfEntries = Object.entries(d.byTimeframe || {});
+            if (tfEntries.length === 0) {
+                tfContainer.innerHTML = '<div style="color:#64748b; font-size:0.9rem; text-align:center; padding:15px;">Henüz değerlendirilmiş sinyal yok.</div>';
+            } else {
+                tfContainer.innerHTML = tfEntries.map(([tf, item]) => {
+                    const rateColor = item.winRate >= 60 ? '#10b981' : item.winRate >= 45 ? '#facc15' : '#ef4444';
+                    return `
+                        <div style="background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                                <span style="font-weight:700; color:#e2e8f0;">${tf.toUpperCase()}</span>
+                                <span style="font-weight:700; color:${rateColor};">%${item.winRate} Başarı (${item.correct}/${item.total})</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width:${item.winRate}%; background:${rateColor};"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        // Trader Positioning (Whale) breakdown
+        const posContainer = document.getElementById('stats-positioning-breakdown');
+        if (posContainer) {
+            const labels = {
+                green: { title: '🟢 Long Balina Yığılması (>= %55)', color: '#10b981' },
+                neutral: { title: '⚪ Nötr / Kararsız Bölge (%50 - %55)', color: '#cbd5e1' },
+                red: { title: '🔴 Short Balina Baskısı (>= %55)', color: '#ef4444' },
+                unknown: { title: '⚪ Belirsiz / Veri Yok', color: '#64748b' }
+            };
+
+            const posEntries = Object.entries(d.byPositioning || {}).filter(([k, v]) => v.total > 0);
+            if (posEntries.length === 0) {
+                posContainer.innerHTML = '<div style="color:#64748b; font-size:0.9rem; text-align:center; padding:15px;">Henüz değerlendirilmiş balina verisi yok.</div>';
+            } else {
+                posContainer.innerHTML = posEntries.map(([key, item]) => {
+                    const info = labels[key] || { title: key, color: '#60a5fa' };
+                    return `
+                        <div style="background:rgba(255,255,255,0.03); padding:10px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                                <span style="font-weight:600; color:#e2e8f0; font-size:0.9rem;">${info.title}</span>
+                                <span style="font-weight:700; color:${info.color};">%${item.winRate} (${item.correct}/${item.total})</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width:${item.winRate}%; background:${info.color};"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+    } catch (e) {
+        console.error('Stats load error:', e);
+    }
+}
+
+function exportSignalsCSV() {
+    window.open('http://localhost:3000/api/signals/export', '_blank');
+}
+
 // ─── Start ───
 document.addEventListener('DOMContentLoaded', () => {
     restoreFromCache();
@@ -732,6 +1094,26 @@ document.addEventListener('DOMContentLoaded', () => {
     initBtcTicker();
     initBotSelector();
     updateHamzaStatusUI(); // 🛡️ Sync Hamza status on page load
+    loadSignalHistory();   // 📂 Load persisted signals and feedback
+
+    // ─── Signal Analytics Listeners ───
+    const btnSignalAnalytics = document.getElementById('btn-open-signal-analytics');
+    const analyticsModal = document.getElementById('signal-analytics-modal');
+    if (btnSignalAnalytics) {
+        btnSignalAnalytics.addEventListener('click', openAnalyticsModal);
+    }
+    if (analyticsModal) {
+        analyticsModal.addEventListener('click', (e) => {
+            if (e.target === analyticsModal) closeAnalyticsModal();
+        });
+    }
+
+    const feedbackModal = document.getElementById('signal-feedback-modal');
+    if (feedbackModal) {
+        feedbackModal.addEventListener('click', (e) => {
+            if (e.target === feedbackModal) closeFeedbackModal();
+        });
+    }
 
     // ─── Detay Scan Listeners ───
     const btnDetayScan = document.getElementById('btn-detay-scan');

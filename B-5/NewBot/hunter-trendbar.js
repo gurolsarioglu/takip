@@ -22,7 +22,7 @@ if (TELEGRAM_TOKEN && TELEGRAM_TOKEN !== 'your_telegram_bot_token_here' && TELEG
             try {
                 const data = JSON.parse(fs.readFileSync(subscribersPath, 'utf8'));
                 chatIds = new Set(data);
-                console.log(`📂 [TrendBot] ${chatIds.size} abone yüklendi.`);
+                console.log(`📂 [DipBot] ${chatIds.size} abone yüklendi.`);
             } catch (e) { }
         }
 
@@ -33,23 +33,23 @@ if (TELEGRAM_TOKEN && TELEGRAM_TOKEN !== 'your_telegram_bot_token_here' && TELEG
                 try {
                     fs.writeFileSync(subscribersPath, JSON.stringify(Array.from(chatIds)), 'utf8');
                 } catch (e) { }
-                console.log(`✅ [TrendBot] Yeni Telegram Abonesi: ${chatId}`);
+                console.log(`✅ [DipBot] Yeni Telegram Abonesi: ${chatId}`);
             }
-            bot.sendMessage(chatId, "🚀 *Trend Bar & Sıkışma Botu Aktif!* \nGünlük, 5 Günlük ve Haftalık SMA50 kırılımı ve trend mum (Trend Bar) sinyalleri burada paylaşılacaktır.", { parse_mode: 'Markdown' });
+            bot.sendMessage(chatId, "🚀 *Dip Avcısı (Reversal) Botu Aktif!* \n1G, 5G ve 1W periyotlarında düşüş sonrası Stoch RSI ve WaveTrend alım kesişimleri burada paylaşılacaktır.", { parse_mode: 'Markdown' });
         });
 
-        console.log('🤖 [TrendBot] Telegram Bot entegrasyonu aktif.');
+        console.log('🤖 [DipBot] Telegram Bot entegrasyonu aktif.');
     } catch (err) {
-        console.warn('⚠️ [TrendBot] Telegram başlatılamadı:', err.message);
+        console.warn('⚠️ [DipBot] Telegram başlatılamadı:', err.message);
     }
 } else {
-    console.log('ℹ️ [TrendBot] Telegram token bulunamadı veya geçersiz.');
+    console.log('ℹ️ [DipBot] Telegram token bulunamadı veya geçersiz.');
 }
 
 const processedSignals = new Map();
 const COOLDOWN_PERIOD = 24 * 60 * 60 * 1000; // 24 hours cooldown for same signal
 
-console.log('⚡ CoinKe V2.0 (Trend Bar & Sıkışma Botu) Başlatıldı!');
+console.log('⚡ CoinKe V2.0 (Dip Avcısı - Bottom Reversal Bot) Başlatıldı!');
 
 async function getFuturesSymbols() {
     try {
@@ -58,7 +58,6 @@ async function getFuturesSymbols() {
             .filter(s => s.quoteAsset === 'USDT' && s.status === 'TRADING' && s.contractType === 'PERPETUAL')
             .map(s => s.symbol);
     } catch (e) {
-        console.error('Sembol listesi alınamadı:', e.message);
         return [];
     }
 }
@@ -72,16 +71,14 @@ async function fetchKlines(symbol, interval, limit = 100) {
             high: parseFloat(k[2]),
             low: parseFloat(k[3]),
             close: parseFloat(k[4]),
-            volume: parseFloat(k[5])
+            volume: parseFloat(k[5]),
+            hlc3: (parseFloat(k[2]) + parseFloat(k[3]) + parseFloat(k[4])) / 3
         }));
     } catch (e) {
         return [];
     }
 }
 
-/**
- * Builds 5-Day klines from 1-Day klines
- */
 function build5DKlines(dailyKlines) {
     const klines5d = [];
     for (let i = 0; i < dailyKlines.length; i += 5) {
@@ -94,41 +91,75 @@ function build5DKlines(dailyKlines) {
     return klines5d;
 }
 
-/**
- * Check if the SMA50 was previously acting as resistance, and now is broken.
- */
-function checkSMA50Breakout(klines, trendBarIndex, smaArray) {
-    if (trendBarIndex < 15 || !smaArray || smaArray.length <= trendBarIndex) return false;
+// Yeni Dip Dönüş Mantığı
+function analyzeDipReversal(klines) {
+    if (klines.length < 35) return false;
+
+    // Hedef mum: Kapanmış en son mum
+    const targetIndex = klines.length - 2;
+    const targetCandle = klines[targetIndex];
+    const p1 = klines[targetIndex - 1];
+    const p2 = klines[targetIndex - 2];
+    const p3 = klines[targetIndex - 3];
+
+    // 1. Düşüş Trendi (Prior Downtrend) Kontrolü
+    let redCount = 0;
+    if (p1.close < p1.open) redCount++;
+    if (p2.close < p2.open) redCount++;
+    if (p3.close < p3.open) redCount++;
+
+    // En az 2 kırmızı mum olmalı ve fiyat genel olarak aşağı gitmiş olmalı
+    if (redCount < 2 || p1.low >= p3.low) return false;
+
+    // 2. Dönüş Mumu (Reversal Candle) Kontrolü
+    // Ya yeşil mum olmalı ya da çekiç (hammer) görünümlü olmalı
+    const body = targetCandle.close - targetCandle.open;
+    const range = targetCandle.high - targetCandle.low;
+    const isGreen = body > 0;
     
-    const trendBar = klines[trendBarIndex];
-    const trendBarSma = smaArray[trendBarIndex];
-    
-    // 1. Trend Bar must close above SMA50
-    if (trendBar.close <= trendBarSma) return false;
-    
-    // 2. Check previous 10-15 candles for rejection (High went above or near SMA, but closed below)
-    let hadRejection = false;
-    for (let i = 1; i <= 15; i++) {
-        const pastIndex = trendBarIndex - i;
-        const pastCandle = klines[pastIndex];
-        const pastSma = smaArray[pastIndex];
-        
-        if (pastCandle && pastSma) {
-            // Rejection: Price touched or crossed SMA50, but closed below it.
-            if (pastCandle.high >= pastSma * 0.99 && pastCandle.close < pastSma) {
-                hadRejection = true;
-                break; // Found a rejection
-            }
-        }
-    }
-    
-    return hadRejection;
+    // Alt fitil gövdenin 1.5 katından büyükse çekiçtir
+    const lowerWick = Math.min(targetCandle.open, targetCandle.close) - targetCandle.low;
+    const isHammer = range > 0 && lowerWick > Math.abs(body) * 1.5;
+
+    if (!isGreen && !isHammer) return false;
+
+    // 3. Stoch RSI Kontrolü (1-2 mum içinde veya şu an dipten kesmiş olmalı)
+    const stochData = technicalService.calculateFullStochRSI(klines.slice(0, targetIndex + 1));
+    const k = stochData.k;
+    const d = stochData.d;
+    const lastK = k[k.length - 1];
+    const lastD = d[d.length - 1];
+    const prevK = k[k.length - 2];
+    const prevD = d[d.length - 2];
+    const prev2K = k[k.length - 3];
+    const prev2D = d[d.length - 3];
+
+    // Şu an K > D olmalı (Bullish) ve bu kesişim yakın zamanda dipte (<35) gerçekleşmiş olmalı
+    const currentlyBullish = lastK >= lastD;
+    const recentCross0 = prevK <= prevD && lastK > lastD && lastK < 35;
+    const recentCross1 = prev2K <= prev2D && prevK > prevD && prevK < 35;
+
+    if (!currentlyBullish || (!recentCross0 && !recentCross1)) return false;
+
+    // 4. WaveTrend Kontrolü
+    // Hedef mum, bir önceki mum ve iki önceki mum için WT hesapla
+    const wtTarget = technicalService.calculateWaveTrend(klines.slice(0, targetIndex + 1));
+    const wtPrev1 = technicalService.calculateWaveTrend(klines.slice(0, targetIndex));
+
+    const wtCurrentlyBullish = wtTarget.wt1 >= wtTarget.wt2;
+    // WaveTrend dip bölgesi < -40
+    const wtRecentCross0 = wtTarget.cross === 'Bullish 🟢' && wtTarget.wt1 < -40;
+    const wtRecentCross1 = wtPrev1.cross === 'Bullish 🟢' && wtPrev1.wt1 < -40;
+
+    if (!wtCurrentlyBullish || (!wtRecentCross0 && !wtRecentCross1)) return false;
+
+    // Tüm şartlar sağlandı!
+    return true;
 }
 
 async function analyzeSymbol(symbol) {
     try {
-        // Fetch Daily and Weekly
-        const klines1d = await fetchKlines(symbol, '1d', 150);
+        const klines1d = await fetchKlines(symbol, '1d', 100);
         const klines1w = await fetchKlines(symbol, '1w', 100);
         const klines5d = build5DKlines(klines1d);
         
@@ -141,51 +172,20 @@ async function analyzeSymbol(symbol) {
         let signalsFound = [];
 
         for (const tf of timeframes) {
-            const { name, klines } = tf;
-            if (klines.length < 55) continue; // Need enough data for SMA50
-
-            // We analyze the LAST CLOSED candle, which is length - 2
-            const targetIndex = klines.length - 2;
-            const targetCandle = klines[targetIndex];
-
-            // 1. Is it a Trend Bar? (Body > 70%)
-            if (!technicalService.isTrendBar(targetCandle, 0.70)) continue;
-
-            // 2. Volume Check: Volume must be > 20% higher than SMA20 Volume
-            const volumes = klines.map(k => k.volume);
-            const smaVolume = technicalService.calculateSMA(volumes.slice(0, targetIndex + 1), 20);
-            if (!smaVolume || targetCandle.volume <= smaVolume * 1.2) continue;
-
-            // 3. Compression Check: Previous 4 candles should have small bodies
-            if (!technicalService.checkCompression(klines, targetIndex, 4)) continue;
-
-            // 4. SMA50 Breakout Check
-            const closePrices = klines.map(k => k.close);
-            // We need full SMA50 array to match indices
-            const sma50Array = [];
-            for(let i=0; i<closePrices.length; i++) {
-                if(i < 50) {
-                    sma50Array.push(null);
-                } else {
-                    sma50Array.push(technicalService.calculateSMA(closePrices.slice(i - 49, i + 1), 50));
-                }
+            if (analyzeDipReversal(tf.klines)) {
+                signalsFound.push(tf.name);
             }
-
-            if (!checkSMA50Breakout(klines, targetIndex, sma50Array)) continue;
-
-            // If we reached here, ALL CONDITIONS MET!
-            signalsFound.push(name);
         }
 
         if (signalsFound.length > 0) {
-            const key = `${symbol}_TREND`;
+            const key = `${symbol}_DIPREVERSAL`;
             if (!processedSignals.has(key) || (Date.now() - processedSignals.get(key) > COOLDOWN_PERIOD)) {
                 processedSignals.set(key, Date.now());
                 await sendTelegramAlert(symbol, signalsFound, klines1d[klines1d.length - 1].close);
             }
         }
     } catch (e) {
-        // Silently fail for individual coins
+        // Silently fail
     }
 }
 
@@ -194,15 +194,16 @@ async function sendTelegramAlert(symbol, timeframes, currentPrice) {
     const binanceUrl = `https://www.binance.com/en/futures/${symbol}`;
     const cleanSymbol = symbol.replace(/[^\x00-\x7F]/g, '');
 
-    const message = `🚀 *[TREND HUNTER] #${cleanSymbol}*\n` +
+    const message = `🚀 *[DİP AVCISI] #${cleanSymbol}*\n` +
         `──────────────────\n` +
-        `🟢 *TREND BAR TESPİT EDİLDİ*\n` +
-        `📊 *Zaman Dilimleri:* ${timeframes.join(', ')}\n` +
+        `🟢 *DİP DÖNÜŞ FORMASYONU*\n` +
+        `📊 *Zaman Dilimi:* ${timeframes.join(', ')}\n` +
         `──────────────────\n` +
         `✅ *Kriterler Sağlandı:*\n` +
-        `• Hacimli Trend Mumu (Gövde > %70)\n` +
-        `• Sıkışma Sonrası Kırılım\n` +
-        `• SMA50 Geçmiş Ret & Güncel Kırılım\n` +
+        `• 🩸 Geçmiş Düşüş Trendi (Kırmızı Mumlar)\n` +
+        `• 🕯️ Dönüş Mumu (Yeşil veya Çekiç)\n` +
+        `• 📈 Stoch RSI Dip Kesişimi (K > D)\n` +
+        `• 🟢 WaveTrend Dip Kesişimi (WT1 > WT2)\n` +
         `──────────────────\n` +
         `💰 *Anlık Fiyat:* ${currentPrice.toFixed(4)}\n` +
         `🔗 [Binance Futures](${binanceUrl}) | ⏰ ${now}`;
@@ -215,22 +216,20 @@ async function sendTelegramAlert(symbol, timeframes, currentPrice) {
         for (const id of chatIds) {
             try {
                 await bot.sendMessage(id, message, { parse_mode: 'Markdown', disable_web_page_preview: true });
-            } catch (tgErr) {
-                console.error(`Telegram gönderim hatası (${id}):`, tgErr.message);
-            }
+            } catch (tgErr) {}
         }
     }
 }
 
 async function performScan() {
     try {
-        console.log(`\n🔍 [${new Date().toLocaleTimeString()}] Trend Bar & Sıkışma Taraması Başlıyor...`);
+        console.log(`\n🔍 [${new Date().toLocaleTimeString()}] Dip Avcısı (Bottom Reversal) Taraması Başlıyor...`);
         const symbols = await getFuturesSymbols();
         console.log(`📈 Toplam ${symbols.length} aktif Futures çifti taranacak.`);
 
         for (const symbol of symbols) {
             await analyzeSymbol(symbol);
-            await new Promise(r => setTimeout(r, 100)); // API Rate Limit Koruması
+            await new Promise(r => setTimeout(r, 100)); // API Rate Limit
         }
         console.log(`✅ [${new Date().toLocaleTimeString()}] Tarama Tamamlandı.`);
     } catch (e) {
@@ -238,7 +237,6 @@ async function performScan() {
     }
 }
 
-// Her 4 saatte bir çalıştır
 function scheduleNextScan() {
     const intervalMs = 4 * 60 * 60 * 1000; // 4 Hours
     console.log(`⏰ Bir sonraki tarama 4 saat sonra (${new Date(Date.now() + intervalMs).toLocaleTimeString()}) yapılacak.`);

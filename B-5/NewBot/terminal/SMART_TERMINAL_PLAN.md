@@ -1,8 +1,75 @@
-# 🚀 Smart Money & Futures Veri Terminali (Proje Planı & Mimari Şema)
+﻿# 🚀 Smart Money & Futures Veri Terminali (Proje Planı & Mimari Şema)
 
 > **Tarih:** 23 Eylül 2026  
 > **Proje:** NewBot Suite - Smart Futures Terminal  
 > **Konum:** `y:\takip\B-5\NewBot\SMART_TERMINAL_PLAN.md`
+
+> [!IMPORTANT]
+> **Karar 1 — Grafik Motoru:** ~~TradingView Lightweight Charts~~ → **Apache ECharts** kullanılacak.
+> Sebep: ECharts açık kaynak, ücretsiz, MIT lisanslı; candlestick + tüm indikatörler native destekli; daha esnek özelleştirme imkânı.
+
+> [!IMPORTANT]
+> **Karar 2 — Mikro Mimari / Plugin Sistemi:** Her modül bağımsız bir plugin olarak tasarlanacak.
+>
+> ```
+> public/
+> ├── index.html              ← Ana kabuk (sadece layout, veri taşımaz)
+> ├── core/
+> │![![alt text](image-1.png)](image.png)
+> │   ├── websocket.js        ← Canlı fiyat / kline WebSocket yöneticisi
+> │   └── event-bus.js        ← Modüller arası iletişim (publish/subscribe)
+> ├── plugins/
+> │   ├── chart/              ← ECharts mum grafiği + indikatörler
+> │   │   └── chart.plugin.js
+> │   ├── smart-money/        ← Balina oranları, L/S barları
+> │   │   └── smart-money.plugin.js
+> │   ├── open-interest/      ← OI delta takipçisi
+> │   │   └── oi.plugin.js
+> │   ├── funding/            ← Funding rate hız takipçisi
+> │   │   └── funding.plugin.js
+> │   └── verdict/            ← Algoritmik Türkçe teşhis motoru
+> │       └── verdict.plugin.js
+> └── styles/
+>     └── terminal.css        ← Dark glassmorphism tema
+> ```
+>
+> **Kural:** Her plugin kendi verisini `binance-api.js`'den çeker, `event-bus` üzerinden konuşur.
+> Bir plugin çökerse diğerleri etkilenmez. Yeni özellik = yeni plugin klasörü.
+
+> [!IMPORTANT]
+> **Karar 3 — Gösterge Sözleşmesi:** Tüm indikatör formülleri sabit ve deterministik. Kodlamadan önce aşağıdaki tanımlar kesinleştirilmiştir.
+>
+> **RSI (14):**
+> - İlk 14 mumun kazanç/kayıp aritmetik ortalaması → sonraki mumlar Wilder güncellemesiyle.
+> - Kenar durumlar: kazanç=0 ve kayıp=0 → 50 | yalnız kayıp=0 → 100 | yalnız kazanç=0 → 0.
+> - Eksik/açık mum üzerinde kesintisiz hesap varsayılmaz.
+>
+> **DEMA9:**
+> `DEMA9 = 2 × EMA9(close) − EMA9(EMA9(close))` | katsayı: `2/(9+1) = 0.2`
+> - İlk EMA9 → SMA9 ile başlatılır. İkinci EMA9 → ilk 9 geçerli EMA9'un SMA'sı ile başlatılır.
+>
+> **Heikin Ashi:**
+> - `HA_close = (O+H+L+C)/4`
+> - `HA_open = (önceki HA_open + önceki HA_close) / 2` | İlk: `(O+C)/2`
+> - `HA_high = max(H, HA_open, HA_close)` | `HA_low = min(L, HA_open, HA_close)`
+> - ⚠️ Her zaman dilimi kendi standart mumlarından ayrı hesaplanır. 1m HA toplayarak 5m HA yapılmaz.
+>
+> **Uyumsuzluk (Divergence) — 4 Tür:**
+>
+> | Tür | Fiyat | RSI (aynı pivot mumlarında) |
+> |---|---|---|
+> | Normal Pozitif 🟢 | İkinci dip daha düşük | İkinci RSI daha yüksek |
+> | Normal Negatif 🔴 | İkinci tepe daha yüksek | İkinci RSI daha düşük |
+> | Gizli Pozitif 🟡 | İkinci dip daha yüksek | İkinci RSI daha düşük |
+> | Gizli Negatif 🟠 | İkinci tepe daha düşük | İkinci RSI daha yüksek |
+>
+> Pivotlar standart fiyat low/high üzerinden bulunur. Aday çizgi kesik/değişebilir; teyitli çizgi düz.
+>
+> **Performans Hedefleri:**
+> - Coin görünümü: p95 < 500ms
+> - Canlı olay → ekran gecikmesi: p95 < 250ms
+> - Açık mum güncellemesi RSI/EMA geçmişine sahte mum eklemez (D02)
+> - Hızlı coin geçişinde eski veri yanlış ekrana gelmez (U01) → `event-bus` tasarımında kritik
 
 ---
 
@@ -15,7 +82,7 @@
 
 ### Geliştirilecek Çözüm:
 Telegram'dan bir sinyal düştüğünde (örneğin `#TAKEUSDT`), tek tıkla veya arama kutusuna yazarak açabileceğimiz;
-1. **TradingView Hızında Mum Grafiği** (ve 5 adede kadar seçilebilir indikatör: RSI, EMA'lar, Bollinger, MACD, Volume),
+1. **Apache ECharts Tabanlı Mum Grafiği** (ve 5 adede kadar seçilebilir indikatör: RSI, EMA'lar, Bollinger, MACD, Volume),
 2. **Akıllı Para (Smart Money) Panelleri** (Balina Pozisyonları, Hesap Dağılımı, Perakende Oranı, Taker Hacmi),
 3. **Dinamik Renkli Barlar** (İlk bakışta % Long / % Short dengesini gösteren yeşil-kırmızı ilerleme çubukları),
 4. **Open Interest (Açık Pozisyon) Delta Sayacı** (Seçilen zaman diliminde örneğin: *"Son 15dk: -5.8M TAKE (%-6.2) Azaldı 🔻"* uyarısı),
@@ -31,7 +98,7 @@ Telegram'dan bir sinyal düştüğünde (örneğin `#TAKEUSDT`), tek tıkla veya
 │  🦁 ALPHA TERMINAL | [ Coin Ara: TAKEUSDT ▼ ]  [ 1m | 5m | 15m | 30m | 1h | 4h | 1d ]  ● CANLI  │
 ├──────────────────────────────────────────────────────────────────┬───────────────────────────────┤
 │                                                                  │ 🐳 TOP TRADER (POSITIONS)     │
-│  📈 FİYAT GRAFİĞİ (TradingView Lightweight 60 FPS)              │ ───────────────────────────── │
+│  📈 FİYAT GRAFİĞİ (Apache ECharts — Candlestick)              │ ───────────────────────────── │
 │  TAKEUSDT • 0.1950 • % +225.30                                   │ 1.03 [====== 51% | 49% ======]│
 │  [ Göstergeler: [x] EMA 20/50  [x] RSI  [x] BB  [ ] MACD ]       │ (Balina Long/Short Parite)    │
 │                                                                  ├───────────────────────────────┤
@@ -63,7 +130,8 @@ Telegram'dan bir sinyal düştüğünde (örneğin `#TAKEUSDT`), tek tıkla veya
 ## ⚙️ 3. Teknik Mimari ve Kullanılacak Teknolojiler
 
 1. **Grafik Motoru:** 
-   - `Lightweight Charts (TradingView)`: Resmi açık kaynak, sıfır gecikmeli, 60fps çalışan kütüphane.
+   - **`Apache ECharts`** (MIT Lisanslı, ücretsiz): Native candlestick desteği, built-in EMA/BB/RSI hesaplama, yüksek performanslı canvas renderer.
+   - ~~Lightweight Charts (TradingView)~~ → **iptal edildi** (ECharts ile değiştirildi).
 2. **Frontend:** 
    - Saf HTML5, Vanilla JavaScript (ultra hafif ve hızlı), modern Dark Glassmorphism CSS.
    - Binance renk paleti: Koyu tema (`#0b0e11`), Kripto Yeşili (`#0ecb81`), Kripto Kırmızısı (`#f6465d`), Altın Sarısı (`#f0b90b`).
@@ -111,7 +179,7 @@ Bu linke tıkladığınız anda tarayıcınızda doğrudan TAKEUSDT verileri, gr
 1. **Aşama 1: Veri Katmanı ve API Servisi** (`binance-data.service.js`)
    - Binance Futures Data endpoint'lerini tek bir fonksiyonda toplayıp temiz JSON formatına sokma.
 2. **Aşama 2: Web Sunucusu ve Arayüz Tasarımı** (`terminal-server.js` + `public/index.html`)
-   - TradingView Lightweight Charts entegrasyonu (mum grafiği, EMA'lar, RSI).
+   - **Apache ECharts** entegrasyonu (candlestick mum grafiği, EMA overlay'ler, RSI alt grafiği).
    - 4'lü Smart Money göstergeleri ve dinamik renkli ilerleme barları.
 3. **Aşama 3: Delta ve Otomatik Teşhis Motoru**
    - Son 15dk / 1 saatlik OI değişimi hesaplayıcısı.

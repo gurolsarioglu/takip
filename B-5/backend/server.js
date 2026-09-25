@@ -11,6 +11,7 @@ const bankrollService = require('./services/bankrollService');
 const firebaseService = require('./services/firebase.service');
 const hamzaService = require('./services/hamza.service');
 const detayScanService = require('./services/detayScan.service');
+const signalFeedbackService = require('./services/signalFeedback.service');
 const formatter = require('./utils/formatter');
 const fs = require('fs');
 const path = require('path');
@@ -511,19 +512,80 @@ app.post('/api/signals/emit', async (req, res) => {
     });
     */
 
+    // Save signal to persistent history with unique ID
+    const savedSignal = signalFeedbackService.saveSignal(req.body);
+    const broadcastData = savedSignal || req.body;
+
     // Pass signal to Hamza (Auto-Trader)
-    hamzaService.handleSignal(req.body).catch(e => {
+    hamzaService.handleSignal(broadcastData).catch(e => {
         console.error('Hamza processing error:', e.message);
     });
 
     if (global.wss) {
         global.wss.clients.forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify({ type: 'signal', data: req.body }));
+                client.send(JSON.stringify({ type: 'signal', data: broadcastData }));
             }
         });
     }
-    res.json({ success: true });
+    res.json({ success: true, signal: broadcastData });
+});
+
+/**
+ * GET /api/signals/history
+ * Return recent signals and their evaluation status
+ */
+app.get('/api/signals/history', (req, res) => {
+    const limit = parseInt(req.query.limit) || 100;
+    const timeframe = req.query.timeframe || null;
+    const signals = signalFeedbackService.getSignals(limit, timeframe);
+    res.json({ success: true, data: signals });
+});
+
+/**
+ * POST /api/signals/feedback
+ * Save user feedback (Correct/Wrong + Notes + Tags) for a signal
+ */
+app.post('/api/signals/feedback', (req, res) => {
+    const { signalId, status, notes, tags } = req.body;
+    if (!signalId || !status) {
+        return res.status(400).json({ success: false, message: 'signalId ve status (CORRECT/WRONG) zorunludur.' });
+    }
+    const updated = signalFeedbackService.saveFeedback(signalId, { status, notes, tags });
+    if (!updated) {
+        return res.status(404).json({ success: false, message: 'Sinyal bulunamadı.' });
+    }
+
+    // Broadcast feedback update to all open dashboards
+    if (global.wss) {
+        global.wss.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify({ type: 'signal_feedback', data: updated }));
+            }
+        });
+    }
+
+    res.json({ success: true, data: updated });
+});
+
+/**
+ * GET /api/signals/stats
+ * Return accuracy metrics and quality report
+ */
+app.get('/api/signals/stats', (req, res) => {
+    const stats = signalFeedbackService.getStats();
+    res.json({ success: true, data: stats });
+});
+
+/**
+ * GET /api/signals/export
+ * Download evaluated signals as CSV (Excel compatible)
+ */
+app.get('/api/signals/export', (req, res) => {
+    const csvData = signalFeedbackService.exportCSV();
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="sinyal_kalite_raporu_${new Date().toISOString().slice(0, 10)}.csv"`);
+    res.send(csvData);
 });
 
 // ─── HAMZA Bot Endpoints ──────────────────────────────────────────────────────

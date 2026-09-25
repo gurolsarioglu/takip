@@ -243,3 +243,31 @@ node hunter-1g.js      # 1G Botu
 node hunter-1gpro.js   # 1Gpro Botu
 node hunter-4spro.js   # 4Spro Botu
 ```
+
+---
+
+## 8. Adım: 15m ve 4Spro Botlarına Trader Positioning & Market Exposure Entegrasyonu
+
+### 👤 Kullanıcı Talebi:
+```text
+NewBot klasör de yer alan 15m ve 4spro bot a iki bilgi eklemek istiyorum örnek eklemek istediğim bilgiyi paylaşıyorum bunu nasıl yapabiliriz. Bana detaylı bir analiz çıkar.
+Trader Positioning: 68.21% 🟢
+Market Exposure: 73.03% 🟢
+
+Trader Positioning: 71.64% 🔴
+Market Exposure: 69.38% 🔴
+```
+
+### 🤖 Yapılan İşlemler & Uygulama Detayları:
+1. **Veri Kaynakları:**
+   - **Trader Positioning:** Binance Futures `/futures/data/topLongShortAccountRatio` (En iyi trader hesap sayısı oranı)
+   - **Market Exposure:** Binance Futures `/futures/data/topLongShortPositionRatio` (En iyi trader net pozisyon hacmi oranı)
+2. **Dinamik Eşik Mantığı (`RATIO_THRESHOLD = 55`):**
+   - Dominant taraf Long ve $\ge 55\%$ ise ➔ `XX.XX% 🟢`
+   - Dominant taraf Short ve $\ge 55\%$ ise ➔ `XX.XX% 🔴`
+   - Dominant taraf $\%50.00 - \%54.99$ arasında ise ➔ `XX.XX% ⚪` (Nötr / Kararsız Bölge)
+3. **Güncellenen Dosyalar:**
+   - `hunter-15m.js`: 15m periyotlu oranlar çekilerek konsol ve dashboard'a eklendi.
+   - `hunter-4spro.js`: 4h periyotlu oranlar çekilerek konsol, Telegram ve dashboard'a eklendi.
+   - `frontend/js/dashboard.js`: Sinyal kartlarında ilgili metriklerin gösterimi sağlandı.
+

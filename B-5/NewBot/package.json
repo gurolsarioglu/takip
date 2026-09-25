@@ -4,6 +4,7 @@
   "description": "Binance Futures Trading Bots Suite (15m, 1G, 1Gpro, 4Spro)",
   "main": "hunter-15m.js",
   "scripts": {
+    "terminal": "node terminal/terminal-server.js",
     "start:15m": "node hunter-15m.js",
     "start:1g": "node hunter-1g.js",
     "start:1gpro": "node hunter-1gpro.js",
@@ -13,6 +14,8 @@
   "dependencies": {
     "axios": "^1.6.2",
     "dotenv": "^16.3.1",
-    "node-telegram-bot-api": "^0.64.0"
+    "express": "^5.2.1",
+    "node-telegram-bot-api": "^0.64.0",
+    "ws": "^8.21.3"
   }
 }

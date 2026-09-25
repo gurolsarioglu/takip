@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🦁 Alpha Terminal — Smart Money & Futures Analiz</title>
+  <meta name="description" content="Binance Futures akıllı para ve vadeli işlem analiz terminali." />
+  <link rel="stylesheet" href="styles/terminal.css" />
+  <script src="libs/lightweight-charts.standalone.production.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+
+<!-- ─── HEADER ──────────────────────────────────────────────── -->
+<header id="header">
+  <div class="logo">🦁 ALPHA</div>
+
+  <div id="coin-search-wrapper">
+    <input type="text" id="coin-input" placeholder="Coin: BTCUSDT" autocomplete="off" spellcheck="false" />
+    <div id="coin-suggestions"></div>
+  </div>
+
+  <nav id="interval-bar">
+    <button class="interval-btn" data-interval="1m">1m</button>
+    <button class="interval-btn" data-interval="5m">5m</button>
+    <button class="interval-btn active" data-interval="15m">15m</button>
+    <button class="interval-btn" data-interval="30m">30m</button>
+    <button class="interval-btn" data-interval="1h">1h</button>
+    <button class="interval-btn" data-interval="4h">4h</button>
+    <button class="interval-btn" data-interval="1d">1d</button>
+  </nav>
+
+  <div id="live-badge">
+    <div class="live-dot disconnected" id="live-dot"></div>
+    <span id="live-text">Bağlanıyor...</span>
+  </div>
+</header>
+
+<!-- ─── ANA UYGULAMA ─────────────────────────────────────────── -->
+<main id="app">
+
+  <!-- Üst Satır: Grafik + Smart Money -->
+  <div id="top-row">
+
+    <!-- Sol: Grafik Paneli -->
+    <div id="chart-panel" class="card">
+      <!-- Binance Futures Ticker Bar (Birebir Binance Tarzı) -->
+      <div id="binance-ticker-bar">
+        <div class="btb-item btb-symbol-box">
+          <span class="btb-star">★</span>
+          <span class="btb-coin-icon">🟣</span>
+          <span id="btb-symbol" class="btb-symbol-text">SYNUSDT</span>
+          <span class="btb-badge-perp">Perp</span>
+        </div>
+
+        <div class="btb-item btb-price-box">
+          <span id="chart-price" class="btb-big-price">—</span>
+          <span id="chart-change" class="btb-change-pill">—</span>
+        </div>
+
+        <div class="btb-divider"></div>
+
+        <div class="btb-item">
+          <span class="btb-lbl">Mark</span>
+          <span id="btb-mark" class="btb-val">—</span>
+        </div>
+
+        <div class="btb-item">
+          <span class="btb-lbl">Index</span>
+          <span id="btb-index" class="btb-val">—</span>
+        </div>
+
+        <div class="btb-item">
+          <span class="btb-lbl">Funding / Geri Sayım</span>
+          <div class="btb-funding-box">
+            <span id="btb-funding" class="btb-val btb-funding-val">—</span>
+            <span id="btb-countdown" class="btb-countdown">—</span>
+          </div>
+        </div>
+
+        <div class="btb-item">
+          <span class="btb-lbl">24h En Yüksek</span>
+          <span id="btb-high" class="btb-val">—</span>
+        </div>
+
+        <div class="btb-item">
+          <span class="btb-lbl">24h En Düşük</span>
+          <span id="btb-low" class="btb-val">—</span>
+        </div>
+
+        <div class="btb-item">
+          <span class="btb-lbl">24h Hacim (USDT)</span>
+          <span id="btb-vol-usdt" class="btb-val">—</span>
+        </div>
+
+        <div class="btb-item btb-oi-box">
+          <span class="btb-lbl">Open Interest (USDT)</span>
+          <div class="btb-oi-row">
+            <span id="btb-oi-val" class="btb-val btb-oi-val">—</span>
+            <span id="btb-oi-tag" class="btb-smart-tag">—</span>
+          </div>
+        </div>
+
+        <!-- Pozisyonum & Karar Rozeti -->
+        <div class="btb-item btb-pos-box">
+          <div class="btb-pos-header">
+            <span class="btb-lbl" id="btb-pos-label">POZİSYONUM (LONG)</span>
+            <span id="btb-pnl-pill" class="btb-pnl-pill">—</span>
+          </div>
+          <div class="btb-pos-row">
+            <span class="btb-pos-prefix">Giriş:</span>
+            <input type="number" step="any" id="btb-entry-input" placeholder="Giriş Fiyatı" />
+            <span id="btb-decision-badge" class="btb-decision-badge neutral">⚪ POZİSYON YOK</span>
+          </div>
+        </div>
+
+        <button id="btb-notify-btn" class="btb-notify-btn" title="Masaüstü Windows Bildirimlerini Aç/Kapat">
+          🔔 Masaüstü Alarm
+        </button>
+
+        <div id="chart-ohlc-legend" class="chart-ohlc-legend"></div>
+      </div>
+      <div id="indicator-toggles">
+        <label class="ind-toggle active" data-ind="EMA20"><input type="checkbox" checked /> EMA20</label>
+        <label class="ind-toggle active" data-ind="EMA50"><input type="checkbox" checked /> EMA50</label>
+      </div>
+      <div id="echarts-container"></div>
+    </div>
+
+    <!-- Sağ: Smart Money & Canlı Balina Kokpiti -->
+    <div id="smart-money-panel">
+
+      <!-- 1. Akıllı Para Güç İbresi (Smart Money Index) -->
+      <div class="card smi-card" id="smi-card">
+        <div class="smi-header">
+          <span class="smi-title">🦁 AKILLI PARA GÜCÜ</span>
+          <span class="smi-score" id="smi-score">--%</span>
+        </div>
+        <div class="smi-meter-track">
+          <div class="smi-meter-fill" id="smi-meter-fill" style="width: 50%"></div>
+        </div>
+        <div class="smi-status-row">
+          <span class="smi-status-badge neutral" id="smi-status-badge">HESAPLANIYOR...</span>
+        </div>
+      </div>
+
+      <!-- 2. Top Trader — Pozisyon (Delta ile) -->
+      <div class="card ls-card">
+        <div class="ls-header-row">
+          <div class="ls-label">🐳 Top Trader — Pozisyon</div>
+          <span class="ls-delta-badge neutral" id="ls-delta-pos">—</span>
+        </div>
+        <div class="ls-ratio-row">
+          <div class="ls-ratio-value neutral" id="ls-ratio-pos">—</div>
+          <span class="ls-trend-hint" id="ls-trend-pos">15-25dk Değişim</span>
+        </div>
+        <div class="ls-bar-track">
+          <div class="ls-bar-long"  id="ls-long-bar-pos"  style="width:50%"></div>
+          <div class="ls-bar-short" id="ls-short-bar-pos" style="width:50%"></div>
+        </div>
+        <div class="ls-bar-labels">
+          <span class="ls-long-pct"  id="ls-long-pct-pos">L —</span>
+          <span class="ls-short-pct" id="ls-short-pct-pos">S —</span>
+        </div>
+        <div class="ls-note" id="ls-note-pos">Yükleniyor...</div>
+      </div>
+
+      <!-- 3. Top Trader — Hesap (Delta ile) -->
+      <div class="card ls-card">
+        <div class="ls-header-row">
+          <div class="ls-label">👥 Top Trader — Hesap</div>
+          <span class="ls-delta-badge neutral" id="ls-delta-acc">—</span>
+        </div>
+        <div class="ls-ratio-row">
+          <div class="ls-ratio-value neutral" id="ls-ratio-acc">—</div>
+          <span class="ls-trend-hint" id="ls-trend-acc">15-25dk Değişim</span>
+        </div>
+        <div class="ls-bar-track">
+          <div class="ls-bar-long"  id="ls-long-bar-acc"  style="width:50%"></div>
+          <div class="ls-bar-short" id="ls-short-bar-acc" style="width:50%"></div>
+        </div>
+        <div class="ls-bar-labels">
+          <span class="ls-long-pct"  id="ls-long-pct-acc">L —</span>
+          <span class="ls-short-pct" id="ls-short-pct-acc">S —</span>
+        </div>
+        <div class="ls-note" id="ls-note-acc">Yükleniyor...</div>
+      </div>
+
+      <!-- 4. Global L/S — Perakende (Delta ile) -->
+      <div class="card ls-card">
+        <div class="ls-header-row">
+          <div class="ls-label">🌐 Global L/S — Perakende</div>
+          <span class="ls-delta-badge neutral" id="ls-delta-global">—</span>
+        </div>
+        <div class="ls-ratio-row">
+          <div class="ls-ratio-value neutral" id="ls-ratio-global">—</div>
+          <span class="ls-trend-hint" id="ls-trend-global">15-25dk Değişim</span>
+        </div>
+        <div class="ls-bar-track">
+          <div class="ls-bar-long"  id="ls-long-bar-global"  style="width:50%"></div>
+          <div class="ls-bar-short" id="ls-short-bar-global" style="width:50%"></div>
+        </div>
+        <div class="ls-bar-labels">
+          <span class="ls-long-pct"  id="ls-long-pct-global">L —</span>
+          <span class="ls-short-pct" id="ls-short-pct-global">S —</span>
+        </div>
+        <div class="ls-note" id="ls-note-global">Yükleniyor...</div>
+      </div>
+
+      <!-- 5. Taker Order Flow — Anlık Piyasa Baskısı -->
+      <div class="card ls-card" id="taker-card">
+        <div class="ls-header-row">
+          <div class="ls-label">⚡ TAKER FLOW — PİYASA BASKISI</div>
+          <span class="ls-delta-badge neutral" id="ls-delta-taker">—</span>
+        </div>
+        <div class="ls-ratio-row">
+          <div class="ls-ratio-value neutral" id="ls-ratio-taker">—</div>
+          <span class="ls-trend-hint" id="ls-trend-taker">Alıcı/Satıcı Oranı</span>
+        </div>
+        <div class="ls-bar-track">
+          <div class="ls-bar-long"  id="ls-long-bar-taker"  style="width:50%"></div>
+          <div class="ls-bar-short" id="ls-short-bar-taker" style="width:50%"></div>
+        </div>
+        <div class="ls-bar-labels">
+          <span class="ls-long-pct"  id="ls-long-pct-taker">Alıcı —</span>
+          <span class="ls-short-pct" id="ls-short-pct-taker">Satıcı —</span>
+        </div>
+        <div class="ls-note" id="ls-note-taker">Piyasa alıcı/satıcı dengesi</div>
+      </div>
+
+      <!-- 6. Canlı Balina & Likidasyon Radarı -->
+      <div class="card whale-radar-card" id="whale-radar-card">
+        <div class="whale-radar-header">
+          <span class="whale-radar-title">🌊 CANLI BALİNA & LİKİDASYON</span>
+          <span class="whale-radar-live-dot" title="Canlı WebSocket Akışı"></span>
+        </div>
+        <div class="whale-radar-list" id="whale-radar-list">
+          <div class="whale-item empty">Büyük işlemler dinleniyor...</div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /top-row -->
+
+  <!-- Alt Bölüm -->
+  <div id="bottom-section">
+
+    <!-- 6 Mini Grafik Grid -->
+    <div id="data-charts-grid">
+
+      <!-- 1. Open Interest -->
+      <div class="mini-chart-card">
+        <div class="mini-chart-header">
+          <span class="mini-chart-title">💰 Open Interest</span>
+          <div class="mini-chart-values">
+            <span class="mini-val"   id="mini-val-oi">—</span>
+            <span class="mini-delta" id="mini-delta-oi">—</span>
+          </div>
+        </div>
+        <div class="mini-chart-canvas" id="mini-chart-oi"></div>
+      </div>
+
+      <!-- 2. L/S Pozisyon (Balina) -->
+      <div class="mini-chart-card">
+        <div class="mini-chart-header">
+          <span class="mini-chart-title">🐳 L/S Pozisyon Oranı</span>
+          <div class="mini-chart-values">
+            <span class="mini-val"   id="mini-val-ls-pos">—</span>
+            <span class="mini-delta" id="mini-delta-ls-pos">—</span>
+          </div>
+        </div>
+        <div class="mini-chart-canvas" id="mini-chart-ls-pos"></div>
+      </div>
+
+      <!-- 3. L/S Hesap (Balina) -->
+      <div class="mini-chart-card">
+        <div class="mini-chart-header">
+          <span class="mini-chart-title">👥 L/S Hesap Oranı</span>
+          <div class="mini-chart-values">
+            <span class="mini-val"   id="mini-val-ls-acc">—</span>
+            <span class="mini-delta" id="mini-delta-ls-acc">—</span>
+          </div>
+        </div>
+        <div class="mini-chart-canvas" id="mini-chart-ls-acc"></div>
+      </div>
+
+      <!-- 4. Taker Buy/Sell -->
+      <div class="mini-chart-card">
+        <div class="mini-chart-header">
+          <span class="mini-chart-title">⚡ Taker Buy/Sell Hacmi</span>
+          <div class="mini-chart-values">
+            <span class="mini-val"   id="mini-val-taker">—</span>
+            <span class="mini-delta" id="mini-delta-taker">—</span>
+          </div>
+        </div>
+        <div class="mini-chart-canvas" id="mini-chart-taker"></div>
+      </div>
+
+      <!-- 5. Global L/S (Perakende) -->
+      <div class="mini-chart-card">
+        <div class="mini-chart-header">
+          <span class="mini-chart-title">🌐 Global L/S Oranı</span>
+          <div class="mini-chart-values">
+            <span class="mini-val"   id="mini-val-global-ls">—</span>
+            <span class="mini-delta" id="mini-delta-global-ls">—</span>
+          </div>
+        </div>
+        <div class="mini-chart-canvas" id="mini-chart-global-ls"></div>
+      </div>
+
+      <!-- 6. Funding Rate -->
+      <div class="mini-chart-card">
+        <div class="mini-chart-header">
+          <span class="mini-chart-title">⏳ Funding Rate</span>
+          <div class="mini-chart-values">
+            <span class="mini-val"   id="mini-val-funding">—</span>
+            <span class="mini-delta" id="mini-delta-funding">—</span>
+          </div>
+        </div>
+        <div class="mini-chart-canvas" id="mini-chart-funding"></div>
+      </div>
+
+    </div><!-- /data-charts-grid -->
+
+    <!-- Verdict Şeridi (Canlı Taktik ve Teyit Merkezi) -->
+    <div id="verdict-panel" class="neutral">
+      <div class="verdict-main">
+        <div id="verdict-icon">🔍</div>
+        <div id="verdict-content">
+          <div class="verdict-header-row">
+            <div id="verdict-badge" class="verdict-badge neutral">GÖZLEM BAŞLATILIYOR</div>
+            <div id="verdict-telemetry" class="verdict-telemetry">
+              <span class="tele-item trigger" id="tele-trigger">🎯 Tetiğe: <strong>—</strong></span>
+              <span class="tele-item stop" id="tele-stop">🛑 Stop Payı: <strong>—</strong></span>
+              <span class="tele-item target" id="tele-target">🏆 Hedef: <strong>—</strong></span>
+              <span class="tele-item rr" id="tele-rr">⚖️ R:R: <strong>—</strong></span>
+            </div>
+          </div>
+          <div id="verdict-text">
+            <strong>Bir coin seçin:</strong> Örnek: BTCUSDT, SYNUSDT, TAKEUSDT
+          </div>
+        </div>
+      </div>
+
+      <!-- Taktik Seviyeler & Takip Çubuğu -->
+      <div id="verdict-tactical-bar">
+        <div class="tactical-field">
+          <label>TETİK DİRENÇ</label>
+          <input type="number" step="any" id="tac-trigger-input" placeholder="0.2250" />
+        </div>
+        <div class="tactical-field">
+          <label>HEDEF (TP)</label>
+          <input type="number" step="any" id="tac-target-input" placeholder="0.26100" />
+        </div>
+        <div class="tactical-field">
+          <label>STOP (SL)</label>
+          <input type="number" step="any" id="tac-stop-input" placeholder="0.2120" />
+        </div>
+        <button id="tac-update-btn" title="Seviyeleri Kaydet ve Grafiğe Yansıt">🎯 Takibe Al</button>
+      </div>
+
+      <!-- Aksiyon Butonları (Ses + Akış) -->
+      <div id="verdict-actions">
+        <button id="verdict-voice-toggle" class="action-btn active" title="Türkçe Sesli Anlatım Açık/Kapalı">
+          <span class="icon">🔊</span>
+          <span class="lbl">Sesli</span>
+        </button>
+        <button id="verdict-feed-toggle" class="action-btn" title="Canlı Taktik Günlüğünü Aç">
+          <span class="icon">📜</span>
+          <span class="lbl">Akış (<span id="feed-count">0</span>)</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Canlı Akış Günlüğü Çekmecesi -->
+    <div id="verdict-feed-drawer" class="feed-drawer hidden">
+      <div class="feed-header">
+        <div class="feed-title">🦁 Canlı Taktik & Teyit Günlüğü</div>
+        <button id="feed-close-btn" class="feed-close">✕</button>
+      </div>
+      <div id="feed-list" class="feed-list"></div>
+    </div>
+
+  </div><!-- /bottom-section -->
+
+</main>
+
+<!-- ─── CORE ────────────────────────────────────────────────── -->
+<script src="core/event-bus.js"></script>
+<script src="core/binance-api.js"></script>
+<script src="core/websocket.js"></script>
+
+<!-- ─── PLUGİNLER ──────────────────────────────────────────── -->
+<script src="plugins/chart/chart.plugin.js"></script>
+<script src="plugins/smart-money/smart-money.plugin.js"></script>
+<script src="plugins/data-charts/data-charts.plugin.js"></script>
+<script src="plugins/verdict/verdict.plugin.js"></script>
+
+<!-- ─── BAŞLATICI ──────────────────────────────────────────── -->
+<script>
+(function initAlphaTerminal() {
+
+  // ── Plugin başlatma ──────────────────────────────────────
+  ChartPlugin.init('echarts-container');
+  SmartMoneyPlugin.init();
+  DataChartsPlugin.init();
+  VerdictPlugin.init();
+
+  // ── WebSocket durum badge ────────────────────────────────
+  EventBus.on('ws:status', (status) => {
+    const dot  = document.getElementById('live-dot');
+    const text = document.getElementById('live-text');
+    dot.className  = `live-dot${status !== 'connected' ? ' ' + status : ''}`;
+    text.textContent =
+      status === 'connected'    ? 'CANLI' :
+      status === 'reconnecting' ? 'Yeniden bağlanıyor...' :
+                                  'Bağlantı kesildi';
+  });
+
+  // ── Anlık Fiyat & Değişim UI Güncelleyici ──────────────
+  function updatePriceUI(cur, chg) {
+    const priceEl  = document.getElementById('chart-price');
+    const chEl     = document.getElementById('chart-change');
+    if (!priceEl || isNaN(cur)) return;
+    const old = parseFloat(priceEl.dataset.prev) || cur;
+    priceEl.dataset.prev = cur;
+    const fmt = cur < 0.001 ? cur.toFixed(6) : cur < 1 ? cur.toFixed(4) : cur < 100 ? cur.toFixed(3) : cur.toFixed(2);
+    priceEl.textContent = fmt;
+    priceEl.classList.remove('up','down');
+    priceEl.classList.add(cur >= old ? 'up' : 'down');
+
+    if (chEl && chg !== undefined && chg !== null && !isNaN(chg)) {
+      chEl.textContent = `${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%`;
+      chEl.className   = `btb-change-pill ${chg >= 0 ? 'up' : 'down'}`;
+    }
+
+    updatePositionUI(cur);
+  }
+
+  // ── Pozisyonum & PnL & Karar Rozeti ─────────────────────
+  let desktopNotifyEnabled = false;
+  let lastNotificationTime = 0;
+
+  function updatePositionUI(curPrice) {
+    const entryInput = document.getElementById('btb-entry-input');
+    const pnlPill    = document.getElementById('btb-pnl-pill');
+    const badgeEl    = document.getElementById('btb-decision-badge');
+    const posLabel   = document.getElementById('btb-pos-label');
+    if (!entryInput || !pnlPill || !badgeEl) return;
+
+    // Dinamik seviyeleri oku (SYN için varsayılan, diğer coinler için girilen/hesaplanan)
+    const isSyn = (currentSymbol === 'SYNUSDT');
+    const trigVal = parseFloat(document.getElementById('tac-trigger-input')?.value) || (isSyn ? 0.2250 : null);
+    const targVal = parseFloat(document.getElementById('tac-target-input')?.value)  || (isSyn ? 0.2610 : null);
+    const stopVal = parseFloat(document.getElementById('tac-stop-input')?.value)    || (isSyn ? 0.2120 : null);
+    const sym = currentSymbol || 'COIN';
+
+    // LocalStorage veya seviye oranından yön tespiti (D01 / D02 uyumu)
+    let savedDir = null;
+    try {
+      const savedStr = localStorage.getItem('alpha_levels_' + currentSymbol);
+      if (savedStr) {
+        const parsed = JSON.parse(savedStr);
+        if (parsed.direction) savedDir = parsed.direction;
+      }
+    } catch(e) {}
+
+    const isShort = savedDir ? (savedDir === 'SHORT') : (targVal && trigVal && targVal < trigVal);
+
+    if (posLabel) {
+      posLabel.textContent = isShort ? 'POZİSYONUM (SHORT)' : 'POZİSYONUM (LONG)';
+    }
+
+    const entry = parseFloat(entryInput.value);
+    if (isNaN(curPrice) || isNaN(entry) || entry <= 0) {
+      pnlPill.textContent = '—';
+      pnlPill.className = 'btb-pnl-pill neutral';
+      badgeEl.textContent = '⚪ POZİSYON YOK';
+      badgeEl.className = 'btb-decision-badge neutral';
+      return;
+    }
+
+    // LONG formülü: ((curPrice - entry) / entry) * 100
+    // SHORT formülü: ((entry - curPrice) / entry) * 100
+    const pnlPct = isShort ? (((entry - curPrice) / entry) * 100) : (((curPrice - entry) / entry) * 100);
+    pnlPill.textContent = `${pnlPct >= 0 ? '+' : ''}${pnlPct.toFixed(2)}% PnL`;
+    pnlPill.className   = `btb-pnl-pill ${pnlPct >= 0 ? 'up' : 'down'}`;
+
+    // Karar Rozeti Belirleme (Dinamik seviyeler ve yöne göre)
+    if (isShort) {
+      if (targVal && curPrice <= targVal) {
+        badgeEl.textContent = '🎯 HEDEF GELDİ (KÂR AL)';
+        badgeEl.className   = 'btb-decision-badge gold';
+        _sendDesktopNotify(`🎯 ${sym} HEDEFE ULAŞTI!`, `Fiyat ${targVal} hedef seviyesine indi! Kâr realizasyonu yap.`);
+      } else if (stopVal && curPrice >= stopVal) {
+        badgeEl.textContent = '🔴 ACİL STOP / KAÇ';
+        badgeEl.className   = 'btb-decision-badge bear';
+        _sendDesktopNotify(`⚠️ ${sym} STOP UYARISI!`, `Fiyat ${stopVal} stop seviyesini aştı!`);
+      } else if (trigVal && curPrice <= trigVal) {
+        badgeEl.textContent = '🔥 TEYİT ALINDI / KIRILIM';
+        badgeEl.className   = 'btb-decision-badge bull';
+      } else if (pnlPct > 0) {
+        badgeEl.textContent = '🟢 KÂRDA / TAKİP';
+        badgeEl.className   = 'btb-decision-badge bull';
+      } else {
+        badgeEl.textContent = '⚖️ İZLEMEDE';
+        badgeEl.className   = 'btb-decision-badge neutral';
+      }
+    } else {
+      if (targVal && curPrice >= targVal) {
+        badgeEl.textContent = '🎯 HEDEF GELDİ (KÂR AL)';
+        badgeEl.className   = 'btb-decision-badge gold';
+        _sendDesktopNotify(`🎯 ${sym} HEDEFE ULAŞTI!`, `Fiyat ${targVal} seviyesine vurdu! Kârın: +%${pnlPct.toFixed(2)}! Kâr realizasyonu yap.`);
+      } else if (stopVal && curPrice <= stopVal) {
+        badgeEl.textContent = '🔴 ACİL STOP / KAÇ';
+        badgeEl.className   = 'btb-decision-badge bear';
+        _sendDesktopNotify(`⚠️ ${sym} STOP UYARISI!`, `Fiyat ${stopVal} desteğini kırdı! Zarar: %${pnlPct.toFixed(2)}!`);
+      } else if (trigVal && curPrice >= trigVal) {
+        badgeEl.textContent = '🔥 TEYİT ALINDI / DİRENÇ AŞILDI';
+        badgeEl.className   = 'btb-decision-badge bull';
+      } else if (stopVal && curPrice < stopVal * 1.015) {
+        badgeEl.textContent = '⚠️ DİKKAT / STOP YAKIN';
+        badgeEl.className   = 'btb-decision-badge warn';
+      } else if (pnlPct > 0) {
+        badgeEl.textContent = '🟢 TUT / TREND SAĞLAM';
+        badgeEl.className   = 'btb-decision-badge bull';
+      } else {
+        badgeEl.textContent = '⚖️ İZLEMEDE';
+        badgeEl.className   = 'btb-decision-badge neutral';
+      }
+    }
+  }
+
+  function _sendDesktopNotify(title, body) {
+    if (!desktopNotifyEnabled) return;
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    const now = Date.now();
+    if (now - lastNotificationTime < 30000) return;
+    lastNotificationTime = now;
+
+    try {
+      new Notification(title, {
+        body,
+        icon: 'https://bin.bnbstatic.com/static/images/common/favicon.ico'
+      });
+    } catch(e){}
+  }
+
+  // Masaüstü bildirim butonu dinleyicisi
+  setTimeout(() => {
+    const notifyBtn = document.getElementById('btb-notify-btn');
+    if (notifyBtn) {
+      notifyBtn.addEventListener('click', () => {
+        if (!('Notification' in window)) {
+          alert('Tarayıcınız masaüstü bildirimlerini desteklemiyor.');
+          return;
+        }
+        if (Notification.permission === 'granted') {
+          desktopNotifyEnabled = !desktopNotifyEnabled;
+          _updateNotifyBtnUI();
+        } else {
+          Notification.requestPermission().then(perm => {
+            desktopNotifyEnabled = (perm === 'granted');
+            _updateNotifyBtnUI();
+          });
+        }
+      });
+    }
+
+    const entryInputEl = document.getElementById('btb-entry-input');
+    if (entryInputEl) {
+      entryInputEl.addEventListener('input', () => {
+        const valStr = entryInputEl.value.trim();
+        if (currentSymbol) {
+          try { localStorage.setItem('alpha_entry_' + currentSymbol, valStr); } catch(e){}
+        }
+        const entryVal = parseFloat(valStr);
+        if (!isNaN(entryVal) && entryVal > 0) {
+          EventBus.emit('tactical:levels', {
+            entry: entryVal,
+            trigger: parseFloat(document.getElementById('tac-trigger-input')?.value) || undefined,
+            target:  parseFloat(document.getElementById('tac-target-input')?.value)  || undefined,
+            stop:    parseFloat(document.getElementById('tac-stop-input')?.value)    || undefined,
+          });
+          const cur = parseFloat(document.getElementById('chart-price')?.textContent);
+          if (!isNaN(cur)) updatePositionUI(cur);
+        } else {
+          updatePositionUI(NaN);
+        }
+      });
+    }
+  }, 300);
+
+  function _updateNotifyBtnUI() {
+    const btn = document.getElementById('btb-notify-btn');
+    if (!btn) return;
+    btn.classList.toggle('active', desktopNotifyEnabled);
+    btn.textContent = desktopNotifyEnabled ? '🔔 Alarm Açık' : '🔕 Alarm Kapalı';
+  }
+
+  // ── Binance Ticker Bar Yardımcıları ──────────────────────
+  let countdownTimer = null;
+  let nextFundingTimestamp = 0;
+
+  function updateBinanceBarMetrics(t) {
+    if (!t) return;
+    const highEl    = document.getElementById('btb-high');
+    const lowEl     = document.getElementById('btb-low');
+    const volUsdtEl = document.getElementById('btb-vol-usdt');
+
+    const fmtPrice = v => {
+      const num = parseFloat(v);
+      if (isNaN(num)) return '—';
+      return num < 0.001 ? num.toFixed(6) : num < 1 ? num.toFixed(4) : num < 100 ? num.toFixed(3) : num.toFixed(2);
+    };
+
+    const fmtVol = v => {
+      const num = parseFloat(v);
+      if (isNaN(num)) return '—';
+      if (num >= 1e9) return `$${(num/1e9).toFixed(2)}B`;
+      if (num >= 1e6) return `$${(num/1e6).toFixed(2)}M`;
+      if (num >= 1e3) return `$${(num/1e3).toFixed(1)}K`;
+      return `$${num.toFixed(2)}`;
+    };
+
+    if (highEl && t.highPrice) highEl.textContent = fmtPrice(t.highPrice);
+    if (lowEl  && t.lowPrice)  lowEl.textContent  = fmtPrice(t.lowPrice);
+    if (volUsdtEl && t.quoteVolume !== undefined) {
+      volUsdtEl.textContent = fmtVol(t.quoteVolume);
+    }
+  }
+
+  function updateFundingUI(f) {
+    if (!f) return;
+    const markEl  = document.getElementById('btb-mark');
+    const indexEl = document.getElementById('btb-index');
+    const fundEl  = document.getElementById('btb-funding');
+
+    const fmtPrice = v => {
+      const num = parseFloat(v);
+      if (isNaN(num)) return '—';
+      return num < 0.001 ? num.toFixed(6) : num < 1 ? num.toFixed(4) : num < 100 ? num.toFixed(3) : num.toFixed(2);
+    };
+
+    if (markEl  && f.markPrice)  markEl.textContent  = fmtPrice(f.markPrice);
+    if (indexEl && f.indexPrice) indexEl.textContent = fmtPrice(f.indexPrice);
+
+    if (fundEl && f.lastFundingRate !== undefined) {
+      const rate = parseFloat(f.lastFundingRate) * 100;
+      fundEl.textContent = `${rate >= 0 ? '+' : ''}${rate.toFixed(4)}%`;
+      fundEl.className = `btb-val btb-funding-val ${rate < 0 ? 'bull' : rate > 0.03 ? 'warn' : 'neutral'}`;
+    }
+
+    if (f.nextFundingTime) {
+      nextFundingTimestamp = parseInt(f.nextFundingTime);
+      _tickCountdown();
+    }
+  }
+
+  function _tickCountdown() {
+    const cdEl = document.getElementById('btb-countdown');
+    if (!cdEl || !nextFundingTimestamp) return;
+
+    const diff = nextFundingTimestamp - Date.now();
+    if (diff <= 0) {
+      cdEl.textContent = '00:00:00';
+      return;
+    }
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    cdEl.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+
+  clearInterval(countdownTimer);
+  countdownTimer = setInterval(_tickCountdown, 1000);
+
+  function updateOpenInterestUI(oiHist) {
+    const oiValEl = document.getElementById('btb-oi-val');
+    const tagEl   = document.getElementById('btb-oi-tag');
+    if (!oiValEl || !oiHist || !oiHist.length) return;
+
+    const latest = oiHist[oiHist.length - 1];
+    const first  = oiHist[0];
+    const curVal = (latest.sumOpenInterestValue !== undefined && latest.sumOpenInterestValue !== null && latest.sumOpenInterestValue !== '') ? parseFloat(latest.sumOpenInterestValue) : null;
+    const oldVal = (first.sumOpenInterestValue !== undefined && first.sumOpenInterestValue !== null && first.sumOpenInterestValue !== '') ? parseFloat(first.sumOpenInterestValue) : null;
+
+    const curQty = (latest.sumOpenInterest !== undefined && latest.sumOpenInterest !== null && latest.sumOpenInterest !== '') ? parseFloat(latest.sumOpenInterest) : null;
+    const oldQty = (first.sumOpenInterest !== undefined && first.sumOpenInterest !== null && first.sumOpenInterest !== '') ? parseFloat(first.sumOpenInterest) : null;
+
+    const fmtMoney = v => {
+      if (v >= 1e9) return `$${(v/1e9).toFixed(2)}B`;
+      if (v >= 1e6) return `$${(v/1e6).toFixed(2)}M`;
+      if (v >= 1e3) return `$${(v/1e3).toFixed(1)}K`;
+      return `$${v.toFixed(0)}`;
+    };
+
+    if (curVal !== null && Number.isFinite(curVal)) {
+      oiValEl.textContent = fmtMoney(curVal);
+    } else if (curQty !== null && Number.isFinite(curQty)) {
+      oiValEl.textContent = `${curQty >= 1e6 ? (curQty/1e6).toFixed(2) + 'M' : curQty >= 1e3 ? (curQty/1e3).toFixed(1) + 'K' : curQty.toFixed(0)} Kontrat`;
+    } else {
+      oiValEl.textContent = '—';
+    }
+
+    if (tagEl) {
+      if (curQty !== null && oldQty !== null && oldQty > 0 && Number.isFinite(curQty) && Number.isFinite(oldQty)) {
+        const deltaQty = curQty - oldQty;
+        const deltaQtyPct = (deltaQty / oldQty) * 100;
+        const deltaVal = (curVal !== null && oldVal !== null) ? curVal - oldVal : 0;
+        const deltaValPct = (oldVal && oldVal > 0) ? (deltaVal / oldVal) * 100 : null;
+
+        if (deltaQtyPct > 0.4) {
+          tagEl.textContent = `🔺 +$${fmtMoney(Math.abs(deltaVal)).replace('$','')} (%+${deltaQtyPct.toFixed(1)}) Pozisyon Artışı`;
+          tagEl.className = 'btb-smart-tag bull';
+        } else if (deltaQtyPct < -0.4) {
+          tagEl.textContent = `🔻 -$${fmtMoney(Math.abs(deltaVal)).replace('$','')} (%${deltaQtyPct.toFixed(1)}) Pozisyon Azalışı`;
+          tagEl.className = 'btb-smart-tag bear';
+        } else if (deltaValPct !== null && Math.abs(deltaValPct) > 0.5) {
+          tagEl.textContent = `⚖️ Değer Değişimi (%${deltaValPct >= 0 ? '+' : ''}${deltaValPct.toFixed(1)})`;
+          tagEl.className = 'btb-smart-tag neutral';
+        } else {
+          tagEl.textContent = `⚖️ Dengeli`;
+          tagEl.className = 'btb-smart-tag neutral';
+        }
+      } else if (curVal !== null && oldVal !== null && oldVal > 0 && Number.isFinite(curVal) && Number.isFinite(oldVal)) {
+        const deltaValPct = ((curVal - oldVal) / oldVal) * 100;
+        tagEl.textContent = `⚖️ Değer Değişimi (%${deltaValPct >= 0 ? '+' : ''}${deltaValPct.toFixed(1)})`;
+        tagEl.className = 'btb-smart-tag neutral';
+      } else {
+        tagEl.textContent = '—';
+        tagEl.className = 'btb-smart-tag neutral';
+      }
+    }
+  }
+
+  // ── WebSocket kline → fiyat güncelleme ──────────────────
+  EventBus.on('ws:kline', ({ symbol, kline }) => {
+    if (symbol && currentSymbol && symbol.toUpperCase() !== currentSymbol) return;
+    updatePriceUI(kline.close);
+  });
+
+  // ── WebSocket ticker → anlık canlı fiyat & % güncelleme ──
+  EventBus.on('ws:ticker', (t) => {
+    if (t.symbol && currentSymbol && t.symbol.toUpperCase() !== currentSymbol) return;
+    updatePriceUI(t.lastPrice, t.priceChangePercent);
+    updateBinanceBarMetrics(t);
+  });
+
+  // ── Smart Money → Verdict için OI delta ve Ticker Bar yayımı ─
+  EventBus.on('smartmoney:data', (sm) => {
+    if (!sm) return;
+    if (sm.funding) updateFundingUI(sm.funding);
+    if (sm.oiHist)  updateOpenInterestUI(sm.oiHist);
+
+    if (sm.takerRatio) {
+      const ratio = parseFloat(sm.takerRatio.buySellRatio);
+      EventBus.emit('oi:data', {
+        current: 0, delta15m: null, deltaPct15m: null,
+        trend: ratio > 1 ? 'artıyor' : 'azalıyor', symbol: ''
+      });
+    }
+  });
+
+  // ── Coin Değiştir ────────────────────────────────────────
+  let currentSymbol   = '';
+  let currentInterval = '15m';
+  let tickerTimer     = null;
+  let tickerGen       = 0;
+
+  function changeCoin(raw) {
+    let symbol = raw.toUpperCase().trim();
+    if (!symbol.endsWith('USDT') && !symbol.endsWith('BUSD')) symbol += 'USDT';
+    if (symbol === currentSymbol) return;
+    currentSymbol = symbol;
+    const myGen = ++tickerGen;
+
+    const btbSym = document.getElementById('btb-symbol');
+    if (btbSym) btbSym.textContent = symbol;
+
+    document.getElementById('chart-price').textContent  = '—';
+    document.getElementById('chart-change').textContent = '—';
+
+    // Clear previous coin bar metrics to prevent showing old data for invalid/loading coins
+    ['btb-high', 'btb-low', 'btb-vol-usdt', 'btb-mark', 'btb-index', 'btb-funding', 'btb-oi-val', 'btb-oi-tag'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = '—';
+    });
+
+    // Load coin-scoped position entry
+    const entryInput = document.getElementById('btb-entry-input');
+    if (entryInput) {
+      let saved = null;
+      try { saved = localStorage.getItem('alpha_entry_' + symbol); } catch(e){}
+      if (saved !== null && saved !== '') {
+        entryInput.value = saved;
+      } else if (symbol === 'SYNUSDT') {
+        entryInput.value = '0.21948';
+      } else {
+        entryInput.value = '';
+      }
+    }
+    updatePositionUI(NaN);
+
+    EventBus.emit('coin:change', { symbol, interval: currentInterval });
+    WebSocketManager.switchTo(symbol, currentInterval);
+
+    // İlk ticker ve fonlama çekimi
+    BinanceAPI.getFundingRate(symbol).then(f => {
+      if (myGen === tickerGen && symbol === currentSymbol) updateFundingUI(f);
+    }).catch(()=>{});
+    BinanceAPI.getOpenInterestHist(symbol, '5m', 4).then(oi => {
+      if (myGen === tickerGen && symbol === currentSymbol) updateOpenInterestUI(oi);
+    }).catch(()=>{});
+
+    // İlk ticker çekimi + 1.5s hızlı poller (WS kesilirse bile fiyat ASLA donmaz)
+    clearInterval(tickerTimer);
+    const fetchTicker = () => {
+      BinanceAPI.getTicker(symbol).then(t => {
+        if (myGen !== tickerGen || symbol !== currentSymbol) return;
+        updatePriceUI(parseFloat(t.lastPrice), parseFloat(t.priceChangePercent));
+        updateBinanceBarMetrics(t);
+        EventBus.emit('ws:ticker', {
+          symbol: t.symbol || symbol,
+          lastPrice: parseFloat(t.lastPrice),
+          priceChangePercent: parseFloat(t.priceChangePercent),
+          highPrice: parseFloat(t.highPrice),
+          lowPrice: parseFloat(t.lowPrice),
+          quoteVolume: parseFloat(t.quoteVolume),
+          volume: parseFloat(t.volume),
+        });
+      }).catch(() => {
+        if (myGen !== tickerGen || symbol !== currentSymbol) return;
+        const cp = document.getElementById('chart-price');
+        if (cp) cp.textContent = 'GEÇERSİZ SEMBOL';
+        const ch = document.getElementById('chart-change');
+        if (ch) ch.textContent = 'VERİ YOK';
+        const badge = document.getElementById('btb-decision-badge');
+        if (badge) {
+          badge.textContent = '⚪ GEÇERSİZ SEMBOL';
+          badge.className = 'btb-decision-badge neutral';
+        }
+      });
+    };
+    fetchTicker();
+    tickerTimer = setInterval(fetchTicker, 1500);
+  }
+
+  // ── Interval Seçici ──────────────────────────────────────
+  document.querySelectorAll('.interval-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.interval-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentInterval = btn.dataset.interval;
+      EventBus.emit('interval:change', currentInterval);
+      if (currentSymbol) WebSocketManager.switchTo(currentSymbol, currentInterval);
+    });
+  });
+
+  // ── Coin Arama ───────────────────────────────────────────
+  const coinInput       = document.getElementById('coin-input');
+  const coinSuggestions = document.getElementById('coin-suggestions');
+
+  const POPULAR = [
+    'SYNUSDT','BTCUSDT','ETHUSDT','BNBUSDT','SOLUSDT','XRPUSDT',
+    'DOGEUSDT','ADAUSDT','AVAXUSDT','DOTUSDT','LINKUSDT',
+    'LTCUSDT','UNIUSDT','ATOMUSDT','NEARUSDT','MATICUSDT',
+    'TAKEUSDT','WIFUSDT','PEPEUSDT','BONKUSDT','SHIBUSDT',
+  ];
+
+  coinInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const v = coinInput.value.trim();
+      if (v) { changeCoin(v); coinSuggestions.classList.remove('show'); coinInput.blur(); }
+    } else if (e.key === 'Escape') {
+      coinSuggestions.classList.remove('show');
+    }
+  });
+
+  coinInput.addEventListener('input', () => {
+    const q = coinInput.value.toUpperCase().trim();
+    if (!q) { coinSuggestions.classList.remove('show'); return; }
+    const matches = POPULAR.filter(c => c.startsWith(q)).slice(0, 8);
+    if (!matches.length) { coinSuggestions.classList.remove('show'); return; }
+    coinSuggestions.innerHTML = matches.map(c =>
+      `<div class="suggestion-item" data-coin="${c}">${c}</div>`
+    ).join('');
+    coinSuggestions.classList.add('show');
+  });
+
+  coinSuggestions.addEventListener('click', (e) => {
+    const item = e.target.closest('.suggestion-item');
+    if (!item) return;
+    coinInput.value = item.dataset.coin;
+    coinSuggestions.classList.remove('show');
+    changeCoin(item.dataset.coin);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!coinInput.contains(e.target) && !coinSuggestions.contains(e.target))
+      coinSuggestions.classList.remove('show');
+  });
+
+  // ── URL parametresi veya BTCUSDT varsayılan ──────────────
+  const coinFromUrl = new URLSearchParams(window.location.search).get('coin');
+  setTimeout(() => {
+    const startCoin = coinFromUrl || 'BTCUSDT';
+    coinInput.value = startCoin.toUpperCase();
+    changeCoin(startCoin);
+  }, 150);
+
+})();
+</script>
+</body>
+</html>

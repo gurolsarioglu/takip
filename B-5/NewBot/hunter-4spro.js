@@ -335,9 +335,13 @@ async function checkCoin(symbol) {
                     supplyStr = `%${supplyData.ratio}` + (supplyData.isMax ? ' !!!' : '');
                 }
 
+                // Top Trader Positioning & Market Exposure (4h)
+                const topTraderData = await getTraderPositioningAndExposure(symbol, '4h');
+
                 await sendAlert(
                     symbol, signalType, boost, price, prev, lastRsi, lastSma, lastK, lastD,
-                    volStatus, trendStatus, demaAlert, analysis1h, analysis1d, analysis1w, supplyStr
+                    volStatus, trendStatus, demaAlert, analysis1h, analysis1d, analysis1w, supplyStr,
+                    topTraderData.traderPositioning, topTraderData.marketExposure
                 );
                 return true;
             }
@@ -345,9 +349,57 @@ async function checkCoin(symbol) {
     } catch (e) { return false; }
 }
 
+const RATIO_THRESHOLD = 55; // Eşik: %55 ve üzeri yönlü (🟢/🔴), %50-%54.99 arası nötr (⚪)
+
+/**
+ * Binance Futures Top Trader Long/Short Account & Position oranlarını çeker
+ */
+async function getTraderPositioningAndExposure(symbol, period = '4h') {
+    try {
+        const [accRes, posRes] = await Promise.all([
+            axios.get('https://fapi.binance.com/futures/data/topLongShortAccountRatio', {
+                params: { symbol, period, limit: 1 },
+                timeout: 3500
+            }).catch(() => ({ data: [] })),
+            axios.get('https://fapi.binance.com/futures/data/topLongShortPositionRatio', {
+                params: { symbol, period, limit: 1 },
+                timeout: 3500
+            }).catch(() => ({ data: [] }))
+        ]);
+
+        const formatRatio = (dataList) => {
+            if (!dataList || !Array.isArray(dataList) || dataList.length === 0) return 'Bilinmiyor';
+            const item = dataList[0];
+            const longPct = parseFloat(item.longAccount) * 100;
+            const shortPct = parseFloat(item.shortAccount) * 100;
+
+            if (isNaN(longPct) || isNaN(shortPct)) return 'Bilinmiyor';
+
+            if (longPct >= shortPct) {
+                const emoji = longPct >= RATIO_THRESHOLD ? '🟢' : '⚪';
+                return `${longPct.toFixed(2)}% ${emoji}`;
+            } else {
+                const emoji = shortPct >= RATIO_THRESHOLD ? '🔴' : '⚪';
+                return `${shortPct.toFixed(2)}% ${emoji}`;
+            }
+        };
+
+        return {
+            traderPositioning: formatRatio(accRes.data),
+            marketExposure: formatRatio(posRes.data)
+        };
+    } catch (e) {
+        return {
+            traderPositioning: 'Bilinmiyor',
+            marketExposure: 'Bilinmiyor'
+        };
+    }
+}
+
 async function sendAlert(
     symbol, type, boost, price, prev, rsi, sma, k, d, vol, trend, demaAlert,
-    analysis1h, analysis1d, analysis1w, supplyStr = 'Bilinmiyor'
+    analysis1h, analysis1d, analysis1w, supplyStr = 'Bilinmiyor',
+    traderPositioning = 'Bilinmiyor', marketExposure = 'Bilinmiyor'
 ) {
     const now = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
     const binanceUrl = `https://www.binance.com/en/futures/${symbol}`;
@@ -403,6 +455,8 @@ async function sendAlert(
         (rsi1wLine ? `${rsi1wLine}` : '') +
         `• *Stoch:* ${Math.round(k)}(K)/${Math.round(d)}(D)\n` +
         `• *Hacim:* ${vol}\n` +
+        `• *Trader Positioning:* ${traderPositioning}\n` +
+        `• *Market Exposure:* ${marketExposure}\n` +
         `──────────────────\n` +
         `🔗 [Binance Futures](${binanceUrl}) | ⏰ ${now}`;
 
@@ -447,7 +501,9 @@ async function sendAlert(
             volume: vol,
             trend,
             demaAlert,
-            supplyStr
+            supplyStr,
+            traderPositioning,
+            marketExposure
         };
         await axios.post('http://localhost:3000/api/signals/emit', signalData);
     } catch (err) {

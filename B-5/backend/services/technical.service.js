@@ -545,10 +545,18 @@ class TechnicalService {
      */
     checkCompression(klines, trendBarIndex, lookback = 3) {
         try {
-            if (trendBarIndex < lookback) return false;
+            if (trendBarIndex < 15) return false;
             
-            const trendBar = klines[trendBarIndex];
-            const trendBarBody = Math.abs(parseFloat(trendBar.close) - parseFloat(trendBar.open));
+            // Calculate 14-period ATR before the trend bar to determine normal volatility
+            let atrSum = 0;
+            for (let i = trendBarIndex - 14; i < trendBarIndex; i++) {
+                const h = parseFloat(klines[i].high);
+                const l = parseFloat(klines[i].low);
+                const pc = parseFloat(klines[i-1].close);
+                const tr = Math.max(h - l, Math.abs(h - pc), Math.abs(l - pc));
+                atrSum += tr;
+            }
+            const atr = atrSum / 14;
             
             let smallCandlesCount = 0;
             
@@ -556,8 +564,8 @@ class TechnicalService {
                 const prev = klines[trendBarIndex - i];
                 const prevBody = Math.abs(parseFloat(prev.close) - parseFloat(prev.open));
                 
-                // If previous candle body is less than 40% of the trend bar body, consider it small/compressed
-                if (prevBody < trendBarBody * 0.40) {
+                // Real compression: The candle body should be smaller than 70% of the 14-period ATR
+                if (prevBody < atr * 0.70) {
                     smallCandlesCount++;
                 }
             }

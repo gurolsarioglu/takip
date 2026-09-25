@@ -1075,3 +1075,152 @@ body {
     from { opacity: 0; transform: translateY(30px) scale(0.98); }
     to { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* ─── Signal Feedback & Quality Rating ─── */
+.signal-feedback-bar {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.feedback-action-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.feedback-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-muted);
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.feedback-btn-correct:hover {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: rgba(16, 185, 129, 0.5);
+    color: #34d399;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+}
+
+.feedback-btn-wrong:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #f87171;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.25);
+}
+
+.feedback-badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.feedback-badge.correct {
+    background: rgba(16, 185, 129, 0.18);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #34d399;
+}
+
+.feedback-badge.wrong {
+    background: rgba(239, 68, 68, 0.18);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #f87171;
+}
+
+.feedback-edit-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: color 0.2s;
+}
+
+.feedback-edit-btn:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.feedback-notes-preview {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 6px 10px;
+    border-radius: 6px;
+    border-left: 3px solid #64748b;
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.feedback-notes-preview.correct-note {
+    border-left-color: #10b981;
+}
+
+.feedback-notes-preview.wrong-note {
+    border-left-color: #ef4444;
+}
+
+.fb-tag {
+    padding: 5px 12px;
+    border-radius: 16px;
+    font-size: 0.8rem;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.fb-tag:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.fb-tag.active {
+    background: rgba(16, 185, 129, 0.25);
+    border-color: #10b981;
+    color: #34d399;
+    font-weight: 600;
+}
+
+.fb-status-btn.selected {
+    outline: 2px solid #fff;
+    box-shadow: 0 0 12px currentColor;
+}
+
+.progress-track {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    height: 8px;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.6s ease;
+}
