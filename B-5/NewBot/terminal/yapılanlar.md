@@ -376,4 +376,17 @@ Kullanıcının ilettiği öncelik tablosu ve `hata.md` raporu doğrultusunda si
   * `node review/terminal-followup-tests.cjs` ➔ **7/7 Başarılı**
   * `http://localhost:3000/` canlı sunucu testi ➔ **Aktif ve Çalışıyor**
 
+---
+
+## 📊 17. Fiyat Mumları ve Hacim Histogramı Çakışmasının Giderilmesi (25 Eylül 2026)
+* **Sorun:** Yüksek hacimli coinlerde (örn. `TAKEUSDT`) hacim histogram çubukları grafiğin orta ve üst kısımlarına kadar uzayarak fiyat mumları ve EMA çizgileri ile birbirine giriyor, görsel karmaşaya yol açıyordu. Ayrıca sağ fiyat ekseninde hacim değeri fiyatların üzerine biniyordu.
+* **Kök Neden:** Lightweight Charts kütüphanesinde `addHistogramSeries` metodu doğrudan `scaleMargins` almaz. `scaleMargins` doğrudan serinin ait olduğu `priceScale()` üzerinden uygulanmalıdır (`volumeSeries.priceScale().applyOptions({ scaleMargins: { top: 0.80, bottom: 0 } })`). Bu tanımlanmadığı için hacim ölçeği varsayılan serbest ölçekte kalıp mumlarla çakışıyordu.
+* **Yapılan Düzeltmeler (`terminal/public/plugins/chart/chart.plugin.js`):**
+  1. **Hacim Ölçeği Sınırlandırması:** `volumeSeries.priceScale().applyOptions({ scaleMargins: { top: 0.80, bottom: 0 } })` uygulanarak hacim çubuklarının maksimum grafiğin en alttaki %20'lik diliminde kalması sağlandı.
+  2. **Mum Taban Payı:** `rightPriceScale.scaleMargins.bottom: 0.25` olarak ayarlanarak fiyat mumlarının en dip noktasının bile grafiğin altından %25 yukarıda kalması sağlandı (%5'lik net güvenlik tamponu bırakıldı, çakışma tamamen engellendi).
+  3. **Eksen Temizliği:** Hacim serisinde `lastValueVisible: false` ve `priceLineVisible: false` yapılarak sağ fiyat ekseninde hacim yazısı kaldırıldı.
+  4. **Legend Zenginleştirmesi:** Üst bilgi çubuğuna (`chart-ohlc-legend`) dinamik `Hacim:` göstergesi eklenerek fare ile mumların üzerine gelindiğinde anlık hacim değerinin okunması sağlandı.
+* **Doğrulama:** Canlı tarayıcıda `TAKEUSDT` ile ekran görüntüsü alınarak doğrulandı, 15/15 regresyon testinden başarıyla geçti.
+
+
 

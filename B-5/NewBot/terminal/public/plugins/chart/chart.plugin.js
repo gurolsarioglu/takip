@@ -65,8 +65,8 @@ const ChartPlugin = (() => {
       rightPriceScale: {
         borderColor: 'rgba(255, 255, 255, 0.08)',
         scaleMargins: {
-          top: 0.06,
-          bottom: 0.18, // Alttaki hacim histogramı için ferah alan
+          top: 0.08,
+          bottom: 0.25, // Alttaki hacim histogramı için ferah alan (mumlar hacimle çakışmaz)
         },
         autoScale: true,
       },
@@ -106,15 +106,32 @@ const ChartPlugin = (() => {
       },
     });
 
+    if (typeof candleSeries.priceScale === 'function') {
+      candleSeries.priceScale().applyOptions({
+        scaleMargins: {
+          top: 0.08,
+          bottom: 0.25,
+        },
+      });
+    }
+
     // 2. Volume Histogram Serisi (En altta yarı şeffaf Binance stili)
     volumeSeries = chart.addHistogramSeries({
       priceFormat: { type: 'volume' },
       priceScaleId: '', // Ayrı görünmez overlay ekseni
-      scaleMargins: {
-        top: 0.82,
-        bottom: 0,
-      },
+      lastValueVisible: false, // Fiyat ekseninde hacim etiketi fiyatla karışmasın
+      priceLineVisible: false,
     });
+
+    // Hacim histogramı ölçeğini sadece en alt %20'lik alana sabitle (fiyat mumlarıyla çakışmayı önler)
+    if (typeof volumeSeries.priceScale === 'function') {
+      volumeSeries.priceScale().applyOptions({
+        scaleMargins: {
+          top: 0.80, // Hacim çubukları maksimum alttaki %20'lik alanda kalır
+          bottom: 0,
+        },
+      });
+    }
 
     // 3. EMA20 Serisi (Altın Sarısı)
     ema20Series = chart.addLineSeries({
@@ -151,7 +168,7 @@ const ChartPlugin = (() => {
     _listenEvents();
   }
 
-  // ─── Crosshair Legend (O: H: L: C: Takipçisi) ─────────────────
+  // ─── Crosshair Legend (O: H: L: C: Vol: Takipçisi) ────────────
   function _setupCrosshairLegend() {
     chart.subscribeCrosshairMove(param => {
       if (!param || !param.time || !param.seriesData || !param.seriesData.get(candleSeries)) {
@@ -159,8 +176,9 @@ const ChartPlugin = (() => {
         return;
       }
       const data = param.seriesData.get(candleSeries);
+      const volData = volumeSeries && param.seriesData.get(volumeSeries);
       if (data) {
-        _renderLegend(data);
+        _renderLegend(data, volData ? volData.value : (data.volume || 0));
       }
     });
   }
@@ -168,21 +186,30 @@ const ChartPlugin = (() => {
   function _updateLegendLast() {
     if (!klineData.length) return;
     const last = klineData[klineData.length - 1];
-    _renderLegend(last);
+    _renderLegend(last, last ? last.volume : 0);
   }
 
-  function _renderLegend(c) {
+  function _renderLegend(c, vol) {
     const legendEl = document.getElementById('chart-ohlc-legend');
     if (!legendEl || !c) return;
     const isUp = c.close >= c.open;
     const colorClass = isUp ? 'up' : 'down';
     const fmt = v => v < 1 ? v.toFixed(4) : v < 100 ? v.toFixed(3) : v.toFixed(2);
+    const vVal = vol !== undefined ? vol : (c.volume || 0);
+    const fmtVol = v => {
+      if (!v && v !== 0) return '—';
+      if (v >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+      if (v >= 1e6) return (v / 1e6).toFixed(2) + 'M';
+      if (v >= 1e3) return (v / 1e3).toFixed(1) + 'K';
+      return Number(v).toFixed(0);
+    };
 
     legendEl.innerHTML = `
       <span>O: <span class="val ${colorClass}">${fmt(c.open)}</span></span>
       <span>H: <span class="val ${colorClass}">${fmt(c.high)}</span></span>
       <span>L: <span class="val ${colorClass}">${fmt(c.low)}</span></span>
       <span>C: <span class="val ${colorClass}">${fmt(c.close)}</span></span>
+      <span>Hacim: <span class="val ${colorClass}">${fmtVol(vVal)}</span></span>
     `;
   }
 
@@ -270,7 +297,7 @@ const ChartPlugin = (() => {
         if (pt50) ema50Series.update(pt50);
       }
 
-      _renderLegend(bar);
+      _renderLegend(bar, kline.volume);
     });
   }
 
