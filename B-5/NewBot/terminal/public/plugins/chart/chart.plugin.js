@@ -11,6 +11,13 @@ const ChartPlugin = (() => {
   let ema20Series  = null;
   let ema50Series  = null;
 
+  // RSI 14 & SMA 9 Serileri
+  let rsiChart     = null;
+  let rsiSeries    = null;
+  let rsiSmaSeries = null;
+  let rsiData      = [];
+  let rsiSmaData   = [];
+
   let currentSymbol   = '';
   let currentInterval = '15m';
   let klineData       = []; // { time, open, high, low, close, volume }
@@ -24,6 +31,7 @@ const ChartPlugin = (() => {
   const indicators = {
     EMA20: true,
     EMA50: true,
+    RSI:   true,
   };
 
   // ─── Lightweight Charts Başlat ────────────────────────────────
@@ -153,15 +161,179 @@ const ChartPlugin = (() => {
       visible: indicators.EMA50,
     });
 
+    // ─── RSI & SMA Sub-Chart Başlat ─────────────────────────────
+    const rsiContainer = document.getElementById('rsi-chart-container');
+    if (rsiContainer) {
+      rsiContainer.innerHTML = '';
+      rsiChart = LightweightCharts.createChart(rsiContainer, {
+        width:  rsiContainer.clientWidth  || 800,
+        height: rsiContainer.clientHeight || 110,
+        layout: {
+          background: { type: 'solid', color: '#0b0e11' },
+          textColor: '#848e9c',
+          fontSize: 10,
+          fontFamily: "'JetBrains Mono', 'Inter', monospace",
+        },
+        grid: {
+          vertLines: { color: 'rgba(255, 255, 255, 0.02)' },
+          horzLines: { color: 'rgba(255, 255, 255, 0.02)' },
+        },
+        crosshair: {
+          mode: LightweightCharts.CrosshairMode.Normal,
+          vertLine: {
+            color: 'rgba(255, 255, 255, 0.25)',
+            width: 1,
+            style: LightweightCharts.LineStyle.Dashed,
+          },
+          horzLine: {
+            color: 'rgba(255, 255, 255, 0.25)',
+            width: 1,
+            style: LightweightCharts.LineStyle.Dashed,
+          },
+        },
+        rightPriceScale: {
+          borderColor: 'rgba(255, 255, 255, 0.08)',
+          scaleMargins: {
+            top: 0.08,
+            bottom: 0.08,
+          },
+        },
+        timeScale: {
+          borderColor: 'rgba(255, 255, 255, 0.08)',
+          timeVisible: true,
+          secondsVisible: false,
+          barSpacing: 9,
+          minBarSpacing: 3,
+          rightOffset: 12,
+        },
+        handleScroll: {
+          mouseWheel: true,
+          pressedMouseMove: true,
+          horzTouchDrag: true,
+          vertTouchDrag: true,
+        },
+        handleScale: {
+          axisPressedMouseMove: true,
+          mouseWheel: true,
+          pinch: true,
+        },
+      });
+
+      // RSI 14 Serisi (Eflatun/Mor)
+      rsiSeries = rsiChart.addLineSeries({
+        color: '#c084fc',
+        lineWidth: 1.5,
+        priceFormat: {
+          type: 'price',
+          precision: 2,
+          minMove: 0.01,
+        },
+        crosshairMarkerVisible: true,
+        crosshairMarkerRadius: 3,
+        lastValueVisible: true,
+        priceLineVisible: false,
+        autoscaleInfoProvider: () => ({
+          priceRange: {
+            minValue: 0,
+            maxValue: 100,
+          },
+        }),
+      });
+
+      // SMA 9 Serisi (Altın Sarısı)
+      rsiSmaSeries = rsiChart.addLineSeries({
+        color: '#f0b90b',
+        lineWidth: 1.5,
+        priceFormat: {
+          type: 'price',
+          precision: 2,
+          minMove: 0.01,
+        },
+        crosshairMarkerVisible: true,
+        crosshairMarkerRadius: 3,
+        lastValueVisible: true,
+        priceLineVisible: false,
+      });
+
+      // 70, 50, 30 Referans Çizgileri
+      rsiSeries.createPriceLine({
+        price: 70,
+        color: 'rgba(246, 70, 93, 0.45)',
+        lineWidth: 1,
+        lineStyle: LightweightCharts.LineStyle.Dashed,
+        axisLabelVisible: true,
+        title: '70',
+      });
+      rsiSeries.createPriceLine({
+        price: 50,
+        color: 'rgba(255, 255, 255, 0.15)',
+        lineWidth: 1,
+        lineStyle: LightweightCharts.LineStyle.Dotted,
+        axisLabelVisible: false,
+        title: '',
+      });
+      rsiSeries.createPriceLine({
+        price: 30,
+        color: 'rgba(14, 203, 129, 0.45)',
+        lineWidth: 1,
+        lineStyle: LightweightCharts.LineStyle.Dashed,
+        axisLabelVisible: true,
+        title: '30',
+      });
+
+      // Zaman Skalalarını Senkronize Et (Sync visible logical range)
+      let isSyncingRange = false;
+      if (chart.timeScale && rsiChart.timeScale) {
+        if (typeof chart.timeScale().subscribeVisibleLogicalRangeChange === 'function') {
+          chart.timeScale().subscribeVisibleLogicalRangeChange(range => {
+            if (isSyncingRange || !rsiChart || !indicators.RSI || !range) return;
+            isSyncingRange = true;
+            if (typeof rsiChart.timeScale().setVisibleLogicalRange === 'function') {
+              rsiChart.timeScale().setVisibleLogicalRange(range);
+            }
+            isSyncingRange = false;
+          });
+        }
+        if (typeof rsiChart.timeScale().subscribeVisibleLogicalRangeChange === 'function') {
+          rsiChart.timeScale().subscribeVisibleLogicalRangeChange(range => {
+            if (isSyncingRange || !chart || !range) return;
+            isSyncingRange = true;
+            if (typeof chart.timeScale().setVisibleLogicalRange === 'function') {
+              chart.timeScale().setVisibleLogicalRange(range);
+            }
+            isSyncingRange = false;
+          });
+        }
+      }
+
+      // RSI Chart Crosshair Dinleyici
+      rsiChart.subscribeCrosshairMove(param => {
+        if (!param || !param.time) {
+          _updateRSILegendLast();
+          return;
+        }
+        _updateRSILegendAt(param.time);
+      });
+    }
+
     // Otomatik Yeniden Boyutlandırma (ResizeObserver)
     const ro = new ResizeObserver(entries => {
       if (!entries || !entries.length) return;
-      const { width, height } = entries[0].contentRect;
-      if (width > 0 && height > 0) {
-        chart.applyOptions({ width, height });
+      if (chart && container) {
+        const { width, height } = container.getBoundingClientRect();
+        if (width > 0 && height > 0) {
+          chart.applyOptions({ width, height });
+        }
+      }
+      if (rsiChart && rsiContainer) {
+        const { width, height } = rsiContainer.getBoundingClientRect();
+        if (width > 0 && height > 0) {
+          rsiChart.applyOptions({ width, height });
+        }
       }
     });
     ro.observe(container);
+    if (rsiContainer) ro.observe(rsiContainer);
 
     _setupCrosshairLegend();
     _bindIndicatorToggles();
@@ -173,6 +345,7 @@ const ChartPlugin = (() => {
     chart.subscribeCrosshairMove(param => {
       if (!param || !param.time || !param.seriesData || !param.seriesData.get(candleSeries)) {
         _updateLegendLast();
+        _updateRSILegendLast();
         return;
       }
       const data = param.seriesData.get(candleSeries);
@@ -180,6 +353,7 @@ const ChartPlugin = (() => {
       if (data) {
         _renderLegend(data, volData ? volData.value : (data.volume || 0));
       }
+      _updateRSILegendAt(param.time);
     });
   }
 
@@ -187,6 +361,7 @@ const ChartPlugin = (() => {
     if (!klineData.length) return;
     const last = klineData[klineData.length - 1];
     _renderLegend(last, last ? last.volume : 0);
+    _updateRSILegendLast();
   }
 
   function _renderLegend(c, vol) {
@@ -228,6 +403,16 @@ const ChartPlugin = (() => {
 
         if (name === 'EMA20' && ema20Series) ema20Series.applyOptions({ visible: active });
         if (name === 'EMA50' && ema50Series) ema50Series.applyOptions({ visible: active });
+        if (name === 'RSI') {
+          const pane = document.getElementById('rsi-pane');
+          if (pane) pane.classList.toggle('hidden', !active);
+          const cEl = document.getElementById('echarts-container');
+          const rEl = document.getElementById('rsi-chart-container');
+          setTimeout(() => {
+            if (chart && cEl) chart.applyOptions({ width: cEl.clientWidth, height: cEl.clientHeight });
+            if (rsiChart && rEl) rsiChart.applyOptions({ width: rEl.clientWidth, height: rEl.clientHeight });
+          }, 30);
+        }
       });
     });
   }
@@ -297,6 +482,15 @@ const ChartPlugin = (() => {
         if (pt50) ema50Series.update(pt50);
       }
 
+      // Canlı RSI 14 & SMA 9 güncellemesi
+      if (rsiSeries && rsiSmaSeries && klineData.length > 15) {
+        rsiData = _calcRSI(klineData, 14);
+        rsiSmaData = _calcSMA(rsiData, 9);
+        rsiSeries.setData(rsiData);
+        rsiSmaSeries.setData(rsiSmaData);
+        _updateRSILegendLast();
+      }
+
       _renderLegend(bar, kline.volume);
     });
   }
@@ -353,6 +547,14 @@ const ChartPlugin = (() => {
       ema20Series.setData(_calcEMAData(klineData, 20));
       ema50Series.setData(_calcEMAData(klineData, 50));
 
+      // 4. RSI 14 & SMA 9 verisi
+      rsiData = _calcRSI(klineData, 14);
+      rsiSmaData = _calcSMA(rsiData, 9);
+      if (rsiSeries) rsiSeries.setData(rsiData);
+      if (rsiSmaSeries) rsiSmaSeries.setData(rsiSmaData);
+      if (rsiChart) rsiChart.timeScale().fitContent();
+      _updateRSILegendLast();
+
       // Grafiği sığdır
       chart.timeScale().fitContent();
       _updateLegendLast();
@@ -380,6 +582,8 @@ const ChartPlugin = (() => {
       if (volumeSeries) volumeSeries.setData([]);
       if (ema20Series)  ema20Series.setData([]);
       if (ema50Series)  ema50Series.setData([]);
+      if (rsiSeries)    rsiSeries.setData([]);
+      if (rsiSmaSeries) rsiSmaSeries.setData([]);
     }
   }
 
@@ -420,6 +624,88 @@ const ChartPlugin = (() => {
       }
     }
     return ema !== null ? { time: candles[candles.length - 1].time, value: ema } : null;
+  }
+
+  // ─── RSI (14) & SMA (9) Hesaplama ────────────────────────────
+  function _calcRSI(klines, period = 14) {
+    if (!klines || klines.length <= period) return [];
+    const result = [];
+    let gains = 0;
+    let losses = 0;
+
+    for (let i = 1; i <= period; i++) {
+      const diff = klines[i].close - klines[i - 1].close;
+      if (diff >= 0) gains += diff;
+      else losses -= diff;
+    }
+
+    let avgGain = gains / period;
+    let avgLoss = losses / period;
+
+    let firstRsi = 100;
+    if (avgLoss !== 0) {
+      firstRsi = 100 - (100 / (1 + (avgGain / avgLoss)));
+    } else if (avgGain === 0) {
+      firstRsi = 50;
+    }
+    result.push({ time: klines[period].time, value: parseFloat(firstRsi.toFixed(2)) });
+
+    for (let i = period + 1; i < klines.length; i++) {
+      const diff = klines[i].close - klines[i - 1].close;
+      const gain = diff > 0 ? diff : 0;
+      const loss = diff < 0 ? -diff : 0;
+
+      avgGain = (avgGain * (period - 1) + gain) / period;
+      avgLoss = (avgLoss * (period - 1) + loss) / period;
+
+      let rsi = 100;
+      if (avgLoss !== 0) {
+        rsi = 100 - (100 / (1 + (avgGain / avgLoss)));
+      } else if (avgGain === 0) {
+        rsi = 50;
+      }
+      result.push({ time: klines[i].time, value: parseFloat(rsi.toFixed(2)) });
+    }
+
+    return result;
+  }
+
+  function _calcSMA(data, period = 9) {
+    if (!data || data.length < period) return [];
+    const result = [];
+    let sum = 0;
+
+    for (let i = 0; i < period; i++) {
+      sum += data[i].value;
+    }
+    result.push({ time: data[period - 1].time, value: parseFloat((sum / period).toFixed(2)) });
+
+    for (let i = period; i < data.length; i++) {
+      sum += data[i].value - data[i - period].value;
+      result.push({ time: data[i].time, value: parseFloat((sum / period).toFixed(2)) });
+    }
+
+    return result;
+  }
+
+  function _updateRSILegendAt(time) {
+    const el = document.getElementById('rsi-legend-val');
+    if (!el) return;
+    const rPt = rsiData.find(p => p.time === time);
+    const sPt = rsiSmaData.find(p => p.time === time);
+    const rVal = rPt ? rPt.value.toFixed(2) : '—';
+    const sVal = sPt ? sPt.value.toFixed(2) : '—';
+    el.innerHTML = `RSI: <span class="val rsi-v">${rVal}</span> <span class="sep">|</span> SMA: <span class="val sma-v">${sVal}</span>`;
+  }
+
+  function _updateRSILegendLast() {
+    const el = document.getElementById('rsi-legend-val');
+    if (!el) return;
+    const lastR = rsiData[rsiData.length - 1];
+    const lastS = rsiSmaData[rsiSmaData.length - 1];
+    const rVal = lastR ? lastR.value.toFixed(2) : '—';
+    const sVal = lastS ? lastS.value.toFixed(2) : '—';
+    el.innerHTML = `RSI: <span class="val rsi-v">${rVal}</span> <span class="sep">|</span> SMA: <span class="val sma-v">${sVal}</span>`;
   }
 
   // ─── Taktik Seviye Çizgileri (Price Lines) ───────────────────

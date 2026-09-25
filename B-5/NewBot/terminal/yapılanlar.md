@@ -388,5 +388,32 @@ Kullanıcının ilettiği öncelik tablosu ve `hata.md` raporu doğrultusunda si
   4. **Legend Zenginleştirmesi:** Üst bilgi çubuğuna (`chart-ohlc-legend`) dinamik `Hacim:` göstergesi eklenerek fare ile mumların üzerine gelindiğinde anlık hacim değerinin okunması sağlandı.
 * **Doğrulama:** Canlı tarayıcıda `TAKEUSDT` ile ekran görüntüsü alınarak doğrulandı, 15/15 regresyon testinden başarıyla geçti.
 
+---
+
+## 📈 18. RSI (14) ve SMA (9) İndikatörü Entegrasyonu (25 Eylül 2026)
+* **İstek:** TradingView standardında 14 periyotluk RSI ve RSI tabanlı 9 periyotluk SMA (hareketli ortalama) çizgisinin eklenmesi.
+* **Tasarım Kararı:** Fiyat mumlarının ve hacim histogramının ferah kalması ve osilatörlerin TradingView/Binance standardına uygun olması amacıyla ana grafiğin hemen altına senkronize bir alt panel (`#rsi-pane`) olarak eklendi.
+* **Yapılan Geliştirmeler:**
+  1. **HTML & CSS:**
+     * `indicator-toggles` çubuğuna `RSI (14, 9)` açma/kapama butonu eklendi.
+     * Ana grafik kartının altına `#rsi-pane` (110px yükseklik, TradingView tarzı üst başlık ve eksenler) yerleştirildi. Butona tıklandığında panel pürüzsüzce açılıp kapanır, kapandığında ana grafik tüm yüksekliği doldurur.
+  2. **Matematiksel Hesaplama (`chart.plugin.js`):**
+     * **Wilder's RSI (14):** Klasik Wilder düzeltmesiyle anlık ve geçmiş 14 periyotluk RSI hesaplandı.
+     * **SMA (9):** RSI serisinin son 9 değerinin basit hareketli ortalaması hesaplandı.
+  3. **Grafik Serileri & Seviyeler:**
+     * **RSI Çizgisi:** Eflatun/mor renk (`#c084fc`, 1.5px kalınlık), sağ eksen ve son değer etiketi açık.
+     * **SMA 9 Çizgisi:** Binance sarısı (`#f0b90b`, 1.5px kalınlık).
+     * **Referans Çizgileri:** 70 (Aşırı Alım / Kırmızı kesikli), 50 (Nötr / Beyaz noktalı), 30 (Aşırı Satım / Yeşil kesikli).
+     * **Ölçek Kilidi:** `autoscaleInfoProvider` ile dikey ölçek daima `[0, 100]` aralığına kilitlendi.
+  4. **Senkronizasyon:**
+     * Ana fiyat grafiği ile RSI zaman eksenleri (zoom, pan, drag) çift yönlü olarak senkronize edildi.
+     * Fare gezdirildiğinde (crosshair) üst legend başlığında anlık `RSI: XX.XX | SMA: XX.XX` değerleri canlı güncellenmektedir.
+     * Canlı WebSocket tick akışında mum güncellendikçe RSI ve SMA anlık olarak hesaplanıp çizilir.
+* **Test ve Doğrulama:**
+  * `node review/terminal-regression-tests.cjs` ➔ **8/8 Başarılı**
+  * `node review/terminal-followup-tests.cjs` ➔ **7/7 Başarılı**
+  * Canlı tarayıcıda `TAKEUSDT` ile ekran görüntüsü alınarak doğrulandı.
+
+
 
 

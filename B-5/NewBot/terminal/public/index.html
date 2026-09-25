@@ -123,8 +123,18 @@
       <div id="indicator-toggles">
         <label class="ind-toggle active" data-ind="EMA20"><input type="checkbox" checked /> EMA20</label>
         <label class="ind-toggle active" data-ind="EMA50"><input type="checkbox" checked /> EMA50</label>
+        <label class="ind-toggle active" data-ind="RSI"><input type="checkbox" checked /> RSI (14, 9)</label>
       </div>
       <div id="echarts-container"></div>
+      <div id="rsi-pane" class="rsi-pane">
+        <div class="rsi-header">
+          <span class="rsi-title">RSI (14, SMA 9)</span>
+          <span id="rsi-legend-val" class="rsi-legend-val">
+            RSI: <span class="val rsi-v">—</span> <span class="sep">|</span> SMA: <span class="val sma-v">—</span>
+          </span>
+        </div>
+        <div id="rsi-chart-container"></div>
+      </div>
     </div>
 
     <!-- Sağ: Smart Money & Canlı Balina Kokpiti -->

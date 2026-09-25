@@ -475,6 +475,62 @@ html, body {
   overflow: hidden;
 }
 
+/* ─── RSI Sub-Chart Pane ─────────────────────────────── */
+.rsi-pane {
+  height: 110px;
+  flex: 0 0 110px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: #0b0e11;
+  transition: all .15s ease;
+}
+.rsi-pane.hidden {
+  display: none !important;
+}
+.rsi-header {
+  position: absolute;
+  top: 4px;
+  left: 12px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  pointer-events: none;
+  background: rgba(11, 14, 17, 0.75);
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.rsi-title {
+  color: #c084fc;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+.rsi-legend-val {
+  color: var(--text-secondary);
+}
+.rsi-legend-val .rsi-v {
+  color: #c084fc;
+  font-weight: 600;
+}
+.rsi-legend-val .sma-v {
+  color: #f0b90b;
+  font-weight: 600;
+}
+.rsi-legend-val .sep {
+  color: rgba(255, 255, 255, 0.15);
+  margin: 0 2px;
+}
+#rsi-chart-container {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+}
+
 /* ─── Smart Money & Canlı Balina Kokpiti (Sağ Panel) ───── */
 #smart-money-panel {
   display: flex;
