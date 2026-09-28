@@ -1,6 +1,7 @@
 /**
  * watchlist.plugin.js — Binance Vadeli 700+ Coin Canlı İzleme Listesi
  * Fiyat, %Değişim, Hacim (USD), Funding Rate (FR) ve FR Süresi.
+ * Gerçek zamanlı WebSocket (!miniTicker@arr) ile anlık fiyat akışı & yeşil/kırmızı tick yanıp sönme (flash).
  */
 const WatchlistPlugin = (() => {
   let allTickers = [];
@@ -8,6 +9,9 @@ const WatchlistPlugin = (() => {
   let searchQuery = '';
   let activeSymbol = 'BTWUSDT';
   let pollInterval = null;
+  let tickerWs = null;
+  let rowElementMap = new Map(); // symbol -> { row, priceCell, chgPill, lastPrice }
+  let reconnectTimer = null;
 
   const COLOR_PALETTE = [
     '#3b82f6', '#06b6d4', '#10b981', '#8b5cf6', '#f59e0b',
@@ -49,7 +53,8 @@ const WatchlistPlugin = (() => {
     try {
       const res = await fetch('/api/watchlist');
       if (!res.ok) return;
-      allTickers = await res.json();
+      const data = await res.json();
+      allTickers = data;
       renderTable();
       updateHeaderCount();
     } catch (e) {
@@ -59,7 +64,7 @@ const WatchlistPlugin = (() => {
 
   function updateHeaderCount() {
     const countEl = document.getElementById('wl-coin-count');
-    if (countEl) countEl.textContent = allTickers.length || 731;
+    if (countEl) countEl.textContent = allTickers.length || 732;
   }
 
   function renderTable() {
@@ -113,6 +118,118 @@ const WatchlistPlugin = (() => {
         </tr>
       `;
     }).join('');
+
+    // Canlı WebSocket güncellemesi için görünen satırların DOM haritasını oluştur
+    rowElementMap.clear();
+    displayList.forEach(t => {
+      const row = tbody.querySelector(`tr[data-symbol="${t.symbol}"]`);
+      if (row) {
+        rowElementMap.set(t.symbol, {
+          row,
+          priceCell: row.querySelector('.wl-price-cell'),
+          chgPill: row.querySelector('.wl-chg-pill'),
+          lastPrice: t.price
+        });
+      }
+    });
+  }
+
+  // ─── Canlı Binance WebSocket Akışı (!miniTicker@arr) ───────────
+  function connectTickerStream() {
+    clearTimeout(reconnectTimer);
+    if (tickerWs) {
+      try {
+        tickerWs.onclose = null;
+        tickerWs.onerror = null;
+        tickerWs.onmessage = null;
+        tickerWs.close();
+      } catch (e) {}
+    }
+
+    try {
+      tickerWs = new WebSocket('wss://stream.binance.com:9443/ws/!miniTicker@arr');
+    } catch (e) {
+      console.warn('[Watchlist WS] Bağlantı hatası:', e);
+      reconnectTimer = setTimeout(connectTickerStream, 4000);
+      return;
+    }
+
+    tickerWs.onopen = () => {
+      console.log('[Watchlist WS] 🟢 Canlı !miniTicker@arr bağlandı. Gerçek zamanlı fiyat akışı devrede.');
+    };
+
+    tickerWs.onmessage = (event) => {
+      try {
+        const raw = JSON.parse(event.data);
+        if (!Array.isArray(raw)) return;
+
+        raw.forEach(m => {
+          if (!m.s || !m.s.endsWith('USDT')) return;
+
+          const newPrice = parseFloat(m.c);
+          const openPrice = parseFloat(m.o);
+          if (isNaN(newPrice)) return;
+
+          const chgPct = openPrice > 0 ? ((newPrice - openPrice) / openPrice) * 100 : 0;
+
+          // 1. Tabloda görünür olan satırı anlık güncelle ve yeşil/kırmızı flash yak
+          const entry = rowElementMap.get(m.s);
+          if (entry && entry.priceCell) {
+            const oldPrice = entry.lastPrice;
+            if (newPrice !== oldPrice) {
+              entry.priceCell.textContent = formatPrice(newPrice);
+              const isUp = newPrice >= oldPrice;
+              entry.priceCell.classList.remove('flash-up', 'flash-down');
+              void entry.priceCell.offsetWidth; // DOM reflow tetikle
+              entry.priceCell.classList.add(isUp ? 'flash-up' : 'flash-down');
+              entry.lastPrice = newPrice;
+            }
+
+            if (entry.chgPill) {
+              const isPositive = chgPct >= 0;
+              entry.chgPill.textContent = `${isPositive ? '+' : ''}${chgPct.toFixed(2)}%`;
+              entry.chgPill.className = `wl-chg-pill ${isPositive ? 'up' : 'down'}`;
+            }
+          }
+
+          // 2. Eğer güncellenen coin şu an seçili olan coin ise Ticker Snapshot'ı da canlı besle
+          if (m.s === activeSymbol) {
+            const priceEl = document.getElementById('snap-price');
+            const chgEl = document.getElementById('snap-chg');
+            if (priceEl) {
+              const oldSnapPrice = parseFloat(priceEl.dataset.price || 0);
+              priceEl.textContent = formatPrice(newPrice);
+              priceEl.dataset.price = newPrice;
+              if (oldSnapPrice && newPrice !== oldSnapPrice) {
+                priceEl.classList.remove('flash-up', 'flash-down');
+                void priceEl.offsetWidth;
+                priceEl.classList.add(newPrice >= oldSnapPrice ? 'flash-up' : 'flash-down');
+              }
+            }
+            if (chgEl) {
+              const isPositive = chgPct >= 0;
+              chgEl.textContent = `${isPositive ? '+' : ''}${chgPct.toFixed(2)}%`;
+              chgEl.className = `snapshot-chg-pill ${isPositive ? 'up' : 'down'}`;
+            }
+          }
+
+          // 3. Bellekteki coin verisini güncelle
+          const mem = allTickers.find(x => x.symbol === m.s);
+          if (mem) {
+            mem.price = newPrice;
+            mem.chgPct = chgPct;
+          }
+        });
+      } catch (err) {}
+    };
+
+    tickerWs.onerror = (e) => {
+      console.warn('[Watchlist WS] Hata:', e.message);
+    };
+
+    tickerWs.onclose = () => {
+      reconnectTimer = setTimeout(connectTickerStream, 3000);
+    };
   }
 
   function setActiveSymbol(symbol) {
@@ -151,7 +268,8 @@ const WatchlistPlugin = (() => {
     });
 
     fetchWatchlist();
-    pollInterval = setInterval(fetchWatchlist, 4000);
+    connectTickerStream();
+    pollInterval = setInterval(fetchWatchlist, 6000);
   }
 
   return {

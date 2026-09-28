@@ -560,7 +560,45 @@ html, body {
 
 .wl-price-cell {
   font-weight: 600;
-  color: var(--text-main);
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+  transition: background-color 0.4s ease, color 0.4s ease;
+  border-radius: 3px;
+  padding: 1px 4px !important;
+}
+
+@keyframes price-flash-green {
+  0% {
+    background-color: rgba(14, 203, 129, 0.45);
+    color: #0ecb81 !important;
+    text-shadow: 0 0 6px rgba(14, 203, 129, 0.8);
+  }
+  100% {
+    background-color: transparent;
+    color: #ffffff;
+    text-shadow: none;
+  }
+}
+
+@keyframes price-flash-red {
+  0% {
+    background-color: rgba(246, 70, 93, 0.45);
+    color: #f6465d !important;
+    text-shadow: 0 0 6px rgba(246, 70, 93, 0.8);
+  }
+  100% {
+    background-color: transparent;
+    color: #ffffff;
+    text-shadow: none;
+  }
+}
+
+.wl-price-cell.flash-up {
+  animation: price-flash-green 0.75s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+.wl-price-cell.flash-down {
+  animation: price-flash-red 0.75s cubic-bezier(0.1, 0.9, 0.2, 1);
 }
 
 .wl-chg-pill {

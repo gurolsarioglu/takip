@@ -46,7 +46,7 @@ const sentimentCache = new Map();
 // ─── /api/watchlist (700+ Coin Tickers + Funding Rates) ─────────
 app.get('/api/watchlist', async (req, res) => {
   const now = Date.now();
-  if (watchlistCache.data && (now - watchlistCache.ts < 3000)) {
+  if (watchlistCache.data && (now - watchlistCache.ts < 1500)) {
     return res.json(watchlistCache.data);
   }
 
