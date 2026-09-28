@@ -870,6 +870,18 @@ html, body {
   box-shadow: 0 0 14px rgba(249, 115, 22, 0.65);
 }
 
+.bot-badge-btn.div {
+  background: radial-gradient(circle, #2e1065 0%, #0d0720 100%);
+  border-color: #7c3aed;
+  color: #c4b5fd;
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.35);
+}
+
+.bot-badge-btn.div:hover, .bot-badge-btn.div.active {
+  border-color: #a78bfa;
+  box-shadow: 0 0 14px rgba(167, 139, 250, 0.65);
+}
+
 .bot-btn-mini-title {
   font-weight: 800;
   font-size: 10px;

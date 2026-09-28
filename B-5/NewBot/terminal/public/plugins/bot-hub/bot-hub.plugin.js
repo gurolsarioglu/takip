@@ -172,14 +172,14 @@ const BotHubPlugin = (() => {
     // ─── 0. Hammer Pro Plus (Advanced structural pattern framework) Kartları ─────────────
     if (activeBot === 'hammerproplus') {
       let html = '';
-      let hasToday = false;
+      let lastDate = null;
 
       signals.forEach(s => {
-        if (!hasToday && s.dateLabel === 'Today') {
-          hasToday = true;
+        if (s.dateLabel && s.dateLabel !== lastDate) {
+          lastDate = s.dateLabel;
           html += `
             <div class="signal-date-divider">
-              <span>Today</span>
+              <span>${lastDate}</span>
             </div>
           `;
         }
@@ -257,14 +257,14 @@ const BotHubPlugin = (() => {
     // ─── 0. 4S Sniper (NW UP Structure Reversal) Kartları ─────────────
     if (activeBot === '4ssniper') {
       let html = '';
-      let hasToday = false;
+      let lastDateSniper = null;
 
       signals.forEach(s => {
-        if (!hasToday && s.dateLabel === 'Today') {
-          hasToday = true;
+        if (s.dateLabel && s.dateLabel !== lastDateSniper) {
+          lastDateSniper = s.dateLabel;
           html += `
             <div class="signal-date-divider">
-              <span>Today</span>
+              <span>${lastDateSniper}</span>
             </div>
           `;
         }
@@ -540,7 +540,7 @@ const BotHubPlugin = (() => {
 
             <div class="card-field-row">
               <span>Funding Rate:</span>
-              <span class="card-field-val" style="color: ${s.fundingRate.startsWith('-') ? 'var(--red)' : 'var(--green)'}; font-weight:700;">
+              <span class="card-field-val" style="color: ${String(s.fundingRate).startsWith('-') ? 'var(--red)' : 'var(--green)'}; font-weight:700;">
                 ${s.fundingRate}
               </span>
             </div>
@@ -555,7 +555,7 @@ const BotHubPlugin = (() => {
             ${s.difference !== undefined ? `
               <div class="card-field-row">
                 <span>Difference:</span>
-                <span class="card-field-val" style="color: ${s.difference.startsWith('-') ? 'var(--red)' : 'var(--text-main)'}; font-weight:600;">
+                <span class="card-field-val" style="color: ${String(s.difference).startsWith('-') ? 'var(--red)' : 'var(--text-main)'}; font-weight:600;">
                   ${s.difference}
                 </span>
               </div>
@@ -711,7 +711,7 @@ const BotHubPlugin = (() => {
 
           <div class="card-field-row" style="margin-top:3px;">
             <span>WT:</span>
-            <span style="font-weight:700;">${s.wt}</span>
+            <span style="font-weight:700;">${s.wt || '—'}</span>
           </div>
 
           ${s.pivot ? `
