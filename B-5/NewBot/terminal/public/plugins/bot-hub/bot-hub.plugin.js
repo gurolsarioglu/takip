@@ -142,11 +142,38 @@ const BotHubPlugin = (() => {
         const d = await snRes.json();
         fourSSniperSignals = d.signals || [];
       }
-
+      updateBadgeCounts();
       renderFeed();
     } catch (e) {
       console.warn('[BotHub] fetch signals error:', e);
     }
+  }
+
+  function updateBadgeCounts() {
+    const counts = {
+      hammerpro: hammerSignals.length,
+      hammerproplus: hammerProPlusSignals.length,
+      m1premium: m1Signals.length,
+      m1a: m1aSignals.length,
+      fr: frSignals.length,
+      div: divSignals.length,
+      v3: v3Signals.length,
+      '4s': fourSSignals.length,
+      '4ssniper': fourSSniperSignals.length
+    };
+
+    document.querySelectorAll('.bot-badge-btn').forEach(btn => {
+      const b = btn.dataset.bot;
+      if (b && counts[b] !== undefined) {
+        let badge = btn.querySelector('.bot-count-badge');
+        if (!badge) {
+          badge = document.createElement('span');
+          badge.className = 'bot-count-badge';
+          btn.appendChild(badge);
+        }
+        badge.textContent = counts[b];
+      }
+    });
   }
 
   function renderFeed() {
@@ -342,14 +369,14 @@ const BotHubPlugin = (() => {
     // ─── 1. 4S (Multi-angle view of the 4H structure) Kartları ───────
     else if (activeBot === '4s') {
       let html = '';
-      let hasToday = false;
+      let lastDate = null;
 
       signals.forEach(s => {
-        if (!hasToday && s.dateLabel === 'Today') {
-          hasToday = true;
+        if (s.dateLabel && s.dateLabel !== lastDate) {
+          lastDate = s.dateLabel;
           html += `
             <div class="signal-date-divider">
-              <span>Today</span>
+              <span>${lastDate}</span>
             </div>
           `;
         }
@@ -460,8 +487,8 @@ const BotHubPlugin = (() => {
         if (s.dateLabel && s.dateLabel !== lastDate) {
           lastDate = s.dateLabel;
           html += `
-            <div style="display:flex; justify-content:center; margin: 6px 0;">
-              <span class="today-pill" style="font-size: 10px; background: rgba(255,255,255,0.08); padding: 2px 8px; border-radius: 10px;">${lastDate}</span>
+            <div class="signal-date-divider">
+              <span>${lastDate}</span>
             </div>
           `;
         }

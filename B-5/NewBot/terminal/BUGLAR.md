@@ -1,4 +1,4 @@
-﻿# Bug Tracking — Alpha Terminal
+# Bug Tracking — Alpha Terminal
 ## Genel Saglik Kontrolleri (28.09.2026)
 
 | Kontrol | Sonuc |
@@ -33,5 +33,11 @@
 | H-11 | 4S Sniper date divider tekrar | bot-hub.plugin.js | DUZELTILDI |
 | H-12 | Hammer Pro Plus date divider | bot-hub.plugin.js | DUZELTILDI |
 | H-14 | test_api.ps1 gereksiz dosya | terminal/ | SILINDI |
+| H-15 | Botlarda eski tarihlerde donma (3 Agustos, 11 Temmuz) & hisse sembolleri (EWJ, GTLB, HOOD) | terminal-server.js | DUZELTILDI |
+| H-16 | /api/signals/emit POST endpoint eksikligi | terminal-server.js | DUZELTILDI |
+| H-17 | Canli arka plan sinyal tazeleyici motor eksikligi | terminal-server.js | DUZELTILDI |
+| H-18 | Buton sayac rozetlerinin statik kalmasi (.bot-count-badge) | bot-hub.plugin.js | DUZELTILDI |
+| H-19 | 4S kartlarinda hasToday divider hatasi | bot-hub.plugin.js | DUZELTILDI |
 
-## Tum hatalar duzeltildi. Son durum: 10/10 tamamlandi.
+## Tum hatalar duzeltildi. Son durum: 15/15 tamamlandi (100% OK).
+
