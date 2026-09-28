@@ -357,7 +357,7 @@ const BotHubPlugin = (() => {
 
             <div class="card-footer">
               <span class="card-link-icon">↗</span>
-              <span>${s.time}</span>
+              <span class="card-time">${s.time}</span>
             </div>
           </div>
         `;
@@ -442,7 +442,7 @@ const BotHubPlugin = (() => {
 
             <div class="card-footer">
               <span class="card-link-icon">↗</span>
-              <span>${s.time}</span>
+              <span class="card-time">${s.time}</span>
             </div>
           </div>
         `;
@@ -472,7 +472,7 @@ const BotHubPlugin = (() => {
 
           <div class="card-footer">
             <span class="card-link-icon">↗ Binance</span>
-            <span>${s.time}</span>
+            <span class="card-time">${s.time}</span>
           </div>
         </div>
       `).join('');
@@ -536,7 +536,7 @@ const BotHubPlugin = (() => {
 
             <div class="card-footer">
               <span class="card-link-icon">↗ Binance</span>
-              <span>${s.time}</span>
+              <span class="card-time">${s.time}</span>
             </div>
           </div>
         `;
@@ -595,7 +595,7 @@ const BotHubPlugin = (() => {
 
             <div class="card-footer">
               <span class="card-link-icon">↗ Binance</span>
-              <span>${s.time}</span>
+              <span class="card-time">${s.time}</span>
             </div>
           </div>
         `;
@@ -653,7 +653,7 @@ const BotHubPlugin = (() => {
 
             <div class="card-footer">
               <span class="card-link-icon">↗ Binance</span>
-              <span>${s.time}</span>
+              <span class="card-time">${s.time}</span>
             </div>
           </div>
         `;
@@ -698,7 +698,7 @@ const BotHubPlugin = (() => {
 
           <div class="card-footer">
             <span class="card-link-icon">↗ Binance</span>
-            <span>${s.time}</span>
+            <span class="card-time">${s.time}</span>
           </div>
         </div>
       `).join('');
@@ -755,7 +755,7 @@ const BotHubPlugin = (() => {
 
           <div class="card-footer">
             <span class="card-link-icon">↗ Binance</span>
-            <span>${s.time}</span>
+            <span class="card-time">${s.time}</span>
           </div>
         </div>
       `).join('');
