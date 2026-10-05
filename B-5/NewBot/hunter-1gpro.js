@@ -392,6 +392,8 @@ async function sendAlert(
             time: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }),
             position: type.includes('Buy') ? 'Long' : 'Short',
             price,
+            prevPrice: prev,
+            boost: boost || `+${Math.abs((price - prev) / prev * 100).toFixed(2)}%`,
             rsi: Math.round(rsi),
             rsiWarning,
             rsi1h: analysis1h.rsi,

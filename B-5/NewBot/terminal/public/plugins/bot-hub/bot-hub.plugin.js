@@ -196,575 +196,16 @@ const BotHubPlugin = (() => {
       return;
     }
 
-    // ─── 0. Hammer Pro Plus (Advanced structural pattern framework) Kartları ─────────────
-    if (activeBot === 'hammerproplus') {
-      let html = '';
-      let lastDate = null;
-
-      signals.forEach(s => {
-        if (s.dateLabel && s.dateLabel !== lastDate) {
-          lastDate = s.dateLabel;
-          html += `
-            <div class="signal-date-divider">
-              <span>${lastDate}</span>
-            </div>
-          `;
-        }
-
-        const dot = s.dot || '🟢';
-        const titleColor = '#38bdf8';
-
-        html += `
-          <div class="signal-card" data-symbol="${s.symbol}">
-            <div class="card-top-row">
-              <span class="card-symbol" style="color: ${titleColor}; font-weight:700;">
-                ${dot} #${s.symbol} ${s.stars ? `<span class="card-star" style="color:#fbbf24;margin-left:4px;">${s.stars}</span>` : ''}
-              </span>
-            </div>
-
-            ${s.strategy ? `
-            <div class="card-field-row" style="margin-top: 4px;">
-              <span>Strategy:</span>
-              <span class="card-field-val" style="color: #fff; font-weight: 700;">${s.strategy}</span>
-            </div>` : ''}
-
-            <div class="card-field-row">
-              <span>Boost Value:</span>
-              <span class="card-field-val" style="color: #0ecb81; font-weight: 700;">${s.boostValue}</span>
-            </div>
-
-            <div class="card-field-row">
-              <span>Current Price:</span>
-              <span class="card-field-val">${s.currentPrice}</span>
-            </div>
-
-            <div class="card-field-row">
-              <span>Previous Price:</span>
-              <span class="card-field-val">${s.prevPrice}</span>
-            </div>
-
-            <div class="card-field-row">
-              <span>RSI:</span>
-              <span class="card-field-val" style="font-size: 11px;">
-                <strong>1m.${s.rsi.m1}</strong> | <strong>5m.${s.rsi.m5}</strong> | <strong>1h.${s.rsi.h1}</strong>
-              </span>
-            </div>
-
-            <div class="card-field-row">
-              <span>SRSI:</span>
-              <span class="card-field-val" style="font-size: 11px;">
-                <strong>1m.${s.srsi.m1}</strong> | <strong>5m.${s.srsi.m5}</strong> | <strong>1h.${s.srsi.h1}</strong>
-              </span>
-            </div>
-
-            ${s.wt ? `
-            <div class="card-field-row">
-              <span>WT:</span>
-              <span class="card-field-val" style="font-weight: 600;">${s.wt}</span>
-            </div>` : ''}
-
-            ${s.pivot ? `
-            <div class="card-field-row">
-              <span>Pivot:</span>
-              <span class="card-field-val" style="color: #f59e0b; font-weight: 600;">${s.pivot}</span>
-            </div>` : ''}
-
-            <div class="card-footer">
-              <span class="card-link-icon" title="Grafikte Aç">↗</span>
-              <span class="card-time">${s.time}</span>
-            </div>
-          </div>
-        `;
-      });
-
-      listEl.innerHTML = html;
-      return;
-    }
-
-    // ─── 0. 4S Sniper (NW UP Structure Reversal) Kartları ─────────────
-    if (activeBot === '4ssniper') {
-      let html = '';
-      let lastDateSniper = null;
-
-      signals.forEach(s => {
-        if (s.dateLabel && s.dateLabel !== lastDateSniper) {
-          lastDateSniper = s.dateLabel;
-          html += `
-            <div class="signal-date-divider">
-              <span>${lastDateSniper}</span>
-            </div>
-          `;
-        }
-
-        const dot = s.dot || '🟢';
-        const titleColor = '#38bdf8';
-
-        html += `
-          <div class="signal-card" data-symbol="${s.symbol}">
-            <div class="card-top-row">
-              <span class="card-symbol" style="color: ${titleColor}; font-weight:700;">
-                ${dot} #${s.displaySymbol || s.symbol}
-              </span>
-            </div>
-
-            <div class="card-field-row" style="margin-top: 4px;">
-              <span>Strategy:</span>
-              <span class="card-field-val" style="color: #fff; font-weight: 700;">${s.strategy || 'NW UP'}</span>
-            </div>
-
-            <div class="card-field-row">
-              <span>Boost Value:</span>
-              <span class="card-field-val" style="color: #0ecb81; font-weight: 700;">${s.boostValue}</span>
-            </div>
-
-            <div class="card-field-row">
-              <span>Current Price:</span>
-              <span class="card-field-val">${s.currentPrice}</span>
-            </div>
-
-            <div class="card-field-row">
-              <span>Previous Price:</span>
-              <span class="card-field-val">${s.prevPrice}</span>
-            </div>
-
-            <div class="card-field-row">
-              <span>RSI:</span>
-              <span class="card-field-val" style="font-size: 11px;">
-                <strong>1h.${s.rsi.h1}</strong> | <strong>4h.${s.rsi.h4}</strong> | <strong>1d.${s.rsi.d1}</strong>
-              </span>
-            </div>
-
-            <div class="card-field-row">
-              <span>SRSI:</span>
-              <span class="card-field-val" style="font-size: 11px;">
-                <strong>1h.${s.srsi.h1}</strong> | <strong>4h.${s.srsi.h4}</strong> | <strong>1d.${s.srsi.d1}</strong>
-              </span>
-            </div>
-
-            <div class="card-field-row">
-              <span>Trader Positioning:</span>
-              <span class="card-field-val" style="font-weight: 600;">
-                ${s.traderPositioning} <span style="font-size: 10px;">${s.traderDot || '🟢'}</span>
-              </span>
-            </div>
-
-            <div class="card-field-row">
-              <span>Market Exposure:</span>
-              <span class="card-field-val" style="font-weight: 600;">
-                ${s.marketExposure} <span style="font-size: 10px;">${s.exposureDot || '🟢'}</span>
-              </span>
-            </div>
-
-            <div class="card-footer">
-              <span class="card-link-icon">↗</span>
-              <span class="card-time">${s.time}</span>
-            </div>
-          </div>
-        `;
-      });
-
-      listEl.innerHTML = html;
-    }
-
-    // ─── 1. 4S (Multi-angle view of the 4H structure) Kartları ───────
-    else if (activeBot === '4s') {
-      let html = '';
-      let lastDate = null;
-
-      signals.forEach(s => {
-        if (s.dateLabel && s.dateLabel !== lastDate) {
-          lastDate = s.dateLabel;
-          html += `
-            <div class="signal-date-divider">
-              <span>${lastDate}</span>
-            </div>
-          `;
-        }
-
-        const dot = s.dot || '🔴';
-        const titleColor = '#38bdf8';
-
-        html += `
-          <div class="signal-card" data-symbol="${s.symbol}">
-            <div class="card-top-row">
-              <span class="card-symbol" style="color: ${titleColor}; font-weight:700;">
-                ${dot} #${s.symbol}
-              </span>
-            </div>
-
-            <div class="card-field-row" style="margin-top: 4px;">
-              <span>Market:</span>
-              <span class="card-field-val" style="color: #94a3b8; font-weight: 600;">${s.market || 'FUTURES'}</span>
-            </div>
-
-            <div class="card-field-row">
-              <span>Boost Value:</span>
-              <span class="card-field-val" style="color: #0ecb81; font-weight: 700;">${s.boostValue}</span>
-            </div>
-
-            <div class="card-field-row">
-              <span>Current Price:</span>
-              <span class="card-field-val">${s.currentPrice}</span>
-            </div>
-
-            <div class="card-field-row">
-              <span>Previous Price:</span>
-              <span class="card-field-val">${s.prevPrice}</span>
-            </div>
-
-            <div class="card-field-row">
-              <span>RSI:</span>
-              <span class="card-field-val" style="font-size: 11px;">
-                <strong>1h.${s.rsi.h1}</strong> | <strong>4h.${s.rsi.h4}</strong> | <strong>1d.${s.rsi.d1}</strong>
-              </span>
-            </div>
-
-            <div class="card-field-row">
-              <span>SRSI:</span>
-              <span class="card-field-val" style="font-size: 11px;">
-                <strong>1h.${s.srsi.h1}</strong> | <strong>4h.${s.srsi.h4}</strong> | <strong>1d.${s.srsi.d1}</strong>
-              </span>
-            </div>
-
-            <div class="card-field-row">
-              <span>Trader Positioning:</span>
-              <span class="card-field-val" style="font-weight: 600;">
-                ${s.traderPositioning} <span style="font-size: 10px;">🟢</span>
-              </span>
-            </div>
-
-            <div class="card-field-row">
-              <span>Market Exposure:</span>
-              <span class="card-field-val" style="font-weight: 600;">
-                ${s.marketExposure} <span style="font-size: 10px;">🟢</span>
-              </span>
-            </div>
-
-            <div class="card-footer">
-              <span class="card-link-icon">↗</span>
-              <span class="card-time">${s.time}</span>
-            </div>
-          </div>
-        `;
-      });
-
-      listEl.innerHTML = html;
-    }
-
-    // ─── 2. V3-A (Hacim Botu) Kartları ──────────────────────────────
-    else if (activeBot === 'v3') {
-      listEl.innerHTML = signals.map(s => `
-        <div class="signal-card" data-symbol="${s.symbol}">
-          <div class="card-top-row">
-            <span class="card-symbol" style="color: #38bdf8;">
-              #${s.symbol}
-            </span>
-          </div>
-
-          <div class="card-field-row" style="margin-top: 4px;">
-            <span>Hacim:</span>
-            <span style="color: var(--green); font-weight: 700;">${s.hacimChange}</span>
-          </div>
-          <div class="card-field-row">
-            <span>24s Hacim:</span>
-            <span class="card-field-val">${s.hacim24s}</span>
-          </div>
-
-          <div class="card-footer">
-            <span class="card-link-icon">↗ Binance</span>
-            <span class="card-time">${s.time}</span>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // ─── 2. Divergence (DIV) Kartları ───────────────────────────────
-    else if (activeBot === 'div') {
-      let html = '';
-      let lastDate = null;
-
-      signals.forEach(s => {
-        if (s.dateLabel && s.dateLabel !== lastDate) {
-          lastDate = s.dateLabel;
-          html += `
-            <div class="signal-date-divider">
-              <span>${lastDate}</span>
-            </div>
-          `;
-        }
-
-        const dot = s.dot ? `${s.dot} ` : '';
-        const titleColor = s.dot === '🔴' ? '#f87171' : '#38bdf8';
-
-        html += `
-          <div class="signal-card" data-symbol="${s.symbol}">
-            <div class="card-top-row">
-              <span class="card-symbol" style="color: ${titleColor};">
-                ${dot}#${s.symbol}
-              </span>
-            </div>
-
-            <div class="card-field-row">
-              <span>Strategy:</span>
-              <span style="color: #38bdf8; font-weight: 700;">${s.strategy}</span>
-            </div>
-            <div class="card-field-row">
-              <span>Boost Value:</span>
-              <span class="card-boost-val">${s.boostValue}</span>
-            </div>
-            <div class="card-field-row">
-              <span>Current Price:</span>
-              <span class="card-field-val">${s.currentPrice}</span>
-            </div>
-            <div class="card-field-row">
-              <span>Previous Price:</span>
-              <span class="card-field-val">${s.prevPrice}</span>
-            </div>
-
-            <div class="card-multi-indicator">
-              RSI: <strong>1h.${s.rsi.h1}</strong> | <strong>4h.${s.rsi.h4}</strong> | <strong>1d.${s.rsi.d1}</strong>
-            </div>
-            <div class="card-multi-indicator">
-              SRSI: <strong>1h.${s.srsi.h1}</strong> | <strong>4h.${s.srsi.h4}</strong> | <strong>1d.${s.srsi.d1}</strong>
-            </div>
-
-            ${s.pivot ? `
-              <div class="card-alert-line">
-                <span>Pivot: ${s.pivot}</span>
-              </div>
-            ` : ''}
-
-            <div class="card-footer">
-              <span class="card-link-icon">↗ Binance</span>
-              <span class="card-time">${s.time}</span>
-            </div>
-          </div>
-        `;
-      });
-
-      listEl.innerHTML = html;
-    }
-
-    // ─── 3. FR (Funding Rate) Kartları ──────────────────────────────
-    else if (activeBot === 'fr') {
-      listEl.innerHTML = signals.map(s => {
-        const dot = s.dot ? `${s.dot} ` : '';
-        const titleColor = s.dot === '🔴' ? '#f87171' : '#38bdf8';
-
-        return `
-          <div class="signal-card" data-symbol="${s.symbol}">
-            <div class="card-top-row">
-              <span class="card-symbol" style="color: ${titleColor};">
-                ${dot}#${s.symbol}
-              </span>
-            </div>
-
-            ${s.alertText ? `
-              <div class="card-alert-line" style="color: #fbbf24; margin-bottom: 5px; font-size: 11px;">
-                <span>⚠️ ${s.alertText}</span>
-              </div>
-            ` : ''}
-
-            <div class="card-field-row">
-              <span>Funding Rate:</span>
-              <span class="card-field-val" style="color: ${String(s.fundingRate).startsWith('-') ? 'var(--red)' : 'var(--green)'}; font-weight:700;">
-                ${s.fundingRate}
-              </span>
-            </div>
-
-            ${s.previousFunding !== undefined ? `
-              <div class="card-field-row">
-                <span>Previous Funding:</span>
-                <span class="card-field-val">${s.previousFunding}</span>
-              </div>
-            ` : ''}
-
-            ${s.difference !== undefined ? `
-              <div class="card-field-row">
-                <span>Difference:</span>
-                <span class="card-field-val" style="color: ${String(s.difference).startsWith('-') ? 'var(--red)' : 'var(--text-main)'}; font-weight:600;">
-                  ${s.difference}
-                </span>
-              </div>
-            ` : ''}
-
-            <div class="card-field-row" style="margin-top: 2px;">
-              <span>Time Remaining:</span>
-              <span style="color: #94a3b8; font-weight: 600;">${s.timeRemaining}</span>
-            </div>
-
-            <div class="card-footer">
-              <span class="card-link-icon">↗ Binance</span>
-              <span class="card-time">${s.time}</span>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // ─── 4. M1-A Kartları ──────────────────────────────────────────
-    else if (activeBot === 'm1a') {
-      listEl.innerHTML = signals.map(s => {
-        const isDrop = (s.type === 'drop') || (s.dropValue && s.dropValue.startsWith('-'));
-        const dot = isDrop ? '🔴' : '🟢';
-        const valColor = isDrop ? 'var(--red)' : 'var(--green)';
-        const label = isDrop ? 'Drop Value:' : 'Boost Value:';
-
-        return `
-          <div class="signal-card" data-symbol="${s.symbol}">
-            <div class="card-top-row">
-              <span class="card-symbol" style="color: ${isDrop ? '#f87171' : '#38bdf8'};">
-                ${dot} #${s.symbol}
-              </span>
-            </div>
-
-            <div class="card-field-row">
-              <span>${label}</span>
-              <span style="color: ${valColor}; font-weight: 700;">${s.dropValue}</span>
-            </div>
-            <div class="card-field-row">
-              <span>Current Price:</span>
-              <span class="card-field-val">${s.currentPrice}</span>
-            </div>
-            <div class="card-field-row">
-              <span>Previous Price:</span>
-              <span class="card-field-val">${s.prevPrice}</span>
-            </div>
-            <div class="card-field-row">
-              <span>Volume:</span>
-              <span style="color: ${s.volume && s.volume.startsWith('-') ? 'var(--red)' : 'var(--green)'}; font-weight: 600;">
-                ${s.volume}
-              </span>
-            </div>
-            <div class="card-field-row">
-              <span>RSI:</span>
-              <span style="font-weight: 700; color: ${s.rsi && s.rsi.includes('77') ? 'var(--gold)' : 'var(--text-main)'};">
-                ${s.rsi}
-              </span>
-            </div>
-            <div class="card-field-row">
-              <span>Stochastic (K/D):</span>
-              <span style="font-weight: 700; color: #fff;">${s.stochastic}</span>
-            </div>
-            <div class="card-field-row">
-              <span>BTC Status:</span>
-              <span style="color: #94a3b8; font-weight: 600;">${s.btcStatus || 'Normal'}</span>
-            </div>
-
-            <div class="card-footer">
-              <span class="card-link-icon">↗ Binance</span>
-              <span class="card-time">${s.time}</span>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // ─── 5. M1 Premium Kartları ─────────────────────────────────
-    else if (activeBot === 'm1premium') {
-      listEl.innerHTML = signals.map(s => `
-        <div class="signal-card" data-symbol="${s.symbol}">
-          <div class="card-top-row">
-            <span class="card-symbol">
-              🟢 #${s.symbol} ${s.isFavorite ? '<span class="card-star">⭐</span>' : ''}
-            </span>
-          </div>
-
-          <div class="card-field-row">
-            <span>Boost Value:</span>
-            <span class="card-boost-val">${s.boostValue}</span>
-          </div>
-          <div class="card-field-row">
-            <span>Current Price:</span>
-            <span class="card-field-val">${s.currentPrice}</span>
-          </div>
-          <div class="card-field-row">
-            <span>Previous Price:</span>
-            <span class="card-field-val">${s.prevPrice}</span>
-          </div>
-
-          <div class="card-multi-indicator">
-            RSI: <strong>1m.${s.rsi.m1}</strong> | <strong>5m.${s.rsi.m5}</strong> | <strong>1h.${s.rsi.h1}</strong>
-          </div>
-          <div class="card-multi-indicator">
-            SRSI: <strong>1m.${s.srsi.m1}</strong> | <strong>5m.${s.srsi.m5}</strong> | <strong>1h.${s.srsi.h1}</strong>
-          </div>
-
-          ${s.divergence ? `
-            <div class="card-alert-line" style="color:var(--green);">
-              <span>Divergence: ${s.divergence}</span>
-            </div>
-          ` : ''}
-
-          <div class="card-footer">
-            <span class="card-link-icon">↗ Binance</span>
-            <span class="card-time">${s.time}</span>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    // ─── 6. Hammer Pro Kartları ─────────────────────────────────
-    else {
-      listEl.innerHTML = signals.map(s => `
-        <div class="signal-card" data-symbol="${s.symbol}">
-          <div class="card-top-row">
-            <span class="card-symbol">🟢 #${s.symbol}</span>
-          </div>
-
-          <div class="card-field-row">
-            <span>Strategy:</span>
-            <span style="color:#38bdf8;font-weight:700;">${s.strategy}</span>
-          </div>
-          <div class="card-field-row">
-            <span>Boost Value:</span>
-            <span class="card-boost-val">${s.boostValue}</span>
-          </div>
-          <div class="card-field-row">
-            <span>Current Price:</span>
-            <span class="card-field-val">${s.currentPrice}</span>
-          </div>
-          <div class="card-field-row">
-            <span>Previous Price:</span>
-            <span class="card-field-val">${s.prevPrice}</span>
-          </div>
-
-          <div class="card-multi-indicator">
-            RSI: <strong>1m.${s.rsi.m1}</strong> | <strong>5m.${s.rsi.m5}</strong> | <strong>1h.${s.rsi.h1}</strong>
-          </div>
-          <div class="card-multi-indicator">
-            SRSI: <strong>1m.${s.srsi.m1}</strong> | <strong>5m.${s.srsi.m5}</strong> | <strong>1h.${s.srsi.h1}</strong>
-          </div>
-
-          <div class="card-field-row" style="margin-top:3px;">
-            <span>WT:</span>
-            <span style="font-weight:700;">${s.wt || '—'}</span>
-          </div>
-
-          ${s.pivot ? `
-            <div class="card-alert-line">
-              <span>Pivot: ${s.pivot}</span>
-            </div>
-          ` : ''}
-
-          ${s.ema200 ? `
-            <div class="card-alert-line">
-              <span>4H.E200: ${s.ema200}</span>
-            </div>
-          ` : ''}
-
-          <div class="card-footer">
-            <span class="card-link-icon">↗ Binance</span>
-            <span class="card-time">${s.time}</span>
-          </div>
-        </div>
-      `).join('');
+    if (typeof BotRenderer !== 'undefined') {
+      listEl.innerHTML = BotRenderer.generateSignalsHtml(activeBot, signals);
     }
   }
 
   function switchBot(botId) {
     activeBot = botId;
-    const cfg = BOT_CONFIGS[botId] || BOT_CONFIGS.v3;
+    const cfg = (typeof BotRenderer !== 'undefined' && BotRenderer.BOT_CONFIGS[botId])
+      ? BotRenderer.BOT_CONFIGS[botId]
+      : (BOT_CONFIGS[botId] || BOT_CONFIGS.v3);
 
     // Başlık ve İkon Güncelle
     const titleEl = document.getElementById('bot-header-title');
@@ -801,21 +242,52 @@ const BotHubPlugin = (() => {
         const card = e.target.closest('.signal-card');
         if (!card) return;
         const sym = card.dataset.symbol;
-        if (sym && typeof WatchlistPlugin !== 'undefined') {
-          WatchlistPlugin.setActiveSymbol(sym);
+        if (sym) {
+          if (typeof WatchlistPlugin !== 'undefined') {
+            WatchlistPlugin.setActiveSymbol(sym);
+          }
+          if (typeof BotRenderer !== 'undefined') {
+            BotRenderer.broadcastSymbol(sym);
+          }
         }
       });
     }
 
-    // Şeritteki butonlara tıklama
+    // Şeritteki butonlara tıklama (Tek tık: Seç | Çift tık: 2. Ekrana Pencere Olarak Aç)
     document.querySelectorAll('.bot-badge-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const botId = btn.dataset.bot;
-        if (botId && BOT_CONFIGS[botId]) {
+        if (botId) {
           switchBot(botId);
         }
       });
+
+      btn.addEventListener('dblclick', () => {
+        const botId = btn.dataset.bot;
+        if (botId && typeof BotRenderer !== 'undefined') {
+          BotRenderer.openBotWindow(botId);
+        }
+      });
     });
+
+    // 2. Ekrana Pop-out Butonları
+    const btnPopout = document.getElementById('btn-popout-active-bot');
+    if (btnPopout) {
+      btnPopout.addEventListener('click', () => {
+        if (typeof BotRenderer !== 'undefined') {
+          BotRenderer.openBotWindow(activeBot);
+        }
+      });
+    }
+
+    const btnPopoutAll = document.getElementById('btn-popout-all-bots');
+    if (btnPopoutAll) {
+      btnPopoutAll.addEventListener('click', () => {
+        if (typeof BotRenderer !== 'undefined') {
+          BotRenderer.openAllBotWindows();
+        }
+      });
+    }
 
     switchBot(activeBot);
     fetchSignals();
@@ -825,5 +297,6 @@ const BotHubPlugin = (() => {
   return {
     init,
     switchBot,
+    getActiveBot: () => activeBot
   };
 })();

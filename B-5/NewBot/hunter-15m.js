@@ -338,11 +338,14 @@ async function sendAlert(
     try {
         const signalData = {
             timeframe: '15m',
+            botType: '15m',
             coin: symbol,
             date: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric', weekday: 'long' }),
             time: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }),
             position: type.includes('Buy') ? 'Long' : 'Short',
             price,
+            prevPrice: prev,
+            boost: `+${Math.abs(parseFloat(boost || 0)).toFixed(2)}%`,
             rsi: Math.round(rsi),
             rsiWarning,
             rsi1h,

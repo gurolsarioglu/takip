@@ -508,6 +508,39 @@ html, body {
 
 .wl-table th:first-child { text-align: left; padding-left: 8px; }
 
+.sortable-th {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s;
+}
+.sortable-th:hover {
+  color: #f8fafc !important;
+}
+.sort-icon {
+  font-size: 8px;
+  margin-left: 2px;
+  color: var(--gold);
+}
+
+.wl-star-btn {
+  background: transparent;
+  border: none;
+  color: #475569;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+.wl-star-btn:hover {
+  color: #facc15;
+  transform: scale(1.2);
+}
+.wl-star-btn.starred {
+  color: #facc15;
+  text-shadow: 0 0 6px rgba(250, 204, 21, 0.6);
+}
+
 .wl-row {
   cursor: pointer;
   transition: background 0.1s;
@@ -785,6 +818,45 @@ html, body {
   transform: scale(1.05);
 }
 
+/* 200 Günlük Kantitatif İstatistik Çubuğu & Rozetleri */
+.snapshot-200d-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 7px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  flex-wrap: wrap;
+}
+.snap-stat-chip {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  padding: 2px 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  transition: border-color 0.15s;
+}
+.snap-stat-chip:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.chip-lbl {
+  color: #64748b;
+  font-size: 9px;
+  font-weight: 500;
+}
+.chip-val {
+  font-weight: 600;
+  color: #e2e8f0;
+}
+.chip-val.green { color: #10b981; }
+.chip-val.red   { color: #f43f5e; }
+.chip-val.cyan  { color: #38bdf8; }
+.chip-val.gold  { color: #facc15; }
+
 /* ─── 3C. ÇOKLU BOT SİNYAL PANELİ (ALT BÖLÜM) ─────────────────── */
 #bot-hub-widget {
   flex: 1;
@@ -1032,6 +1104,43 @@ html, body {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.bot-popout-btn {
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.bot-popout-btn:hover {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+}
+
+.bot-popout-btn.secondary {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.35);
+  color: #f59e0b;
+}
+
+.bot-popout-btn.secondary:hover {
+  background: rgba(245, 158, 11, 0.25);
+  border-color: #f59e0b;
+  color: #fff;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
 }
 
 .bot-search-input {

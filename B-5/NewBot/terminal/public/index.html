@@ -83,20 +83,24 @@
             <span class="wl-count" id="wl-coin-count">731</span>
           </div>
           <div class="wl-controls">
-            <button class="wl-filter-pill active" data-filter="all">Crypto</button>
-            <button class="wl-filter-pill" data-filter="gainers">Yükselenler</button>
-            <button class="wl-filter-pill" data-filter="volume">Hacim</button>
+            <button class="wl-filter-pill active" data-filter="all">Tümü</button>
+            <button class="wl-filter-pill" data-filter="favorites" title="Yıldızlanan Favori Coinler">⭐ Favoriler</button>
+            <button class="wl-filter-pill" data-filter="gainers" title="En Çok Yükselenler">📈 Yükselenler</button>
+            <button class="wl-filter-pill" data-filter="losers" title="En Çok Düşenler">📉 Düşenler</button>
+            <button class="wl-filter-pill" data-filter="funding" title="Ekstrem Negatif / Squeeze Fonlamaları">💰 Ekstrem FR</button>
+            <button class="wl-filter-pill" data-filter="volume" title="İşlem Hacmine Göre Sırala">📊 Hacim</button>
           </div>
         </div>
         <div class="wl-table-wrap" id="watchlist-table-wrap">
           <table class="wl-table">
             <thead>
               <tr>
-                <th>Symbol</th>
-                <th>Price</th>
-                <th>Chg%</th>
-                <th>Vol (USD)</th>
-                <th>FR (%)</th>
+                <th style="width: 22px; text-align: center;" title="Favori">⭐</th>
+                <th data-sort="symbol" class="sortable-th">Symbol <span class="sort-icon" id="sort-icon-symbol"></span></th>
+                <th data-sort="price" class="sortable-th">Price <span class="sort-icon" id="sort-icon-price"></span></th>
+                <th data-sort="chg" class="sortable-th">Chg% <span class="sort-icon" id="sort-icon-chg"></span></th>
+                <th data-sort="vol" class="sortable-th">Vol (USD) <span class="sort-icon" id="sort-icon-vol"></span></th>
+                <th data-sort="fr" class="sortable-th">FR (%) <span class="sort-icon" id="sort-icon-fr"></span></th>
                 <th>FR (h)</th>
               </tr>
             </thead>
@@ -107,7 +111,7 @@
         </div>
       </section>
 
-      <!-- 3B. SEÇİLİ COIN SNAPSHOT (Fiyat, Funding, OI, L/S & [◫] İkonu) -->
+      <!-- 3B. SEÇİLİ COIN SNAPSHOT (Fiyat, Funding, OI, L/S & 200 Günlük Analiz) -->
       <section id="ticker-snapshot-widget">
         <div class="snapshot-row-top">
           <div class="snapshot-coin-info">
@@ -141,6 +145,30 @@
           <button class="sentiment-modal-trigger-btn" id="sentiment-modal-trigger-btn" title="Derin Piyasa Dağılımını Göster">
             ◫
           </button>
+        </div>
+
+        <!-- 200 GÜNLÜK QUANT & TARİHSEL İSTATİSTİK ROZETLERİ -->
+        <div class="snapshot-200d-row" id="snap-200d-row">
+          <div class="snap-stat-chip" id="chip-ema" title="200 Günlük EMA ve Fiyat Farkı">
+            <span class="chip-lbl">EMA200</span>
+            <span class="chip-val cyan" id="snap-val-ema">—</span>
+          </div>
+          <div class="snap-stat-chip" id="chip-ath" title="200 Günlük Zirveye (ATH) Uzaklık">
+            <span class="chip-lbl">200G Zirve</span>
+            <span class="chip-val red" id="snap-val-ath">—</span>
+          </div>
+          <div class="snap-stat-chip" id="chip-atl" title="200 Günlük Dipten (ATL) Yükseliş">
+            <span class="chip-lbl">200G Dip</span>
+            <span class="chip-val green" id="snap-val-atl">—</span>
+          </div>
+          <div class="snap-stat-chip" id="chip-winrate" title="Son 200 Günde Pozitif Kapanış Oranı (Win Rate)">
+            <span class="chip-lbl">Pozitif Gün</span>
+            <span class="chip-val gold" id="snap-val-winrate">—</span>
+          </div>
+          <div class="snap-stat-chip" id="chip-streak" title="Ardışık Yeşil/Kırmızı Gün Serisi">
+            <span class="chip-lbl">Seri</span>
+            <span class="chip-val" id="snap-val-streak">—</span>
+          </div>
         </div>
       </section>
 
@@ -199,6 +227,12 @@
               </div>
             </div>
             <div class="bot-header-tools">
+              <button class="bot-popout-btn" id="btn-popout-active-bot" title="Bu Botu 2. Ekrana / Ayrı Pencereye Ayır (Serbest Boyutlandırılabilir)">
+                ↗ 2. Ekran
+              </button>
+              <button class="bot-popout-btn secondary" id="btn-popout-all-bots" title="Tüm 9 Botu 2. Ekranda Ayrı Pencerelerde Aç">
+                ⧉ Tümünü Aç
+              </button>
               <span class="today-pill" style="font-size:10px;font-weight:700;">SE</span>
               <input type="text" class="bot-search-input" placeholder="Search" />
             </div>
@@ -313,6 +347,7 @@
 <script src="plugins/chart/multi-chart.plugin.js"></script>
 <script src="plugins/watchlist/watchlist.plugin.js"></script>
 <script src="plugins/sentiment-modal/sentiment-modal.plugin.js"></script>
+<script src="plugins/bot-hub/bot-renderer.js"></script>
 <script src="plugins/bot-hub/bot-hub.plugin.js"></script>
 
 <script>
@@ -322,6 +357,12 @@ document.addEventListener('DOMContentLoaded', () => {
   WatchlistPlugin.init();
   TickerSnapshot.init();
   BotHubPlugin.init();
+
+  // Çift Ekran Canlı Senkronizasyonu (2. Ekrandaki bot penceresinden coine tıklandığında 1. ekranı senkronize et)
+  BotRenderer.onSymbolBroadcast((symbol) => {
+    console.log('[DualMonitor] 2. Ekrandan sinyal seçildi -> 1. Ekrana kilitleniyor:', symbol);
+    WatchlistPlugin.setActiveSymbol(symbol);
+  });
 
   // 2. Canlı Saat (UTC+3)
   function updateClock() {
@@ -334,9 +375,14 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateClock, 1000);
   updateClock();
 
-  // 3. Üst Arama Çubuğu (Coin Arama)
+  // 3. Üst Arama Çubuğu (Coin Arama & Anlık Canlı Filtreleme)
   const searchInput = document.getElementById('coin-search-input');
   if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const val = e.target.value.trim();
+      WatchlistPlugin.search(val);
+    });
+
     searchInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         const val = searchInput.value.trim().toUpperCase();
@@ -345,6 +391,10 @@ document.addEventListener('DOMContentLoaded', () => {
           WatchlistPlugin.setActiveSymbol(formatted);
           searchInput.blur();
         }
+      } else if (e.key === 'Escape') {
+        searchInput.value = '';
+        WatchlistPlugin.search('');
+        searchInput.blur();
       }
     });
   }
