@@ -86,6 +86,11 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
   * Terminal sunucusu Port 3000 üzerinde aktif başlatıldı.
   * Tüm 9 bot endpoint'i (`hammerproplus`, `hammerpro`, `4ssniper`, `4s`, `v3`, `div`, `fr`, `m1a`, `m1premium`), 741 coinlik Watchlist ve `coin-history` API uç noktası HTTP 200 ile doğrulandı.
   * `check_terminal_status.bat`, `start_terminal_background.bat` ve `stop_terminal.bat` scriptlerindeki stdin redirection ve parantez sözdizimi hataları giderildi; bağımsız çalışma teyit edildi.
+* **Test Verisi Temizliği (TESTUSDT):**
+  * Fiyat hassasiyet testi (0.004890) sırasında depoya yazılmış olan yapay `TESTUSDT` sinyalleri `data/signals_history.json` içerisinden tamamen temizlendi.
+  * `services/signal-store.service.js` içine `removeSignal(id)` ve `removeSignalsBySymbol(symbol)` metotları eklendi.
+  * `review/verify-signal-store-precision.cjs` test sonrasında otomatik temizlik yapacak şekilde güncellendi.
+  * Hammer Pro Plus ve 4S Sniper botlarının gerçek başlangıç sinyalleri (`IOSTUSDT`, `SUIUSDT`, `QNTUSDT` vb.) depoya yeniden senkronize edildi.
 
 ---
 

@@ -127,6 +127,59 @@ class SignalStoreService {
   }
 
   /**
+   * Değişiklikleri anında diske senkron yazar (testler ve temizlik için)
+   */
+  saveSync() {
+    if (this.saveTimeout) clearTimeout(this.saveTimeout);
+    try {
+      this.ensureDataDir();
+      const cutoff = Date.now() - RETENTION_MS;
+      this.signals = this.signals.filter(s => (s.timestamp || 0) >= cutoff);
+      const payload = {
+        version: '1.0',
+        updatedAt: new Date().toISOString(),
+        totalSignals: this.signals.length,
+        retentionDays: 60,
+        signals: this.signals
+      };
+      const tempFile = `${HISTORY_FILE}.tmp`;
+      fs.writeFileSync(tempFile, JSON.stringify(payload, null, 2), 'utf8');
+      fs.renameSync(tempFile, HISTORY_FILE);
+    } catch (err) {
+      console.error('[SignalStore] saveSync hatasi:', err.message);
+    }
+  }
+
+  /**
+   * Belirtilen ID'ye sahip sinyali kalıcı depodan siler
+   */
+  removeSignal(id) {
+    const idx = this.signals.findIndex(s => s.id === id);
+    if (idx !== -1) {
+      this.signals.splice(idx, 1);
+      this.rebuildIndex();
+      this.saveSync();
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Belirtilen sembole (örn: TESTUSDT) sahip tüm sinyalleri depodan siler
+   */
+  removeSignalsBySymbol(symbol) {
+    const sym = (symbol || '').toUpperCase();
+    const before = this.signals.length;
+    this.signals = this.signals.filter(s => (s.symbol || '').toUpperCase() !== sym);
+    if (this.signals.length !== before) {
+      this.rebuildIndex();
+      this.saveSync();
+      return before - this.signals.length;
+    }
+    return 0;
+  }
+
+  /**
    * Yeni sinyali kalıcı depoya ekler
    */
   recordSignal(botId, signalData, botName = '') {

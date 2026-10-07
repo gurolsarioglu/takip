@@ -83,6 +83,10 @@ assert.strictEqual(resJson.symbol, 'TESTUSDT');
 assert.ok(resJson.count >= 2);
 console.log(`✅ Test 8: Controller getCoinHistory("TESTUSDT") -> ${resJson.count} sinyal ve istatistik basarili.`);
 
+// Test sonrasi temizlik: Test verilerini depodan temizle
+const removedCount = signalStore.removeSignalsBySymbol('TESTUSDT');
+console.log(`🧹 Test Temizligi: ${removedCount} adet TESTUSDT kaydi depodan temizlendi.`);
+
 console.log('\n========================================');
 console.log('  TÜM TESTLER BAŞARIYLA GEÇTİ! 🚀');
 console.log('========================================');
