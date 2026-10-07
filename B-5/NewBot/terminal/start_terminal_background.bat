@@ -4,7 +4,7 @@ echo ========================================================
 echo   ALPHA TERMINAL - 7/24 ARKA PLAN SERVISI BASLATILIYOR
 echo ========================================================
 wscript.exe "%~dp0start_terminal_background.vbs"
-timeout /t 2 >nul
+ping -n 3 127.0.0.1 >nul
 netstat -aon | findstr ":3000" | findstr "LISTENING" >nul
 if %errorlevel% equ 0 (
     echo [BASARILI] Alpha Terminal arka planda 7/24 sessiz modda aktif edildi!
@@ -15,4 +15,4 @@ if %errorlevel% equ 0 (
     echo [BILGI] Baslatma komutu gonderildi. 
 )
 echo ========================================================
-timeout /t 3 >nul
+ping -n 3 127.0.0.1 >nul

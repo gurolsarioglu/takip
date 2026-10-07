@@ -11,4 +11,4 @@ for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":3000" ^| findstr "LISTENING
 
 echo.
 echo Alpha Terminal arka plan sureci basariyla durduruldu.
-timeout /t 2 >nul
+ping -n 3 127.0.0.1 >nul

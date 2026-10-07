@@ -82,6 +82,10 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
   * Express sunucusu Port 3000 üzerinde ayağa kaldırıldı, `/api/signals/coin-history?symbol=SOLUSDT` çağrısı canlıda test edilip doğrulandı.
 * **Dokümantasyon Birleştirildi ve Sadeleştirildi:**
   * Eski `05.10.2026_MVC_BOT_MIMARISI.md`, `28.09.2026.md`, `28.09.2026` ve `yapılanlar.md` (25.09) içerisindeki tüm mimari, formül, bug düzeltme ve analiz kayıtları eksiksiz olarak `proje takip.md` altında kronolojik başlıklarla birleştirildi; bu ayrı 3 dosya silinerek tüm proje tek bir ana takip dokümanına kavuşturuldu.
+* **Canlı Çalıştırma & Sistem Doğrulaması:**
+  * Terminal sunucusu Port 3000 üzerinde aktif başlatıldı.
+  * Tüm 9 bot endpoint'i (`hammerproplus`, `hammerpro`, `4ssniper`, `4s`, `v3`, `div`, `fr`, `m1a`, `m1premium`), 741 coinlik Watchlist ve `coin-history` API uç noktası HTTP 200 ile doğrulandı.
+  * `check_terminal_status.bat`, `start_terminal_background.bat` ve `stop_terminal.bat` scriptlerindeki stdin redirection ve parantez sözdizimi hataları giderildi; bağımsız çalışma teyit edildi.
 
 ---
 
