@@ -300,3 +300,55 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
    * **7/7 BAŞARILI** (`{ "total": 7, "passed": 7, "failed": 0 }`).
 3. **Toplam 15/15 regresyon testi eksiksiz geçti.**
 4. Commit `767d2c1`, `24390db`, `b592f2e` ile terminal modüler yapısı repoya kaydedildi.
+
+---
+
+# 📅 07.10.2026 - Kripto Fiyat Hassasiyeti (Tick Precision) & Kesme/Yuvarlama Sorununun Kesin Çözümü
+
+## 💬 1. Konuşmalarımız ve Onaylananlar
+* **Kullanıcı Talebi:** Fiyat kısmındaki yuvarlama ve basamak kesip atma hatasının giderilmesi: "Ne fiyat varsa rakam olarak o gelsin, yuvarlama falan olmasın ya da kesip atmasın, bu çok büyük sıkıntı, sonra botlarda yanlış sinyal üretir, ne ise o."
+* **Belirlenen İhtiyaç:** Kullanıcı tarafından iletilen terminal ekran görüntüsünde IMXUSDT (fiyatı `0.17890`) 4'lü grafikteki (1m, 5m, 1h, 1D) fiyat eksenlerinde ve anlık fiyat rozetlerinde `0.17`, `0.17`, `0.17`, `0.16` olarak 2 basamağa yapay olarak yuvarlanıyordu; ayrıca sinyal kartlarında `0.1771` gibi eksik basamaklar yer alıyordu. 
+* **Prensip Kararı:** Hiçbir kripto fiyatında (ister `0.17890`, ister `0.004890`, ister `0.00001850`) basamak kırpılmayacak, yapay yuvarlama yapılmayacak, Binance'den gelen orijinal tick hassasiyeti eksiksiz korunacaktır.
+
+## 🧠 2. Düşündüklerimiz ve Mimari Kararlar
+1. **Lightweight Charts Kök Neden Analizi:** Lightweight Charts varsayılan konfigürasyonda `{ type: 'price', precision: 2, minMove: 0.01 }` kullanır. Mum serileri oluşturulurken coine özel `priceFormat` ve grafiğe `localization.priceFormatter` tanımlanmadığında kütüphane dahili olarak `toFixed(2)` uygulayarak `0.17890` değerini `0.17` olarak gösterir.
+2. **Dinamik Coine Özel Hassasiyet Tespiti (`detectCoinPrecision`):** Her coin yüklendiğinde Binance kline mumlarından son örnekler taranarak maksimum ondalık basamak sayısı (`maxDecimals`) tespit edilir (örn: IMX için 5 basamak, PUMP için 6-7 basamak). Mum serilerine `precision` ve `minMove = 10^-precision` atanır.
+3. **Grafik Skalası & Crosshair Lokalizasyonu:** `mainChart.applyOptions({ localization: { priceFormatter: (val) => val.toFixed(precision) } })` tanımlanarak hem Y-eksenindeki ölçek etiketlerinin hem de anlık fiyat rozetinin ve crosshair etiketinin coinin gerçek hassasiyetini göstermesi sağlandı.
+4. **String Passthrough Mimarisi (`PriceFormatter`):** Frontend ve backend `PriceFormatter` servisleri, Binance'den gelen saf string fiyatları (ör. `'0.17890'`, `'0.004890'`) hiçbir float dönüşümüne uğratmadan ve sondaki sıfırları (`trailing zeros`) kaybetmeden doğrudan passthrough edecek şekilde güncellendi.
+5. **Bot Sinyalleri & Watchlist Entegrasyonu:** Watchlist tablosu, `!miniTicker@arr` canlı WebSocket akışı, Ticker Snapshot modalı ve Bot sinyal kartları `PriceFormatter` ile senkronize edildi.
+
+## 🛠️ 3. Yaptıklarımız (Teknik ve Mimari Değişiklikler)
+1. **`public/plugins/chart/multi-chart.plugin.js`:**
+   * `detectCoinPrecision(rawData)` fonksiyonu eklendi.
+   * `fetchAndRenderCell` içinde her hücre için coinin dinamik hassasiyeti ve minMove değeri hesaplandı.
+   * `candleSeries`, `bbUpperSeries`, `bbMiddleSeries`, `bbLowerSeries` serilerine dinamik `priceFormat` uygulandı.
+   * `mainChart` lokalizasyonuna dinamik `priceFormatter` eklendi.
+   * İlk seri başlatma varsayılanı 2'den 5 basamağa çıkarıldı.
+2. **`public/plugins/chart/chart.plugin.js`:**
+   * `detectCoinPrecision(raw)` fonksiyonu eklendi.
+   * `loadKlines` içinde `candleSeries.applyOptions({ priceFormat: { type: 'price', precision, minMove } })` ve `chart.applyOptions({ localization: { priceFormatter } })` entegre edildi.
+   * `_renderLegend` fonksiyonundaki sabit `toFixed(4)` kaldırıldı; `PriceFormatter.format` entegre edildi.
+3. **`public/core/price-formatter.js` & `services/price-formatter.js`:**
+   * String passthrough koruması eklendi: Sayısal geçerli string fiyatlar regex ile doğrulanıp tek bir basamağı dahi kırpılmadan döndürüldü.
+   * Float değerler için mikro-basamak garantisi (0.01 altı için 6-8 basamak) eklendi.
+4. **`public/plugins/sentiment-modal/sentiment-modal.plugin.js`:**
+   * `t.lastPrice` string değeri doğrudan `formatPrice`'a aktarılarak sondaki sıfırların float dönüşümüyle silinmesi engellendi.
+5. **`public/plugins/watchlist/watchlist.plugin.js`:**
+   * Canlı WebSocket `!miniTicker@arr` mesajlarındaki `m.c` string fiyatı doğrudan `priceCell` hücresine aktarıldı.
+   * `formatPrice` fallback fonksiyonuna string passthrough koruması eklendi.
+6. **`public/plugins/smart-money/smart-money.plugin.js`:**
+   * Balina radarındaki `@price` gösteriminde sabit `toFixed(4)` kaldırılıp `PriceFormatter.format` entegre edildi.
+7. **`bots/strategies/four-s.bot.js` & `data/signals_history.json`:**
+   * IMXUSDT örnek sinyal kartının fiyatları `0.17890` (5 basamak) ve `0.17540` olarak güncellendi.
+8. **`terminal-server.js`:**
+   * `/api/watchlist` rotasında `t.lastPrice ? String(t.lastPrice) : price` ve `high/low` değerlerinin string orijinal halleri korundu.
+
+## ✅ 4. Tamamlanan İşler ve Doğrulama
+1. **Watchlist API Doğrulaması:**
+   * IMXUSDT: `"price": "0.1721"`, `"high": "0.1914"`, `"low": "0.1682"` orijinal string korundu.
+   * Mikro coinler: `PUMPUSDT` -> `"0.0061890"` (7 basamak tam korundu), `1000PEPEUSDT` -> `"0.0040268"` (7 basamak tam korundu), `1000SHIBUSDT` -> `"0.005375"` (6 basamak tam korundu).
+2. **Bot Sinyalleri API Doğrulaması:**
+   * `/api/signals?bot=4s`: IMXUSDT sinyali `"currentPrice": "0.17890"`, `"prevPrice": "0.17540"` olarak doğrulandı.
+3. **Grafik Hassasiyet Testi:**
+   * `detectCoinPrecision` algoritması `0.17890` için 5 basamak, `0.004890` için 6 basamak tespit ederek grafiğe aktarıldı.
+4. **Sistem Canlı:** Arka planda `terminal-server.js` port 3000 üzerinde hatasız çalışmaktadır.

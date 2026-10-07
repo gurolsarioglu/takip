@@ -159,6 +159,11 @@ const MultiChartPlugin = (() => {
       borderDownColor: '#f6465d',
       wickUpColor: '#0ecb81',
       wickDownColor: '#f6465d',
+      priceFormat: {
+        type: 'price',
+        precision: 5,
+        minMove: 0.00001,
+      },
     });
 
     const volumeSeries = mainChart.addHistogramSeries({
@@ -372,6 +377,24 @@ const MultiChartPlugin = (() => {
     return instObj;
   }
 
+  // ─── Coinin Gerçek Ondalık Hassasiyetini Tespit Et ───────────────
+  function detectCoinPrecision(rawData) {
+    let maxDecimals = 2;
+    if (!Array.isArray(rawData) || !rawData.length) return 2;
+    const sampleCount = Math.min(35, rawData.length);
+    for (let i = 0; i < sampleCount; i++) {
+      const row = rawData[i];
+      for (let c = 1; c <= 4; c++) {
+        const pStr = String(row[c] || '');
+        if (pStr.includes('.')) {
+          const dec = pStr.split('.')[1].length;
+          if (dec > maxDecimals) maxDecimals = dec;
+        }
+      }
+    }
+    return Math.min(8, Math.max(2, maxDecimals));
+  }
+
   // ─── Tek Bir Hücrenin Verisini Çek ve Güncelle ─────────────────
   async function fetchAndRenderCell(inst, symbol) {
     try {
@@ -379,6 +402,33 @@ const MultiChartPlugin = (() => {
       if (!res.ok) return;
       const rawData = await res.json();
       if (!Array.isArray(rawData) || !rawData.length) return;
+
+      // Hassasiyet (Tick Precision): Coinin gerçek basamak sayısını tespit et (0.17890 -> 5 basamak, 0.004890 -> 6 basamak)
+      const precision = detectCoinPrecision(rawData);
+      const minMove = Number(Math.pow(10, -precision).toFixed(precision));
+
+      inst.precision = precision;
+      inst.minMove = minMove;
+
+      const priceFormatOpts = {
+        type: 'price',
+        precision: precision,
+        minMove: minMove,
+      };
+
+      inst.candleSeries.applyOptions({ priceFormat: priceFormatOpts });
+      inst.bbUpperSeries.applyOptions({ priceFormat: priceFormatOpts });
+      inst.bbMiddleSeries.applyOptions({ priceFormat: priceFormatOpts });
+      inst.bbLowerSeries.applyOptions({ priceFormat: priceFormatOpts });
+
+      inst.mainChart.applyOptions({
+        localization: {
+          priceFormatter: (val) => {
+            if (typeof val !== 'number' || isNaN(val)) return '—';
+            return val.toFixed(precision);
+          }
+        }
+      });
 
       const klines = rawData.map(d => ({
         time: Math.floor(d[0] / 1000),

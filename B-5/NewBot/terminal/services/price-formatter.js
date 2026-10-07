@@ -1,7 +1,7 @@
 /**
- * price-formatter.js — Alpha Terminal Kripto Fiyat Hassasiyet Koruma Motoru
+ * price-formatter.js — Alpha Terminal Kripto Fiyat Hassasiyet Koruma Motoru (Backend)
  * 
- * Kripto vadeli piyasalarında 0.004890 veya 0.00001850 gibi mikro rakamların
+ * Kripto vadeli piyasalarında 0.17890, 0.004890 veya 0.00001850 gibi mikro rakamların
  * basamaklarını asla körlemesine kırpmaz, yuvarlamaz veya yutmaz.
  * Tick ve ondalık hassasiyetini eksiksiz korur.
  */
@@ -12,10 +12,8 @@
 function getDecimalPlaces(val) {
   if (val === null || val === undefined) return 2;
   const str = String(val).trim();
-  if (str.includes('.')) {
-    if (!str.includes('e') && !str.includes('E')) {
-      return str.split('.')[1].length;
-    }
+  if (str.includes('.') && !str.includes('e') && !str.includes('E')) {
+    return str.split('.')[1].length;
   }
   const num = Number(val);
   if (isNaN(num) || num === 0) return 2;
@@ -30,16 +28,22 @@ function getDecimalPlaces(val) {
 
 /**
  * Fiyatı tick hassasiyetini koruyarak güvenle formatlar.
- * Eğer string olarak geldiyse (örn: "0.004890"), orijinal hassasiyeti birebir korunur.
- * Eğer sayısal float geldiyse (örn: 0.00489), mikro seviyesine göre (6-8 basamak) formatlanır.
+ * Eğer string olarak geldiyse (örn: "0.17890", "0.004890"), orijinal hassasiyeti birebir korunur.
+ * Eğer sayısal float geldiyse (örn: 0.1789), basamakları kesilmeden korunur.
  */
-function formatCryptoPrice(rawPrice) {
+function formatCryptoPrice(rawPrice, precision = null) {
   if (rawPrice === null || rawPrice === undefined || rawPrice === '') return '0.00';
 
-  // 1. Eğer string olarak geldiyse ve bilimsel gösterim içermiyorsa orijinal haliyle koru
+  // 1. Eğer string olarak geldiyse ve bilimsel gösterim içermiyorsa orijinal haliyle koru (ASLA KESME)
   if (typeof rawPrice === 'string') {
     const str = rawPrice.trim();
     if (/^-?\d+(\.\d+)?$/.test(str) && !str.includes('e') && !str.includes('E')) {
+      if (precision !== null && typeof precision === 'number') {
+        const parts = str.split('.');
+        if (parts.length === 2 && parts[1].length < precision) {
+          return str + '0'.repeat(precision - parts[1].length);
+        }
+      }
       return str;
     }
   }
@@ -48,23 +52,21 @@ function formatCryptoPrice(rawPrice) {
   if (isNaN(num)) return '0.00';
   if (num === 0) return '0.00';
 
-  const abs = Math.abs(num);
-  if (abs >= 1000) {
-    return num.toFixed(2);
-  } else if (abs >= 1) {
-    return num.toFixed(4);
-  } else if (abs >= 0.01) {
-    return num.toFixed(5);
-  } else if (abs >= 0.0001) {
-    // 0.004890 gibi 6 basamaklılar
-    return num.toFixed(6);
-  } else if (abs >= 0.000001) {
-    // 0.0000185 gibi 7 basamaklılar
-    return num.toFixed(7);
-  } else {
-    // PEPE, SHIB, BONK gibi 8 basamaklılar
-    return num.toFixed(8);
+  if (precision !== null && typeof precision === 'number') {
+    return num.toFixed(precision);
   }
+
+  // 2. Sayısal float ise string basamaklarını koru
+  const strVal = String(num);
+  if (strVal.includes('.') && !strVal.includes('e') && !strVal.includes('E')) {
+    const decimals = strVal.split('.')[1].length;
+    const abs = Math.abs(num);
+    if (abs < 0.0001) return num.toFixed(Math.max(decimals, 8));
+    if (abs < 0.01) return num.toFixed(Math.max(decimals, 6)); // 0.004890
+    return strVal;
+  }
+
+  return num.toFixed(2);
 }
 
 /**

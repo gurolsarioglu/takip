@@ -97,8 +97,10 @@ const WatchlistPlugin = (() => {
     if (typeof PriceFormatter !== 'undefined' && PriceFormatter.format) {
       return PriceFormatter.format(val);
     }
-    if (val === null || val === undefined || isNaN(val)) return '—';
+    if (val === null || val === undefined || val === '') return '—';
+    if (typeof val === 'string' && /^-?\d+(\.\d+)?$/.test(val.trim())) return val.trim();
     const num = Number(val);
+    if (isNaN(num)) return '—';
     const abs = Math.abs(num);
     if (abs >= 1000) return num.toFixed(2);
     if (abs >= 1) return num.toFixed(4);
@@ -297,9 +299,9 @@ const WatchlistPlugin = (() => {
           // 1. Tabloda görünür olan satırı anlık güncelle ve yeşil/kırmızı flash yak
           const entry = rowElementMap.get(m.s);
           if (entry && entry.priceCell) {
-            const oldPrice = entry.lastPrice;
+            const priceToDisplay = m.c ? String(m.c) : formatPrice(newPrice);
             if (newPrice !== oldPrice) {
-              entry.priceCell.textContent = formatPrice(newPrice);
+              entry.priceCell.textContent = priceToDisplay;
               const isUp = newPrice >= oldPrice;
               entry.priceCell.classList.remove('flash-up', 'flash-down');
               void entry.priceCell.offsetWidth;
@@ -320,7 +322,8 @@ const WatchlistPlugin = (() => {
             const chgEl = document.getElementById('snap-chg');
             if (priceEl) {
               const oldSnapPrice = parseFloat(priceEl.dataset.price || 0);
-              priceEl.textContent = formatPrice(newPrice);
+              const snapPriceToDisplay = m.c ? String(m.c) : formatPrice(newPrice);
+              priceEl.textContent = snapPriceToDisplay;
               priceEl.dataset.price = newPrice;
               if (oldSnapPrice && newPrice !== oldSnapPrice) {
                 priceEl.classList.remove('flash-up', 'flash-down');

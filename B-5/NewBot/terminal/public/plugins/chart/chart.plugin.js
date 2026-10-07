@@ -109,8 +109,8 @@ const ChartPlugin = (() => {
       wickDownColor: '#f6465d',
       priceFormat: {
         type: 'price',
-        precision: 4,
-        minMove: 0.0001,
+        precision: 5,
+        minMove: 0.00001,
       },
     });
 
@@ -369,7 +369,12 @@ const ChartPlugin = (() => {
     if (!legendEl || !c) return;
     const isUp = c.close >= c.open;
     const colorClass = isUp ? 'up' : 'down';
-    const fmt = v => v < 1 ? v.toFixed(4) : v < 100 ? v.toFixed(3) : v.toFixed(2);
+    const fmt = v => {
+      if (typeof PriceFormatter !== 'undefined' && PriceFormatter.format) {
+        return PriceFormatter.format(v);
+      }
+      return String(v);
+    };
     const vVal = vol !== undefined ? vol : (c.volume || 0);
     const fmtVol = v => {
       if (!v && v !== 0) return '—';
@@ -495,6 +500,24 @@ const ChartPlugin = (() => {
     });
   }
 
+  // ─── Coinin Gerçek Ondalık Hassasiyetini Tespit Et ───────────────
+  function detectCoinPrecision(rawData) {
+    let maxDecimals = 2;
+    if (!Array.isArray(rawData) || !rawData.length) return 5;
+    const sampleCount = Math.min(35, rawData.length);
+    for (let i = 0; i < sampleCount; i++) {
+      const row = rawData[i];
+      for (let c = 1; c <= 4; c++) {
+        const pStr = String(row[c] || '');
+        if (pStr.includes('.')) {
+          const dec = pStr.split('.')[1].length;
+          if (dec > maxDecimals) maxDecimals = dec;
+        }
+      }
+    }
+    return Math.min(8, Math.max(2, maxDecimals));
+  }
+
   // ─── Kline Yükleme ───────────────────────────────────────────
   async function loadKlines() {
     if (!currentSymbol || !candleSeries) return;
@@ -522,15 +545,22 @@ const ChartPlugin = (() => {
 
       klineData = Array.from(map.values()).sort((a, b) => a.time - b.time);
 
-      // Fiyat hassasiyetini belirle
-      if (klineData.length > 0) {
-        const samplePrice = klineData[klineData.length - 1].close;
-        const precision = samplePrice < 0.001 ? 6 : samplePrice < 1 ? 4 : samplePrice < 100 ? 3 : 2;
-        const minMove   = samplePrice < 0.001 ? 0.000001 : samplePrice < 1 ? 0.0001 : samplePrice < 100 ? 0.001 : 0.01;
-        candleSeries.applyOptions({
-          priceFormat: { type: 'price', precision, minMove }
-        });
-      }
+      // Fiyat hassasiyetini belirle (Tick precision tespiti)
+      const precision = detectCoinPrecision(raw);
+      const minMove = Number(Math.pow(10, -precision).toFixed(precision));
+      candleSeries.applyOptions({
+        priceFormat: { type: 'price', precision, minMove }
+      });
+      chart.applyOptions({
+        localization: {
+          priceFormatter: (val) => {
+            if (typeof PriceFormatter !== 'undefined' && PriceFormatter.format) {
+              return PriceFormatter.format(val);
+            }
+            return typeof val === 'number' ? val.toFixed(precision) : String(val);
+          }
+        }
+      });
 
       // 1. Candlestick verisi
       candleSeries.setData(klineData);

@@ -398,7 +398,12 @@ const SmartMoneyPlugin = (() => {
       return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
     };
 
-    const fmtPrice = p => p < 0.001 ? p.toFixed(6) : p < 1 ? p.toFixed(4) : p < 100 ? p.toFixed(3) : p.toFixed(2);
+    const fmtPrice = p => {
+      if (typeof PriceFormatter !== 'undefined' && PriceFormatter.format) {
+        return PriceFormatter.format(p);
+      }
+      return String(p);
+    };
 
     listEl.innerHTML = radarItems.map(item => {
       const isBuy  = item.type === 'buy';

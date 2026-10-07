@@ -80,15 +80,16 @@ app.get('/api/watchlist', async (req, res) => {
 
         result.push({
           symbol: t.symbol,
-          price,
+          price: t.lastPrice ? String(t.lastPrice) : price,
+          priceNum: price,
           chg,
           chgPct,
           volUsd,
           fr: prem.fundingRate,
           frInterval: '8h',
           nextFundingTime: prem.nextFundingTime,
-          high: parseFloat(t.highPrice || 0),
-          low: parseFloat(t.lowPrice || 0)
+          high: t.highPrice ? String(t.highPrice) : (t.highPrice || 0),
+          low: t.lowPrice ? String(t.lowPrice) : (t.lowPrice || 0)
         });
       });
     }

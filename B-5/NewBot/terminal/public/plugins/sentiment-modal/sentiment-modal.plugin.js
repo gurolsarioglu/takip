@@ -11,8 +11,12 @@ const TickerSnapshot = (() => {
     if (typeof PriceFormatter !== 'undefined' && PriceFormatter.format) {
       return PriceFormatter.format(val);
     }
-    if (val === null || val === undefined || isNaN(val)) return '—';
+    if (val === null || val === undefined || val === '') return '—';
+    if (typeof val === 'string' && /^-?\d+(\.\d+)?$/.test(val.trim())) {
+      return val.trim();
+    }
     const num = Number(val);
+    if (isNaN(num)) return '—';
     const abs = Math.abs(num);
     if (abs >= 1000) return num.toFixed(2);
     if (abs >= 1) return num.toFixed(4);
@@ -46,14 +50,14 @@ const TickerSnapshot = (() => {
 
       if (tickerRes.status === 'fulfilled' && tickerRes.value.ok) {
         const t = await tickerRes.value.json();
-        const price = parseFloat(t.lastPrice || 0);
+        const rawPrice = t.lastPrice !== undefined && t.lastPrice !== null ? String(t.lastPrice) : '0';
         const chg = parseFloat(t.priceChangePercent || 0);
 
         const priceEl = document.getElementById('snap-price');
         const chgEl = document.getElementById('snap-chg');
 
         if (priceEl) {
-          priceEl.textContent = formatPrice(price);
+          priceEl.textContent = formatPrice(rawPrice);
           priceEl.className = `snapshot-price-big ${chg >= 0 ? 'up' : 'down'}`;
         }
         if (chgEl) {
