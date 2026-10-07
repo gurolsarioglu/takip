@@ -245,7 +245,7 @@ const BotRenderer = (() => {
           <div class="signal-card" data-symbol="${s.symbol}">
             <div class="card-top-row">
               <span class="card-symbol" style="color: ${titleColor}; font-weight:700;">
-                ${dot} #${s.symbol} ${s.stars ? `<span class="card-star" style="color:#fbbf24;margin-left:4px;">${s.stars}</span>` : ''}
+                ${dot} <span class="card-coin-tag" data-coin="${s.symbol}" title="Son 60 günlük sinyal geçmişini aç">#${s.symbol}</span> ${s.stars ? `<span class="card-star" style="color:#fbbf24;margin-left:4px;">${s.stars}</span>` : ''}
               </span>
             </div>
             ${s.strategy ? `
@@ -314,7 +314,7 @@ const BotRenderer = (() => {
           <div class="signal-card" data-symbol="${s.symbol}">
             <div class="card-top-row">
               <span class="card-symbol" style="color: ${titleColor}; font-weight:700;">
-                ${dot} #${s.displaySymbol || s.symbol}
+                ${dot} <span class="card-coin-tag" data-coin="${s.symbol}" title="Son 60 günlük sinyal geçmişini aç">#${s.displaySymbol || s.symbol}</span>
               </span>
             </div>
             <div class="card-field-row" style="margin-top: 4px;">
@@ -384,7 +384,7 @@ const BotRenderer = (() => {
           <div class="signal-card" data-symbol="${s.symbol}">
             <div class="card-top-row">
               <span class="card-symbol" style="color: ${titleColor}; font-weight:700;">
-                ${dot} #${s.symbol}
+                ${dot} <span class="card-coin-tag" data-coin="${s.symbol}" title="Son 60 günlük sinyal geçmişini aç">#${s.symbol}</span>
               </span>
             </div>
             <div class="card-field-row" style="margin-top: 4px;">
@@ -453,7 +453,7 @@ const BotRenderer = (() => {
           <div class="signal-card" data-symbol="${s.symbol}">
             <div class="card-top-row">
               <span class="card-symbol" style="color: #38bdf8; font-weight: 700;">
-                #${s.symbol} ${isSuperSurge ? '<span title="Ekstrem Hacim Girişi" style="font-size:12px;margin-left:4px;">🔥</span>' : ''}
+                <span class="card-coin-tag" data-coin="${s.symbol}" title="Son 60 günlük sinyal geçmişini aç">#${s.symbol}</span> ${isSuperSurge ? '<span title="Ekstrem Hacim Girişi" style="font-size:12px;margin-left:4px;">🔥</span>' : ''}
               </span>
             </div>
             <div class="card-field-row" style="margin-top: 4px;">
@@ -491,7 +491,7 @@ const BotRenderer = (() => {
           <div class="signal-card" data-symbol="${s.symbol}">
             <div class="card-top-row">
               <span class="card-symbol" style="color: ${titleColor}; font-weight:700;">
-                ${dot}#${s.symbol}
+                ${dot}<span class="card-coin-tag" data-coin="${s.symbol}" title="Son 60 günlük sinyal geçmişini aç">#${s.symbol}</span>
               </span>
             </div>
             <div class="card-field-row">
@@ -549,7 +549,7 @@ const BotRenderer = (() => {
           <div class="signal-card" data-symbol="${s.symbol}">
             <div class="card-top-row">
               <span class="card-symbol" style="color: ${titleColor}; font-weight: 700;">
-                ${dot}#${s.symbol}
+                ${dot}<span class="card-coin-tag" data-coin="${s.symbol}" title="Son 60 günlük sinyal geçmişini aç">#${s.symbol}</span>
               </span>
             </div>
             ${cleanAlert ? `
@@ -610,7 +610,7 @@ const BotRenderer = (() => {
           <div class="signal-card" data-symbol="${s.symbol}">
             <div class="card-top-row">
               <span class="card-symbol" style="color: ${isDrop ? '#f87171' : '#38bdf8'}; font-weight: 700;">
-                ${dot} #${s.symbol}
+                ${dot} <span class="card-coin-tag" data-coin="${s.symbol}" title="Son 60 günlük sinyal geçmişini aç">#${s.symbol}</span>
               </span>
             </div>
             <div class="card-field-row">
@@ -670,7 +670,7 @@ const BotRenderer = (() => {
           <div class="signal-card" data-symbol="${s.symbol}">
             <div class="card-top-row">
               <span class="card-symbol" style="color: #38bdf8; font-weight: 700;">
-                🟢 #${s.symbol} ${s.isFavorite ? '<span class="card-star" style="color:#fbbf24;margin-left:4px;">⭐</span>' : ''}
+                🟢 <span class="card-coin-tag" data-coin="${s.symbol}" title="Son 60 günlük sinyal geçmişini aç">#${s.symbol}</span> ${s.isFavorite ? '<span class="card-star" style="color:#fbbf24;margin-left:4px;">⭐</span>' : ''}
               </span>
             </div>
             <div class="card-field-row">
@@ -710,7 +710,7 @@ const BotRenderer = (() => {
     return signals.map(s => `
       <div class="signal-card" data-symbol="${s.symbol}">
         <div class="card-top-row">
-          <span class="card-symbol">🟢 #${s.symbol}</span>
+          <span class="card-symbol">🟢 <span class="card-coin-tag" data-coin="${s.symbol}" title="Son 60 günlük sinyal geçmişini aç">#${s.symbol}</span></span>
         </div>
         <div class="card-field-row">
           <span>Strategy:</span>
@@ -754,6 +754,20 @@ const BotRenderer = (() => {
         </div>
       </div>
     `).join('');
+  }
+
+  if (typeof document !== 'undefined') {
+    document.addEventListener('click', (e) => {
+      const coinTag = e.target.closest('.card-coin-tag');
+      if (coinTag) {
+        e.preventDefault();
+        e.stopPropagation();
+        const coin = coinTag.dataset.coin;
+        if (coin && typeof CoinHistoryModal !== 'undefined') {
+          CoinHistoryModal.open(coin);
+        }
+      }
+    }, true);
   }
 
   return {

@@ -13,6 +13,7 @@ const divergenceBot    = require('./strategies/divergence.bot');
 const fundingRateBot   = require('./strategies/funding-rate.bot');
 const m1aDropBot       = require('./strategies/m1a-drop.bot');
 const m1PremiumBot     = require('./strategies/m1-premium.bot');
+const { formatCryptoPrice, computePrevPrice } = require('../services/price-formatter');
 
 class BotManager {
   constructor() {
@@ -154,8 +155,8 @@ class BotManager {
           dot: isBull ? '🟢' : '🔴',
           strategy: isBull ? '1H RSI DIVERGENCE' : '1H RSI SMA CROSSED',
           boostValue: (isBull ? '+' : '-') + (Math.random() * 2 + 0.5).toFixed(2) + '%',
-          currentPrice: price > 10 ? price.toFixed(2) : price.toFixed(4),
-          prevPrice: price > 10 ? (price * (isBull ? 0.985 : 1.015)).toFixed(2) : (price * (isBull ? 0.985 : 1.015)).toFixed(4),
+          currentPrice: formatCryptoPrice(ticker.price),
+          prevPrice: computePrevPrice(price, isBull ? 1.5 : -1.5, ticker.price),
           rsi: {
             h1: isBull ? `${Math.floor(Math.random() * 8 + 22)} ❗` : `${Math.floor(Math.random() * 8 + 68)} ❗`,
             h4: `${Math.floor(Math.random() * 30 + 35)}`,

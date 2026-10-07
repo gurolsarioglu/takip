@@ -4,6 +4,7 @@
  */
 
 const BaseBot = require('../base/base-bot');
+const { formatCryptoPrice, computePrevPrice } = require('../../services/price-formatter');
 
 const initialSignals = [
   {
@@ -198,10 +199,9 @@ class FourSSniperBot extends BaseBot {
     let prevPriceStr = s.prevPrice ? String(s.prevPrice) : '';
     if (!prevPriceStr || prevPriceStr === String(s.price)) {
       if (priceNum > 0 && boostNum !== 0) {
-        const computedPrev = priceNum / (1 + boostNum / 100);
-        prevPriceStr = priceNum > 1 ? computedPrev.toFixed(4) : computedPrev.toFixed(6);
+        prevPriceStr = computePrevPrice(priceNum, boostNum, s.price);
       } else {
-        prevPriceStr = priceNum > 0 ? String(priceNum) : '0.00';
+        prevPriceStr = formatCryptoPrice(s.price);
       }
     }
 
@@ -239,7 +239,7 @@ class FourSSniperBot extends BaseBot {
       dot: '🟢', // NW UP sniper dip dönüşü her zaman Long teyitli yeşil noktadır
       strategy: s.strategy || 'NW UP',
       boostValue: boostFormatted,
-      currentPrice: priceNum > 0 ? (priceNum > 1 ? priceNum.toFixed(4) : priceNum.toFixed(6)) : String(s.price || '0.00'),
+      currentPrice: formatCryptoPrice(s.price),
       prevPrice: prevPriceStr,
       rsi: {
         h1: `${rsi1hNum}${rsi1hNum <= 30 ? ' ❗' : ''}`,

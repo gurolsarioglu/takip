@@ -94,12 +94,18 @@ const WatchlistPlugin = (() => {
   }
 
   function formatPrice(val) {
-    if (isNaN(val)) return '—';
-    if (val < 0.0001) return val.toFixed(7);
-    if (val < 0.01) return val.toFixed(6);
-    if (val < 1) return val.toFixed(4);
-    if (val < 100) return val.toFixed(3);
-    return val.toFixed(2);
+    if (typeof PriceFormatter !== 'undefined' && PriceFormatter.format) {
+      return PriceFormatter.format(val);
+    }
+    if (val === null || val === undefined || isNaN(val)) return '—';
+    const num = Number(val);
+    const abs = Math.abs(num);
+    if (abs >= 1000) return num.toFixed(2);
+    if (abs >= 1) return num.toFixed(4);
+    if (abs >= 0.01) return num.toFixed(5);
+    if (abs >= 0.0001) return num.toFixed(6);
+    if (abs >= 0.000001) return num.toFixed(7);
+    return num.toFixed(8);
   }
 
   function formatVolume(val) {

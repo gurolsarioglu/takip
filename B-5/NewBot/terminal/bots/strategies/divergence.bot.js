@@ -4,6 +4,7 @@
  */
 
 const BaseBot = require('../base/base-bot');
+const { formatCryptoPrice, computePrevPrice, getDecimalPlaces } = require('../../services/price-formatter');
 
 const initialSignals = [
   {
@@ -211,15 +212,14 @@ class DivergenceBot extends BaseBot {
     let prevPriceStr = s.prevPrice ? String(s.prevPrice) : '';
     if (!prevPriceStr || prevPriceStr === String(s.price)) {
       if (priceNum > 0 && boostNum !== 0) {
-        let computedPrev;
+        const decimals = Math.min(8, Math.max(2, getDecimalPlaces(s.price || priceNum)));
         if (dot === '🔴') {
-          computedPrev = priceNum * (1 + boostNum / 100);
+          prevPriceStr = (priceNum * (1 + boostNum / 100)).toFixed(decimals);
         } else {
-          computedPrev = priceNum / (1 + boostNum / 100);
+          prevPriceStr = computePrevPrice(priceNum, boostNum, s.price);
         }
-        prevPriceStr = priceNum > 1 ? computedPrev.toFixed(4) : computedPrev.toFixed(6);
       } else {
-        prevPriceStr = priceNum > 0 ? String(priceNum) : '0.00';
+        prevPriceStr = formatCryptoPrice(s.price);
       }
     }
 
@@ -242,7 +242,7 @@ class DivergenceBot extends BaseBot {
       dot: dot,
       strategy: strategy,
       boostValue: boostFormatted,
-      currentPrice: priceNum > 0 ? (priceNum > 1 ? priceNum.toFixed(4) : priceNum.toFixed(6)) : String(s.price || '0.00'),
+      currentPrice: formatCryptoPrice(s.price),
       prevPrice: prevPriceStr,
       rsi: {
         h1: fmtRsi(rsi1hNum),

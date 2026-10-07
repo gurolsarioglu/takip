@@ -12,6 +12,7 @@
  */
 
 const BaseBot = require('../base/base-bot');
+const { formatCryptoPrice, computePrevPrice } = require('../../services/price-formatter');
 
 const initialSignals = [
   {
@@ -204,10 +205,9 @@ class HammerProPlusBot extends BaseBot {
     let prevPriceStr = s.prevPrice ? String(s.prevPrice) : '';
     if (!prevPriceStr || prevPriceStr === String(s.price)) {
       if (priceNum > 0 && boostNum !== 0) {
-        const computedPrev = priceNum / (1 + boostNum / 100);
-        prevPriceStr = priceNum > 1 ? computedPrev.toFixed(4) : computedPrev.toFixed(6);
+        prevPriceStr = computePrevPrice(priceNum, boostNum, s.price);
       } else {
-        prevPriceStr = priceNum > 0 ? String(priceNum) : '0.00';
+        prevPriceStr = formatCryptoPrice(s.price);
       }
     }
 
@@ -250,7 +250,7 @@ class HammerProPlusBot extends BaseBot {
       dot: '🟢',
       strategy: strategy,
       boostValue: boostFormatted,
-      currentPrice: priceNum > 0 ? (priceNum > 1 ? priceNum.toFixed(4) : priceNum.toFixed(6)) : String(s.price || '0.00'),
+      currentPrice: formatCryptoPrice(s.price),
       prevPrice: prevPriceStr,
       rsi: {
         m1: `${rsi1mNum}${rsi1mNum <= 30 ? ' ❗' : ''}`,

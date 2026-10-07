@@ -4,6 +4,7 @@
  */
 
 const BaseBot = require('../base/base-bot');
+const { formatCryptoPrice, computePrevPrice } = require('../../services/price-formatter');
 
 const initialSignals = [
   {
@@ -177,10 +178,9 @@ class M1ADropBot extends BaseBot {
     let prevPriceStr = s.prevPrice ? String(s.prevPrice) : '';
     if (!prevPriceStr || prevPriceStr === String(s.price)) {
       if (priceNum > 0 && valNum !== 0) {
-        const computedPrev = priceNum / (1 + valNum / 100);
-        prevPriceStr = priceNum > 1 ? computedPrev.toFixed(4) : computedPrev.toFixed(6);
+        prevPriceStr = computePrevPrice(priceNum, valNum, s.price);
       } else {
-        prevPriceStr = priceNum > 0 ? String(priceNum) : '0.00';
+        prevPriceStr = formatCryptoPrice(s.price);
       }
     }
 
@@ -201,7 +201,7 @@ class M1ADropBot extends BaseBot {
       type: type,
       dot: dot,
       dropValue: valFormatted,
-      currentPrice: priceNum > 0 ? (priceNum > 1 ? priceNum.toFixed(4) : priceNum.toFixed(6)) : String(s.price || '0.00'),
+      currentPrice: formatCryptoPrice(s.price),
       prevPrice: prevPriceStr,
       volume: volFormatted,
       rsi: rsiFormatted,
