@@ -54,11 +54,13 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
    * [`public/plugins/chart/multi-chart.plugin.js`](public/plugins/chart/multi-chart.plugin.js) ve [`public/plugins/chart/chart.plugin.js`](public/plugins/chart/chart.plugin.js): `detectCoinPrecision` fonksiyonunda trailing zero temizliği ve magnitude baseline uygulandı.
 5. **Arayüz Düzeni ve Taşma Önleme:**
    * [`public/styles/terminal-pro.css`](public/styles/terminal-pro.css): `#main-body` flex ve taşma kuralları güçlendirildi.
-6. **Bot Stratejilerindeki Gizli Hatalar Giderildi:**
+6. **Üst Arama Çubuğu Canlı Sembol Senkronizasyonu:**
+   * [`public/plugins/watchlist/watchlist.plugin.js`](public/plugins/watchlist/watchlist.plugin.js) ve [`public/index.html`](public/index.html): Bot Hub sinyal kartlarına, Watchlist satırına veya alt ticker bandına tıklandığında üst arama kutusunun (`#coin-search-input`) sabit kalması sorunu çözüldü. Grafikte hangi coin gösteriliyorsa arama çubuğunun değeri ve placeholder'ı da anında o coine eşitlendi. Tıklandığında tüm metni otomatik seçme (`select()`) ve vazgeçilip dışarı tıklandığında aktif coine geri dönme güvenliği eklendi.
+7. **Bot Stratejilerindeki Gizli Hatalar Giderildi:**
    * [`bots/strategies/v3-volume.bot.js`](bots/strategies/v3-volume.bot.js): Binlik nokta parse bug'ı düzeltildi.
    * [`bots/strategies/divergence.bot.js`](bots/strategies/divergence.bot.js): Negatif boost mutlak değer eşiği düzeltildi.
    * [`bots/strategies/m1a-drop.bot.js`](bots/strategies/m1a-drop.bot.js): `s.drop` ve `priceNum` eksikleri tamamlandı.
-7. **İki Büyük Test Süiti ve Rapor İnşa Edildi:**
+8. **İki Büyük Test Süiti ve Rapor İnşa Edildi:**
    * [`review/full-realistic-terminal-test.cjs`](review/full-realistic-terminal-test.cjs): 36 adımlık tam mimari test süiti.
    * [`review/end-user-live-binance-audit.cjs`](review/end-user-live-binance-audit.cjs): 33 adımlık son kullanıcı & Binance canlı piyasa denetim süiti.
    * [`TAM_TEST_METODOLOJISI_VE_RAPORU.md`](TAM_TEST_METODOLOJISI_VE_RAPORU.md): Metodoloji, matematiksel formüller ve test kanıtları raporu.

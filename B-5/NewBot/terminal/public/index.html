@@ -22,7 +22,7 @@
 
       <div class="search-box-wrap">
         <span class="search-icon-inside">🔍</span>
-        <input type="text" id="coin-search-input" class="search-input" placeholder="BTWUSDT" autocomplete="off" spellcheck="false" />
+        <input type="text" id="coin-search-input" class="search-input" value="BTWUSDT" placeholder="BTWUSDT" autocomplete="off" spellcheck="false" />
       </div>
 
       <nav class="timeframe-strip" id="timeframe-strip">
@@ -376,12 +376,24 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(updateClock, 1000);
   updateClock();
 
-  // 3. Üst Arama Çubuğu (Coin Arama & Anlık Canlı Filtreleme)
+  // 3. Üst Arama Çubuğu (Coin Arama, Canlı Filtreleme & Senkronizasyon)
   const searchInput = document.getElementById('coin-search-input');
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       const val = e.target.value.trim();
       WatchlistPlugin.search(val);
+    });
+
+    searchInput.addEventListener('focus', () => {
+      searchInput.select();
+    });
+
+    searchInput.addEventListener('blur', () => {
+      const current = WatchlistPlugin.getActiveSymbol ? WatchlistPlugin.getActiveSymbol() : '';
+      if (current) {
+        searchInput.value = current;
+        WatchlistPlugin.search('');
+      }
     });
 
     searchInput.addEventListener('keydown', (e) => {
@@ -390,12 +402,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (val) {
           const formatted = val.endsWith('USDT') ? val : val + 'USDT';
           WatchlistPlugin.setActiveSymbol(formatted);
+          WatchlistPlugin.search('');
           searchInput.blur();
         }
       } else if (e.key === 'Escape') {
-        searchInput.value = '';
+        const current = WatchlistPlugin.getActiveSymbol ? WatchlistPlugin.getActiveSymbol() : '';
+        searchInput.value = current;
         WatchlistPlugin.search('');
         searchInput.blur();
+      }
+    });
+  }
+
+  // Alt Ticker Tape Tıklama Senkronizasyonu
+  const tapeContainer = document.getElementById('tape-items-scroll');
+  if (tapeContainer) {
+    tapeContainer.addEventListener('click', (e) => {
+      const item = e.target.closest('.tape-item');
+      if (!item) return;
+      const symEl = item.querySelector('.tape-symbol');
+      if (symEl) {
+        const clean = symEl.textContent.trim().replace('.P', '');
+        WatchlistPlugin.setActiveSymbol(clean);
       }
     });
   }

@@ -410,6 +410,13 @@ const WatchlistPlugin = (() => {
     activeSymbol = symbol.toUpperCase();
     renderTable();
 
+    // Üst arama kutusunu aktif coine güncelle ve senkronize et
+    const searchInput = document.getElementById('coin-search-input');
+    if (searchInput) {
+      searchInput.value = activeSymbol;
+      searchInput.placeholder = activeSymbol;
+    }
+
     if (typeof MultiChartPlugin !== 'undefined') {
       MultiChartPlugin.loadSymbol(activeSymbol);
     }
@@ -509,7 +516,12 @@ const WatchlistPlugin = (() => {
     connectTickerStream();
     pollInterval = setInterval(fetchWatchlist, 6000);
 
-    // Başlangıç coin'i için 200 günlük veriyi getir
+    // Başlangıç coin'i için arama çubuğunu ve 200 günlük veriyi getir
+    const searchInput = document.getElementById('coin-search-input');
+    if (searchInput) {
+      searchInput.value = activeSymbol;
+      searchInput.placeholder = activeSymbol;
+    }
     load200dAnalytics(activeSymbol);
   }
 
