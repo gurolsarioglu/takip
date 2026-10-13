@@ -31,7 +31,7 @@ const WebSocketManager = (() => {
     currentSymbol   = symbol.toLowerCase();
     currentInterval = interval;
 
-    const streams = `${currentSymbol}@kline_${interval}/${currentSymbol}@ticker/${currentSymbol}@aggTrade/${currentSymbol}@forceOrder`;
+    const streams = `${currentSymbol}@kline_1m/${currentSymbol}@kline_5m/${currentSymbol}@kline_1h/${currentSymbol}@kline_1d/${currentSymbol}@ticker/${currentSymbol}@aggTrade/${currentSymbol}@forceOrder`;
     const fullUrl = `${BASE_WS}?streams=${streams}`;
 
     try {

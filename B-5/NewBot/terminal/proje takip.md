@@ -18,61 +18,69 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 ## 💬 1. Konuşmalarımız ve Onaylananlar (Kullanıcı Talepleri & Kararlar)
 1. **Fiyat Yuvarlama Uyarısı & Tam Odaklanma:**
    * Kullanıcı, önceki test çalışmalarında fiyatta yuvarlama/basamak kırpma hatası olduğunu kendisinin yakaladığını, bu tür kritik finansal hataların gözden kaçırılmaması gerektiğini ve projeye tam odaklanarak gerçekçi bir tam test yapılmasını istedi.
-2. **Gerçekçi Tam Test Talebi:**
-   * Yüzeysel testler yerine; sistemin tüm parçalarını (fiyat formatlayıcı, 9 bot stratejisi, 60 günlük kalıcı arşiv, REST API'ler ve ön yüz grafik motorları) kapsayan gerçekçi bir uçtan uca test uygulanması kararlaştırıldı.
-3. **Özel Test Metodolojisi Dokümantasyonu:**
-   * İşlem bittikten sonra hem `proje takip.md` kuralının aksatılmadan güncellenmesi, hem de **ayrıca** hangi metot ile nasıl test yapıldığını, nerelere dikkat edildiğini ve kök neden analizini detaylandıran bağımsız bir Markdown raporu (`TAM_TEST_METODOLOJISI_VE_RAPORU.md`) hazırlanması talep edildi.
-4. **Otonom İcraat & Sıfır Yapay Yuvarlama Garantisi:**
-   * Kullanıcıdan ara adım onayı istemeden tüm düzeltmelerin yapılması, doğrulanması ve otomatik GitHub gönderiminin icra edilmesi onaylandı.
+2. **Gerçekçi Tam Test & Metodoloji Raporu Talebi:**
+   * Yüzeysel testler yerine; sistemin tüm parçalarını kapsayan gerçekçi bir uçtan uca test uygulanması ve ayrıca hangi metot ile nasıl test yapıldığını detaylandıran bağımsız bir Markdown raporu (`TAM_TEST_METODOLOJISI_VE_RAPORU.md`) hazırlanması talep edildi.
+3. **Son Kullanıcı (Trader) Gözüyle Uçtan Uca Denetim Talebi:**
+   * Kullanıcı: *"son kullanıcı gibi de bir gir kullan bak eksik kalan çalışmayan ya da kullanıcıyı rahatsız eden bir durum var mı bak bir son kullanıcı test yap tam kapsamlı olsun gene. grafikleri kontrol et mesela Binance'taki fiyatlar ile bizim ekranımızdaki fiyatlar aynı vs. gibi gibi işte sen biliyorsun"* diyerek canlı piyasa kontrolü ve kullanıcı deneyimi testi istedi.
+4. **Otonom İcraat & Canlı Binance Senkronizasyonu:**
+   * Kullanıcıdan ara onay istenmeden tespit edilen tüm ön yüz ve WebSocket kusurlarının giderilmesi, Binance canlı vadeli piyasa fiyatlarıyla ekran fiyatlarının test edilmesi ve teslimatın yapılması onaylandı.
 
 ---
 
 ## 🧠 2. Düşündüklerimiz ve Mimari Kararlar
 1. **JavaScript Float Büyüklük Koruması (Magnitude-Aware Decimals):**
-   * JS motoru float sayılardaki sondaki sıfırları (`trailing zeros`) yutar (`0.004890` -> `0.00489`).
-   * `getDecimalPlaces` fonksiyonu string basamaklarını kontrol ederken float stringe dönüştüğünde 5 basamak sanıyordu.
-   * Çözüm olarak coinin mutlak değer büyüklüğüne göre minimum kripto tick alt sınırı getirildi:
+   * JS motorunun yuttuğu sıfırları telafi etmek için coinin mutlak değer büyüklüğüne göre minimum kripto tick alt sınırı getirildi:
      $$\text{dec} = \max(\text{strDecimals}, \text{minDecimalsByMagnitude})$$
      $\text{abs} < 0.0001 \rightarrow 8$ basamak, $\text{abs} < 0.01 \rightarrow 6$ basamak, $\text{abs} < 1 \rightarrow 5$ basamak garanti edildi.
-2. **Çift Yönlü `computePrevPrice` Determinizmi:**
-   * $P_{prev} = \frac{P_{curr}}{1 + \Delta\%/100}$ formülü, coinin orijinal basamak sayısı tespit edilerek tam o basamağa sabitlendi (`toFixed(safeDecimals)`). Yükseliş ve düşüşlerde IEEE-754 float taşması veya basamak kaybı engellendi.
-3. **Lightweight Charts Eksen ve Crosshair Senkronizasyonu:**
-   * Mum verilerinden tespit edilen `precision` değeri, `chart.applyOptions` localization fonksiyonuna açık argüman olarak geçirilerek grafik ekseninde tam tick hassasiyeti sağlandı.
-4. **5 Katmanlı Piramit Test Mimarisi:**
-   * İzole edilmiş VM mockları yerine gerçek Express sunucu rotaları, gerçek bot yöneticisi (`botManager`), gerçek dosya sistemi (`signalStore`) ve gerçekçi kripto mum verileriyle 36 adımlık deterministik test paketi kuruldu.
+2. **Watchlist Canlı WebSocket Flaşlama Güvenliği:**
+   * `watchlist.plugin.js` içerisindeki `oldPrice` tanımsızlığı (`ReferenceError`) nedeniyle `!miniTicker@arr` mesajlarının sessizce çöküp durduğu tespit edildi. Bellekteki `entry.lastPrice` referansı `oldPrice` olarak bağlanarak 745 coinlik tablonun yeşil/kırmızı canlı fiyat hareketliliği güvenceye alındı.
+3. **Eşzamanlı 4'lü Kline Stream (1m, 5m, 1h, 1D):**
+   * Tekli `kline_1m` yerine Binance USD-M WebSocket üzerinden `${symbol}@kline_1m/${symbol}@kline_5m/${symbol}@kline_1h/${symbol}@kline_1d` kombine akışına geçilerek 4 grafiğin tamamının eşzamanlı ve canlı olarak yeni mum üretmesi sağlandı.
+4. **Grafik Eksenlerinde Tick Boyutu Standardizasyonu (Yapay 7-8 Sıfır Temizliği):**
+   * Binance'ın dahili 7-8 basamaklı string padding'lerinden kaynaklanan `1.8876000` ve `1.9000000` gibi gereksiz sıfırlar, mum klines analizi ve büyüklük taban eşiği ile optimize edildi. `BTWUSDT` için 4 basamak (`1.8876`), `SOLUSDT` için 2 basamak (`106.27`), `1000PEPE` için 7 basamak (`0.0040618`) standartlaştırıldı.
+5. **Ekran Düzeni ve Taşma Önleme (Layout Robustness):**
+   * `#main-body` kapsayıcısına `width: 100%; overflow: hidden;` atanarak 4'lü grafik alanı ile sağ kokpitin (Watchlist, Snapshot, Bot İstasyonu) hiçbir çözünürlükte taşmadan stabil oturması sağlandı.
 
 ---
 
 ## 🛠️ 3. Yaptıklarımız (Teknik Geliştirmeler)
 1. **Fiyat Formatlayıcı Motorları Güçlendirildi:**
-   * [`services/price-formatter.js`](services/price-formatter.js): `getDecimalPlaces`, `formatCryptoPrice` ve `computePrevPrice` float büyüklük farkındalığıyla güncellendi.
-   * [`public/core/price-formatter.js`](public/core/price-formatter.js): Tarayıcı tarafı formatlayıcısına `getDecimalPlaces` ve büyüklük kuralları entegre edildi.
-2. **Grafik Eksen Formatlayıcıları Düzeltildi:**
-   * [`public/plugins/chart/chart.plugin.js`](public/plugins/chart/chart.plugin.js): `localization.priceFormatter` içine `precision` parametresi eklendi.
-   * [`public/plugins/chart/multi-chart.plugin.js`](public/plugins/chart/multi-chart.plugin.js): `PriceFormatter.format(val, precision)` bağlandı.
-   * [`public/plugins/watchlist/watchlist.plugin.js`](public/plugins/watchlist/watchlist.plugin.js) ve [`public/plugins/sentiment-modal/sentiment-modal.plugin.js`](public/plugins/sentiment-modal/sentiment-modal.plugin.js): Fallback yuvarlama kalıntıları yeni dinamik tick kurallarıyla senkronize edildi.
-3. **Bot Stratejilerindeki Gizli Hatalar Giderildi:**
-   * [`bots/strategies/v3-volume.bot.js`](bots/strategies/v3-volume.bot.js): `'25.000.000 MTEST'` Türkçe binlik nokta formatı parse hatası giderildi (25 milyonluk coinlerin illikit çöp coin sanılıp elenmesi önlendi).
-   * [`bots/strategies/divergence.bot.js`](bots/strategies/divergence.bot.js): Ayı uyumsuzluklarında negatif boost'un (`-3.20%`) elenmesi hatası `Math.abs(boostNum)` ile giderildi; işaretli format korundu.
-   * [`bots/strategies/m1a-drop.bot.js`](bots/strategies/m1a-drop.bot.js): `s.drop` parametresi ingest zincirine dahil edildi, eksik `priceNum` tanımlandı.
-4. **36 Testlik Kapsamlı Test Süiti İnşa Edildi:**
-   * [`review/full-realistic-terminal-test.cjs`](review/full-realistic-terminal-test.cjs) oluşturuldu.
-   * Bölüm 1 (Fiyat & Tick Hassasiyeti - 12 test), Bölüm 2 (9 Bot Stratejisi Ingest - 11 test), Bölüm 3 (60 Günlük Kalıcı Arşiv - 4 test), Bölüm 4 (Express REST API - 3 test), Bölüm 5 (Tarayıcı & Grafik - 4 test), Bölüm 6 (Veri Tabanı & Dosya Bütünlüğü - 2 test).
-5. **Kapsamlı Test Metodolojisi & Kök Neden Dokümanı Yazıldı:**
-   * [`TAM_TEST_METODOLOJISI_VE_RAPORU.md`](TAM_TEST_METODOLOJISI_VE_RAPORU.md) oluşturuldu.
+   * [`services/price-formatter.js`](services/price-formatter.js) ve [`public/core/price-formatter.js`](public/core/price-formatter.js) float büyüklük farkındalığıyla güncellendi.
+2. **Watchlist Canlı WebSocket Bugfix:**
+   * [`public/plugins/watchlist/watchlist.plugin.js`](public/plugins/watchlist/watchlist.plugin.js): `oldPrice` tanımsızlık hatası giderildi, satır fiyat hücrelerinin canlı güncellenmesi sağlandı.
+3. **Çoklu Kline WebSocket Akışı:**
+   * [`public/core/websocket.js`](public/core/websocket.js): 4 zaman dilimi (1m, 5m, 1h, 1d) aynı anda bağlandı.
+4. **Grafik Eksen Hassasiyet Motoru Geliştirildi:**
+   * [`public/plugins/chart/multi-chart.plugin.js`](public/plugins/chart/multi-chart.plugin.js) ve [`public/plugins/chart/chart.plugin.js`](public/plugins/chart/chart.plugin.js): `detectCoinPrecision` fonksiyonunda trailing zero temizliği ve magnitude baseline uygulandı.
+5. **Arayüz Düzeni ve Taşma Önleme:**
+   * [`public/styles/terminal-pro.css`](public/styles/terminal-pro.css): `#main-body` flex ve taşma kuralları güçlendirildi.
+6. **Bot Stratejilerindeki Gizli Hatalar Giderildi:**
+   * [`bots/strategies/v3-volume.bot.js`](bots/strategies/v3-volume.bot.js): Binlik nokta parse bug'ı düzeltildi.
+   * [`bots/strategies/divergence.bot.js`](bots/strategies/divergence.bot.js): Negatif boost mutlak değer eşiği düzeltildi.
+   * [`bots/strategies/m1a-drop.bot.js`](bots/strategies/m1a-drop.bot.js): `s.drop` ve `priceNum` eksikleri tamamlandı.
+7. **İki Büyük Test Süiti ve Rapor İnşa Edildi:**
+   * [`review/full-realistic-terminal-test.cjs`](review/full-realistic-terminal-test.cjs): 36 adımlık tam mimari test süiti.
+   * [`review/end-user-live-binance-audit.cjs`](review/end-user-live-binance-audit.cjs): 33 adımlık son kullanıcı & Binance canlı piyasa denetim süiti.
+   * [`TAM_TEST_METODOLOJISI_VE_RAPORU.md`](TAM_TEST_METODOLOJISI_VE_RAPORU.md): Metodoloji, matematiksel formüller ve test kanıtları raporu.
 
 ---
 
 ## ✅ 4. Tamamlanan İşler ve Doğrulama
-* **36/36 Tam Test Başarısı:**
-  * `node review/full-realistic-terminal-test.cjs` çalıştırıldı: **36 Testin 36'sı da %100 Passed ✅**.
-  * `0.004890`, `0.00001850`, `0.17890`, `1.4520`, `148.50`, `83030.60` fiyatlarının tek bir basamağının dahi kırpılmadığı hem string hem float testleriyle kanıtlandı.
-* **Canlı API ve HTTP Doğrulaması:**
-  * `review/test-api-coin-history.cjs` çalıştırıldı: Port 3000 üzerinde Express ayağa kalktı; `/api/signals`, `/api/signals/coin-history?symbol=SOLUSDT` sorguları canlıda doğrulandı.
-* **Regresyon Testleri Doğrulandı:**
-  * `review/terminal-regression-tests.cjs` çalıştırıldı: 8 öncelikli hata (H01-H08) %100 geçti.
+* **Canlı Binance Futures vs Terminal Denetimi (33/33 %100 PASS):**
+  * `node review/end-user-live-binance-audit.cjs` çalıştırıldı:
+    * `BTCUSDT`: Binance $83347.30 == Terminal $83347.30 (0 Fark) ✅
+    * `ETHUSDT`: Binance $2498.32 == Terminal $2498.32 (0 Fark) ✅
+    * `SOLUSDT`: Binance $106.2700 == Terminal $106.2700 (0 Fark) ✅
+    * `BTWUSDT`: Binance $1.8775000 == Terminal $1.8775000 (0 Fark) ✅
+    * `DOGEUSDT`: Binance $0.083570 == Terminal $0.083570 (0 Fark) ✅
+    * `1000PEPEUSDT`: Binance $0.0040618 == Terminal $0.0040618 (0 Fark) ✅
+* **Tam Mimari Regresyon Süiti (36/36 %100 PASS):**
+  * `node review/full-realistic-terminal-test.cjs` çalıştırıldı: 36 adımın tamamı eksiksiz geçti ✅.
+* **Gerçek Tarayıcı (Headless & Görsel) Uçtan Uca Son Kullanıcı Testi:**
+  * Tarayıcı üzerinde 4 grafik (1m, 5m, 1h, 1D), Watchlist (745 coin), Ticker Snapshot, 9 Bot İstasyonu ve Alt Ticker Bandı test edildi.
+  * Konsolda sıfır hata ve kusursuz ekran yerleşimi teyit edildi (`verified_terminal_post_fix_1791892033209.png`).
 * **Veri Deposu Temizliği:**
-  * Test sonrasında `data/signals_history.json` içerisindeki tüm geçici test kayıtları temizlendi, yapay sembol sayısı 0 olarak teyit edildi.
+  * Test sonrasında `data/signals_history.json` içerisindeki yapay sembol sayısı 0 olarak korundu.
 
 ---
 

@@ -298,6 +298,7 @@ const WatchlistPlugin = (() => {
           // 1. Tabloda görünür olan satırı anlık güncelle ve yeşil/kırmızı flash yak
           const entry = rowElementMap.get(m.s);
           if (entry && entry.priceCell) {
+            const oldPrice = typeof entry.lastPrice === 'number' ? entry.lastPrice : parseFloat(entry.lastPrice || 0);
             const priceToDisplay = m.c ? String(m.c) : formatPrice(newPrice);
             if (newPrice !== oldPrice) {
               entry.priceCell.textContent = priceToDisplay;

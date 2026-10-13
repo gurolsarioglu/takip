@@ -502,20 +502,28 @@ const ChartPlugin = (() => {
 
   // ─── Coinin Gerçek Ondalık Hassasiyetini Tespit Et ───────────────
   function detectCoinPrecision(rawData) {
-    let maxDecimals = 2;
-    if (!Array.isArray(rawData) || !rawData.length) return 5;
+    if (!Array.isArray(rawData) || !rawData.length) return 2;
+
+    const samplePrice = parseFloat(rawData[0][4] || rawData[0][1] || 0);
+    let minByMag = 2;
+    if (samplePrice < 0.0001) minByMag = 8;
+    else if (samplePrice < 0.01) minByMag = 6;
+    else if (samplePrice < 1) minByMag = 4;
+    else minByMag = 2;
+
+    let maxSignificantDecimals = 2;
     const sampleCount = Math.min(35, rawData.length);
     for (let i = 0; i < sampleCount; i++) {
       const row = rawData[i];
       for (let c = 1; c <= 4; c++) {
-        const pStr = String(row[c] || '');
+        const pStr = String(row[c] || '').replace(/0+$/, '');
         if (pStr.includes('.')) {
           const dec = pStr.split('.')[1].length;
-          if (dec > maxDecimals) maxDecimals = dec;
+          if (dec > maxSignificantDecimals) maxSignificantDecimals = dec;
         }
       }
     }
-    return Math.min(8, Math.max(2, maxDecimals));
+    return Math.min(8, Math.max(minByMag, maxSignificantDecimals));
   }
 
   // ─── Kline Yükleme ───────────────────────────────────────────
