@@ -28,6 +28,8 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
    * Kullanıcı: *"burda arama kısmında solo kalmış mesela olmaması gerekiyor. ben grafikte görmek için basıyorum grafik değişiyor ama bu sabit kalıyor orada bizim grafikte gördüğümüz coin ismi yazıyor olması gerekli"* diyerek, grafikte görüntülenen aktif coin ile arama kutusunun çift yönlü senkronize edilmesini talep etti.
 6. **DIV Botunda Zaman / Saat Algısı & Tarih Formatı (gün.ay.yıl) Talebi:**
    * Kullanıcı: *"dıv botuna baktım ilk gözüme çarpan gelen mesajdaki saat şu an saat 15:25 mesajda 17:30 zamanlar ile ilgili hatalarımız var hissine kapıldım. nasıl realtime oluyor saat kısmının yanında bir de tarih ekleyelim tarih formatı gün.ay.yıl şeklinde olsun."* diyerek sinyal kartlarındaki saatlerin yanına `gün.ay.yıl` formatında (`DD.MM.YYYY HH:mm`) açık tarihin eklenmesini istedi.
+7. **DIV Botunda "50 Okunmamış Mesaj" Algısı ve Rozet Netleştirmesi:**
+   * Kullanıcı: *"ben mesajları okuyorum ama dıv botunda hala 50 adet okunmamamış mesaj duruyor ?"* diyerek başlık yanındaki kırmızı `50` rozetini bir mesajlaşma uygulamasındaki okunmamış bildirim balonu sandığını belirtti. Toplam sinyal adedinin okunmamış mesajla karıştırılmaması için arayüzün netleştirilmesi kararlaştırıldı.
 
 ---
 
@@ -47,6 +49,9 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 6. **Sinyal Zamanı / Tarih Karışıklığı Kök Neden Analizi (60 Günlük Arşiv vs Canlı Algı):**
    * Kullanıcının DIV botunda `17:30` görmesinin nedeni incelendi: Söz konusu sinyal (`#SOLUSDT`) 6 gün önce (`07.10.2026 17:30`) üretilmiş ve 60 günlük kalıcı depodan yüklenmişti. Ancak ön yüz kart şablonunda yalnızca `<span class="card-time">${s.time}</span>` gösterildiği ve tarih alanı gizli kaldığı için kullanıcı bunu "bugün 17:30'da gelecekte gelmiş bir sinyal" sanıyordu.
    * Çözüm olarak; hem 9 botun sinyal kartlarına hem de 60 günlük geçmiş modalına `formatSignalDateTime(s)` helper'ı entegre edildi. Her karta deterministik olarak `gün.ay.yıl saat:dakika` (`DD.MM.YYYY HH:mm`, örn: `13.10.2026 15:40` veya `07.10.2026 17:30`) formatı kazandırıldı. Ayrıca günler arasına tarih ayraçları (`signal-date-divider`) yerleştirildi.
+7. **Okunmamış Mesaj Sayacı vs Toplam Aktif Sinyal Havuzu Tasarım Ayrımı:**
+   * Telegram/iOS tarzı kırmızı bildirim balonları (`background: #ef4444; color: #fff`) kullanıcıda doğrudan "okunmamış bildirim" beklentisi yaratır. Kullanıcı kartları inceledikçe bu sayının düşmemesi kafa karışıklığı oluşturuyordu.
+   * Çözüm olarak; kırmızı alarm rozeti kaldırıldı, yerine profesyonel terminal standardı olan şık cyan rozet (`background: rgba(56, 189, 248, 0.12); color: #38bdf8;`) ve açıkça **`50 Sinyal`** etiketi entegre edildi. Tooltip ile de "Bot havuzundaki toplam aktif sinyal adedi: 50" açıklaması eklendi.
 
 ---
 
@@ -76,6 +81,9 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
    * [`public/plugins/bot-hub/coin-history-modal.js`](public/plugins/bot-hub/coin-history-modal.js): 60 günlük sinyal geçmişi kartlarında tarih-saat birleştirildi.
    * [`public/styles/terminal-pro.css`](public/styles/terminal-pro.css): `.card-time` sınıfına `white-space: nowrap; font-family: var(--font-mono); font-variant-numeric: tabular-nums;` eklenerek hizalama kusursuzlaştırıldı.
    * [`bots/base/base-bot.js`](bots/base/base-bot.js) & [`bots/index.js`](bots/index.js) & [`bots/strategies/divergence.bot.js`](bots/strategies/divergence.bot.js): `dateStr`, `timestamp`, `isoDate` arka plan üretiminde garantiye alındı.
+10. **Bot Başlık Rozetinin '50 Sinyal' Olarak Güncellenmesi & Nötr Cyan Stili:**
+   * [`public/bot-window.html`](public/bot-window.html): Başlık yanındaki kırmızı unread badge kaldırıldı, tek satırda hizalı `50 Sinyal` rozeti ve açıklayıcı tooltip entegre edildi.
+   * [`public/styles/terminal-pro.css`](public/styles/terminal-pro.css) & [`public/plugins/bot-hub/bot-hub.plugin.js`](public/plugins/bot-hub/bot-hub.plugin.js): Ana terminaldeki bot sekmelerinin buton rozetleri de cyan renge ve `${count} Aktif Sinyal` tooltip'ine kavuşturuldu.
 
 ---
 
@@ -96,6 +104,8 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 * **Sinyal Tarih & Saat Format Doğrulaması (Görsel ve Birim Testleri Tamamlandı):**
   * `http://localhost:3000/bot-window.html?bot=div` üzerinde DIV botu açıldı: Kartların sağ altında `13.10.2026 15:40`, `13.10.2026 15:39`, `07.10.2026 17:30` şeklinde tam `gün.ay.yıl saat:dakika` formatının çalıştığı doğrulandı ve ekran görüntüsü alındı (`div_bot_cards_1791895275131.png`).
   * `#SOLUSDT` geçmiş modalı açıldı: 60 günlük sinyal kartlarında `13.10.2026 15:40` ve `07.10.2026 17:30` tarihli sinyallerin eksiksiz listelendiği doğrulandı (`coin_history_modal_1791895291326.png`).
+* **Rozet "50 Sinyal" Tasarım Doğrulaması:**
+  * DIV penceresinde başlık kontrol edildi: `Divergence [50 Sinyal]` yatay olarak kusursuz oturdu, kırmızı bildirim renginden terminal cyan tonuna geçirildi (`divergence_bot_window_1791896003327.png`).
 * **Veri Deposu Temizliği:**
   * Test sonrasında `data/signals_history.json` içerisindeki yapay sembol sayısı 0 olarak korundu.
 

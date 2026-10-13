@@ -73,12 +73,19 @@
     }
 
     .det-badge-count {
-      background: #ef4444;
-      color: #fff;
-      font-size: 9px;
-      font-weight: 800;
-      padding: 1px 5px;
-      border-radius: 10px;
+      background: rgba(56, 189, 248, 0.12);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 12px;
+      letter-spacing: 0.3px;
+      margin-left: 6px;
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      line-height: 1.2;
     }
 
     .det-header-actions {
@@ -331,7 +338,7 @@
       <div class="det-bot-title-box">
         <span class="det-bot-title" id="det-bot-title">
           Divergence
-          <span class="det-badge-count" id="det-badge-count">0</span>
+          <span class="det-badge-count" id="det-badge-count" title="Bot havuzundaki toplam aktif sinyal adedi">0 Sinyal</span>
         </span>
         <span class="det-bot-sub" id="det-bot-sub">Momentum and price relationship analysis</span>
       </div>
@@ -415,7 +422,7 @@
       const countEl = document.getElementById('det-badge-count');
 
       if (titleEl) {
-        titleEl.innerHTML = `${cfg.title} <span class="det-badge-count" id="det-badge-count">${currentSignals.length}</span>`;
+        titleEl.innerHTML = `${cfg.title} <span class="det-badge-count" id="det-badge-count" title="Bot havuzundaki toplam aktif sinyal adedi">${currentSignals.length} Sinyal</span>`;
       }
       if (subEl) subEl.textContent = cfg.subtitle;
       if (sumEl) sumEl.textContent = cfg.summaryStats;

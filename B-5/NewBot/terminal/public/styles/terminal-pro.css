@@ -1011,13 +1011,13 @@ html, body {
   position: absolute;
   top: -3px;
   right: -5px;
-  background: var(--red);
-  color: #fff;
+  background: rgba(56, 189, 248, 0.25);
+  color: #38bdf8;
   font-size: 8px;
   font-weight: 700;
   padding: 1px 4px;
   border-radius: 8px;
-  border: 1px solid #000;
+  border: 1px solid rgba(56, 189, 248, 0.4);
 }
 
 /* Aktif Botun Sinyal Akışı Alanı */

@@ -172,6 +172,7 @@ const BotHubPlugin = (() => {
           btn.appendChild(badge);
         }
         badge.textContent = counts[b];
+        badge.title = `${counts[b]} Aktif Sinyal`;
       }
     });
   }
