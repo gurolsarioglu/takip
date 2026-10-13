@@ -424,6 +424,9 @@ const MultiChartPlugin = (() => {
       inst.mainChart.applyOptions({
         localization: {
           priceFormatter: (val) => {
+            if (typeof PriceFormatter !== 'undefined' && PriceFormatter.format) {
+              return PriceFormatter.format(val, precision);
+            }
             if (typeof val !== 'number' || isNaN(val)) return '—';
             return val.toFixed(precision);
           }

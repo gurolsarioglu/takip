@@ -5,10 +5,74 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 ---
 
 ## 📑 Kronolojik İçindekiler
-1. [📅 07.10.2026 — 7/24 Kesintisiz Arka Plan, 60 Günlük Kalıcı Sinyal Arşivi, Hassas Fiyat Formatı (0.004890) ve #coin Geçmişi](#-07102026)
-2. [📅 05.10.2026 — MVC Katmanlı Mikro-Bot Mimarisi, 9 Bot Modülerliği ve Hata Düzeltmeleri](#-05102026)
-3. [📅 28.09.2026 — Multi-Bot İstasyonu, Canlı Kripto Senkronizasyonu, /api/signals/emit Entegrasyonu ve Watchlist WebSocket](#-28092026)
-4. [📅 25.09.2026 — Akıllı Türev Terminali Temeli, TradingView Lightweight Charts, Akıllı Para Kokpiti ve 15 Regresyon Testi](#-25092026)
+1. [📅 13.10.2026 — Gerçekçi Tam Test Süiti (36 Test), Kökten Fiyat Hassasiyeti (0.004890 / 0.00001850 / 0.17890) ve Test Metodolojisi](#-13102026)
+2. [📅 07.10.2026 — 7/24 Kesintisiz Arka Plan, 60 Günlük Kalıcı Sinyal Arşivi, Hassas Fiyat Formatı (0.004890) ve #coin Geçmişi](#-07102026)
+3. [📅 05.10.2026 — MVC Katmanlı Mikro-Bot Mimarisi, 9 Bot Modülerliği ve Hata Düzeltmeleri](#-05102026)
+4. [📅 28.09.2026 — Multi-Bot İstasyonu, Canlı Kripto Senkronizasyonu, /api/signals/emit Entegrasyonu ve Watchlist WebSocket](#-28092026)
+5. [📅 25.09.2026 — Akıllı Türev Terminali Temeli, TradingView Lightweight Charts, Akıllı Para Kokpiti ve 15 Regresyon Testi](#-25092026)
+
+---
+
+# 📅 13.10.2026
+
+## 💬 1. Konuşmalarımız ve Onaylananlar (Kullanıcı Talepleri & Kararlar)
+1. **Fiyat Yuvarlama Uyarısı & Tam Odaklanma:**
+   * Kullanıcı, önceki test çalışmalarında fiyatta yuvarlama/basamak kırpma hatası olduğunu kendisinin yakaladığını, bu tür kritik finansal hataların gözden kaçırılmaması gerektiğini ve projeye tam odaklanarak gerçekçi bir tam test yapılmasını istedi.
+2. **Gerçekçi Tam Test Talebi:**
+   * Yüzeysel testler yerine; sistemin tüm parçalarını (fiyat formatlayıcı, 9 bot stratejisi, 60 günlük kalıcı arşiv, REST API'ler ve ön yüz grafik motorları) kapsayan gerçekçi bir uçtan uca test uygulanması kararlaştırıldı.
+3. **Özel Test Metodolojisi Dokümantasyonu:**
+   * İşlem bittikten sonra hem `proje takip.md` kuralının aksatılmadan güncellenmesi, hem de **ayrıca** hangi metot ile nasıl test yapıldığını, nerelere dikkat edildiğini ve kök neden analizini detaylandıran bağımsız bir Markdown raporu (`TAM_TEST_METODOLOJISI_VE_RAPORU.md`) hazırlanması talep edildi.
+4. **Otonom İcraat & Sıfır Yapay Yuvarlama Garantisi:**
+   * Kullanıcıdan ara adım onayı istemeden tüm düzeltmelerin yapılması, doğrulanması ve otomatik GitHub gönderiminin icra edilmesi onaylandı.
+
+---
+
+## 🧠 2. Düşündüklerimiz ve Mimari Kararlar
+1. **JavaScript Float Büyüklük Koruması (Magnitude-Aware Decimals):**
+   * JS motoru float sayılardaki sondaki sıfırları (`trailing zeros`) yutar (`0.004890` -> `0.00489`).
+   * `getDecimalPlaces` fonksiyonu string basamaklarını kontrol ederken float stringe dönüştüğünde 5 basamak sanıyordu.
+   * Çözüm olarak coinin mutlak değer büyüklüğüne göre minimum kripto tick alt sınırı getirildi:
+     $$\text{dec} = \max(\text{strDecimals}, \text{minDecimalsByMagnitude})$$
+     $\text{abs} < 0.0001 \rightarrow 8$ basamak, $\text{abs} < 0.01 \rightarrow 6$ basamak, $\text{abs} < 1 \rightarrow 5$ basamak garanti edildi.
+2. **Çift Yönlü `computePrevPrice` Determinizmi:**
+   * $P_{prev} = \frac{P_{curr}}{1 + \Delta\%/100}$ formülü, coinin orijinal basamak sayısı tespit edilerek tam o basamağa sabitlendi (`toFixed(safeDecimals)`). Yükseliş ve düşüşlerde IEEE-754 float taşması veya basamak kaybı engellendi.
+3. **Lightweight Charts Eksen ve Crosshair Senkronizasyonu:**
+   * Mum verilerinden tespit edilen `precision` değeri, `chart.applyOptions` localization fonksiyonuna açık argüman olarak geçirilerek grafik ekseninde tam tick hassasiyeti sağlandı.
+4. **5 Katmanlı Piramit Test Mimarisi:**
+   * İzole edilmiş VM mockları yerine gerçek Express sunucu rotaları, gerçek bot yöneticisi (`botManager`), gerçek dosya sistemi (`signalStore`) ve gerçekçi kripto mum verileriyle 36 adımlık deterministik test paketi kuruldu.
+
+---
+
+## 🛠️ 3. Yaptıklarımız (Teknik Geliştirmeler)
+1. **Fiyat Formatlayıcı Motorları Güçlendirildi:**
+   * [`services/price-formatter.js`](services/price-formatter.js): `getDecimalPlaces`, `formatCryptoPrice` ve `computePrevPrice` float büyüklük farkındalığıyla güncellendi.
+   * [`public/core/price-formatter.js`](public/core/price-formatter.js): Tarayıcı tarafı formatlayıcısına `getDecimalPlaces` ve büyüklük kuralları entegre edildi.
+2. **Grafik Eksen Formatlayıcıları Düzeltildi:**
+   * [`public/plugins/chart/chart.plugin.js`](public/plugins/chart/chart.plugin.js): `localization.priceFormatter` içine `precision` parametresi eklendi.
+   * [`public/plugins/chart/multi-chart.plugin.js`](public/plugins/chart/multi-chart.plugin.js): `PriceFormatter.format(val, precision)` bağlandı.
+   * [`public/plugins/watchlist/watchlist.plugin.js`](public/plugins/watchlist/watchlist.plugin.js) ve [`public/plugins/sentiment-modal/sentiment-modal.plugin.js`](public/plugins/sentiment-modal/sentiment-modal.plugin.js): Fallback yuvarlama kalıntıları yeni dinamik tick kurallarıyla senkronize edildi.
+3. **Bot Stratejilerindeki Gizli Hatalar Giderildi:**
+   * [`bots/strategies/v3-volume.bot.js`](bots/strategies/v3-volume.bot.js): `'25.000.000 MTEST'` Türkçe binlik nokta formatı parse hatası giderildi (25 milyonluk coinlerin illikit çöp coin sanılıp elenmesi önlendi).
+   * [`bots/strategies/divergence.bot.js`](bots/strategies/divergence.bot.js): Ayı uyumsuzluklarında negatif boost'un (`-3.20%`) elenmesi hatası `Math.abs(boostNum)` ile giderildi; işaretli format korundu.
+   * [`bots/strategies/m1a-drop.bot.js`](bots/strategies/m1a-drop.bot.js): `s.drop` parametresi ingest zincirine dahil edildi, eksik `priceNum` tanımlandı.
+4. **36 Testlik Kapsamlı Test Süiti İnşa Edildi:**
+   * [`review/full-realistic-terminal-test.cjs`](review/full-realistic-terminal-test.cjs) oluşturuldu.
+   * Bölüm 1 (Fiyat & Tick Hassasiyeti - 12 test), Bölüm 2 (9 Bot Stratejisi Ingest - 11 test), Bölüm 3 (60 Günlük Kalıcı Arşiv - 4 test), Bölüm 4 (Express REST API - 3 test), Bölüm 5 (Tarayıcı & Grafik - 4 test), Bölüm 6 (Veri Tabanı & Dosya Bütünlüğü - 2 test).
+5. **Kapsamlı Test Metodolojisi & Kök Neden Dokümanı Yazıldı:**
+   * [`TAM_TEST_METODOLOJISI_VE_RAPORU.md`](TAM_TEST_METODOLOJISI_VE_RAPORU.md) oluşturuldu.
+
+---
+
+## ✅ 4. Tamamlanan İşler ve Doğrulama
+* **36/36 Tam Test Başarısı:**
+  * `node review/full-realistic-terminal-test.cjs` çalıştırıldı: **36 Testin 36'sı da %100 Passed ✅**.
+  * `0.004890`, `0.00001850`, `0.17890`, `1.4520`, `148.50`, `83030.60` fiyatlarının tek bir basamağının dahi kırpılmadığı hem string hem float testleriyle kanıtlandı.
+* **Canlı API ve HTTP Doğrulaması:**
+  * `review/test-api-coin-history.cjs` çalıştırıldı: Port 3000 üzerinde Express ayağa kalktı; `/api/signals`, `/api/signals/coin-history?symbol=SOLUSDT` sorguları canlıda doğrulandı.
+* **Regresyon Testleri Doğrulandı:**
+  * `review/terminal-regression-tests.cjs` çalıştırıldı: 8 öncelikli hata (H01-H08) %100 geçti.
+* **Veri Deposu Temizliği:**
+  * Test sonrasında `data/signals_history.json` içerisindeki tüm geçici test kayıtları temizlendi, yapay sembol sayısı 0 olarak teyit edildi.
 
 ---
 

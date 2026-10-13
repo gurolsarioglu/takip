@@ -131,9 +131,10 @@ class DivergenceBot extends BaseBot {
    * - '🔴': Negatif Uyumsuzluk / Ayı Dönüşü (1h RSI tepede, momentum zayıflamış)
    */
   evaluateDivergence({ rsi1h, rsi4h, boostNum, explicitDot, explicitStrategy, position }) {
-    // 1. Minimum hareket eşiği (en az +0.25% sapma olmalı)
-    if (boostNum < 0.25) {
-      return { valid: false, reason: `Boost (${boostNum.toFixed(2)}%) uyumsuzluk teyidi için çok düşük.` };
+    const absBoost = Math.abs(boostNum);
+    // 1. Minimum hareket eşiği (en az 0.25% sapma olmalı)
+    if (absBoost < 0.25) {
+      return { valid: false, reason: `Boost (%${absBoost.toFixed(2)}) uyumsuzluk teyidi için çok düşük.` };
     }
 
     // Açıkça belirtilmiş yön varsa
@@ -169,7 +170,7 @@ class DivergenceBot extends BaseBot {
 
     const priceNum = parseFloat(s.price || 0);
     const boostNum = this.parseBoost(s.boost || s.boostValue);
-    const boostFormatted = `+${boostNum.toFixed(2)}%`;
+    const boostFormatted = boostNum >= 0 ? `+${boostNum.toFixed(2)}%` : `${boostNum.toFixed(2)}%`;
 
     // Strateji İsmi Belirleme
     let strategy = '1H RSI DIVERGENCE';

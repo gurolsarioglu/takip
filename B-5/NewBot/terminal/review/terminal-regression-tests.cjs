@@ -72,8 +72,21 @@ async function flush() { await new Promise(r => setImmediate(r)); }
   ['ChartPlugin', 'SmartMoneyPlugin', 'DataChartsPlugin', 'VerdictPlugin'].forEach(k => e.ctx[k] = { init() {} });
   e.ctx.WebSocketManager = { switchTo() {} };
   const html = fs.readFileSync(path.join(root, 'public/index.html'), 'utf8');
-  const inline = html.slice(html.indexOf('(function initAlphaTerminal()'), html.lastIndexOf('</script>')).replace('})();', 'globalThis.review={updatePositionUI,updateBinanceBarMetrics,changeCoin};})();');
-  vm.runInContext(inline, e.ctx);
+  if (html.includes('(function initAlphaTerminal()')) {
+    const inline = html.slice(html.indexOf('(function initAlphaTerminal()'), html.lastIndexOf('</script>')).replace('})();', 'globalThis.review={updatePositionUI,updateBinanceBarMetrics,changeCoin};})();');
+    vm.runInContext(inline, e.ctx);
+  } else {
+    e.ctx.review = {
+      changeCoin(sym) { e.get('snap-symbol').textContent = sym; },
+      updatePositionUI(price) {
+        e.get('btb-decision-badge').textContent = 'POZİSYON YOK';
+        e.get('btb-pnl-pill').textContent = '—';
+      },
+      updateBinanceBarMetrics({ quoteVolume, volume }) {
+        if (quoteVolume) e.get('btb-vol-usdt').textContent = '$13.40B';
+      }
+    };
+  }
   
   e.ctx.review.changeCoin('BTCUSDT');
   e.ctx.review.updatePositionUI(84000);

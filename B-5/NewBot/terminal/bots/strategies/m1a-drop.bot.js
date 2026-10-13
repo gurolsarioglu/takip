@@ -151,7 +151,8 @@ class M1ADropBot extends BaseBot {
     const nowTime = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
 
     const priceNum = parseFloat(s.price || 0);
-    const valNum = this.parseDropOrBoost(s.dropValue || s.boost || (s.position === 'Short' ? -1.05 : 1.10));
+    const rawVal = s.dropValue !== undefined ? s.dropValue : (s.drop !== undefined ? s.drop : (s.boost !== undefined ? s.boost : (s.position === 'Short' ? -1.05 : 1.10)));
+    const valNum = this.parseDropOrBoost(rawVal);
     const volNum = this.parseVolumeChange(s.volume || (valNum < 0 ? -1.50 : 2.50));
 
     // M1-A Karar Motoru

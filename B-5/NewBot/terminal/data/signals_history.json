@@ -1,9 +1,49 @@
 {
   "version": "1.0",
-  "updatedAt": "2026-10-07T14:34:56.098Z",
-  "totalSignals": 91,
+  "updatedAt": "2026-10-13T09:32:26.688Z",
+  "totalSignals": 92,
   "retentionDays": 60,
   "signals": [
+    {
+      "id": "div_live_1791383755094",
+      "botId": "div",
+      "botName": "Divergence",
+      "symbol": "BTCUSDT",
+      "timestamp": 1791383755094,
+      "isoDate": "2026-10-07T14:35:55.094Z",
+      "dateStr": "07.10.2026",
+      "time": "17:35",
+      "dot": "🔴",
+      "strategy": "1H RSI SMA CROSSED",
+      "stars": "",
+      "boostValue": "-2.37%",
+      "currentPrice": "83030.60",
+      "prevPrice": "84295.03",
+      "rsi": {
+        "h1": "72 ❗",
+        "h4": "50",
+        "d1": "50"
+      },
+      "srsi": {
+        "h1": "89 ❗",
+        "h4": "39",
+        "d1": "61"
+      },
+      "wt": null,
+      "pivot": "%0.34 ⚠️",
+      "ema200": null,
+      "traderPositioning": null,
+      "marketExposure": null,
+      "stochastic": null,
+      "fundingRate": null,
+      "difference": null,
+      "timeRemaining": null,
+      "hacimChange": null,
+      "hacim24s": null,
+      "btcStatus": null,
+      "dropValue": null,
+      "volume": null
+    },
     {
       "id": "div_live_1791383695190",
       "botId": "div",

@@ -120,7 +120,14 @@ class V3VolumeBot extends BaseBot {
     }
 
     if (volume24hRaw !== undefined && volume24hRaw !== null) {
-      const num24 = typeof volume24hRaw === 'number' ? volume24hRaw : parseFloat(String(volume24hRaw).replace(/[^0-9.]/g, ''));
+      let rawStr = String(volume24hRaw).trim();
+      // '25.000.000' veya '42.158.400' gibi binlik noktalarını temizle
+      if ((rawStr.match(/\./g) || []).length > 1) {
+        rawStr = rawStr.replace(/\./g, '');
+      } else if (rawStr.includes('.') && rawStr.includes(',')) {
+        rawStr = rawStr.replace(/\./g, '').replace(',', '.');
+      }
+      const num24 = typeof volume24hRaw === 'number' ? volume24hRaw : parseFloat(rawStr.replace(/[^0-9.]/g, ''));
       if (!isNaN(num24) && num24 > 0 && num24 < 500) {
         return { valid: false, reason: `24s baz hacim (${num24}) çok düşük; illikit yapay hareket riski.` };
       }

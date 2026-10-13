@@ -102,12 +102,11 @@ const WatchlistPlugin = (() => {
     const num = Number(val);
     if (isNaN(num)) return '—';
     const abs = Math.abs(num);
-    if (abs >= 1000) return num.toFixed(2);
-    if (abs >= 1) return num.toFixed(4);
-    if (abs >= 0.01) return num.toFixed(5);
-    if (abs >= 0.0001) return num.toFixed(6);
-    if (abs >= 0.000001) return num.toFixed(7);
-    return num.toFixed(8);
+    if (abs < 0.0001) return num.toFixed(8);
+    if (abs < 0.01) return num.toFixed(6);
+    if (abs < 1) return num.toFixed(5);
+    if (abs < 100) return num.toFixed(4);
+    return num.toFixed(2);
   }
 
   function formatVolume(val) {

@@ -555,7 +555,7 @@ const ChartPlugin = (() => {
         localization: {
           priceFormatter: (val) => {
             if (typeof PriceFormatter !== 'undefined' && PriceFormatter.format) {
-              return PriceFormatter.format(val);
+              return PriceFormatter.format(val, precision);
             }
             return typeof val === 'number' ? val.toFixed(precision) : String(val);
           }
