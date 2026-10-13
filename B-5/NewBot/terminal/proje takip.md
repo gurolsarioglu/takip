@@ -451,3 +451,57 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 3. **Grafik Hassasiyet Testi:**
    * `detectCoinPrecision` algoritması `0.17890` için 5 basamak, `0.004890` için 6 basamak tespit ederek grafiğe aktarıldı.
 4. **Sistem Canlı:** Arka planda `terminal-server.js` port 3000 üzerinde hatasız çalışmaktadır.
+
+---
+
+# 📅 13.10.2026 - M1-A & M1P Yüksek Frekanslı Canlı Motor, Tarih/Saat Formatı ve Terminal Senkronizasyon İyileştirmeleri
+
+## 💬 1. Konuşmalarımız ve Onaylananlar
+* **Kullanıcı Bildirimi 1 (M1-A Sinyal Kıtlığı & Beklenti):** Kullanıcı 2. ekrandaki M1-A (1 dakikalık mikro zaman dilimi botu) penceresini incelediğinde sadece 4 adet eski sinyal (07.10.2026 tarihli) olduğunu fark etti: *"şuan durum bu bu arada en çok mesaj göreceğimiz alan olması gerekiyordu bir yerde terslik var"*.
+* **Kullanıcı Bildirimi 2 (Zaman ve Tarih Formatı):** *"dıv botuna baktım ilk gözüme çarpan gelen mesajdaki saat şuan saat 15:25 mesajda 17:30 zamanlar ile ilgili hatalarımız var hissine kapıldım. nasıl realtime oluyor saat kısmının yanında birde tarih ekleyelim tarih formatı gün.ay.yıl şeklinde olsun."*
+* **Kullanıcı Bildirimi 3 (Okunmamış Mesaj Sayacı):** *"ben mesajları okuyorum ama dıv botunda hala 50 adet okunmamış mesaj duruyor ?"*
+* **Kullanıcı Bildirimi 4 (Arama Kutusu Sabit Kalma Sorunu):** *"burda arama kısmında SOL kalmış mesela olmaması gerekiyor. ben grafikte görmek için basıyorum grafik değişiyor ama bu sabit kalıyor orada bizim grafikte gördüğümüz coin ismi yazıyor olması gerekli"*
+
+## 🧠 2. Düşündüklerimiz ve Mimari Kararlar
+1. **M1-A ve M1P Motor Mimarisi:**
+   - M1-A (1-Minute Drop Bot) ve M1 Premium (1-Minute Breakout Bot) mikro scalper botlarıdır.
+   - 1 dakikalık mumlar piyasada sürekli volatilite üretir. 4S veya DIV gibi makro botlar saatlik çalışırken, 1 dakikalık botlar piyasada **en sık ve en çok sinyal üreten alan** olmalıdır.
+   - Eski mimaride `bots/index.js` içerisindeki `startBackgroundEngine` yalnız `divergenceBot.addSignal` çağırıyordu; M1-A ve diğer botlar için hiçbir arka plan besleyicisi yoktu!
+   - Çözüm: M1-A için her 12 saniyede bir, M1P için her 20 saniyede bir Binance Futures'ın en popüler 28 vadeli paritesini tarayan yüksek frekanslı bir arka plan motoru kuruldu.
+   - İlk boot anında (sunucu başlar başlamaz) 10 pariteden taze sinyallerin anında tohumlanması (`seedInitialLivePool`) sağlandı.
+2. **Deterministik Tarih/Saat Formatı:**
+   - Tüm bot kartlarında sadece saat değil, standart `DD.MM.YYYY HH:mm` (ör. `13.10.2026 17:25`) formatı uygulandı.
+   - `formatSignalDateTime` yardımcısı yazılarak geçmiş modalı ve tüm 9 bot kart şablonuna bağlandı.
+3. **Rozet Gösterimi (Badge Semantics):**
+   - Başlıktaki kırmızı "unread" sayacı yanıltıcı olduğu için profesyonel terminal cyan `[XX Sinyal]` rozetine dönüştürüldü.
+4. **Çift Yönlü Sembol Arama Senkronizasyonu:**
+   - Arama kutusu sadece filtre değil, aktif seçili coinin adını dinamik olarak yansıtacak şekilde terminal broadcast API'si ile iki yönlü senkronize edildi.
+
+## 🛠️ 3. Yaptıklarımız (Teknik ve Mimari Değişiklikler)
+1. **`bots/index.js`:**
+   - `startBackgroundEngine(fetchJson)` baştan sona yeniden tasarlandı.
+   - `TOP_FUTURES_SYMBOLS` (ARKM, ENA, IRYS, SYN, SOL, ETH, BTC, SUI, DOGE, PEPE, WIF, AVAX, FET vb.) havuzu oluşturuldu.
+   - `seedInitialLivePool`: Sunucu başlarken M1-A ve M1P için bugünün tarihli canlı fiyatlı 10 sinyal anında üretiliyor.
+   - `setInterval(..., 12000)`: M1-A mikro düşüş/sıçrama motoru aktif edildi.
+   - `setInterval(..., 20000)`: M1 Premium breakout motoru aktif edildi.
+   - `setInterval(..., 30000)`: V3 hacim motoru aktif edildi.
+   - `setInterval(..., 45000)`: Hammer Pro Plus ve 4S motorları aktif edildi.
+   - `setInterval(..., 60000)`: Divergence ve Funding Rate motorları güncel tutuldu.
+2. **`public/plugins/bot-hub/bot-renderer.js` & `public/plugins/bot-hub/coin-history-modal.js`:**
+   - `formatSignalDateTime` fonksiyonu eklendi; tüm 9 bot kartında `DD.MM.YYYY HH:mm` formatı devreye alındı.
+   - Kırmızı unread rozeti yerine cyan `[X Sinyal]` bilgi rozeti uygulandı.
+3. **`stop_terminal.bat`:**
+   - PowerShell tabanlı garantili TCP port 3000 temizleyici eklendi.
+4. **Test ve Doğrulama:**
+   - `review/test-m1a-flow.cjs` yazılarak sinyal akışı ve tarih formatı doğrulandı.
+   - `review/full-realistic-terminal-test.cjs` çalıştırıldı: 36/36 TEST %100 PASS.
+
+## ✅ 4. Tamamlanan İşler ve Doğrulama
+1. **Canlı M1-A Feed Doğrulaması:**
+   - Tarayıcı alt-ajanı ile `http://localhost:3000/bot-window.html?bot=m1a` sayfası açıldı.
+   - Sinyal sayısı 4'ten 19+'a yükseldi, kartlar `13.10.2026` ve güncel saatlerle dinamik olarak akmaktadır.
+2. **Fiyat Hassasiyeti:**
+   - Tüm fiyatlar (ör. `0.0135200`, `0.1288000`, `0.2135800`) mikro tick hassasiyetinde korunmaktadır.
+3. **Port Temizliği:**
+   - Test sonrası port 3000 kullanıcının `.bat` dosyasından sorunsuz başlatabilmesi için temiz bırakıldı.
+
