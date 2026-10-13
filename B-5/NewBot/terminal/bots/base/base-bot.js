@@ -50,15 +50,23 @@ class BaseBot {
     if (!signal) return null;
 
     const now = Date.now();
-    const nowTime = new Date(now).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    const dateObj = new Date(signal.timestamp || now);
+    const dateStr = dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const nowTime = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
     const formatted = {
       id: signal.id || `${this.id}_${now}`,
       timestamp: signal.timestamp || now,
+      isoDate: signal.isoDate || dateObj.toISOString(),
+      dateStr: signal.dateStr || dateStr,
       symbol: (signal.symbol || signal.coin || 'UNKNOWN').toUpperCase(),
-      dateLabel: signal.dateLabel || 'Today',
+      dateLabel: signal.dateLabel || dateStr,
       time: signal.time || nowTime,
       ...signal
     };
+
+    if (!formatted.dateStr) formatted.dateStr = dateStr;
+    if (!formatted.time) formatted.time = nowTime;
+    if (!formatted.timestamp) formatted.timestamp = now;
 
     // 1. Bellek havuzuna ekle
     this.signals.unshift(formatted);

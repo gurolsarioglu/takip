@@ -221,6 +221,95 @@ const BotRenderer = (() => {
   }
 
   /**
+   * Sinyal tarih ve saatini deterministik olarak gün.ay.yıl saat:dakika formatlar.
+   * Format: "DD.MM.YYYY HH:mm" (Örn: "13.10.2026 15:25" veya "07.10.2026 17:30")
+   */
+  function formatSignalDateTime(s) {
+    if (!s) return '';
+
+    let datePart = '';
+    let timePart = '';
+
+    // 1. Tarih tespiti (gün.ay.yıl - DD.MM.YYYY)
+    if (s.dateStr && /^\d{2}\.\d{2}\.\d{4}$/.test(s.dateStr)) {
+      datePart = s.dateStr;
+    } else if (s.timestamp) {
+      const d = new Date(Number(s.timestamp));
+      if (!isNaN(d.getTime())) {
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yyyy = d.getFullYear();
+        datePart = `${dd}.${mm}.${yyyy}`;
+      }
+    } else if (s.isoDate) {
+      const d = new Date(s.isoDate);
+      if (!isNaN(d.getTime())) {
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yyyy = d.getFullYear();
+        datePart = `${dd}.${mm}.${yyyy}`;
+      }
+    }
+
+    if (!datePart && s.dateLabel && /^\d{2}\.\d{2}\.\d{4}$/.test(s.dateLabel)) {
+      datePart = s.dateLabel;
+    }
+
+    if (!datePart) {
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, '0');
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const yyyy = now.getFullYear();
+      datePart = `${dd}.${mm}.${yyyy}`;
+    }
+
+    // 2. Saat tespiti (SS:DD - HH:mm)
+    if (s.time && typeof s.time === 'string' && /^\d{1,2}:\d{2}/.test(s.time)) {
+      timePart = s.time.trim();
+    } else if (s.timestamp) {
+      const d = new Date(Number(s.timestamp));
+      if (!isNaN(d.getTime())) {
+        const hh = String(d.getHours()).padStart(2, '0');
+        const min = String(d.getMinutes()).padStart(2, '0');
+        timePart = `${hh}:${min}`;
+      }
+    } else if (s.isoDate) {
+      const d = new Date(s.isoDate);
+      if (!isNaN(d.getTime())) {
+        const hh = String(d.getHours()).padStart(2, '0');
+        const min = String(d.getMinutes()).padStart(2, '0');
+        timePart = `${hh}:${min}`;
+      }
+    } else {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      timePart = `${hh}:${min}`;
+    }
+
+    if (datePart && timePart) {
+      return `${datePart} ${timePart}`;
+    }
+    return datePart || timePart || '';
+  }
+
+  function getSignalDateLabel(s) {
+    if (!s) return '';
+    if (s.dateStr && /^\d{2}\.\d{2}\.\d{4}$/.test(s.dateStr)) return s.dateStr;
+    if (s.timestamp) {
+      const d = new Date(Number(s.timestamp));
+      if (!isNaN(d.getTime())) {
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const yyyy = d.getFullYear();
+        return `${dd}.${mm}.${yyyy}`;
+      }
+    }
+    if (s.dateLabel) return s.dateLabel;
+    return '';
+  }
+
+  /**
    * Verilen botId ve sinyal listesi için tam HTML kartlarını üretir
    */
   function generateSignalsHtml(botId, signals) {
@@ -234,8 +323,9 @@ const BotRenderer = (() => {
       let lastDate = null;
 
       signals.forEach(s => {
-        if (s.dateLabel && s.dateLabel !== lastDate) {
-          lastDate = s.dateLabel;
+        const dateTag = getSignalDateLabel(s);
+        if (dateTag && dateTag !== lastDate) {
+          lastDate = dateTag;
           html += `<div class="signal-date-divider"><span>${lastDate}</span></div>`;
         }
         const dot = s.dot || '🟢';
@@ -289,7 +379,7 @@ const BotRenderer = (() => {
             </div>` : ''}
             <div class="card-footer">
               <span class="card-link-icon" title="1. Ekranda Aç">↗ Grafikte Göster</span>
-              <span class="card-time">${s.time}</span>
+              <span class="card-time">${formatSignalDateTime(s)}</span>
             </div>
           </div>
         `;
@@ -303,8 +393,9 @@ const BotRenderer = (() => {
       let lastDate = null;
 
       signals.forEach(s => {
-        if (s.dateLabel && s.dateLabel !== lastDate) {
-          lastDate = s.dateLabel;
+        const dateTag = getSignalDateLabel(s);
+        if (dateTag && dateTag !== lastDate) {
+          lastDate = dateTag;
           html += `<div class="signal-date-divider"><span>${lastDate}</span></div>`;
         }
         const dot = s.dot || '🟢';
@@ -359,7 +450,7 @@ const BotRenderer = (() => {
             </div>
             <div class="card-footer">
               <span class="card-link-icon" title="1. Ekranda Aç">↗ Grafikte Göster</span>
-              <span class="card-time">${s.time}</span>
+              <span class="card-time">${formatSignalDateTime(s)}</span>
             </div>
           </div>
         `;
@@ -373,8 +464,9 @@ const BotRenderer = (() => {
       let lastDate = null;
 
       signals.forEach(s => {
-        if (s.dateLabel && s.dateLabel !== lastDate) {
-          lastDate = s.dateLabel;
+        const dateTag = getSignalDateLabel(s);
+        if (dateTag && dateTag !== lastDate) {
+          lastDate = dateTag;
           html += `<div class="signal-date-divider"><span>${lastDate}</span></div>`;
         }
         const dot = s.dot || '🔴';
@@ -429,7 +521,7 @@ const BotRenderer = (() => {
             </div>
             <div class="card-footer">
               <span class="card-link-icon" title="1. Ekranda Aç">↗ Grafikte Göster</span>
-              <span class="card-time">${s.time}</span>
+              <span class="card-time">${formatSignalDateTime(s)}</span>
             </div>
           </div>
         `;
@@ -443,8 +535,9 @@ const BotRenderer = (() => {
       let lastDate = null;
 
       signals.forEach(s => {
-        if (s.dateLabel && s.dateLabel !== lastDate) {
-          lastDate = s.dateLabel;
+        const dateTag = getSignalDateLabel(s);
+        if (dateTag && dateTag !== lastDate) {
+          lastDate = dateTag;
           html += `<div class="signal-date-divider"><span>${lastDate}</span></div>`;
         }
         const isSuperSurge = parseFloat(String(s.hacimChange || '').replace(/[^0-9.]/g, '')) >= 80;
@@ -466,7 +559,7 @@ const BotRenderer = (() => {
             </div>
             <div class="card-footer">
               <span class="card-link-icon" title="1. Ekranda Aç">↗ Binance</span>
-              <span class="card-time">${s.time}</span>
+              <span class="card-time">${formatSignalDateTime(s)}</span>
             </div>
           </div>
         `;
@@ -480,8 +573,9 @@ const BotRenderer = (() => {
       let lastDate = null;
 
       signals.forEach(s => {
-        if (s.dateLabel && s.dateLabel !== lastDate) {
-          lastDate = s.dateLabel;
+        const dateTag = getSignalDateLabel(s);
+        if (dateTag && dateTag !== lastDate) {
+          lastDate = dateTag;
           html += `<div class="signal-date-divider"><span>${lastDate}</span></div>`;
         }
         const dot = s.dot ? `${s.dot} ` : '';
@@ -523,7 +617,7 @@ const BotRenderer = (() => {
             ` : ''}
             <div class="card-footer">
               <span class="card-link-icon" title="1. Ekranda Aç">↗ Grafikte Göster</span>
-              <span class="card-time">${s.time}</span>
+              <span class="card-time">${formatSignalDateTime(s)}</span>
             </div>
           </div>
         `;
@@ -537,8 +631,9 @@ const BotRenderer = (() => {
       let lastDate = null;
 
       signals.forEach(s => {
-        if (s.dateLabel && s.dateLabel !== lastDate) {
-          lastDate = s.dateLabel;
+        const dateTag = getSignalDateLabel(s);
+        if (dateTag && dateTag !== lastDate) {
+          lastDate = dateTag;
           html += `<div class="signal-date-divider"><span>${lastDate}</span></div>`;
         }
         const dot = s.dot ? `${s.dot} ` : '';
@@ -583,7 +678,7 @@ const BotRenderer = (() => {
             </div>
             <div class="card-footer">
               <span class="card-link-icon" title="1. Ekranda Aç">↗ Grafikte Göster</span>
-              <span class="card-time">${s.time}</span>
+              <span class="card-time">${formatSignalDateTime(s)}</span>
             </div>
           </div>
         `;
@@ -597,8 +692,9 @@ const BotRenderer = (() => {
       let lastDate = null;
 
       signals.forEach(s => {
-        if (s.dateLabel && s.dateLabel !== lastDate) {
-          lastDate = s.dateLabel;
+        const dateTag = getSignalDateLabel(s);
+        if (dateTag && dateTag !== lastDate) {
+          lastDate = dateTag;
           html += `<div class="signal-date-divider"><span>${lastDate}</span></div>`;
         }
         const isDrop = (s.type === 'drop') || (s.dropValue && s.dropValue.startsWith('-'));
@@ -627,14 +723,14 @@ const BotRenderer = (() => {
             </div>
             <div class="card-field-row">
               <span>Volume:</span>
-              <span style="color: ${s.volume && s.volume.startsWith('-') ? 'var(--red)' : 'var(--green)'}; font-weight: 600;">
-                ${s.volume}
+              <span style="color: ${typeof s.volume === 'string' && s.volume.startsWith('-') ? 'var(--red)' : 'var(--green)'}; font-weight: 600;">
+                ${typeof s.volume === 'object' && s.volume ? (s.volume.m1 || JSON.stringify(s.volume)) : (s.volume || '—')}
               </span>
             </div>
             <div class="card-field-row">
               <span>RSI:</span>
-              <span style="font-weight: 700; color: ${s.rsi && s.rsi.includes('77') ? 'var(--gold)' : 'var(--text-main)'};">
-                ${s.rsi}
+              <span style="font-weight: 700; color: ${typeof s.rsi === 'string' && s.rsi.includes('77') ? 'var(--gold)' : 'var(--text-main)'};">
+                ${typeof s.rsi === 'object' && s.rsi ? (s.rsi.h1 || s.rsi.m1 || JSON.stringify(s.rsi)) : (s.rsi || '—')}
               </span>
             </div>
             <div class="card-field-row">
@@ -647,7 +743,7 @@ const BotRenderer = (() => {
             </div>
             <div class="card-footer">
               <span class="card-link-icon" title="1. Ekranda Aç">↗ Grafikte Göster</span>
-              <span class="card-time">${s.time}</span>
+              <span class="card-time">${formatSignalDateTime(s)}</span>
             </div>
           </div>
         `;
@@ -661,8 +757,9 @@ const BotRenderer = (() => {
       let lastDate = null;
 
       signals.forEach(s => {
-        if (s.dateLabel && s.dateLabel !== lastDate) {
-          lastDate = s.dateLabel;
+        const dateTag = getSignalDateLabel(s);
+        if (dateTag && dateTag !== lastDate) {
+          lastDate = dateTag;
           html += `<div class="signal-date-divider"><span>${lastDate}</span></div>`;
         }
 
@@ -698,7 +795,7 @@ const BotRenderer = (() => {
             ` : ''}
             <div class="card-footer">
               <span class="card-link-icon" title="1. Ekranda Aç">↗ Grafikte Göster</span>
-              <span class="card-time">${s.time}</span>
+              <span class="card-time">${formatSignalDateTime(s)}</span>
             </div>
           </div>
         `;
@@ -750,7 +847,7 @@ const BotRenderer = (() => {
         ` : ''}
         <div class="card-footer">
           <span class="card-link-icon" title="1. Ekranda Aç">↗ Grafikte Göster</span>
-          <span class="card-time">${s.time}</span>
+          <span class="card-time">${formatSignalDateTime(s)}</span>
         </div>
       </div>
     `).join('');
@@ -776,7 +873,9 @@ const BotRenderer = (() => {
     onSymbolBroadcast,
     openBotWindow,
     openAllBotWindows,
-    generateSignalsHtml
+    generateSignalsHtml,
+    formatSignalDateTime,
+    getSignalDateLabel
   };
 })();
 

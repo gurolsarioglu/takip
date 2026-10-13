@@ -24,6 +24,10 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
    * Kullanıcı: *"son kullanıcı gibi de bir gir kullan bak eksik kalan çalışmayan ya da kullanıcıyı rahatsız eden bir durum var mı bak bir son kullanıcı test yap tam kapsamlı olsun gene. grafikleri kontrol et mesela Binance'taki fiyatlar ile bizim ekranımızdaki fiyatlar aynı vs. gibi gibi işte sen biliyorsun"* diyerek canlı piyasa kontrolü ve kullanıcı deneyimi testi istedi.
 4. **Otonom İcraat & Canlı Binance Senkronizasyonu:**
    * Kullanıcıdan ara onay istenmeden tespit edilen tüm ön yüz ve WebSocket kusurlarının giderilmesi, Binance canlı vadeli piyasa fiyatlarıyla ekran fiyatlarının test edilmesi ve teslimatın yapılması onaylandı.
+5. **Sinyal Arama Çubuğu Sembol Senkronizasyonu:**
+   * Kullanıcı: *"burda arama kısmında solo kalmış mesela olmaması gerekiyor. ben grafikte görmek için basıyorum grafik değişiyor ama bu sabit kalıyor orada bizim grafikte gördüğümüz coin ismi yazıyor olması gerekli"* diyerek, grafikte görüntülenen aktif coin ile arama kutusunun çift yönlü senkronize edilmesini talep etti.
+6. **DIV Botunda Zaman / Saat Algısı & Tarih Formatı (gün.ay.yıl) Talebi:**
+   * Kullanıcı: *"dıv botuna baktım ilk gözüme çarpan gelen mesajdaki saat şu an saat 15:25 mesajda 17:30 zamanlar ile ilgili hatalarımız var hissine kapıldım. nasıl realtime oluyor saat kısmının yanında bir de tarih ekleyelim tarih formatı gün.ay.yıl şeklinde olsun."* diyerek sinyal kartlarındaki saatlerin yanına `gün.ay.yıl` formatında (`DD.MM.YYYY HH:mm`) açık tarihin eklenmesini istedi.
 
 ---
 
@@ -40,6 +44,9 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
    * Binance'ın dahili 7-8 basamaklı string padding'lerinden kaynaklanan `1.8876000` ve `1.9000000` gibi gereksiz sıfırlar, mum klines analizi ve büyüklük taban eşiği ile optimize edildi. `BTWUSDT` için 4 basamak (`1.8876`), `SOLUSDT` için 2 basamak (`106.27`), `1000PEPE` için 7 basamak (`0.0040618`) standartlaştırıldı.
 5. **Ekran Düzeni ve Taşma Önleme (Layout Robustness):**
    * `#main-body` kapsayıcısına `width: 100%; overflow: hidden;` atanarak 4'lü grafik alanı ile sağ kokpitin (Watchlist, Snapshot, Bot İstasyonu) hiçbir çözünürlükte taşmadan stabil oturması sağlandı.
+6. **Sinyal Zamanı / Tarih Karışıklığı Kök Neden Analizi (60 Günlük Arşiv vs Canlı Algı):**
+   * Kullanıcının DIV botunda `17:30` görmesinin nedeni incelendi: Söz konusu sinyal (`#SOLUSDT`) 6 gün önce (`07.10.2026 17:30`) üretilmiş ve 60 günlük kalıcı depodan yüklenmişti. Ancak ön yüz kart şablonunda yalnızca `<span class="card-time">${s.time}</span>` gösterildiği ve tarih alanı gizli kaldığı için kullanıcı bunu "bugün 17:30'da gelecekte gelmiş bir sinyal" sanıyordu.
+   * Çözüm olarak; hem 9 botun sinyal kartlarına hem de 60 günlük geçmiş modalına `formatSignalDateTime(s)` helper'ı entegre edildi. Her karta deterministik olarak `gün.ay.yıl saat:dakika` (`DD.MM.YYYY HH:mm`, örn: `13.10.2026 15:40` veya `07.10.2026 17:30`) formatı kazandırıldı. Ayrıca günler arasına tarih ayraçları (`signal-date-divider`) yerleştirildi.
 
 ---
 
@@ -64,6 +71,11 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
    * [`review/full-realistic-terminal-test.cjs`](review/full-realistic-terminal-test.cjs): 36 adımlık tam mimari test süiti.
    * [`review/end-user-live-binance-audit.cjs`](review/end-user-live-binance-audit.cjs): 33 adımlık son kullanıcı & Binance canlı piyasa denetim süiti.
    * [`TAM_TEST_METODOLOJISI_VE_RAPORU.md`](TAM_TEST_METODOLOJISI_VE_RAPORU.md): Metodoloji, matematiksel formüller ve test kanıtları raporu.
+9. **Sinyal Kartlarına ve Geçmiş Modallarına Tarih (gün.ay.yıl) Entegrasyonu:**
+   * [`public/plugins/bot-hub/bot-renderer.js`](public/plugins/bot-hub/bot-renderer.js): `formatSignalDateTime(s)` ve `getSignalDateLabel(s)` motorları inşa edildi. 9 botun tüm kart şablonlarında `${s.time}` yerine `${formatSignalDateTime(s)}` bağlandı.
+   * [`public/plugins/bot-hub/coin-history-modal.js`](public/plugins/bot-hub/coin-history-modal.js): 60 günlük sinyal geçmişi kartlarında tarih-saat birleştirildi.
+   * [`public/styles/terminal-pro.css`](public/styles/terminal-pro.css): `.card-time` sınıfına `white-space: nowrap; font-family: var(--font-mono); font-variant-numeric: tabular-nums;` eklenerek hizalama kusursuzlaştırıldı.
+   * [`bots/base/base-bot.js`](bots/base/base-bot.js) & [`bots/index.js`](bots/index.js) & [`bots/strategies/divergence.bot.js`](bots/strategies/divergence.bot.js): `dateStr`, `timestamp`, `isoDate` arka plan üretiminde garantiye alındı.
 
 ---
 
@@ -81,6 +93,9 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 * **Gerçek Tarayıcı (Headless & Görsel) Uçtan Uca Son Kullanıcı Testi:**
   * Tarayıcı üzerinde 4 grafik (1m, 5m, 1h, 1D), Watchlist (745 coin), Ticker Snapshot, 9 Bot İstasyonu ve Alt Ticker Bandı test edildi.
   * Konsolda sıfır hata ve kusursuz ekran yerleşimi teyit edildi (`verified_terminal_post_fix_1791892033209.png`).
+* **Sinyal Tarih & Saat Format Doğrulaması (Görsel ve Birim Testleri Tamamlandı):**
+  * `http://localhost:3000/bot-window.html?bot=div` üzerinde DIV botu açıldı: Kartların sağ altında `13.10.2026 15:40`, `13.10.2026 15:39`, `07.10.2026 17:30` şeklinde tam `gün.ay.yıl saat:dakika` formatının çalıştığı doğrulandı ve ekran görüntüsü alındı (`div_bot_cards_1791895275131.png`).
+  * `#SOLUSDT` geçmiş modalı açıldı: 60 günlük sinyal kartlarında `13.10.2026 15:40` ve `07.10.2026 17:30` tarihli sinyallerin eksiksiz listelendiği doğrulandı (`coin_history_modal_1791895291326.png`).
 * **Veri Deposu Temizliği:**
   * Test sonrasında `data/signals_history.json` içerisindeki yapay sembol sayısı 0 olarak korundu.
 

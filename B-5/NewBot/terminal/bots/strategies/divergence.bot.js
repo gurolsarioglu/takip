@@ -166,7 +166,10 @@ class DivergenceBot extends BaseBot {
 
   ingest(s) {
     const symbol = (s.coin || s.symbol).toUpperCase();
-    const nowTime = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    const now = Date.now();
+    const dateObj = new Date(now);
+    const dateStr = dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const nowTime = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
 
     const priceNum = parseFloat(s.price || 0);
     const boostNum = this.parseBoost(s.boost || s.boostValue);
@@ -238,8 +241,11 @@ class DivergenceBot extends BaseBot {
     const fmtSrsi = (v) => `${v}${v >= 85 || v <= 15 ? ' ❗' : ''}`;
 
     const card = {
-      id: 'div_' + Date.now(),
+      id: 'div_' + now,
       symbol: symbol,
+      timestamp: now,
+      isoDate: dateObj.toISOString(),
+      dateStr: dateStr,
       dot: dot,
       strategy: strategy,
       boostValue: boostFormatted,
@@ -256,7 +262,7 @@ class DivergenceBot extends BaseBot {
         d1: fmtSrsi(srsi1dNum)
       },
       pivot: pivotDisplay,
-      dateLabel: 'Today',
+      dateLabel: dateStr,
       time: nowTime
     };
 

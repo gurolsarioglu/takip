@@ -24,6 +24,17 @@ const CoinHistoryModal = (() => {
     m1premium:     { icon: '⚡',  name: 'M1 Premium',       color: '#facc15' }
   };
 
+  function formatSignalDateTime(s) {
+    if (typeof BotRenderer !== 'undefined' && typeof BotRenderer.formatSignalDateTime === 'function') {
+      return BotRenderer.formatSignalDateTime(s);
+    }
+    if (!s) return '';
+    const datePart = s.dateStr || (s.timestamp ? new Date(Number(s.timestamp)).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '');
+    const timePart = s.time || (s.timestamp ? new Date(Number(s.timestamp)).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '');
+    if (datePart && timePart) return `${datePart} ${timePart}`;
+    return datePart || timePart || '';
+  }
+
   function ensureModalDOM() {
     if (modalEl) return modalEl;
 
@@ -184,7 +195,7 @@ const CoinHistoryModal = (() => {
             </div>
             <div class="ch-card-time-wrap">
               <span class="ch-card-dot">${dot}</span>
-              <span class="ch-card-time">${s.time || ''}</span>
+              <span class="ch-card-time">${formatSignalDateTime(s)}</span>
             </div>
           </div>
 

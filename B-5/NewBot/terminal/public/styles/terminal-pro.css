@@ -1295,6 +1295,9 @@ html, body {
   font-weight: 700;
   font-size: 11px;
   letter-spacing: 0.3px;
+  white-space: nowrap;
+  font-family: var(--font-mono, monospace);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ─── 4. DERİN PİYASA DUYARLILIK MODALI (OK İLE AÇILAN PENCERE) ──── */

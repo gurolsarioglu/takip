@@ -145,13 +145,19 @@ class BotManager {
         if (!ticker || !ticker.price) return;
 
         const price = parseFloat(ticker.price);
-        const nowTime = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+        const now = Date.now();
+        const dateObj = new Date(now);
+        const dateStr = dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const nowTime = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
         const isBull = Math.random() > 0.4;
 
         // Canlı Divergence sinyali
         divergenceBot.addSignal({
-          id: 'div_live_' + Date.now(),
+          id: 'div_live_' + now,
           symbol: sym,
+          timestamp: now,
+          isoDate: dateObj.toISOString(),
+          dateStr: dateStr,
           dot: isBull ? '🟢' : '🔴',
           strategy: isBull ? '1H RSI DIVERGENCE' : '1H RSI SMA CROSSED',
           boostValue: (isBull ? '+' : '-') + (Math.random() * 2 + 0.5).toFixed(2) + '%',
@@ -168,7 +174,7 @@ class BotManager {
             d1: `${Math.floor(Math.random() * 30 + 40)}`
           },
           pivot: `%${(Math.random() * 0.4 + 0.1).toFixed(2)} ⚠️`,
-          dateLabel: 'Today',
+          dateLabel: dateStr,
           time: nowTime
         });
       } catch (e) {
