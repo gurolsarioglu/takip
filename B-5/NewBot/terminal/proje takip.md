@@ -85,6 +85,8 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
    * ✅ **8/8 Öncelikli Hata Doğrulandı ve PASS verdi.**
 3. **Kombine Test Süiti (`npm test`):**
    * ✅ Tüm regresyon ve quant testleri tek komutla hatasız tamamlandı.
+4. **Canlı Sunucu Doğrulaması (`terminal-server.js`):**
+   * ✅ Sunucu arka planda aktif edildi; `http://localhost:3000` üzerinde `!miniTicker@arr`, `!markPrice@arr@1s` ve `SymbolRegistry` (526 vadeli sembol) tam kapasite çalışıyor.
 
 ---
 

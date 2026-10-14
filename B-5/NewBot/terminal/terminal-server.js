@@ -47,6 +47,8 @@ function fetchJson(url) {
       });
     }).on('error', reject);
   });
+}
+
 const symbolRegistryService = require('./services/symbol-registry.service');
 
 // SymbolRegistry Başlat
