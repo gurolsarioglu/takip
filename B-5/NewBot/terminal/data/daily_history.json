@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-14T11:21:45.158Z",
+  "updatedAt": "2026-10-14T12:57:46.449Z",
   "coins": {
     "BTCUSDT": {
       "symbol": "BTCUSDT",
@@ -3927,16 +3927,16 @@
     },
     "OGNUSDT": {
       "symbol": "OGNUSDT",
-      "latestPrice": 0.03245,
+      "latestPrice": 0.03142,
       "candleCount": 200,
       "metrics": {
-        "ema200": 0.019803,
-        "ema200DiffPct": 63.86,
+        "ema200": 0.019798,
+        "ema200DiffPct": 58.7,
         "ema200Status": "ABOVE",
         "ath200d": 0.05364,
-        "athDistancePct": -39.5,
+        "athDistancePct": -41.42,
         "atl200d": 0.01414,
-        "atlBouncePct": 129.49,
+        "atlBouncePct": 122.21,
         "greenDays": 107,
         "redDays": 93,
         "winRatePct": 53.5,
@@ -3944,9 +3944,9 @@
           "count": 2,
           "type": "DOWN"
         },
-        "avgDailyRangePct": 7.95,
-        "perf7d": 42.26,
-        "perf30d": 82
+        "avgDailyRangePct": 7.96,
+        "perf7d": 37.75,
+        "perf30d": 76.22
       },
       "dailyReturns": [
         {
@@ -4244,13 +4244,13 @@
           "date": "2026-10-14",
           "open": 0.0348,
           "high": 0.03508,
-          "low": 0.03226,
-          "close": 0.03245,
-          "volume": 484603708,
-          "changePct": -6.75
+          "low": 0.03137,
+          "close": 0.03142,
+          "volume": 573671130,
+          "changePct": -9.71
         }
       ],
-      "lastSync": 1791976127675
+      "lastSync": 1791982666056
     },
     "ARCUSDT": {
       "symbol": "ARCUSDT",
