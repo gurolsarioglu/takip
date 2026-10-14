@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-14T10:23:37.975Z",
+  "updatedAt": "2026-10-14T11:16:49.611Z",
   "coins": {
     "BTCUSDT": {
       "symbol": "BTCUSDT",
@@ -984,16 +984,16 @@
     },
     "BTWUSDT": {
       "symbol": "BTWUSDT",
-      "latestPrice": 2.5519,
+      "latestPrice": 2.6126,
       "candleCount": 133,
       "metrics": {
-        "ema200": 0.431597,
-        "ema200DiffPct": 491.27,
+        "ema200": 0.432054,
+        "ema200DiffPct": 504.69,
         "ema200Status": "ABOVE",
         "ath200d": 2.7536,
-        "athDistancePct": -7.32,
+        "athDistancePct": -5.12,
         "atl200d": 0.016559,
-        "atlBouncePct": 15310.95,
+        "atlBouncePct": 15677.52,
         "greenDays": 77,
         "redDays": 56,
         "winRatePct": 57.9,
@@ -1002,8 +1002,8 @@
           "type": "UP"
         },
         "avgDailyRangePct": 36.53,
-        "perf7d": 96.65,
-        "perf30d": 337.11
+        "perf7d": 101.33,
+        "perf30d": 347.51
       },
       "dailyReturns": [
         {
@@ -1302,12 +1302,12 @@
           "open": 2.0852,
           "high": 2.7536,
           "low": 2.0699,
-          "close": 2.5519,
-          "volume": 154051241,
-          "changePct": 22.38
+          "close": 2.6126,
+          "volume": 164506360,
+          "changePct": 25.29
         }
       ],
-      "lastSync": 1791972714331
+      "lastSync": 1791976608350
     },
     "SKYAIUSDT": {
       "symbol": "SKYAIUSDT",
@@ -3924,6 +3924,333 @@
         }
       ],
       "lastSync": 1791893663905
+    },
+    "OGNUSDT": {
+      "symbol": "OGNUSDT",
+      "latestPrice": 0.03245,
+      "candleCount": 200,
+      "metrics": {
+        "ema200": 0.019803,
+        "ema200DiffPct": 63.86,
+        "ema200Status": "ABOVE",
+        "ath200d": 0.05364,
+        "athDistancePct": -39.5,
+        "atl200d": 0.01414,
+        "atlBouncePct": 129.49,
+        "greenDays": 107,
+        "redDays": 93,
+        "winRatePct": 53.5,
+        "currentStreak": {
+          "count": 2,
+          "type": "DOWN"
+        },
+        "avgDailyRangePct": 7.95,
+        "perf7d": 42.26,
+        "perf30d": 82
+      },
+      "dailyReturns": [
+        {
+          "time": 1789430400000,
+          "date": "2026-09-15",
+          "open": 0.01783,
+          "high": 0.01788,
+          "low": 0.01673,
+          "close": 0.01701,
+          "volume": 39931204,
+          "changePct": -4.6
+        },
+        {
+          "time": 1789516800000,
+          "date": "2026-09-16",
+          "open": 0.01701,
+          "high": 0.01717,
+          "low": 0.01663,
+          "close": 0.01717,
+          "volume": 32756520,
+          "changePct": 0.94
+        },
+        {
+          "time": 1789603200000,
+          "date": "2026-09-17",
+          "open": 0.01715,
+          "high": 0.01763,
+          "low": 0.01709,
+          "close": 0.01762,
+          "volume": 23466638,
+          "changePct": 2.74
+        },
+        {
+          "time": 1789689600000,
+          "date": "2026-09-18",
+          "open": 0.01762,
+          "high": 0.0186,
+          "low": 0.01755,
+          "close": 0.01848,
+          "volume": 32952989,
+          "changePct": 4.88
+        },
+        {
+          "time": 1789776000000,
+          "date": "2026-09-19",
+          "open": 0.01849,
+          "high": 0.01966,
+          "low": 0.01834,
+          "close": 0.01955,
+          "volume": 49762255,
+          "changePct": 5.73
+        },
+        {
+          "time": 1789862400000,
+          "date": "2026-09-20",
+          "open": 0.01954,
+          "high": 0.02016,
+          "low": 0.01859,
+          "close": 0.01923,
+          "volume": 60775962,
+          "changePct": -1.59
+        },
+        {
+          "time": 1789948800000,
+          "date": "2026-09-21",
+          "open": 0.01923,
+          "high": 0.02025,
+          "low": 0.01909,
+          "close": 0.01996,
+          "volume": 48971827,
+          "changePct": 3.8
+        },
+        {
+          "time": 1790035200000,
+          "date": "2026-09-22",
+          "open": 0.01995,
+          "high": 0.02007,
+          "low": 0.01922,
+          "close": 0.01994,
+          "volume": 45539887,
+          "changePct": -0.05
+        },
+        {
+          "time": 1790121600000,
+          "date": "2026-09-23",
+          "open": 0.01993,
+          "high": 0.02028,
+          "low": 0.01873,
+          "close": 0.01902,
+          "volume": 56741020,
+          "changePct": -4.57
+        },
+        {
+          "time": 1790208000000,
+          "date": "2026-09-24",
+          "open": 0.019,
+          "high": 0.01993,
+          "low": 0.01873,
+          "close": 0.01969,
+          "volume": 36327822,
+          "changePct": 3.63
+        },
+        {
+          "time": 1790294400000,
+          "date": "2026-09-25",
+          "open": 0.01968,
+          "high": 0.0231,
+          "low": 0.01943,
+          "close": 0.021,
+          "volume": 253951996,
+          "changePct": 6.71
+        },
+        {
+          "time": 1790380800000,
+          "date": "2026-09-26",
+          "open": 0.021,
+          "high": 0.02279,
+          "low": 0.0207,
+          "close": 0.02096,
+          "volume": 184184936,
+          "changePct": -0.19
+        },
+        {
+          "time": 1790467200000,
+          "date": "2026-09-27",
+          "open": 0.02097,
+          "high": 0.02116,
+          "low": 0.02066,
+          "close": 0.02103,
+          "volume": 46983913,
+          "changePct": 0.29
+        },
+        {
+          "time": 1790553600000,
+          "date": "2026-09-28",
+          "open": 0.02103,
+          "high": 0.02118,
+          "low": 0.01941,
+          "close": 0.01965,
+          "volume": 58296235,
+          "changePct": -6.56
+        },
+        {
+          "time": 1790640000000,
+          "date": "2026-09-29",
+          "open": 0.01964,
+          "high": 0.02059,
+          "low": 0.01905,
+          "close": 0.02005,
+          "volume": 42126637,
+          "changePct": 2.09
+        },
+        {
+          "time": 1790726400000,
+          "date": "2026-09-30",
+          "open": 0.02006,
+          "high": 0.02108,
+          "low": 0.01986,
+          "close": 0.02047,
+          "volume": 54766673,
+          "changePct": 2.04
+        },
+        {
+          "time": 1790812800000,
+          "date": "2026-10-01",
+          "open": 0.02046,
+          "high": 0.02102,
+          "low": 0.02024,
+          "close": 0.02097,
+          "volume": 53538209,
+          "changePct": 2.49
+        },
+        {
+          "time": 1790899200000,
+          "date": "2026-10-02",
+          "open": 0.02097,
+          "high": 0.02135,
+          "low": 0.02017,
+          "close": 0.02072,
+          "volume": 53735885,
+          "changePct": -1.19
+        },
+        {
+          "time": 1790985600000,
+          "date": "2026-10-03",
+          "open": 0.02071,
+          "high": 0.02124,
+          "low": 0.02064,
+          "close": 0.02072,
+          "volume": 27021884,
+          "changePct": 0.05
+        },
+        {
+          "time": 1791072000000,
+          "date": "2026-10-04",
+          "open": 0.02071,
+          "high": 0.02086,
+          "low": 0.02036,
+          "close": 0.02068,
+          "volume": 23950303,
+          "changePct": -0.14
+        },
+        {
+          "time": 1791158400000,
+          "date": "2026-10-05",
+          "open": 0.02067,
+          "high": 0.0252,
+          "low": 0.0203,
+          "close": 0.02186,
+          "volume": 1082706299,
+          "changePct": 5.76
+        },
+        {
+          "time": 1791244800000,
+          "date": "2026-10-06",
+          "open": 0.02186,
+          "high": 0.024,
+          "low": 0.02153,
+          "close": 0.02197,
+          "volume": 761339067,
+          "changePct": 0.5
+        },
+        {
+          "time": 1791331200000,
+          "date": "2026-10-07",
+          "open": 0.02197,
+          "high": 0.02393,
+          "low": 0.0204,
+          "close": 0.02281,
+          "volume": 487303981,
+          "changePct": 3.82
+        },
+        {
+          "time": 1791417600000,
+          "date": "2026-10-08",
+          "open": 0.02281,
+          "high": 0.05364,
+          "low": 0.02237,
+          "close": 0.04562,
+          "volume": 20285214867,
+          "changePct": 100
+        },
+        {
+          "time": 1791504000000,
+          "date": "2026-10-09",
+          "open": 0.04563,
+          "high": 0.04769,
+          "low": 0.03512,
+          "close": 0.039,
+          "volume": 9106635849,
+          "changePct": -14.53
+        },
+        {
+          "time": 1791590400000,
+          "date": "2026-10-10",
+          "open": 0.039,
+          "high": 0.04646,
+          "low": 0.03308,
+          "close": 0.03396,
+          "volume": 2694296925,
+          "changePct": -12.92
+        },
+        {
+          "time": 1791676800000,
+          "date": "2026-10-11",
+          "open": 0.03395,
+          "high": 0.03745,
+          "low": 0.03208,
+          "close": 0.0329,
+          "volume": 1029541986,
+          "changePct": -3.09
+        },
+        {
+          "time": 1791763200000,
+          "date": "2026-10-12",
+          "open": 0.0329,
+          "high": 0.04174,
+          "low": 0.03011,
+          "close": 0.03517,
+          "volume": 2910254002,
+          "changePct": 6.9
+        },
+        {
+          "time": 1791849600000,
+          "date": "2026-10-13",
+          "open": 0.03516,
+          "high": 0.04347,
+          "low": 0.03323,
+          "close": 0.03481,
+          "volume": 4965177818,
+          "changePct": -1
+        },
+        {
+          "time": 1791936000000,
+          "date": "2026-10-14",
+          "open": 0.0348,
+          "high": 0.03508,
+          "low": 0.03226,
+          "close": 0.03245,
+          "volume": 484603708,
+          "changePct": -6.75
+        }
+      ],
+      "lastSync": 1791976127675
     }
   }
 }

@@ -135,6 +135,54 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 
 ---
 
+## 🎛️ 6. Grafik Alanının Devre Dışı Bırakılması ve "Bot Takip Ekranı & Kasa Yönetimi Alanı" Dönüşümü
+
+### 💬 Konuşmalarımız ve Kullanıcı Talebi
+* **Kullanıcı Talebi:** *"porjenin bu kısmını devre dışı bırak burayı bir bot takip ekranı ve kasa yönetimi alanı yapıyor olacağız."* (Kullanıcı, ekran görüntüsü üzerinde kırmızı çerçeve çizerek sol çizim çubuğu, üst zaman dilimi/grid butonları ve 4'lü TradingView grafiklerinin bulunduğu orta ana alanı işaretledi ve bu alanın tamamen **Bot Takip Ekranı ve Kasa Yönetimi Kokpiti**'ne dönüştürülmesini talep etti).
+* **Onaylanan Kapsam:** Kullanıcıdan ara onay sorulmadan, TradingView grafiklerinin yerine trader'ın portföyünü, riskini ve 9 botun performansını yönetebileceği kurumsal düzeyde zengin bir kokpitin inşa edilmesi, test edilip devreye alınması kararlaştırıldı.
+
+### 🧠 Düşündüklerimiz ve Mimari Kararlar
+1. **Çoklu Grafiklerin Devre Dışı Bırakılması & Alan Optimizasyonu:**
+   * 4 eşzamanlı TradingView grafiği ve sol çizim araç çubuğu (`#left-drawing-toolbar`) gizlenerek, tüm merkez alan (`flex: 1`) modern, yüksek tempolu bir Finansal Kasa ve Bot Takip Kokpitine (`#treasury-cockpit-container`) tahsis edildi.
+   * Üst çubuktaki grafik zaman dilimleri (`1m, 5m, 1h...`) ve grid butonları (`1x1, 2x1, 4x1`) yerine, Kasa Bakiyesi (`$10,000.00`), Risk Seviyesi (`%1.50`) ve Aktif Bot Sayısı (`9 Quant Botu Aktif`) rozetleri yerleştirildi.
+2. **Kasa & Risk Yönetimi (Treasury & Risk Management):**
+   * Toplam Sermaye, Kullanılabilir Marjin, Riskteki Sermaye, Günlük Gerçekleşen/Gerçekleşmeyen PnL ve %1.5 Kasa Koruma Protokolünü izleyen 5 adet neon göstergeli stat kartı tasarlandı.
+   * Kullanıcının kural dışı işlem açmasını engelleyen ve sermayesini koruyan matematiksel **Pozisyon Büyüklüğü Hesaplayıcısı (Position Sizing Calculator)** entegre edildi:
+     $$\text{Pozisyon Boyutu (\$) } = \frac{\text{Toplam Kasa (\$) } \times (\text{Risk \%} / 100)}{\text{Stop Loss Mesafesi \%} / 100}$$
+     $$\text{Gerekli Teminat (Marjin \$) } = \frac{\text{Pozisyon Boyutu}}{\text{Kaldıraç}}$$
+3. **9 Quant Botunun Entegre Takip Matrisi:**
+   * Sağ paneldeki bot sinyalleriyle tam uyumlu çalışan 9 botluk durum matrisi (`M1-A`, `M1P`, `PRO`, `PRO+`, `4S`, `4S SNIPER`, `DIV`, `FR`, `V3`) geliştirildi.
+   * Her bot için anlık sinyal sayısı, kasa tahsisat yüzdesi (`Alloc %`), son gelen sinyal detayı ve tek tıkla sağ panelde ilgili bota odaklanma (`EventBus.emit('bot:select')`) sağlandı.
+4. **Çift Yönlü Canlı Piyasa Entegrasyonu:**
+   * Watchlist veya Bot Hub'dan seçilen herhangi bir coin (`EventBus.on('symbol:selected')`), hesaplayıcıdaki sembol ve giriş fiyatını otomatik günceller; Binance WebSocket fiyat akışları canlı pozisyonlardaki anlık PnL'i canlı olarak yeşil/kırmızı yanıp sönerek hesaplar.
+5. **Kalıcı Bellek (Persistence):**
+   * Trader'ın belirlediği kasa bakiyesi, risk limitleri ve açık pozisyonlar `localStorage` üzerinde kaydedilerek sayfa yenilense dahi korunur.
+
+### 🛠️ Yapılan Teknik Geliştirmeler
+1. **[`public/styles/treasury-cockpit.css`](public/styles/treasury-cockpit.css):**
+   * Sıfırdan oluşturuldu. Dark Mode, glassmorphism, 5 adet neon efektli kasa kartı, 9 botluk matriks gridi, aktif pozisyonlar tablosu, risk hesaplayıcısı ve ayarlar modalı için 400+ satırlık eksiksiz stil sistemi kodlandı.
+2. **[`public/plugins/treasury-cockpit/treasury-cockpit.plugin.js`](public/plugins/treasury-cockpit/treasury-cockpit.plugin.js):**
+   * Sıfırdan oluşturuldu. Kasa hesaplamaları, 9 botun `/api/signals?bot=<id>` üzerinden canlı veri takibi, aktif pozisyon yönetimi (`TP %50`, `BE Stop`, `Pozisyon Kapat`), pozisyon boyutu hesaplayıcısı ve ayarlar modalı tek modülde birleştirildi.
+3. **[`public/index.html`](public/index.html):**
+   * Üst başlık sol bölümü `ALPHA KASA & BOT KOKPİTİ` rozetleri ve canlı kasa metrikleriyle güncellendi.
+   * Çizim çubuğu gizlendi (`display: none;`).
+   * Orta grafik alanı (`#charts-viewport`) flex-column düzeniyle yeni kokpite uyarlandı.
+   * `MultiChartPlugin.init` çağrısı kaldırılarak grafikler devre dışı bırakıldı ve yerine `TreasuryCockpitPlugin.init('charts-viewport')` bağlandı.
+4. **[`public/styles/terminal-pro.css`](public/styles/terminal-pro.css):**
+   * `#charts-viewport` grid yapısından flex sütun yapısına dönüştürüldü.
+
+### 🔬 Doğrulama ve Test Sonuçları
+1. **Headless Browser Görsel Denetimi (`http://localhost:3000`):**
+   * Sayfa açıldı; 4 grafik ve çizim araçlarının tamamen devre dışı bırakıldığı, yerini **Bot Takip Kokpiti & Kasa Yönetimi** alanının aldığı doğrulandı.
+   * 5 Kasa Kartının canlı metrikleri (Toplam Kasa: `$10,000.00`, Kullanılabilir: `$8,384.40`, Riskteki: `$1,615.60`, PnL: `+$488.53`, Kasa Koruma: `%1.50`) test edildi.
+   * 9 Bot Matrisinin canlı sinyal adetleri ve aktiflik durumları doğrulandı.
+   * Pozisyon tablosundaki canlı pozisyonlar (BTC, ETH, SPCX) ve Risk Hesaplayıcısındaki `%0.5 - %3.0` risk butonları interaktif olarak test edildi; ekran görüntüsü kaydedildi (`bot_kokpit_overview_1791976616856.png`).
+2. **Test Süitleri:**
+   * `node review/terminal-regression-tests.cjs`: **8/8 PASS**.
+   * `node review/quant-accuracy-verification.cjs`: **5/5 PASS**.
+
+---
+
 
 
 ## 💬 1. Konuşmalarımız ve Onaylananlar (Kullanıcı Talepleri & Kararlar)

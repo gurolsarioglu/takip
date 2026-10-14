@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>⚡ Alpha Terminal — Multi-Bot Trading Station</title>
-  <meta name="description" content="Binance Futures 4-Chart Multi-Timeframe Station with Hammer Pro & M1 Premium signal feeds." />
+  <title>⚡ Alpha Terminal — Bot Takip & Kasa Yönetimi Kokpiti</title>
+  <meta name="description" content="Binance Futures 9-Bot Tracking Station and Professional Treasury & Risk Management Cockpit." />
   <link rel="stylesheet" href="styles/terminal-pro.css" />
+  <link rel="stylesheet" href="styles/treasury-cockpit.css" />
   <script src="libs/lightweight-charts.standalone.production.js"></script>
 </head>
 <body>
@@ -15,9 +16,9 @@
   <!-- ─── 1. TOP HEADER ─────────────────────────────────────────── -->
   <header id="top-header">
     <div class="header-left">
-      <div class="logo-badge">
-        <span>🔨</span>
-        <span>HAMMER PRO</span>
+      <div class="logo-badge" style="background: linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(56,189,248,0.25) 100%); border: 1px solid rgba(56,189,248,0.4); box-shadow: 0 0 10px rgba(56,189,248,0.2);">
+        <span>🛡️</span>
+        <span style="color:#f8fafc; font-weight:800; letter-spacing:0.5px;">ALPHA KASA & BOT KOKPİTİ</span>
       </div>
 
       <div class="search-box-wrap">
@@ -25,20 +26,16 @@
         <input type="text" id="coin-search-input" class="search-input" value="BTWUSDT" placeholder="BTWUSDT" autocomplete="off" spellcheck="false" />
       </div>
 
-      <nav class="timeframe-strip" id="timeframe-strip">
-        <button class="tf-btn" data-tf="1m">1m</button>
-        <button class="tf-btn" data-tf="5m">5m</button>
-        <button class="tf-btn" data-tf="15m">15m</button>
-        <button class="tf-btn" data-tf="1h">1H</button>
-        <button class="tf-btn" data-tf="4h">4H</button>
-        <button class="tf-btn active" data-tf="1d">D</button>
-        <button class="tf-btn" data-tf="1w">W</button>
-      </nav>
-
-      <div class="grid-selector">
-        <button class="grid-btn" title="Tekli Grafik" id="grid-1x1">1x1</button>
-        <button class="grid-btn" title="İkili Grafik" id="grid-2x1">2x1</button>
-        <button class="grid-btn active" title="4'lü Multi-Timeframe (1m, 5m, 1h, 1D)" id="grid-4x1">4x1</button>
+      <div class="cockpit-quick-tags" style="display:flex; align-items:center; gap:8px; margin-left:8px;">
+        <span class="wl-filter-pill active" style="font-size:10px; font-weight:700; background:rgba(16,185,129,0.18); color:#6ee7b7; border: 1px solid rgba(16,185,129,0.4);">
+          💼 Kasa: $10,000.00
+        </span>
+        <span class="wl-filter-pill" style="font-size:10px; font-weight:700; background:rgba(56,189,248,0.15); color:#7dd3fc; border: 1px solid rgba(56,189,248,0.35);">
+          🛡️ Risk: %1.50
+        </span>
+        <span class="wl-filter-pill" style="font-size:10px; font-weight:700; background:rgba(245,158,11,0.15); color:#fbbf24; border: 1px solid rgba(245,158,11,0.35);">
+          🤖 9 Quant Botu Aktif
+        </span>
       </div>
     </div>
 
@@ -57,20 +54,11 @@
   <!-- ─── 2. MAIN BODY ──────────────────────────────────────────── -->
   <div id="main-body">
 
-    <!-- SOL: Çizim Araç Çubuğu (TradingView Style) -->
-    <aside id="left-drawing-toolbar">
-      <button class="draw-tool-btn active" title="İmleç / Crosshair">✛</button>
-      <button class="draw-tool-btn" title="Trend Çizgisi">╱</button>
-      <button class="draw-tool-btn" title="Yatay Işın / Destek-Direnç">―</button>
-      <button class="draw-tool-btn" title="Fibonacci Düzeltmesi">≣</button>
-      <div class="draw-sep"></div>
-      <button class="draw-tool-btn" title="Metin / Not">T</button>
-      <button class="draw-tool-btn" title="Fiyat Cetveli / Ölçüm">📏</button>
-      <button class="draw-tool-btn" title="Çizimleri Temizle">🗑️</button>
-    </aside>
+    <!-- SOL: Çizim Araç Çubuğu (Grafikler devre dışı bırakıldığı için gizlendi) -->
+    <aside id="left-drawing-toolbar" style="display: none;"></aside>
 
-    <!-- ORTA: 4'lü Çoklu Zaman Dilimli Grafik Alanı (1m, 5m, 1h, 1D) -->
-    <main id="charts-viewport"></main>
+    <!-- ORTA: Bot Takip Ekranı & Kasa Yönetimi Alanı (Treasury Cockpit Viewport) -->
+    <main id="charts-viewport" style="flex: 1; display: flex; flex-direction: column; background: #080b10; overflow: hidden; min-width: 0; min-height: 0;"></main>
 
     <!-- SAĞ: Watchlist + Ticker Snapshot + Çoklu Bot İstasyonu -->
     <aside id="right-sidebar">
@@ -351,11 +339,12 @@
 <script src="plugins/bot-hub/coin-history-modal.js"></script>
 <script src="plugins/bot-hub/bot-renderer.js"></script>
 <script src="plugins/bot-hub/bot-hub.plugin.js"></script>
+<script src="plugins/treasury-cockpit/treasury-cockpit.plugin.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Modülleri Başlat
-  MultiChartPlugin.init('charts-viewport');
+  // 1. Modülleri Başlat (Grafikler yerine Bot Takip ve Kasa Yönetimi Kokpiti aktif)
+  TreasuryCockpitPlugin.init('charts-viewport');
   WatchlistPlugin.init();
   TickerSnapshot.init();
   BotHubPlugin.init();
