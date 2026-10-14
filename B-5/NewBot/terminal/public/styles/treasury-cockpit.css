@@ -663,6 +663,30 @@
   color: #38bdf8;
 }
 
+.tp-pill-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tp-pill-btn.active, .tp-pill-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.5);
+  color: #34d399;
+}
+
+.pos-btn-mini.btn-pos-add:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #38bdf8;
+}
+
 .calc-result-box {
   background: linear-gradient(180deg, rgba(13, 17, 23, 0.8) 0%, rgba(8, 11, 16, 0.95) 100%);
   border: 1px solid rgba(56, 189, 248, 0.25);

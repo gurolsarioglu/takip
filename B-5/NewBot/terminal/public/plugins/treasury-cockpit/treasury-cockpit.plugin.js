@@ -1,29 +1,27 @@
 /**
  * treasury-cockpit.plugin.js — Bot Takip Ekranı & Kasa Yönetimi Alanı Modülü
- * Alpha Terminal 2.0
+ * Alpha Terminal 2.0 (Stop-Loss'suz Kasa Yönetimi & Marjin/Likidasyon Kontrolü)
  * 
- * Özellikler:
- * - 9 Quant botunun anlık durumunu, sinyal sayılarını ve son sinyal detaylarını tek matriste takip eder.
- * - Profesyonel vadeli işlem kasa yönetimi: Toplam Sermaye, Kullanılabilir Marjin, Risk Seviyesi.
- * - Matematiksel Pozisyon Büyüklüğü Hesaplayıcı (Risk % kuralı, SL mesafesi, Kaldıraç, Max Risk $).
- * - Aktif Takip Edilen Pozisyon Defteri: Canlı PnL, Kâr Al, Başabaşa Çek (BE), Pozisyon Kapat.
- * - Seçili Coin (Watchlist / Bot Hub) ile çift yönlü otomatik senkronizasyon.
- * - Ayarlar ve pozisyonlar localStorage üzerinde kalıcı saklanır.
+ * Trader İlkesi:
+ * - Stop-Loss KULLANILMAZ.
+ * - Risk, her işleme ayrılan sınırlı Kasa Teminatı (Margin Allocation %) ve düşük kaldıraçla yönetilir.
+ * - Güvenlik, Likidasyon Fiyatı Mesafesi (% Liq Distance Buffer) ile takip edilir.
+ * - Kâr alımları (TP1, TP2, TP3) ve kademeli kâr realization (%50 TP) ile kasa büyütülür.
  */
 
 const TreasuryCockpitPlugin = (() => {
-  // ─── Varsayılan Durum ve Yapılandırma ──────────────────────────
-  const STORAGE_KEY_SETTINGS = 'alpha_treasury_settings_v1';
-  const STORAGE_KEY_POSITIONS = 'alpha_treasury_positions_v1';
+  const STORAGE_KEY_SETTINGS = 'alpha_treasury_settings_v2';
+  const STORAGE_KEY_POSITIONS = 'alpha_treasury_positions_v2';
 
   let state = {
-    totalEquity: 10000.00,       // Toplam Kasa (USDT)
-    riskPerTradePct: 1.50,       // İşlem Başı Maksimum Risk %
-    maxDailyLossPct: 5.00,       // Günlük Maksimum Zarar Limiti %
-    dailyRealizedPnl: 348.50,    // Günlük Gerçekleşen PnL ($)
-    selectedSymbol: 'BTCUSDT',   // Aktif Seçili Coin
-    selectedPrice: 83500.00,     // Anlık Fiyat
-    positions: [],               // Aktif Pozisyonlar
+    totalEquity: 10000.00,           // Toplam Kasa (USDT)
+    marginAllocPerTradePct: 2.00,    // İşlem Başı Kasa Teminatı % (Varsayılan %2 = $200)
+    maxPositionMarginPct: 5.00,      // Tek Coine Max İzin Verilen Teminat % (Varsayılan %5 = $500)
+    dailyRealizedPnl: 348.50,        // Günlük Gerçekleşen Kâr ($)
+    selectedSymbol: 'BTCUSDT',       // Aktif Seçili Coin
+    selectedPrice: 83500.00,         // Anlık Fiyat
+    targetTpPct: 2.50,               // Hedef Kâr % (Varsayılan %2.5)
+    positions: [],                   // Aktif Pozisyonlar
     bots: [
       { id: 'm1a', badge: 'M1-A', name: 'M1-A Drop', color: 'gold', strategy: '1m Ani Düşüş', allocPct: 10, count: 0, lastSignal: null, active: true },
       { id: 'm1premium', badge: 'M1P', name: 'M1 Premium', color: 'gold', strategy: '1m Momentum & Sıçrama', allocPct: 15, count: 0, lastSignal: null, active: true },
@@ -46,16 +44,17 @@ const TreasuryCockpitPlugin = (() => {
       if (savedSettings) {
         const parsed = JSON.parse(savedSettings);
         if (parsed.totalEquity) state.totalEquity = parseFloat(parsed.totalEquity);
-        if (parsed.riskPerTradePct) state.riskPerTradePct = parseFloat(parsed.riskPerTradePct);
-        if (parsed.maxDailyLossPct) state.maxDailyLossPct = parseFloat(parsed.maxDailyLossPct);
+        if (parsed.marginAllocPerTradePct) state.marginAllocPerTradePct = parseFloat(parsed.marginAllocPerTradePct);
+        if (parsed.maxPositionMarginPct) state.maxPositionMarginPct = parseFloat(parsed.maxPositionMarginPct);
         if (parsed.dailyRealizedPnl !== undefined) state.dailyRealizedPnl = parseFloat(parsed.dailyRealizedPnl);
+        if (parsed.targetTpPct) state.targetTpPct = parseFloat(parsed.targetTpPct);
       }
 
       const savedPositions = localStorage.getItem(STORAGE_KEY_POSITIONS);
       if (savedPositions) {
         state.positions = JSON.parse(savedPositions);
       } else {
-        // İlk açılışta gerçekçi başlangıç pozisyonları
+        // Gerçekçi başlangıç pozisyonları (Stop-Loss'suz, Likidasyon Korumalı)
         state.positions = [
           {
             id: 'pos_btc_1',
@@ -65,12 +64,11 @@ const TreasuryCockpitPlugin = (() => {
             side: 'LONG',
             entryPrice: 83120.00,
             curPrice: 83520.00,
-            amount: 0.15,
-            margin: 623.40,
-            leverage: 20,
-            sl: 82450.00,
-            tp1: 84500.00,
-            tp2: 85800.00,
+            amount: 0.06,
+            margin: 500.00,
+            leverage: 10,
+            liqPrice: 75223.00,
+            tp1: 85200.00,
             openTime: '13:23'
           },
           {
@@ -81,12 +79,11 @@ const TreasuryCockpitPlugin = (() => {
             side: 'LONG',
             entryPrice: 2488.50,
             curPrice: 2505.20,
-            amount: 2.5,
-            margin: 622.12,
-            leverage: 10,
-            sl: 2445.00,
+            amount: 1.0,
+            margin: 500.00,
+            leverage: 5,
+            liqPrice: 2003.20,
             tp1: 2560.00,
-            tp2: 2620.00,
             openTime: '13:23'
           },
           {
@@ -97,12 +94,11 @@ const TreasuryCockpitPlugin = (() => {
             side: 'LONG',
             entryPrice: 154.20,
             curPrice: 157.39,
-            amount: 12.0,
-            margin: 370.08,
-            leverage: 5,
-            sl: 150.00,
+            amount: 5.8,
+            margin: 300.00,
+            leverage: 3,
+            liqPrice: 104.50,
             tp1: 165.00,
-            tp2: 172.00,
             openTime: '13:23'
           }
         ];
@@ -117,9 +113,10 @@ const TreasuryCockpitPlugin = (() => {
     try {
       localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify({
         totalEquity: state.totalEquity,
-        riskPerTradePct: state.riskPerTradePct,
-        maxDailyLossPct: state.maxDailyLossPct,
-        dailyRealizedPnl: state.dailyRealizedPnl
+        marginAllocPerTradePct: state.marginAllocPerTradePct,
+        maxPositionMarginPct: state.maxPositionMarginPct,
+        dailyRealizedPnl: state.dailyRealizedPnl,
+        targetTpPct: state.targetTpPct
       }));
     } catch (e) {}
   }
@@ -142,7 +139,28 @@ const TreasuryCockpitPlugin = (() => {
     return `${sign}${num.toFixed(2)}%`;
   }
 
-  // ─── Hesaplamalar ─────────────────────────────────────────────
+  // ─── Likidasyon Hesaplayıcı ────────────────────────────────────
+  function calculateLiqPrice(entry, leverage, side = 'LONG') {
+    const lev = Math.max(1, parseInt(leverage, 10) || 1);
+    if (lev <= 1) return 0; // 1x Spot / Sıfır Likidasyon
+    const m = 0.95; // %0.5 - %1 sürdürme teminatı payı
+    if (side === 'LONG') {
+      return Math.max(0, +(entry * (1 - (1 / lev) * m)).toFixed(4));
+    } else {
+      return +(entry * (1 + (1 / lev) * m)).toFixed(4);
+    }
+  }
+
+  function calculateLiqDistancePct(curPrice, liqPrice, side = 'LONG') {
+    if (!liqPrice || liqPrice <= 0) return 100; // Likidasyon yok
+    if (side === 'LONG') {
+      return -Math.abs(((curPrice - liqPrice) / curPrice) * 100);
+    } else {
+      return +Math.abs(((liqPrice - curPrice) / curPrice) * 100);
+    }
+  }
+
+  // ─── Kasa İstatistik Hesaplamaları ─────────────────────────────
   function getInTradeMargin() {
     return state.positions.reduce((sum, p) => sum + (parseFloat(p.margin) || 0), 0);
   }
@@ -188,7 +206,7 @@ const TreasuryCockpitPlugin = (() => {
     updateHeaderCounters();
   }
 
-  // ─── Arayüzü İnşa Etme ─────────────────────────────────────────
+  // ─── Ana Arayüz İskelesi (Layout) ──────────────────────────────
   function renderLayout() {
     if (!containerEl) return;
 
@@ -201,9 +219,11 @@ const TreasuryCockpitPlugin = (() => {
             <div class="cockpit-heading-group">
               <div class="cockpit-main-title">
                 BOT TAKİP KOKPİTİ & KASA YÖNETİMİ
-                <span class="live-pulse-chip">CANLI SENKRONİZE</span>
+                <span class="live-pulse-chip" style="background:rgba(56,189,248,0.2); color:#38bdf8; border-color:rgba(56,189,248,0.4);">
+                  🛡️ STOP-LOSS'SUZ (MARJİN & LİKİDASYON KONTROLÜ)
+                </span>
               </div>
-              <div class="cockpit-sub-title">9 Quant Botu Gerçek Zamanlı İzleme, Risk Dağılımı & İcra Masası</div>
+              <div class="cockpit-sub-title">Sermaye Dağılımı, Likidasyon Güvenlik Mesafesi ve Hedef Kâr Takibi</div>
             </div>
           </div>
           <div class="cockpit-banner-actions">
@@ -234,13 +254,13 @@ const TreasuryCockpitPlugin = (() => {
           </div>
         </div>
 
-        <!-- 4. Alt Çalışma Masası (Pozisyonlar + Risk Hesaplayıcı) -->
+        <!-- 4. Alt Çalışma Masası (Pozisyonlar + SL'siz Marjin Hesaplayıcı) -->
         <div class="workbench-split-grid">
           <!-- Sol Panel: Aktif Pozisyonlar -->
           <div class="workbench-panel">
             <div class="panel-header">
               <div class="panel-title">
-                <span>📋 Aktif Pozisyon & İcra Defteri</span>
+                <span>📋 Aktif Pozisyon & Kasa İcra Defteri</span>
                 <span class="section-count-tag" id="pos-count-tag">3 Pozisyon</span>
               </div>
               <div style="font-size:10px; color:#94a3b8; font-family:'SF Mono',Consolas,monospace;">
@@ -256,7 +276,8 @@ const TreasuryCockpitPlugin = (() => {
                     <th>Giriş / Anlık</th>
                     <th>Miktar</th>
                     <th>Marjin / Kaldıraç</th>
-                    <th>SL / TP</th>
+                    <th>Likidasyon & Tampon</th>
+                    <th>Hedef Kâr (TP)</th>
                     <th>Canlı PnL</th>
                     <th style="text-align:right;">Aksiyon</th>
                   </tr>
@@ -268,13 +289,13 @@ const TreasuryCockpitPlugin = (() => {
             </div>
           </div>
 
-          <!-- Sağ Panel: Pozisyon Büyüklüğü & Kasa Riski Hesaplayıcı -->
+          <!-- Sağ Panel: SL'siz Kasa Marjin & Likidasyon Hesaplayıcı -->
           <div class="workbench-panel">
             <div class="panel-header">
               <div class="panel-title">
-                <span>🧮 Kasa Riski & Pozisyon Hesaplayıcı</span>
+                <span>🧮 Kasa Marjin & Likidasyon Hesaplayıcı</span>
               </div>
-              <span style="font-size:9px; color:#38bdf8; font-weight:700;">%1.5 KASA KURALI</span>
+              <span style="font-size:9px; color:#38bdf8; font-weight:700;">SL'SİZ MARJİN KONTROLÜ</span>
             </div>
             <div class="calc-form">
               <div class="calc-row">
@@ -286,52 +307,57 @@ const TreasuryCockpitPlugin = (() => {
                 <input type="number" id="calc-entry" class="calc-input" value="${state.selectedPrice}" step="any" />
               </div>
               <div class="calc-row">
-                <span class="calc-label">İşlem Başı Risk</span>
+                <span class="calc-label">Kasa Payı (Teminat)</span>
                 <div class="risk-pill-group">
-                  <button class="risk-pill-btn" data-risk="0.5">0.5%</button>
-                  <button class="risk-pill-btn" data-risk="1.0">1.0%</button>
-                  <button class="risk-pill-btn active" data-risk="1.5">1.5%</button>
-                  <button class="risk-pill-btn" data-risk="2.0">2.0%</button>
-                  <button class="risk-pill-btn" data-risk="3.0">3.0%</button>
+                  <button class="risk-pill-btn" data-alloc="1.0">%1 ($100)</button>
+                  <button class="risk-pill-btn active" data-alloc="2.0">%2 ($200)</button>
+                  <button class="risk-pill-btn" data-alloc="3.0">%3 ($300)</button>
+                  <button class="risk-pill-btn" data-alloc="5.0">%5 ($500)</button>
+                  <button class="risk-pill-btn" data-alloc="10.0">%10 ($1K)</button>
                 </div>
-              </div>
-              <div class="calc-row">
-                <span class="calc-label">Stop Loss Fiyatı</span>
-                <input type="number" id="calc-sl" class="calc-input" placeholder="Örn: 82500" step="any" />
               </div>
               <div class="calc-row">
                 <span class="calc-label">Kaldıraç</span>
                 <select id="calc-leverage" class="calc-input" style="padding:4px 6px;">
-                  <option value="1">1x (Spot / Marjinsiz)</option>
-                  <option value="2">2x</option>
-                  <option value="3">3x</option>
-                  <option value="5">5x</option>
-                  <option value="10" selected>10x</option>
-                  <option value="20">20x</option>
+                  <option value="1">1x (Spot Güvenli / 0 Likidasyon)</option>
+                  <option value="2">2x (%50 Güvenlik Tamponu)</option>
+                  <option value="3">3x (%33.3 Güvenlik Tamponu)</option>
+                  <option value="5" selected>5x (%20.0 Güvenlik Tamponu)</option>
+                  <option value="10">10x (%10.0 Güvenlik Tamponu)</option>
+                  <option value="20">20x (%5.0 Yüksek Risk)</option>
                 </select>
               </div>
               <div class="calc-row">
-                <span class="calc-label">Take Profit 1 ($)</span>
-                <input type="number" id="calc-tp1" class="calc-input" placeholder="Opsiyonel" step="any" />
+                <span class="calc-label">Hedef Kâr Al (TP %)</span>
+                <div class="risk-pill-group">
+                  <button class="tp-pill-btn" data-tp="1.5">+1.5%</button>
+                  <button class="tp-pill-btn active" data-tp="2.5">+2.5%</button>
+                  <button class="tp-pill-btn" data-tp="4.0">+4.0%</button>
+                  <button class="tp-pill-btn" data-tp="6.0">+6.0%</button>
+                </div>
               </div>
 
               <!-- Sonuç Kutusu -->
               <div class="calc-result-box">
                 <div class="calc-res-item">
-                  <span class="calc-res-lbl">Maksimum Risk:</span>
-                  <span class="calc-res-val" id="res-risk-usd">$150.00</span>
+                  <span class="calc-res-lbl">Ayrılan Teminat (Marjin):</span>
+                  <span class="calc-res-val highlight-gold" id="res-margin-usd">$200.00 (%2.0)</span>
                 </div>
                 <div class="calc-res-item">
-                  <span class="calc-res-lbl">Önerilen Marjin (Teminat):</span>
-                  <span class="calc-res-val highlight-gold" id="res-margin-usd">$600.00</span>
+                  <span class="calc-res-lbl">Toplam Pozisyon Hacmi:</span>
+                  <span class="calc-res-val highlight-green" id="res-notional-usd">$1,000.00 (5x)</span>
                 </div>
                 <div class="calc-res-item">
-                  <span class="calc-res-lbl">Toplam Pozisyon Büyüklüğü:</span>
-                  <span class="calc-res-val highlight-green" id="res-notional-usd">$6,000.00</span>
+                  <span class="calc-res-lbl">Tahmini Likidasyon Fiyatı:</span>
+                  <span class="calc-res-val" id="res-liq-price" style="color:#f87171;">$66,800.00</span>
                 </div>
                 <div class="calc-res-item">
-                  <span class="calc-res-lbl">Risk/Ödül Oranı (R:R):</span>
-                  <span class="calc-res-val" id="res-rr-ratio">1 : 2.2</span>
+                  <span class="calc-res-lbl">Likidasyon Güvenlik Mesafesi:</span>
+                  <span class="calc-res-val" id="res-liq-dist" style="color:#34d399;">%-20.0 (🟢 GÜVENLİ TAMPON)</span>
+                </div>
+                <div class="calc-res-item">
+                  <span class="calc-res-lbl">Hedef Kâr Getirisi (TP):</span>
+                  <span class="calc-res-val" id="res-tp-profit" style="color:#38bdf8;">+$25.00 (+12.5% Marjin Kârı)</span>
                 </div>
               </div>
 
@@ -346,7 +372,7 @@ const TreasuryCockpitPlugin = (() => {
         <div class="treasury-modal-backdrop" id="treasury-settings-modal">
           <div class="treasury-modal-card">
             <div class="tm-header">
-              <span class="tm-title">⚙️ KASA VE RİSK YÖNETİMİ AYARLARI</span>
+              <span class="tm-title">⚙️ KASA VE MARJİN AYARLARI</span>
               <button class="tm-close-btn" id="btn-close-modal">✕</button>
             </div>
             <div class="calc-form">
@@ -355,15 +381,15 @@ const TreasuryCockpitPlugin = (() => {
                 <input type="number" id="modal-equity" class="calc-input" value="${state.totalEquity}" step="100" />
               </div>
               <div class="calc-row">
-                <span class="calc-label">İşlem Başına Risk Limiti (%)</span>
-                <input type="number" id="modal-risk-pct" class="calc-input" value="${state.riskPerTradePct}" step="0.1" />
+                <span class="calc-label">İşlem Başı Teminat Limiti (%)</span>
+                <input type="number" id="modal-risk-pct" class="calc-input" value="${state.marginAllocPerTradePct}" step="0.5" />
               </div>
               <div class="calc-row">
-                <span class="calc-label">Günlük Max Kayıp Limiti (%)</span>
-                <input type="number" id="modal-daily-loss" class="calc-input" value="${state.maxDailyLossPct}" step="0.5" />
+                <span class="calc-label">Tek Coine Max Teminat (%)</span>
+                <input type="number" id="modal-daily-loss" class="calc-input" value="${state.maxPositionMarginPct}" step="0.5" />
               </div>
               <div class="calc-row">
-                <span class="calc-label">Bugünkü Realized PnL ($)</span>
+                <span class="calc-label">Bugünkü Gerçekleşen Kâr ($)</span>
                 <input type="number" id="modal-realized-pnl" class="calc-input" value="${state.dailyRealizedPnl}" step="10" />
               </div>
               <button class="calc-submit-btn" id="btn-save-settings">
@@ -394,7 +420,7 @@ const TreasuryCockpitPlugin = (() => {
     const totalPnl = state.dailyRealizedPnl + uPnl;
     const pnlPct = (totalPnl / state.totalEquity) * 100;
     const marginUsagePct = Math.min(100, (inTrade / state.totalEquity) * 100);
-    const maxRiskTradeUsd = state.totalEquity * (state.riskPerTradePct / 100);
+    const maxSingleMarginUsd = state.totalEquity * (state.maxPositionMarginPct / 100);
 
     gridEl.innerHTML = `
       <!-- Kart 1: Toplam Kasa -->
@@ -429,15 +455,15 @@ const TreasuryCockpitPlugin = (() => {
         </div>
       </div>
 
-      <!-- Kart 3: Riskteki Sermaye -->
+      <!-- Kart 3: Riskteki Marjin -->
       <div class="treasury-card glow-blue">
         <div class="t-card-header">
-          <span class="t-card-title">Riskteki Marjin</span>
+          <span class="t-card-title">Açık Marjin (Kullanılan)</span>
           <span class="t-card-icon">⚡</span>
         </div>
         <div class="t-card-value" style="color: #38bdf8;">${formatMoney(inTrade)}</div>
         <div class="t-card-sub">
-          <span>Kullanım Oranı</span>
+          <span>Kasa Kullanımı</span>
           <span>${marginUsagePct.toFixed(1)}%</span>
         </div>
         <div class="t-card-bar-wrap">
@@ -463,16 +489,16 @@ const TreasuryCockpitPlugin = (() => {
         </div>
       </div>
 
-      <!-- Kart 5: Kasa Koruma Protokolü -->
+      <!-- Kart 5: Kasa Disiplini (SL'siz Marjin & Güvenlik Kuralı) -->
       <div class="treasury-card glow-purple">
         <div class="t-card-header">
-          <span class="t-card-title">Kasa Koruma (Risk)</span>
+          <span class="t-card-title">Kasa Disiplini (SL'siz)</span>
           <span class="t-card-icon">🛡️</span>
         </div>
-        <div class="t-card-value" style="color: #c084fc;">%${state.riskPerTradePct.toFixed(2)} (${formatMoney(maxRiskTradeUsd)})</div>
+        <div class="t-card-value" style="color: #c084fc;">Max %${state.maxPositionMarginPct.toFixed(1)} (${formatMoney(maxSingleMarginUsd)})</div>
         <div class="t-card-sub">
-          <span>Max Günlük Kayıp</span>
-          <span style="color: #f87171;">-${formatMoney(state.totalEquity * (state.maxDailyLossPct / 100))}</span>
+          <span>Likidasyon Güvenliği</span>
+          <span style="color: #34d399; font-weight:700;">GÜVENLİ TAMPON</span>
         </div>
         <div class="t-card-bar-wrap">
           <div class="t-card-bar-fill" style="width: 100%; background: #a855f7;"></div>
@@ -534,7 +560,6 @@ const TreasuryCockpitPlugin = (() => {
       `;
     }).join('');
 
-    // Sinyallere git butonları
     gridEl.querySelectorAll('.btn-jump-bot').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -555,12 +580,11 @@ const TreasuryCockpitPlugin = (() => {
     if (typeof EventBus !== 'undefined') {
       EventBus.emit('bot:select', botId);
     }
-    // Sağ taraftaki bot butonunu tıkla
     const rightBtn = document.querySelector(`.bot-badge-btn[data-bot="${botId}"]`);
     if (rightBtn) rightBtn.click();
   }
 
-  // ─── 3. Aktif Pozisyonlar Tablosu ──────────────────────────────
+  // ─── 3. Aktif Pozisyonlar Tablosu (SL'siz, Likidasyon & TP) ─────
   function renderPositionsTable() {
     const tbody = document.getElementById('positions-tbody');
     const countTag = document.getElementById('pos-count-tag');
@@ -573,11 +597,11 @@ const TreasuryCockpitPlugin = (() => {
     if (state.positions.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="8">
+          <td colspan="9">
             <div class="empty-positions-placeholder">
               <span class="empty-icon">🛡️</span>
               <span style="font-size:12px; font-weight:700; color:#cbd5e1;">Açık Pozisyon Bulunmuyor</span>
-              <span style="font-size:10px; margin-top:4px;">Sağdaki hesaplayıcıdan yeni pozisyon ekleyebilir veya bot sinyallerini takip edebilirsiniz.</span>
+              <span style="font-size:10px; margin-top:4px;">Sağdaki hesaplayıcıdan pozisyon ekleyebilir veya bot sinyallerini takip edebilirsiniz.</span>
             </div>
           </td>
         </tr>
@@ -590,10 +614,15 @@ const TreasuryCockpitPlugin = (() => {
       const cur = parseFloat(p.curPrice) || entry;
       const amt = parseFloat(p.amount) || 0;
       const margin = parseFloat(p.margin) || 0;
+      const lev = parseInt(p.leverage, 10) || 5;
       const diff = p.side === 'LONG' ? (cur - entry) : (entry - cur);
       const pnlUsd = diff * amt;
       const pnlPct = margin > 0 ? (pnlUsd / margin) * 100 : 0;
       const isUp = pnlUsd >= 0;
+
+      const liq = p.liqPrice || calculateLiqPrice(entry, lev, p.side);
+      const liqDistPct = calculateLiqDistancePct(cur, liq, p.side);
+      const isLiqSafe = Math.abs(liqDistPct) >= 15;
 
       return `
         <tr data-pos-id="${p.id}">
@@ -613,11 +642,17 @@ const TreasuryCockpitPlugin = (() => {
           <td>${amt}</td>
           <td>
             <div>${formatMoney(margin)}</div>
-            <div style="font-size:9px; color:#38bdf8;">${p.leverage || 10}x</div>
+            <div style="font-size:9px; color:#38bdf8;">${lev}x</div>
           </td>
           <td>
-            <div style="font-size:9px; color:#f87171;">SL: ${p.sl || '—'}</div>
-            <div style="font-size:9px; color:#34d399;">TP: ${p.tp1 || '—'}</div>
+            <div style="font-weight:700; color:#f87171;">${liq > 0 ? liq : 'Yok (1x)'}</div>
+            <div style="font-size:9px; color:${isLiqSafe ? '#34d399' : '#f59e0b'};">
+              ${liqDistPct.toFixed(1)}% ${isLiqSafe ? '🟢 Güvenli' : '⚠️ Dikkat'}
+            </div>
+          </td>
+          <td>
+            <div style="font-weight:700; color:#34d399;">${p.tp1 || '—'}</div>
+            <div style="font-size:9px; color:#64748b;">Hedef Kâr</div>
           </td>
           <td class="pos-pnl-cell ${isUp ? 'up' : 'down'}">
             ${isUp ? '+' : ''}${formatMoney(pnlUsd)} (${formatPercent(pnlPct)})
@@ -625,7 +660,7 @@ const TreasuryCockpitPlugin = (() => {
           <td style="text-align:right;">
             <div class="pos-action-btns" style="justify-content:flex-end;">
               <button class="pos-btn-mini btn-pos-tp" data-id="${p.id}" title="Yarı Pozisyon Kâr Al (%50)">TP %50</button>
-              <button class="pos-btn-mini btn-pos-be" data-id="${p.id}" title="Stop Loss'u Giriş Fiyatına Çek">BE</button>
+              <button class="pos-btn-mini btn-pos-add" data-id="${p.id}" title="Kademeli Ekle / Maliyet Düşür">+ Ekle</button>
               <button class="pos-btn-mini danger btn-pos-close" data-id="${p.id}" title="Pozisyonu Kapat">✕</button>
             </div>
           </td>
@@ -633,7 +668,6 @@ const TreasuryCockpitPlugin = (() => {
       `;
     }).join('');
 
-    // Aksiyon butonları
     tbody.querySelectorAll('.btn-pos-close').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
@@ -648,15 +682,15 @@ const TreasuryCockpitPlugin = (() => {
       });
     });
 
-    tbody.querySelectorAll('.btn-pos-be').forEach(btn => {
+    tbody.querySelectorAll('.btn-pos-add').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
-        breakEvenPosition(id);
+        addToPosition(id);
       });
     });
   }
 
-  // ─── Pozisyon Aksiyonları ──────────────────────────────────────
+  // ─── Pozisyon Eylemleri ────────────────────────────────────────
   function closePosition(id) {
     const idx = state.positions.findIndex(p => p.id === id);
     if (idx === -1) return;
@@ -693,78 +727,84 @@ const TreasuryCockpitPlugin = (() => {
     renderPositionsTable();
   }
 
-  function breakEvenPosition(id) {
+  function addToPosition(id) {
     const p = state.positions.find(p => p.id === id);
     if (!p) return;
-    p.sl = p.entryPrice;
+    const cur = parseFloat(p.curPrice) || p.entryPrice;
+    // Mevcut pozisyonun %50'si kadar kademe ekle
+    const addMargin = +(p.margin * 0.5).toFixed(2);
+    const addAmt = +(p.amount * 0.5).toFixed(4);
+    const oldTotalCost = p.entryPrice * p.amount;
+    const newTotalCost = oldTotalCost + (cur * addAmt);
+    const newTotalAmt = +(p.amount + addAmt).toFixed(4);
+
+    p.entryPrice = +(newTotalCost / newTotalAmt).toFixed(4);
+    p.amount = newTotalAmt;
+    p.margin = +(p.margin + addMargin).toFixed(2);
+    p.liqPrice = calculateLiqPrice(p.entryPrice, p.leverage, p.side);
+
     savePositionsToStorage();
+    renderMetrics();
     renderPositionsTable();
   }
 
-  // ─── 4. Pozisyon Büyüklüğü Hesaplayıcı ──────────────────────────
+  // ─── 4. SL'siz Kasa Marjin & Likidasyon Hesaplayıcı ─────────────
   function recalculatePositionSize() {
     const entryInput = document.getElementById('calc-entry');
-    const slInput = document.getElementById('calc-sl');
     const levSelect = document.getElementById('calc-leverage');
-    const tp1Input = document.getElementById('calc-tp1');
 
     const entry = parseFloat(entryInput ? entryInput.value : state.selectedPrice) || 1;
-    let sl = parseFloat(slInput ? slInput.value : 0);
-    const lev = parseInt(levSelect ? levSelect.value : 10, 10) || 10;
-    const tp1 = parseFloat(tp1Input ? tp1Input.value : 0);
+    const lev = parseInt(levSelect ? levSelect.value : 5, 10) || 5;
+    const allocPct = state.marginAllocPerTradePct;
+    const tpPct = state.targetTpPct;
 
-    // SL girilmemişse varsayılan %1.2 mesafe koy
-    if (!sl || isNaN(sl) || sl <= 0) {
-      sl = +(entry * 0.988).toFixed(4);
-      if (slInput) slInput.value = sl;
-    }
+    // 1. Ayrılan Teminat (Marjin) = Toplam Kasa * Kasa Payı %
+    const marginUsd = +(state.totalEquity * (allocPct / 100)).toFixed(2);
 
-    const slDistancePct = Math.abs((entry - sl) / entry) * 100;
-    const riskUsd = state.totalEquity * (state.riskPerTradePct / 100);
+    // 2. Toplam Pozisyon Büyüklüğü ($ Notional) = Marjin * Kaldıraç
+    const notionalUsd = +(marginUsd * lev).toFixed(2);
 
-    // Güvenli Pozisyon Boyutu ($ Notional) = Risk $ / SL Mesafe %
-    const notionalUsd = slDistancePct > 0 ? (riskUsd / (slDistancePct / 100)) : (riskUsd * lev);
-    const marginUsd = notionalUsd / lev;
+    // 3. Likidasyon Fiyatı & Mesafesi
+    const liqPrice = calculateLiqPrice(entry, lev, 'LONG');
+    const liqDistPct = calculateLiqDistancePct(entry, liqPrice, 'LONG');
+    const isLiqSafe = Math.abs(liqDistPct) >= 15;
 
-    // R:R Oranı
-    let rrRatio = '1 : 2.0';
-    if (tp1 && tp1 > entry) {
-      const tpDist = Math.abs(tp1 - entry);
-      const slDist = Math.abs(entry - sl);
-      if (slDist > 0) {
-        rrRatio = `1 : ${(tpDist / slDist).toFixed(1)}`;
-      }
-    }
+    // 4. Hedef Kâr Getirisi (TP1)
+    const tpProfitUsd = +(notionalUsd * (tpPct / 100)).toFixed(2);
+    const tpRoePct = +((tpProfitUsd / marginUsd) * 100).toFixed(1);
 
-    const resRisk = document.getElementById('res-risk-usd');
     const resMargin = document.getElementById('res-margin-usd');
     const resNotional = document.getElementById('res-notional-usd');
-    const resRr = document.getElementById('res-rr-ratio');
+    const resLiqPrice = document.getElementById('res-liq-price');
+    const resLiqDist = document.getElementById('res-liq-dist');
+    const resTpProfit = document.getElementById('res-tp-profit');
 
-    if (resRisk) resRisk.textContent = formatMoney(riskUsd);
-    if (resMargin) resMargin.textContent = formatMoney(marginUsd);
-    if (resNotional) resNotional.textContent = formatMoney(notionalUsd);
-    if (resRr) resRr.textContent = rrRatio;
+    if (resMargin) resMargin.textContent = `${formatMoney(marginUsd)} (%${allocPct.toFixed(1)})`;
+    if (resNotional) resNotional.textContent = `${formatMoney(notionalUsd)} (${lev}x)`;
+    if (resLiqPrice) resLiqPrice.textContent = liqPrice > 0 ? `$${liqPrice}` : 'Yok (1x Spot)';
+    if (resLiqDist) {
+      resLiqDist.textContent = `${liqDistPct.toFixed(1)}% (${isLiqSafe ? '🟢 GÜVENLİ TAMPON' : '⚠️ DİKKAT'})`;
+      resLiqDist.style.color = isLiqSafe ? '#34d399' : '#f59e0b';
+    }
+    if (resTpProfit) resTpProfit.textContent = `+${formatMoney(tpProfitUsd)} (+${tpRoePct}% Marjin Kârı)`;
   }
 
   function addCalculatedPosition() {
     const symInput = document.getElementById('calc-symbol');
     const entryInput = document.getElementById('calc-entry');
-    const slInput = document.getElementById('calc-sl');
     const levSelect = document.getElementById('calc-leverage');
-    const tp1Input = document.getElementById('calc-tp1');
 
     const sym = (symInput ? symInput.value : state.selectedSymbol).toUpperCase().trim();
     const entry = parseFloat(entryInput ? entryInput.value : state.selectedPrice) || 100;
-    const sl = parseFloat(slInput ? slInput.value : (entry * 0.985));
-    const lev = parseInt(levSelect ? levSelect.value : 10, 10);
-    const tp1 = parseFloat(tp1Input ? tp1Input.value : 0) || +(entry * 1.03).toFixed(4);
+    const lev = parseInt(levSelect ? levSelect.value : 5, 10);
+    const allocPct = state.marginAllocPerTradePct;
+    const tpPct = state.targetTpPct;
 
-    const slDistancePct = Math.abs((entry - sl) / entry) * 100;
-    const riskUsd = state.totalEquity * (state.riskPerTradePct / 100);
-    const notionalUsd = slDistancePct > 0 ? (riskUsd / (slDistancePct / 100)) : (riskUsd * lev);
-    const margin = +(notionalUsd / lev).toFixed(2);
+    const margin = +(state.totalEquity * (allocPct / 100)).toFixed(2);
+    const notionalUsd = margin * lev;
     const amount = +(notionalUsd / entry).toFixed(4);
+    const liqPrice = calculateLiqPrice(entry, lev, 'LONG');
+    const tp1Price = +(entry * (1 + tpPct / 100)).toFixed(4);
 
     const now = new Date();
     const timeStr = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
@@ -774,15 +814,14 @@ const TreasuryCockpitPlugin = (() => {
       symbol: sym,
       botId: 'manual',
       botBadge: 'MANUEL',
-      side: entry >= sl ? 'LONG' : 'SHORT',
+      side: 'LONG',
       entryPrice: entry,
       curPrice: entry,
       amount,
       margin,
       leverage: lev,
-      sl,
-      tp1,
-      tp2: +(entry * 1.05).toFixed(4),
+      liqPrice,
+      tp1: tp1Price,
       openTime: timeStr
     };
 
@@ -794,7 +833,6 @@ const TreasuryCockpitPlugin = (() => {
 
   // ─── 5. Olay Dinleyicileri (Event Listeners) ───────────────────
   function setupEventListeners() {
-    // Yenile Butonu
     const refreshBtn = document.getElementById('btn-refresh-cockpit');
     if (refreshBtn) {
       refreshBtn.addEventListener('click', () => {
@@ -803,7 +841,6 @@ const TreasuryCockpitPlugin = (() => {
       });
     }
 
-    // Modal Aç / Kapa
     const openSettingsBtn = document.getElementById('btn-open-settings');
     const modalBackdrop = document.getElementById('treasury-settings-modal');
     const closeModalBtn = document.getElementById('btn-close-modal');
@@ -829,8 +866,8 @@ const TreasuryCockpitPlugin = (() => {
         const rPnl = parseFloat(document.getElementById('modal-realized-pnl').value);
 
         if (!isNaN(eq) && eq > 0) state.totalEquity = eq;
-        if (!isNaN(rPct) && rPct > 0) state.riskPerTradePct = rPct;
-        if (!isNaN(dLoss) && dLoss > 0) state.maxDailyLossPct = dLoss;
+        if (!isNaN(rPct) && rPct > 0) state.marginAllocPerTradePct = rPct;
+        if (!isNaN(dLoss) && dLoss > 0) state.maxPositionMarginPct = dLoss;
         if (!isNaN(rPnl)) state.dailyRealizedPnl = rPnl;
 
         saveSettingsToStorage();
@@ -841,19 +878,28 @@ const TreasuryCockpitPlugin = (() => {
       });
     }
 
-    // Risk Butonları
+    // Kasa Payı (Teminat) Butonları
     document.querySelectorAll('.risk-pill-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.risk-pill-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        state.riskPerTradePct = parseFloat(btn.getAttribute('data-risk'));
+        state.marginAllocPerTradePct = parseFloat(btn.getAttribute('data-alloc'));
         recalculatePositionSize();
-        renderMetrics();
+      });
+    });
+
+    // Hedef TP Butonları
+    document.querySelectorAll('.tp-pill-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tp-pill-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.targetTpPct = parseFloat(btn.getAttribute('data-tp'));
+        recalculatePositionSize();
       });
     });
 
     // Hesaplayıcı Girdi Değişiklikleri
-    ['calc-entry', 'calc-sl', 'calc-leverage', 'calc-tp1'].forEach(id => {
+    ['calc-entry', 'calc-leverage'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('input', recalculatePositionSize);
     });
@@ -878,7 +924,6 @@ const TreasuryCockpitPlugin = (() => {
   function listenExternalEvents() {
     if (typeof EventBus === 'undefined') return;
 
-    // Watchlist veya Bot Hub'dan sembol değiştiğinde
     EventBus.on('symbol:selected', (symbol) => {
       if (!symbol) return;
       state.selectedSymbol = symbol.toUpperCase().replace('.P', '');
@@ -886,13 +931,11 @@ const TreasuryCockpitPlugin = (() => {
       if (symInput) symInput.value = state.selectedSymbol;
     });
 
-    // Canlı fiyat güncellemeleri
     EventBus.on('ticker:update', (data) => {
       if (!data || !data.symbol) return;
       const clean = data.symbol.toUpperCase().replace('.P', '');
       const price = parseFloat(data.price) || 0;
 
-      // Pozisyonlardaki anlık fiyatı güncelle
       let posChanged = false;
       state.positions.forEach(p => {
         if (p.symbol === clean && price > 0) {
@@ -906,7 +949,6 @@ const TreasuryCockpitPlugin = (() => {
         renderMetrics();
       }
 
-      // Hesaplayıcı aktif coini ise fiyatı güncelle
       if (clean === state.selectedSymbol && price > 0) {
         state.selectedPrice = price;
         const entryInput = document.getElementById('calc-entry');
@@ -917,7 +959,6 @@ const TreasuryCockpitPlugin = (() => {
       }
     });
 
-    // Bot sinyali yayınlandığında listeyi güncelle
     EventBus.on('bot:signals_updated', () => {
       refreshBotSignals();
     });
@@ -935,15 +976,12 @@ const TreasuryCockpitPlugin = (() => {
     renderLayout();
     listenExternalEvents();
 
-    // 9 Botun sinyallerini hemen çek
     refreshBotSignals();
-
-    // Periyodik olarak sinyalleri güncelle (her 15 saniyede bir)
     setInterval(() => {
       refreshBotSignals();
     }, 15000);
 
-    console.log('[TreasuryCockpit] Bot Takip ve Kasa Yönetimi Alanı başarıyla başlatıldı.');
+    console.log('[TreasuryCockpit] Stop-Losssuz Kasa & Bot Takip Kokpiti basariyla baslatildi.');
   }
 
   return {

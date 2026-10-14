@@ -183,6 +183,45 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 
 ---
 
+## 🛡️ 7. Stop-Loss'suz Kasa Yönetimi, Marjin Bölüştürme & Likidasyon Güvenlik Mimarisi
+
+### 💬 Konuşmalarımız ve Kullanıcı İlkesi
+* **Kullanıcı İlkesi:** *"ben stop los kullanmıyorum."*
+* **Onaylanan Yaklaşım:** Trader'ın stop-loss kullanmadığı stratejilerde riskin "Stop Mesafesi" ile değil, **"Kasa Teminat Bölüştürmesi (Margin Allocation %)"** ve **"Likidasyon Güvenlik Mesafesi (% Liq Distance Buffer)"** ile yönetildiği ilkesi temel alındı. Arayüz ve hesaplama motoru bu trader mantığına göre baştan uyarlandı.
+
+### 🧠 Düşündüklerimiz ve Mimari Kararlar
+1. **Stop-Loss Bağımlılığının Kaldırılması:**
+   * Hesaplayıcıdaki zorunlu Stop Loss alanı kaldırıldı. Trader'ın kuralı gereği, işlem riskininStop Loss ile sınırlandırılmadığı, bunun yerine her işleme kasanın yalnızca küçük bir yüzdesinin (varsayılan `%2` veya `%1 - %5`) tahsis edildiği yapı kuruldu.
+2. **Likidasyon Fiyatı & Güvenlik Tamponu Hesaplaması:**
+   * Stop-loss kullanmayan bir trader için en hayati risk göstergesi likidasyon seviyesidir. Kaldıraç katsayısına (`1x, 2x, 3x, 5x, 10x, 20x`) göre anlık **Tahmini Likidasyon Fiyatı** ve **Güvenlik Tamponu Mesafesi** matematiksel olarak hesaplandı:
+     $$\text{Likidasyon Fiyatı (Long)} = \text{Giriş Fiyatı} \times \left(1 - \frac{1}{\text{Kaldıraç}} \times 0.95\right)$$
+     $$\text{Likidasyon Güvenlik Mesafesi \%} = \frac{\text{Giriş} - \text{Likidasyon}}{\text{Giriş}} \times 100$$
+   * 1x kaldıraç seçildiğinde "Yok (Spot Güvenli)", 2x'te `%-50.0`, 3x'te `%-33.3`, 5x'te `%-20.0` güvenlik tamponu açıkça gösterildi.
+3. **Kâr Al (Take Profit) ve Kademeli Çıkış Odaklı İcra:**
+   * Hızlı kâr alma yüzdeleri (`+1.5%`, `+2.5%`, `+4.0%`, `+6.0%`) eklendi.
+   * Pozisyon tablosunda `SL` sütunu kaldırılarak yerine **`Likidasyon & Tampon`** ve **`Hedef Kâr (TP)`** sütunları getirildi.
+   * `BE` (Başabaş stop) butonu yerine **`[+ Ekle]`** (Maliyet düşürme / Kademeli giriş) ve **`[TP %50]`** (Kârın yarısını realize etme) aksiyonları konuldu.
+
+### 🛠️ Yapılan Teknik Geliştirmeler
+1. **[`public/plugins/treasury-cockpit/treasury-cockpit.plugin.js`](public/plugins/treasury-cockpit/treasury-cockpit.plugin.js):**
+   * Hesaplama fonksiyonları `marginAllocPerTradePct`, `targetTpPct` ve `calculateLiqPrice()` üzerinden Stop-Loss'suz modele uyarlandı.
+   * Pozisyon tablosuna `Likidasyon & Tampon` ve `Hedef Kâr (TP)` metrikleri entegre edildi.
+   * Başlık rozetine `🛡️ STOP-LOSS'SUZ (MARJİN & LİKİDASYON KONTROLÜ)` etiketi yerleştirildi.
+2. **[`public/styles/treasury-cockpit.css`](public/styles/treasury-cockpit.css):**
+   * `.tp-pill-btn` (Hedef TP butonları) ve `.btn-pos-add` stilleri eklendi.
+3. **[`public/index.html`](public/index.html):**
+   * Üst çubukta yer alan rozet `🛡️ Mod: Stop-Loss'suz (Marjin Kontrolü)` olarak güncellendi.
+
+### 🔬 Doğrulama ve Test Sonuçları
+1. **Headless Tarayıcı Görsel UI Denetimi (`http://localhost:3000`):**
+   * Stop-Loss'suz mod arayüzü tarayıcı alt ajanı ile kontrol edildi.
+   * Üst başlıkta ve kokpit panosunda "Stop-Loss'suz (Marjin Kontrolü)" ibareleri, pozisyon tablosundaki Likidasyon/TP sütunları ve hesaplayıcıdaki teminat/kaldıraç/likidasyon tamponu değerleri doğrulandı.
+2. **Test Süitleri:**
+   * `review/terminal-regression-tests.cjs`: **8/8 PASS** ✅
+   * `review/quant-accuracy-verification.cjs`: **5/5 PASS** ✅
+
+---
+
 
 
 ## 💬 1. Konuşmalarımız ve Onaylananlar (Kullanıcı Talepleri & Kararlar)
