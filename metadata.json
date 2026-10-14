@@ -1,0 +1,8 @@
+{
+  "name": "Alpha Terminal - Crypto Market & Bot Cockpit",
+  "description": "Binance Futures 9-Bot Tracking Station, Real-Time Market Scanner, Sentiment Analysis, and Professional Treasury & Risk Management Cockpit.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
