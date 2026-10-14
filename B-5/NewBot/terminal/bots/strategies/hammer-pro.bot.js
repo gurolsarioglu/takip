@@ -6,70 +6,12 @@
 const BaseBot = require('../base/base-bot');
 const { formatCryptoPrice, computePrevPrice } = require('../../services/price-formatter');
 
-const initialSignals = [
-  {
-    id: 'h1',
-    symbol: 'FORMUSDT',
-    strategy: '#W1',
-    boostValue: '+0.64%',
-    currentPrice: '0.2979',
-    prevPrice: '0.2979',
-    rsi: { m1: '26 ❗', m5: '25 ❗', h1: '25 ❗' },
-    srsi: { m1: '29', m5: '0 ❗', h1: '7 ❗' },
-    wt: '1m 🟢',
-    dateLabel: 'Today',
-    time: '16:41'
-  },
-  {
-    id: 'h2',
-    symbol: 'GMXUSDT',
-    strategy: '#W1',
-    boostValue: '+1.01%',
-    currentPrice: '7.767',
-    prevPrice: '7.764',
-    rsi: { m1: '35', m5: '24 ❗', h1: '22 ❗' },
-    srsi: { m1: '100', m5: '13 ❗', h1: '0 ❗' },
-    wt: '1m 🟢',
-    pivot: '%0.71 ⚠️',
-    dateLabel: 'Today',
-    time: '16:42'
-  },
-  {
-    id: 'h3',
-    symbol: 'SYRUPUSDT',
-    strategy: '#W1',
-    boostValue: '+1.21%',
-    currentPrice: '0.2085',
-    prevPrice: '0.20852',
-    rsi: { m1: '36', m5: '32', h1: '30 ❗' },
-    srsi: { m1: '73', m5: '6 ❗', h1: '4 ❗' },
-    wt: '1m 🟢',
-    ema200: '%0.36 ⚠️',
-    dateLabel: 'Today',
-    time: '16:42'
-  },
-  {
-    id: 'h4',
-    symbol: '1000CATUSDT',
-    strategy: '#W1',
-    boostValue: '+1.54%',
-    currentPrice: '0.002312',
-    prevPrice: '0.002277',
-    rsi: { m1: '31', m5: '28 ❗', h1: '29 ❗' },
-    srsi: { m1: '88', m5: '11 ❗', h1: '2 ❗' },
-    wt: '1m 🟢',
-    dateLabel: 'Today',
-    time: '16:43'
-  }
-];
-
 class HammerProBot extends BaseBot {
   constructor() {
     super({
       id: 'hammerpro',
       name: 'Hammer Pro',
-      description: 'Automated pattern analysis & reversal scanner',
-      initialSignals
+      description: 'Automated pattern analysis & reversal scanner'
     });
   }
 

@@ -47,7 +47,15 @@ function fetchJson(url) {
       });
     }).on('error', reject);
   });
-}
+const symbolRegistryService = require('./services/symbol-registry.service');
+
+// SymbolRegistry Başlat
+symbolRegistryService.init();
+
+// ─── /api/exchange-info (Official tickSize, decimals, minMove) ──
+app.get('/api/exchange-info', (req, res) => {
+  res.json(symbolRegistryService.getAllRegistryData());
+});
 
 // ─── Cache Containers ─────────────────────────────────────────
 let watchlistCache = { data: null, ts: 0 };
@@ -90,6 +98,8 @@ app.get('/api/watchlist', async (req, res) => {
           symbol: t.symbol,
           price: t.lastPrice ? String(t.lastPrice) : price,
           priceNum: price,
+          decimals: symbolRegistryService.getPrecision(t.symbol),
+          minMove: symbolRegistryService.getMinMove(t.symbol),
           chg,
           chgPct,
           volUsd,
@@ -283,8 +293,8 @@ app.get('/api/open-app-window', (req, res) => {
   }
 });
 
-// Arka plan sinyal tazeleyici motorunu başlat
-botManager.startBackgroundEngine(fetchJson);
+// Arka plan Quant piyasa ve sinyal motorunu başlat
+botManager.startBackgroundEngine();
 
 
 // /api/fapi/** -> https://fapi.binance.com/fapi/**

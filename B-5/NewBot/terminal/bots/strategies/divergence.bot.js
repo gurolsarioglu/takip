@@ -6,100 +6,12 @@
 const BaseBot = require('../base/base-bot');
 const { formatCryptoPrice, computePrevPrice, getDecimalPlaces } = require('../../services/price-formatter');
 
-const initialSignals = [
-  {
-    id: 'div_1',
-    symbol: 'SOLUSDT',
-    dot: '🟢',
-    strategy: '1H RSI DIVERGENCE',
-    boostValue: '+2.28%',
-    currentPrice: '148.52',
-    prevPrice: '145.20',
-    rsi: { h1: '24 ❗', h4: '32', d1: '45' },
-    srsi: { h1: '12 ❗', h4: '20', d1: '52' },
-    pivot: '%0.32 ⚠️',
-    dateLabel: 'Today',
-    time: '16:35'
-  },
-  {
-    id: 'div_2',
-    symbol: 'ETHUSDT',
-    dot: '🔴',
-    strategy: '1H RSI DIVERGENCE',
-    boostValue: '+0.49%',
-    currentPrice: '2645.10',
-    prevPrice: '2658.00',
-    rsi: { h1: '72 ❗', h4: '68', d1: '59' },
-    srsi: { h1: '88 ❗', h4: '82 ❗', d1: '64' },
-    pivot: '%0.45 ⚠️',
-    dateLabel: 'Today',
-    time: '16:20'
-  },
-  {
-    id: 'div_3',
-    symbol: 'BTCUSDT',
-    dot: '🔴',
-    strategy: '1H RSI SMA CROSSED',
-    boostValue: '+0.42%',
-    currentPrice: '63850.00',
-    prevPrice: '64120.00',
-    rsi: { h1: '68', h4: '64', d1: '58' },
-    srsi: { h1: '92 ❗', h4: '75', d1: '62' },
-    pivot: '%0.38 ⚠️',
-    dateLabel: 'Today',
-    time: '16:05'
-  },
-  {
-    id: 'div_4',
-    symbol: 'SUIUSDT',
-    dot: '🟢',
-    strategy: '1H RSI DIVERGENCE',
-    boostValue: '+1.92%',
-    currentPrice: '1.7450',
-    prevPrice: '1.7120',
-    rsi: { h1: '26 ❗', h4: '38', d1: '51' },
-    srsi: { h1: '8 ❗', h4: '15', d1: '44' },
-    pivot: '%0.28 ⚠️',
-    dateLabel: 'Today',
-    time: '15:45'
-  },
-  {
-    id: 'div_5',
-    symbol: 'NEARUSDT',
-    dot: '🟢',
-    strategy: '1H RSI DIVERGENCE',
-    boostValue: '+2.07%',
-    currentPrice: '5.420',
-    prevPrice: '5.310',
-    rsi: { h1: '28 ❗', h4: '34', d1: '48' },
-    srsi: { h1: '14 ❗', h4: '19', d1: '40' },
-    pivot: '%0.35 ⚠️',
-    dateLabel: 'Today',
-    time: '15:15'
-  },
-  {
-    id: 'div_6',
-    symbol: 'DOGEUSDT',
-    dot: '🟢',
-    strategy: '1H RSI SMA CROSSED',
-    boostValue: '+1.96%',
-    currentPrice: '0.12450',
-    prevPrice: '0.12210',
-    rsi: { h1: '32', h4: '42', d1: '50' },
-    srsi: { h1: '18', h4: '25', d1: '55' },
-    pivot: '%0.22 ⚠️',
-    dateLabel: 'Today',
-    time: '14:50'
-  }
-];
-
 class DivergenceBot extends BaseBot {
   constructor() {
     super({
       id: 'div',
       name: 'Divergence',
-      description: 'Momentum and price relationship analysis',
-      initialSignals
+      description: 'Momentum and price relationship analysis'
     });
   }
 

@@ -5,72 +5,12 @@
 
 const BaseBot = require('../base/base-bot');
 
-const initialSignals = [
-  {
-    id: 'v3_1',
-    symbol: 'PEPEUSDT',
-    hacimChange: '+84.20%',
-    hacim24s: '42.158.400 PEPE',
-    dateLabel: 'Today',
-    time: '16:30'
-  },
-  {
-    id: 'v3_2',
-    symbol: 'BANANAUSDT',
-    hacimChange: '+14.14%',
-    hacim24s: '337.301 BANANA',
-    dateLabel: 'Today',
-    time: '16:25'
-  },
-  {
-    id: 'v3_3',
-    symbol: 'WIFUSDT',
-    hacimChange: '+42.60%',
-    hacim24s: '12.845.000 WIF',
-    dateLabel: 'Today',
-    time: '16:15'
-  },
-  {
-    id: 'v3_4',
-    symbol: 'SUIUSDT',
-    hacimChange: '+65.30%',
-    hacim24s: '85.420.100 SUI',
-    dateLabel: 'Today',
-    time: '16:05'
-  },
-  {
-    id: 'v3_5',
-    symbol: 'RENDERUSDT',
-    hacimChange: '+28.90%',
-    hacim24s: '3.420.000 RENDER',
-    dateLabel: 'Today',
-    time: '15:50'
-  },
-  {
-    id: 'v3_6',
-    symbol: 'NEIROUSDT',
-    hacimChange: '+112.50%',
-    hacim24s: '98.500.000 NEIRO',
-    dateLabel: 'Today',
-    time: '15:35'
-  },
-  {
-    id: 'v3_7',
-    symbol: 'TAOUSDT',
-    hacimChange: '+38.20%',
-    hacim24s: '254.300 TAO',
-    dateLabel: 'Today',
-    time: '15:20'
-  }
-];
-
 class V3VolumeBot extends BaseBot {
   constructor() {
     super({
       id: 'v3',
       name: 'V3-A',
-      description: 'Real-time volume monitoring & surge detector',
-      initialSignals
+      description: 'Real-time volume monitoring & surge detector'
     });
   }
 

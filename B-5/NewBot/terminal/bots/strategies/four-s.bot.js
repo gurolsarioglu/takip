@@ -6,106 +6,12 @@
 const BaseBot = require('../base/base-bot');
 const { formatCryptoPrice, computePrevPrice } = require('../../services/price-formatter');
 
-const initialSignals = [
-  {
-    id: '4s_1',
-    symbol: 'GRTUSDT',
-    dot: '🔴',
-    market: 'FUTURES',
-    boostValue: '+18.53%',
-    currentPrice: '0.03196',
-    prevPrice: '0.03179',
-    rsi: { h1: '53', h4: '63', d1: '72 ❗' },
-    srsi: { h1: '3', h4: '16', d1: '82' },
-    traderPositioning: '66.38%',
-    marketExposure: '64.05%',
-    dateLabel: 'Today',
-    time: '11:08'
-  },
-  {
-    id: '4s_2',
-    symbol: 'IMXUSDT',
-    dot: '🔴',
-    market: 'FUTURES',
-    boostValue: '+10.03%',
-    currentPrice: '0.17890',
-    prevPrice: '0.17540',
-    rsi: { h1: '51', h4: '62', d1: '69' },
-    srsi: { h1: '3', h4: '12', d1: '89' },
-    traderPositioning: '65.41%',
-    marketExposure: '59.36%',
-    dateLabel: 'Today',
-    time: '11:09'
-  },
-  {
-    id: '4s_3',
-    symbol: 'PUMPUSDT',
-    dot: '🔴',
-    market: 'FUTURES',
-    boostValue: '+6.32%',
-    currentPrice: '0.004901',
-    prevPrice: '0.004862',
-    rsi: { h1: '51', h4: '64', d1: '61' },
-    srsi: { h1: '2', h4: '51', d1: '86' },
-    traderPositioning: '60.29%',
-    marketExposure: '56.03%',
-    dateLabel: 'Today',
-    time: '11:12'
-  },
-  {
-    id: '4s_4',
-    symbol: 'SOONUSDT',
-    dot: '🔴',
-    market: 'FUTURES',
-    boostValue: '+14.81%',
-    currentPrice: '0.3434',
-    prevPrice: '0.3390',
-    rsi: { h1: '46', h4: '37', d1: '39' },
-    srsi: { h1: '100 ❗', h4: '31', d1: '5 ❗' },
-    traderPositioning: '75.48%',
-    marketExposure: '76.21%',
-    dateLabel: 'Today',
-    time: '11:04'
-  },
-  {
-    id: '4s_5',
-    symbol: 'BTWUSDT',
-    dot: '🟢',
-    market: 'FUTURES',
-    boostValue: '+24.85%',
-    currentPrice: '1.3220',
-    prevPrice: '1.2850',
-    rsi: { h1: '48', h4: '52', d1: '68' },
-    srsi: { h1: '85 ❗', h4: '42', d1: '77' },
-    traderPositioning: '72.15%',
-    marketExposure: '68.40%',
-    dateLabel: 'Today',
-    time: '11:15'
-  },
-  {
-    id: '4s_6',
-    symbol: 'QNTUSDT',
-    dot: '🟢',
-    market: 'FUTURES',
-    boostValue: '+50.05%',
-    currentPrice: '261.98',
-    prevPrice: '248.50',
-    rsi: { h1: '62', h4: '71 ❗', d1: '76 ❗' },
-    srsi: { h1: '92 ❗', h4: '88 ❗', d1: '64' },
-    traderPositioning: '81.20%',
-    marketExposure: '74.50%',
-    dateLabel: 'Today',
-    time: '11:18'
-  }
-];
-
 class FourSBot extends BaseBot {
   constructor() {
     super({
       id: '4s',
       name: '4S',
-      description: 'Multi-angle view of the 4H structure',
-      initialSignals
+      description: 'Multi-angle view of the 4H structure'
     });
   }
 
@@ -160,7 +66,7 @@ class FourSBot extends BaseBot {
       return { valid: false, reason: `Boost (${boostNum.toFixed(2)}%) 4H ana yapı için yetersiz (Min +%5.00 olmalı).` };
     }
 
-    // Açıkça belirtilmiş bir yön varsa (örn: initialSignals'daki dot)
+    // Açıkça belirtilmiş bir yön varsa (örn: sinyal verisindeki dot)
     if (explicitDot && (explicitDot === '🔴' || explicitDot === '🟢')) {
       return { valid: true, dot: explicitDot };
     }

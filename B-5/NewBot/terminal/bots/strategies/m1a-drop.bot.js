@@ -6,76 +6,12 @@
 const BaseBot = require('../base/base-bot');
 const { formatCryptoPrice, computePrevPrice } = require('../../services/price-formatter');
 
-const initialSignals = [
-  {
-    id: 'm1a_1',
-    symbol: 'IRYSUSDT',
-    type: 'drop',
-    dot: '🔴',
-    dropValue: '-1.24%',
-    currentPrice: '0.01909',
-    prevPrice: '0.01935',
-    volume: '-1.15%',
-    rsi: '47',
-    stochastic: '57/77',
-    btcStatus: 'Normal',
-    dateLabel: 'Today',
-    time: '16:10'
-  },
-  {
-    id: 'm1a_2',
-    symbol: 'ENAUSDT',
-    type: 'drop',
-    dot: '🔴',
-    dropValue: '-1.04%',
-    currentPrice: '0.3456',
-    prevPrice: '0.3492',
-    volume: '-1.79%',
-    rsi: '70',
-    stochastic: '68/47',
-    btcStatus: 'Normal',
-    dateLabel: 'Today',
-    time: '16:10'
-  },
-  {
-    id: 'm1a_3',
-    symbol: 'ARKMUSDT',
-    type: 'drop',
-    dot: '🔴',
-    dropValue: '-1.01%',
-    currentPrice: '1.4520',
-    prevPrice: '1.4680',
-    volume: '-2.34%',
-    rsi: '71',
-    stochastic: '69/47',
-    btcStatus: 'Normal',
-    dateLabel: 'Today',
-    time: '16:10'
-  },
-  {
-    id: 'm1a_4',
-    symbol: 'SYNUSDT',
-    type: 'boost',
-    dot: '🟢',
-    dropValue: '+1.45%',
-    currentPrice: '0.13712',
-    prevPrice: '0.1286',
-    volume: '+7.22%',
-    rsi: '77 ⚠️',
-    stochastic: '50/31',
-    btcStatus: 'Normal',
-    dateLabel: 'Today',
-    time: '16:10'
-  }
-];
-
 class M1ADropBot extends BaseBot {
   constructor() {
     super({
       id: 'm1a',
       name: 'M1-A',
-      description: 'Focused insight on the smallest timeframe',
-      initialSignals
+      description: 'Focused insight on the smallest timeframe'
     });
   }
 

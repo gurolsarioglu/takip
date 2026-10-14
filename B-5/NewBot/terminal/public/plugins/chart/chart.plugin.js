@@ -553,9 +553,13 @@ const ChartPlugin = (() => {
 
       klineData = Array.from(map.values()).sort((a, b) => a.time - b.time);
 
-      // Fiyat hassasiyetini belirle (Tick precision tespiti)
-      const precision = detectCoinPrecision(raw);
-      const minMove = Number(Math.pow(10, -precision).toFixed(precision));
+      // Fiyat hassasiyetini belirle (SymbolRegistry resmi kontrat tickSize ve minMove)
+      const precision = (typeof SymbolRegistry !== 'undefined' && SymbolRegistry.getPrecision)
+        ? SymbolRegistry.getPrecision(targetSymbol)
+        : detectCoinPrecision(raw);
+      const minMove = (typeof SymbolRegistry !== 'undefined' && SymbolRegistry.getMinMove)
+        ? SymbolRegistry.getMinMove(targetSymbol)
+        : Number(Math.pow(10, -precision).toFixed(precision));
       candleSeries.applyOptions({
         priceFormat: { type: 'price', precision, minMove }
       });

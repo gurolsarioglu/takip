@@ -14,110 +14,12 @@
 const BaseBot = require('../base/base-bot');
 const { formatCryptoPrice, computePrevPrice } = require('../../services/price-formatter');
 
-const initialSignals = [
-  {
-    id: 'hpp_1',
-    symbol: 'IOSTUSDT',
-    stars: '⭐⭐',
-    dot: '🟢',
-    strategy: '#W1',
-    boostValue: '+2.21%',
-    currentPrice: '0.01144',
-    prevPrice: '0.01119',
-    rsi: { m1: '26 ❗', m5: '21 ❗', h1: '17 ❗' },
-    srsi: { m1: '39', m5: '0 ❗', h1: '0 ❗' },
-    pivot: '%0.52 ⚠️',
-    dateLabel: 'Today',
-    time: '16:28'
-  },
-  {
-    id: 'hpp_2',
-    symbol: 'SUIUSDT',
-    stars: '⭐⭐⭐',
-    dot: '🟢',
-    strategy: '#W1 / #S1',
-    boostValue: '+1.34%',
-    currentPrice: '1.7450',
-    prevPrice: '1.7220',
-    rsi: { m1: '17 ❗', m5: '23 ❗', h1: '30 ❗' },
-    srsi: { m1: '0 ❗', m5: '0 ❗', h1: '0 ❗' },
-    wt: '1m 🟢',
-    pivot: '%0.18 ⚠️',
-    dateLabel: 'Today',
-    time: '16:33'
-  },
-  {
-    id: 'hpp_3',
-    symbol: 'QNTUSDT',
-    stars: '⭐',
-    dot: '🟢',
-    strategy: '#S1',
-    boostValue: '+2.72%',
-    currentPrice: '231.23',
-    prevPrice: '225.10',
-    rsi: { m1: '29 ❗', m5: '27 ❗', h1: '34' },
-    srsi: { m1: '21', m5: '0 ❗', h1: '0 ❗' },
-    pivot: '%0.22 ⚠️',
-    dateLabel: 'Today',
-    time: '16:35'
-  },
-  {
-    id: 'hpp_4',
-    symbol: 'SAGAUSDT',
-    stars: '⭐⭐⭐',
-    dot: '🟢',
-    strategy: '#W1 / #S1',
-    boostValue: '+3.36%',
-    currentPrice: '1.852',
-    prevPrice: '1.792',
-    rsi: { m1: '22 ❗', m5: '15 ❗', h1: '30 ❗' },
-    srsi: { m1: '46', m5: '14 ❗', h1: '27' },
-    wt: '1m 🟢',
-    pivot: '%0.07 ⚠️',
-    dateLabel: 'Today',
-    time: '16:38'
-  },
-  {
-    id: 'hpp_5',
-    symbol: 'RENDERUSDT',
-    stars: '⭐⭐',
-    dot: '🟢',
-    strategy: '#W1',
-    boostValue: '+2.15%',
-    currentPrice: '5.420',
-    prevPrice: '5.306',
-    rsi: { m1: '24 ❗', m5: '20 ❗', h1: '28 ❗' },
-    srsi: { m1: '5 ❗', m5: '0 ❗', h1: '2 ❗' },
-    wt: '1m 🟢',
-    pivot: '%0.24 ⚠️',
-    dateLabel: 'Today',
-    time: '16:40'
-  },
-  {
-    id: 'hpp_6',
-    symbol: 'SOLUSDT',
-    stars: '⭐⭐⭐',
-    dot: '🟢',
-    strategy: '#S1',
-    boostValue: '+3.88%',
-    currentPrice: '148.50',
-    prevPrice: '142.95',
-    rsi: { m1: '21 ❗', m5: '19 ❗', h1: '32 ❗' },
-    srsi: { m1: '12', m5: '4 ❗', h1: '1 ❗' },
-    wt: '1m 🟢',
-    pivot: '%0.12 ⚠️',
-    dateLabel: 'Today',
-    time: '16:42'
-  }
-];
-
 class HammerProPlusBot extends BaseBot {
   constructor() {
     super({
       id: 'hammerproplus',
       name: 'Hammer Pro Plus',
-      description: 'Advanced structural pattern framework',
-      initialSignals
+      description: 'Advanced structural pattern framework'
     });
   }
 

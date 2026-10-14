@@ -6,62 +6,12 @@
 const BaseBot = require('../base/base-bot');
 const { formatCryptoPrice, computePrevPrice } = require('../../services/price-formatter');
 
-const initialSignals = [
-  {
-    id: 'm1',
-    symbol: 'SUPERUSDT',
-    boostValue: '+1.39%',
-    currentPrice: '0.19732',
-    prevPrice: '0.1946',
-    rsi: { m1: '78 ❗', m5: '60', h1: '44' },
-    srsi: { m1: '80', m5: '76', h1: '10' },
-    dateLabel: 'Today',
-    time: '16:50'
-  },
-  {
-    id: 'm2',
-    symbol: 'SOLUSDT',
-    isFavorite: true,
-    boostValue: '+1.94%',
-    currentPrice: '148.52',
-    prevPrice: '146.10',
-    rsi: { m1: '64', m5: '53', h1: '46' },
-    srsi: { m1: '98 ❗', m5: '9', h1: '71' },
-    dateLabel: 'Today',
-    time: '16:50'
-  },
-  {
-    id: 'm3',
-    symbol: 'SUPERUSDT',
-    boostValue: '+1.82%',
-    currentPrice: '0.19815',
-    prevPrice: '0.1946',
-    rsi: { m1: '81 ❗', m5: '63', h1: '46' },
-    srsi: { m1: '80', m5: '76', h1: '12' },
-    divergence: '1m ✅',
-    dateLabel: 'Today',
-    time: '16:50'
-  },
-  {
-    id: 'm4',
-    symbol: 'FETUSDT',
-    boostValue: '+1.09%',
-    currentPrice: '1.345',
-    prevPrice: '1.320',
-    rsi: { m1: '65', m5: '55', h1: '40' },
-    srsi: { m1: '87', m5: '76', h1: '53' },
-    dateLabel: 'Today',
-    time: '16:51'
-  }
-];
-
 class M1PremiumBot extends BaseBot {
   constructor() {
     super({
       id: 'm1premium',
       name: 'M1 Premium',
-      description: 'Enhanced minute-level analytics & divergence',
-      initialSignals
+      description: 'Enhanced minute-level analytics & divergence'
     });
   }
 

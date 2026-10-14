@@ -411,9 +411,13 @@ const MultiChartPlugin = (() => {
       const rawData = await res.json();
       if (!Array.isArray(rawData) || !rawData.length) return;
 
-      // Hassasiyet (Tick Precision): Coinin gerçek basamak sayısını tespit et (0.17890 -> 5 basamak, 0.004890 -> 6 basamak)
-      const precision = detectCoinPrecision(rawData);
-      const minMove = Number(Math.pow(10, -precision).toFixed(precision));
+      // Hassasiyet (Tick Precision): SymbolRegistry resmi kontrat tanımı
+      const precision = (typeof SymbolRegistry !== 'undefined' && SymbolRegistry.getPrecision)
+        ? SymbolRegistry.getPrecision(symbol)
+        : detectCoinPrecision(rawData);
+      const minMove = (typeof SymbolRegistry !== 'undefined' && SymbolRegistry.getMinMove)
+        ? SymbolRegistry.getMinMove(symbol)
+        : Number(Math.pow(10, -precision).toFixed(precision));
 
       inst.precision = precision;
       inst.minMove = minMove;

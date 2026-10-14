@@ -6,119 +6,12 @@
 const BaseBot = require('../base/base-bot');
 const { formatCryptoPrice, computePrevPrice } = require('../../services/price-formatter');
 
-const initialSignals = [
-  {
-    id: '4ss_1',
-    symbol: 'ZROUSDT',
-    dot: '🟢',
-    strategy: 'NW UP',
-    boostValue: '+14.49%',
-    currentPrice: '1.5002',
-    prevPrice: '1.4564',
-    rsi: { h1: '36', h4: '47', d1: '65' },
-    srsi: { h1: '7', h4: '5 ❗', d1: '81' },
-    traderPositioning: '62.45%',
-    traderDot: '🟢',
-    marketExposure: '57.94%',
-    exposureDot: '🟢',
-    dateLabel: 'Today',
-    time: '16:18'
-  },
-  {
-    id: '4ss_2',
-    symbol: 'ZRXUSDT',
-    dot: '🟢',
-    strategy: 'NW UP',
-    boostValue: '+3.62%',
-    currentPrice: '0.1198',
-    prevPrice: '0.1188',
-    rsi: { h1: '29 ❗', h4: '41', d1: '59' },
-    srsi: { h1: '8', h4: '3 ❗', d1: '52' },
-    traderPositioning: '71.77%',
-    traderDot: '🟢',
-    marketExposure: '66.95%',
-    exposureDot: '🟢',
-    dateLabel: 'Today',
-    time: '16:18'
-  },
-  {
-    id: '4ss_3',
-    symbol: 'LOBSTERUSDT',
-    displaySymbol: '龙虾USDT',
-    dot: '🟢',
-    strategy: 'NW UP',
-    boostValue: '+32.95%',
-    currentPrice: '0.07307',
-    prevPrice: '0.07417',
-    rsi: { h1: '26 ❗', h4: '30 ❗', d1: '41' },
-    srsi: { h1: '26', h4: '0 ❗', d1: '0 ❗' },
-    traderPositioning: '52.4%',
-    traderDot: '🟢',
-    marketExposure: '51.17%',
-    exposureDot: '🔴',
-    dateLabel: 'Today',
-    time: '16:18'
-  },
-  {
-    id: '4ss_0',
-    symbol: 'SUIUSDT',
-    dot: '🟢',
-    strategy: 'NW UP',
-    boostValue: '+8.74%',
-    currentPrice: '1.8420',
-    prevPrice: '1.8150',
-    rsi: { h1: '32', h4: '39', d1: '54' },
-    srsi: { h1: '5', h4: '2 ❗', d1: '36' },
-    traderPositioning: '74.96%',
-    traderDot: '🟢',
-    marketExposure: '76.08%',
-    exposureDot: '🟢',
-    dateLabel: 'Today',
-    time: '16:18'
-  },
-  {
-    id: '4ss_4',
-    symbol: 'BTWUSDT',
-    dot: '🟢',
-    strategy: 'NW UP',
-    boostValue: '+24.85%',
-    currentPrice: '1.3220',
-    prevPrice: '1.2850',
-    rsi: { h1: '28 ❗', h4: '44', d1: '62' },
-    srsi: { h1: '4 ❗', h4: '12', d1: '75' },
-    traderPositioning: '76.80%',
-    traderDot: '🟢',
-    marketExposure: '71.20%',
-    exposureDot: '🟢',
-    dateLabel: 'Today',
-    time: '11:19'
-  },
-  {
-    id: '4ss_5',
-    symbol: 'GRTUSDT',
-    dot: '🟢',
-    strategy: 'NW UP',
-    boostValue: '+18.53%',
-    currentPrice: '0.03196',
-    prevPrice: '0.03179',
-    rsi: { h1: '30 ❗', h4: '48', d1: '68' },
-    srsi: { h1: '6 ❗', h4: '18', d1: '79' },
-    traderPositioning: '68.90%',
-    traderDot: '🟢',
-    marketExposure: '63.40%',
-    exposureDot: '🟢',
-    dateLabel: 'Today',
-    time: '11:21'
-  }
-];
-
 class FourSSniperBot extends BaseBot {
   constructor() {
     super({
       id: '4ssniper',
       name: '4S Sniper',
-      description: 'Multi-angle view of the 4H structure (NW UP Strategy)',
-      initialSignals
+      description: 'Multi-angle view of the 4H structure (NW UP Strategy)'
     });
   }
 

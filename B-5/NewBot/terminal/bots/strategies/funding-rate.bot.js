@@ -5,97 +5,12 @@
 
 const BaseBot = require('../base/base-bot');
 
-const initialSignals = [
-  {
-    id: 'fr_1',
-    symbol: 'BELUSDT',
-    dot: '🟢',
-    alertText: 'Funding changed from + to -',
-    fundingRate: '-0.0750%',
-    previousFunding: '+0.0100%',
-    difference: '0.0850%',
-    timeRemaining: '00:31:59',
-    dateLabel: 'Today',
-    time: '16:28'
-  },
-  {
-    id: 'fr_2',
-    symbol: 'SAGAUSDT',
-    dot: '🔴',
-    fundingRate: '-0.9632%',
-    previousFunding: '-0.9110%',
-    difference: '-0.0522%',
-    timeRemaining: '00:32:59',
-    dateLabel: 'Today',
-    time: '16:27'
-  },
-  {
-    id: 'fr_3',
-    symbol: 'TRBUSDT',
-    dot: '🟢',
-    alertText: 'Funding changed from + to -',
-    fundingRate: '-0.0485%',
-    previousFunding: '+0.0050%',
-    difference: '0.0535%',
-    timeRemaining: '00:27:59',
-    dateLabel: 'Today',
-    time: '16:32'
-  },
-  {
-    id: 'fr_4',
-    symbol: 'ONEUSDT',
-    dot: '🔴',
-    fundingRate: '-0.3168%',
-    previousFunding: '-0.3262%',
-    difference: '-0.0094%',
-    timeRemaining: '00:01:59',
-    dateLabel: 'Today',
-    time: '16:35'
-  },
-  {
-    id: 'fr_5',
-    symbol: 'VOXELUSDT',
-    dot: '🔴',
-    fundingRate: '-0.2800%',
-    previousFunding: '-0.2500%',
-    difference: '-0.0300%',
-    timeRemaining: '01:47:59',
-    dateLabel: 'Today',
-    time: '16:37'
-  },
-  {
-    id: 'fr_6',
-    symbol: 'LDOUSDT',
-    dot: '🟢',
-    alertText: 'Funding changed from - to +',
-    fundingRate: '+0.0100%',
-    previousFunding: '-0.0150%',
-    difference: '0.0250%',
-    timeRemaining: '03:12:00',
-    dateLabel: 'Today',
-    time: '16:40'
-  },
-  {
-    id: 'fr_7',
-    symbol: 'DARUSDT',
-    dot: '🔴',
-    alertText: 'High Negative Funding Alert',
-    fundingRate: '-0.3500%',
-    previousFunding: '-0.2800%',
-    difference: '-0.0700%',
-    timeRemaining: '05:40:59',
-    dateLabel: 'Today',
-    time: '16:42'
-  }
-];
-
 class FundingRateBot extends BaseBot {
   constructor() {
     super({
       id: 'fr',
       name: 'FR',
-      description: 'Funding rate perspective, simulation & arbitrage alerts',
-      initialSignals
+      description: 'Funding rate perspective, simulation & arbitrage alerts'
     });
   }
 
