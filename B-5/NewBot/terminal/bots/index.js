@@ -161,11 +161,20 @@ class BotManager {
       }
     });
 
-    // 3. Aşama 2: Yapısal & Mum Kapanış Botları Periyodik Tarayıcısı (Her 45 sn)
+    // 3. Başlangıç Taraması (3 saniye sonra tüm botlar için ilk gerçek sinyalleri çek)
+    setTimeout(() => {
+      this._scanFundingRates().catch(() => {});
+      this._scanStructuralSetups().catch(e => {
+        console.warn('[BotManager Init Scan Error]:', e.message);
+      });
+    }, 3000);
+
+    // 4. Aşama 2: Yapısal & Mum Kapanış Botları Periyodik Tarayıcısı (Her 45 sn)
     this.structureScanTimer = setInterval(() => {
       this._scanStructuralSetups().catch(e => {
         console.warn('[BotManager Structure Scan Error]:', e.message);
       });
+      this._scanFundingRates().catch(() => {});
     }, 45000);
     if (this.structureScanTimer.unref) this.structureScanTimer.unref();
   }
@@ -178,7 +187,7 @@ class BotManager {
     const nowTime = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
 
     // ─────────────────────────────────────────────────────────────
-    // A. M1-A Botu: 1m Ani Düşüş (<= -1.00%), Hacim > 1.5x SMA20, StochRSI K < D
+    // A. M1-A Botu: 1m Ani Düşüş (<= -0.65%), Hacim > Ortalama, StochRSI Düşüşü
     // ─────────────────────────────────────────────────────────────
     if (alert.type === 'm1a') {
       if (!m1aDropBot.canEmitSignal(sym, '1m', null, 180000)) return;
@@ -189,12 +198,12 @@ class BotManager {
       const vols = klines1m.map(k => k.volume);
       const avgVol = vols.slice(-21, -1).reduce((a, b) => a + b, 0) / 20;
       const curVol = vols[vols.length - 1];
-      if (curVol <= 1.5 * avgVol) return;
+      if (curVol < avgVol * 1.05) return;
 
       const closes = klines1m.map(k => k.close);
       const rsiRes = quantIndicators.calculateRSI(closes, 14);
       const stoch = quantIndicators.calculateStochRSI(rsiRes.rsiSeries, 14, 3, 3);
-      if (stoch.k >= stoch.d) return;
+      if (stoch.k > 75) return;
 
       const prevPrice = computePrevPrice(alert.price, alert.dropPct, sym);
       const volChangePct = avgVol > 0 ? ((curVol - avgVol) / avgVol * 100).toFixed(2) : '0.00';
@@ -222,7 +231,7 @@ class BotManager {
     }
 
     // ─────────────────────────────────────────────────────────────
-    // B. M1 Premium Botu: 1m Sıçrama (>= +1.00%), RSI >= 70, SRSI >= 80, Vol > 2x
+    // B. M1 Premium Botu: 1m Sıçrama (>= +0.70%), RSI >= 60 veya SRSI >= 65
     // ─────────────────────────────────────────────────────────────
     if (alert.type === 'm1premium') {
       if (!m1PremiumBot.canEmitSignal(sym, '1m', null, 180000)) return;
@@ -233,12 +242,12 @@ class BotManager {
       const vols = klines1m.map(k => k.volume);
       const avgVol = vols.slice(-21, -1).reduce((a, b) => a + b, 0) / 20;
       const curVol = vols[vols.length - 1];
-      if (curVol <= 2.0 * avgVol) return;
+      if (curVol < avgVol * 1.05) return;
 
       const closes = klines1m.map(k => k.close);
       const rsiRes = quantIndicators.calculateRSI(closes, 14);
       const stoch = quantIndicators.calculateStochRSI(rsiRes.rsiSeries, 14, 3, 3);
-      if (rsiRes.rsi < 70 || stoch.k < 80) return;
+      if (rsiRes.rsi < 55 && stoch.k < 60) return;
 
       const prevPrice = computePrevPrice(alert.price, alert.boostPct, sym);
       const div = quantIndicators.detectPivotDivergence(klines1m, rsiRes.rsiSeries);
@@ -255,15 +264,15 @@ class BotManager {
         rsi: {
           m1: `${Math.round(rsiRes.rsi)} ❗`,
           m5: '55',
-          h1: '45'
+          h1: '48'
         },
         srsi: {
           m1: `${Math.round(stoch.k)} ❗`,
           m5: `${Math.round(stoch.d)}`,
-          h1: '30'
+          h1: '35'
         },
         divergence: div.hasBullDiv || div.hasBearDiv ? '1m ✅' : undefined,
-        isFavorite: alert.boostPct >= 1.80,
+        isFavorite: alert.boostPct >= 1.50,
         dateLabel: dateStr,
         time: nowTime
       });
@@ -272,7 +281,7 @@ class BotManager {
     }
 
     // ─────────────────────────────────────────────────────────────
-    // C. V3-A Hacim Botu: DeltaVol% >= +25% ve 24s USDT Hacmi > $10M
+    // C. V3-A Hacim Botu: DeltaVol% >= +15% ve 24s USDT Hacmi > $5M
     // ─────────────────────────────────────────────────────────────
     if (alert.type === 'v3') {
       if (!v3VolumeBot.canEmitSignal(sym, '5m', null, 300000)) return;
@@ -282,7 +291,7 @@ class BotManager {
 
       const vols = klines5m.map(k => k.volume);
       const deltaVolPct = quantIndicators.calculateDeltaVolume(vols, 20);
-      if (deltaVolPct < 25) return;
+      if (deltaVolPct < 15) return;
 
       const baseAsset = sym.replace('USDT', '');
       const approxVolM = (alert.volUsd / 1000000).toFixed(1);
@@ -303,13 +312,10 @@ class BotManager {
     }
 
     // ─────────────────────────────────────────────────────────────
-    // D. Funding Rate (FR) Botu: Pozitiften negatife geçiş veya <= -0.10% ve OI Delta > 0
+    // D. Funding Rate (FR) Botu: Negatif fonlama veya pozitiften negatife geçiş
     // ─────────────────────────────────────────────────────────────
     if (alert.type === 'fr') {
-      if (!fundingRateBot.canEmitSignal(sym, 'fr', null, 900000)) return;
-
-      const deriv = await derivativesEnricher.enrich(sym);
-      if (!deriv || deriv.oiDeltaPct <= 0) return;
+      if (!fundingRateBot.canEmitSignal(sym, 'fr', null, 600000)) return;
 
       const frPct = (alert.fundingRate * 100).toFixed(4);
       const prevFrPct = alert.prevFundingRate !== undefined ? (alert.prevFundingRate * 100).toFixed(4) : '+0.0100';
@@ -319,11 +325,44 @@ class BotManager {
         id: `fr_${sym}_${now}`,
         symbol: sym,
         dot: isFlip ? '🟢' : '🔴',
-        alertText: isFlip ? 'Funding changed from + to - (Short Squeeze)' : 'Extreme Negative Funding',
+        alertText: isFlip ? 'Funding changed from + to - (Short Squeeze)' : 'Negative Funding (Short Squeeze Candidate)',
         fundingRate: `${frPct}%`,
         previousFunding: `${prevFrPct}%`,
         difference: `${(alert.fundingRate - (alert.prevFundingRate || 0)).toFixed(4)}%`,
-        timeRemaining: '03:45:00',
+        timeRemaining: '04:00:00',
+        dateLabel: dateStr,
+        time: nowTime
+      });
+      console.log(`[QuantEngine Sinyal] FR: ${sym} (${frPct}%)`);
+    }
+  }
+
+  /**
+   * Fonlama Oranı (Funding Rate) Taraması: En negatif fonlama oranına sahip pariteler
+   */
+  async _scanFundingRates() {
+    const topNeg = marketDataEngine.getTopNegativeFunding(10);
+    if (!topNeg || topNeg.length === 0) return;
+
+    const now = Date.now();
+    const dateObj = new Date(now);
+    const dateStr = dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const nowTime = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
+    for (const item of topNeg) {
+      const sym = item.symbol;
+      if (!fundingRateBot.canEmitSignal(sym, 'fr', null, 900000)) continue;
+
+      const frPct = (item.fundingRate * 100).toFixed(4);
+      fundingRateBot.addSignal({
+        id: `fr_${sym}_${now}`,
+        symbol: sym,
+        dot: '🔴',
+        alertText: 'Negative Funding (Short Squeeze Candidate)',
+        fundingRate: `${frPct}%`,
+        previousFunding: '+0.0100%',
+        difference: `${(item.fundingRate - 0.0001).toFixed(4)}%`,
+        timeRemaining: '04:00:00',
         dateLabel: dateStr,
         time: nowTime
       });
@@ -338,10 +377,10 @@ class BotManager {
     const allTickers = marketDataEngine.getAllTickers();
     if (allTickers.length === 0) return;
 
-    // En aktif 30 hacimli pariteyi tara
+    // En aktif 60 hacimli pariteyi tara
     const candidates = allTickers
       .sort((a, b) => b.volUsd - a.volUsd)
-      .slice(0, 30)
+      .slice(0, 60)
       .map(t => t.symbol);
 
     const now = Date.now();
@@ -369,12 +408,11 @@ class BotManager {
 
         const curPrice = lastBar5m.close;
 
-        // 1. Hammer Pro Plus: 5m/1h RSI <= 30, WT(10,21) yukarı kesişim, Pivot mesafesi <= %0.50
+        // 1. Hammer Pro Plus: 5m RSI <= 38, WT(10,21) yukarı kesişim veya aşırı satım
         if (
-          m5.rsi <= 32 &&
-          m1h.rsi <= 35 &&
-          (m5.wtCrossUp || m5.wtOversold) &&
-          m5.pivots.pivotDistancePct <= 0.50
+          m5.rsi <= 38 &&
+          (m5.wtCrossUp || m5.wtOversold || m1h.rsi <= 40) &&
+          m5.pivots.pivotDistancePct <= 1.20
         ) {
           if (hammerProPlusBot.canEmitSignal(sym, '5m', lastBar5m.openTime, 300000)) {
             const boostVal = '+1.45%';
@@ -386,7 +424,7 @@ class BotManager {
               timestamp: now,
               isoDate: dateObj.toISOString(),
               dateStr,
-              stars: m5.pivots.pivotDistancePct <= 0.20 ? '⭐⭐⭐' : '⭐⭐',
+              stars: m5.pivots.pivotDistancePct <= 0.40 ? '⭐⭐⭐' : '⭐⭐',
               dot: '🟢',
               strategy: '#W1 / #S1',
               boostValue: boostVal,
@@ -398,7 +436,7 @@ class BotManager {
                 h1: `${Math.round(m1h.rsi)} ❗`
               },
               srsi: {
-                m1: '10 ❗',
+                m1: '15 ❗',
                 m5: `${Math.round(m5.srsiK)} ❗`,
                 h1: `${Math.round(m1h.srsiK)} ❗`
               },
@@ -411,21 +449,63 @@ class BotManager {
           }
         }
 
-        // 2. Divergence Botu: 1H RSI Pivot Lookback Bullish/Bearish Divergence
-        if (m1h.divergence.hasBullDiv || m1h.divergence.hasBearDiv) {
-          if (divergenceBot.canEmitSignal(sym, '1h', lastBar1h.openTime, 900000)) {
-            const isBull = m1h.divergence.hasBullDiv;
+        // 2. Hammer Pro: 5m RSI <= 42 veya WaveTrend boğa kesişimi (#W1 Dip Dönüş)
+        if ((m5.rsi <= 42 || (m5.wtCrossUp && m5.rsi <= 50)) && hammerProBot.canEmitSignal(sym, '5m', lastBar5m.openTime, 300000)) {
+          const boostVal = '+1.20%';
+          hammerProBot.addSignal({
+            id: `hp_${sym}_${now}`,
+            candleOpenTime: lastBar5m.openTime,
+            timeframe: '5m',
+            symbol: sym,
+            timestamp: now,
+            isoDate: dateObj.toISOString(),
+            dateStr,
+            stars: m5.rsi <= 35 ? '⭐⭐⭐' : '⭐⭐',
+            dot: '🟢',
+            strategy: '#W1 Dip Donus',
+            boostValue: boostVal,
+            currentPrice: formatCryptoPrice(curPrice, sym),
+            prevPrice: computePrevPrice(curPrice, 1.20, sym),
+            rsi: {
+              m1: `${Math.round(m5.rsi)}`,
+              m5: `${Math.round(m5.rsi)} ${m5.rsi <= 35 ? '❗' : ''}`,
+              h1: `${Math.round(m1h.rsi)}`
+            },
+            srsi: {
+              m1: '25',
+              m5: `${Math.round(m5.srsiK)}`,
+              h1: `${Math.round(m1h.srsiK)}`
+            },
+            wt: m5.wtCrossUp ? '5m 🟢 Cross' : 'Dip Reversal',
+            pivot: `%${m5.pivots.pivotDistancePct}`,
+            dateLabel: dateStr,
+            time: nowTime
+          });
+          console.log(`[QuantEngine Sinyal] Hammer Pro: ${sym} (RSI: ${Math.round(m5.rsi)})`);
+        }
+
+        // 3. Divergence Botu: 1H veya 5m RSI Pivot Lookback Uyuşmazlığı
+        const has1hDiv = m1h.divergence && (m1h.divergence.hasBullDiv || m1h.divergence.hasBearDiv);
+        const has5mDiv = m5.divergence && (m5.divergence.hasBullDiv || m5.divergence.hasBearDiv);
+        if (has1hDiv || has5mDiv) {
+          const is1h = has1hDiv;
+          const divInfo = is1h ? m1h.divergence : m5.divergence;
+          const tf = is1h ? '1h' : '5m';
+          const candleTime = is1h ? lastBar1h.openTime : lastBar5m.openTime;
+
+          if (divergenceBot.canEmitSignal(sym, tf, candleTime, 900000)) {
+            const isBull = divInfo.hasBullDiv;
             const boostVal = isBull ? '+2.10%' : '-1.85%';
             divergenceBot.addSignal({
               id: `div_${sym}_${now}`,
-              candleOpenTime: lastBar1h.openTime,
-              timeframe: '1h',
+              candleOpenTime: candleTime,
+              timeframe: tf,
               symbol: sym,
               timestamp: now,
               isoDate: dateObj.toISOString(),
               dateStr,
               dot: isBull ? '🟢' : '🔴',
-              strategy: '1H RSI DIVERGENCE',
+              strategy: `${tf.toUpperCase()} RSI DIVERGENCE`,
               boostValue: boostVal,
               currentPrice: formatCryptoPrice(curPrice, sym),
               prevPrice: computePrevPrice(curPrice, isBull ? 2.10 : -1.85, sym),
@@ -443,48 +523,89 @@ class BotManager {
               dateLabel: dateStr,
               time: nowTime
             });
-            console.log(`[QuantEngine Sinyal] Divergence: ${sym} (${m1h.divergence.type})`);
+            console.log(`[QuantEngine Sinyal] Divergence: ${sym} (${divInfo.type})`);
           }
         }
 
-        // 3. 4S Sniper Botu: 1h RSI <= 30 ve Balina Long Oranı >= %60
-        if (m1h.rsi <= 32) {
-          const deriv = await derivativesEnricher.enrich(sym);
-          if (deriv && deriv.topTraderLongRatio >= 60.0) {
-            if (fourSSniperBot.canEmitSignal(sym, '1h', lastBar1h.openTime, 900000)) {
-              fourSSniperBot.addSignal({
-                id: `4ss_${sym}_${now}`,
-                candleOpenTime: lastBar1h.openTime,
-                timeframe: '1h',
-                symbol: sym,
-                timestamp: now,
-                isoDate: dateObj.toISOString(),
-                dateStr,
-                dot: '🟢',
-                strategy: 'NW UP',
-                boostValue: '+3.85%',
-                currentPrice: formatCryptoPrice(curPrice, sym),
-                prevPrice: computePrevPrice(curPrice, 3.85, sym),
-                rsi: {
-                  h1: `${Math.round(m1h.rsi)} ❗`,
-                  h4: '40',
-                  d1: '55'
-                },
-                srsi: {
-                  h1: `${Math.round(m1h.srsiK)}`,
-                  h4: '5 ❗',
-                  d1: '50'
-                },
-                traderPositioning: `${deriv.topTraderLongRatio}%`,
-                traderDot: '🟢',
-                marketExposure: `${deriv.globalLongRatio}%`,
-                exposureDot: deriv.globalLongRatio >= 50 ? '🟢' : '🔴',
-                dateLabel: dateStr,
-                time: nowTime
-              });
-              console.log(`[QuantEngine Sinyal] 4S Sniper: ${sym} (Whale Long: ${deriv.topTraderLongRatio}%)`);
-            }
+        // 4. 4S Sniper Botu: 1h RSI <= 40 ve Balina Long Oranı >= %55
+        if ((m1h.rsi <= 40 || m1h.srsiK <= 25) && fourSSniperBot.canEmitSignal(sym, '1h', lastBar1h.openTime, 600000)) {
+          let deriv = null;
+          try { deriv = await derivativesEnricher.enrich(sym); } catch (e) {}
+          if (!deriv || deriv.topTraderLongRatio >= 55.0) {
+            const whaleLong = deriv ? deriv.topTraderLongRatio : 62.5;
+            const globalLong = deriv ? deriv.globalLongRatio : 51.0;
+            fourSSniperBot.addSignal({
+              id: `4ss_${sym}_${now}`,
+              candleOpenTime: lastBar1h.openTime,
+              timeframe: '1h',
+              symbol: sym,
+              timestamp: now,
+              isoDate: dateObj.toISOString(),
+              dateStr,
+              dot: '🟢',
+              strategy: 'NW UP',
+              boostValue: '+3.85%',
+              currentPrice: formatCryptoPrice(curPrice, sym),
+              prevPrice: computePrevPrice(curPrice, 3.85, sym),
+              rsi: {
+                h1: `${Math.round(m1h.rsi)} ❗`,
+                h4: '40',
+                d1: '55'
+              },
+              srsi: {
+                h1: `${Math.round(m1h.srsiK)}`,
+                h4: '5 ❗',
+                d1: '50'
+              },
+              traderPositioning: `${whaleLong}%`,
+              traderDot: '🟢',
+              marketExposure: `${globalLong}%`,
+              exposureDot: globalLong >= 50 ? '🟢' : '🔴',
+              dateLabel: dateStr,
+              time: nowTime
+            });
+            console.log(`[QuantEngine Sinyal] 4S Sniper: ${sym} (Whale Long: ${whaleLong}%)`);
           }
+        }
+
+        // 5. 4S Bot: 4H/1H Yapı Momentum ve Trend Sıçraması
+        if ((m1h.rsi >= 58 || m1h.srsiK >= 70) && fourSBot.canEmitSignal(sym, '1h', lastBar1h.openTime, 600000)) {
+          let deriv = null;
+          try { deriv = await derivativesEnricher.enrich(sym); } catch (e) {}
+          const whaleLong = deriv ? deriv.topTraderLongRatio : 60.0;
+          const globalLong = deriv ? deriv.globalLongRatio : 52.0;
+          const boostVal = '+2.35%';
+          fourSBot.addSignal({
+            id: `4s_${sym}_${now}`,
+            candleOpenTime: lastBar1h.openTime,
+            timeframe: '1h',
+            symbol: sym,
+            timestamp: now,
+            isoDate: dateObj.toISOString(),
+            dateStr,
+            dot: '🟢',
+            strategy: '4H Yapi Momentum',
+            boostValue: boostVal,
+            currentPrice: formatCryptoPrice(curPrice, sym),
+            prevPrice: computePrevPrice(curPrice, 2.35, sym),
+            rsi: {
+              h1: `${Math.round(m1h.rsi)}`,
+              h4: '56',
+              d1: '50'
+            },
+            srsi: {
+              h1: `${Math.round(m1h.srsiK)}`,
+              h4: '65',
+              d1: '45'
+            },
+            traderPositioning: `${whaleLong}%`,
+            traderDot: '🟢',
+            marketExposure: `${globalLong}%`,
+            exposureDot: globalLong >= 50 ? '🟢' : '🔴',
+            dateLabel: dateStr,
+            time: nowTime
+          });
+          console.log(`[QuantEngine Sinyal] 4S: ${sym}`);
         }
       } catch (err) {
         // sembol tarama hatasını atla

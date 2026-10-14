@@ -176,13 +176,39 @@ class MarketDataEngine extends EventEmitter {
     if (this.isRunning) return;
     this.isRunning = true;
     console.log('[MarketDataEngine] WebSocket Genis Piyasa Radari baslatiliyor...');
+    
+    // REST ile hızlı başlangıç (Zero-latency warm-up)
+    this.primeTickersFromRest();
+
     this._connectMiniTickerWs();
     this._connectMarkPriceWs();
   }
 
+  async primeTickersFromRest() {
+    try {
+      const data = await this.safeFetch('https://fapi.binance.com/fapi/v1/ticker/24hr', 40);
+      if (Array.isArray(data)) {
+        const tickers = data.map(d => ({
+          s: d.symbol,
+          c: d.lastPrice,
+          o: d.openPrice,
+          h: d.highPrice,
+          l: d.lowPrice,
+          q: d.quoteVolume,
+          E: d.closeTime
+        }));
+        this._handleMiniTickers(tickers);
+        console.log(`[MarketDataEngine] ✅ REST 24hr Ticker ile ${this.tickerMap.size} vadeli sembol onceden yuklendi.`);
+      }
+    } catch (err) {
+      console.warn('[MarketDataEngine] REST Ticker warm-up uyarisi:', err.message);
+    }
+  }
+
   _connectMiniTickerWs() {
     try {
-      this.miniTickerWs = new WebSocket('wss://fstream.binance.com/ws/!miniTicker@arr');
+      // Binance Futures güncel endpoint: /market/ws/
+      this.miniTickerWs = new WebSocket('wss://fstream.binance.com/market/ws/!miniTicker@arr');
 
       this.miniTickerWs.on('open', () => {
         console.log('[MarketDataEngine] !miniTicker@arr WebSocket baglantisi kuruldu.');
@@ -191,8 +217,13 @@ class MarketDataEngine extends EventEmitter {
 
       this.miniTickerWs.on('message', (data) => {
         try {
-          const arr = JSON.parse(data);
-          if (Array.isArray(arr)) {
+          const parsed = JSON.parse(data);
+          const arr = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.data) ? parsed.data : null);
+          if (arr && arr.length > 0) {
+            if (!this._miniTickerLogged) {
+              console.log(`[MarketDataEngine] ✅ Canli MiniTicker verisi akmaya basladi: ${arr.length} sembol.`);
+              this._miniTickerLogged = true;
+            }
             this._handleMiniTickers(arr);
           }
         } catch (e) {}
@@ -215,7 +246,8 @@ class MarketDataEngine extends EventEmitter {
 
   _connectMarkPriceWs() {
     try {
-      this.markPriceWs = new WebSocket('wss://fstream.binance.com/ws/!markPrice@arr@1s');
+      // Binance Futures güncel endpoint: /market/ws/
+      this.markPriceWs = new WebSocket('wss://fstream.binance.com/market/ws/!markPrice@arr@1s');
 
       this.markPriceWs.on('open', () => {
         console.log('[MarketDataEngine] !markPrice@arr@1s WebSocket baglantisi kuruldu.');
@@ -223,8 +255,13 @@ class MarketDataEngine extends EventEmitter {
 
       this.markPriceWs.on('message', (data) => {
         try {
-          const arr = JSON.parse(data);
-          if (Array.isArray(arr)) {
+          const parsed = JSON.parse(data);
+          const arr = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.data) ? parsed.data : null);
+          if (arr && arr.length > 0) {
+            if (!this._markPriceLogged) {
+              console.log(`[MarketDataEngine] ✅ Canli MarkPrice verisi akmaya basladi: ${arr.length} sembol.`);
+              this._markPriceLogged = true;
+            }
             this._handleMarkPrices(arr);
           }
         } catch (e) {}
@@ -249,7 +286,7 @@ class MarketDataEngine extends EventEmitter {
     for (let i = 0; i < tickers.length; i++) {
       const t = tickers[i];
       const sym = t.s;
-      if (!sym.endsWith('USDT')) continue;
+      if (!sym || !sym.endsWith('USDT')) continue;
 
       const curPrice = parseFloat(t.c);
       const openPrice = parseFloat(t.o);
@@ -289,8 +326,8 @@ class MarketDataEngine extends EventEmitter {
         const price1mChangePct = ((curPrice - oldest.price) / oldest.price) * 100;
         const vol1mChange = quoteVol - oldest.vol;
 
-        // Anlık M1-A ve M1-Premium Radar Olayları
-        if (price1mChangePct <= -1.00) {
+        // Anlık M1-A ve M1-Premium Radar Olayları (Kalibre edilmiş gerçekçi eşikler)
+        if (price1mChangePct <= -0.65) {
           this.emit('radarAlert', {
             type: 'm1a',
             symbol: sym,
@@ -300,7 +337,7 @@ class MarketDataEngine extends EventEmitter {
             volUsd: quoteVol,
             timestamp: now
           });
-        } else if (price1mChangePct >= 1.00) {
+        } else if (price1mChangePct >= 0.70) {
           this.emit('radarAlert', {
             type: 'm1premium',
             symbol: sym,
@@ -312,8 +349,8 @@ class MarketDataEngine extends EventEmitter {
           });
         }
 
-        // V3 Hacim Radarı (Son 24 saatlik hacim > $10M ve anlık hacim sıçraması)
-        if (quoteVol > 10000000 && vol1mChange > 250000) {
+        // V3 Hacim Radarı (Son 24 saatlik hacim > $5M ve anlık hacim sıçraması)
+        if (quoteVol > 5000000 && vol1mChange > 100000) {
           this.emit('radarAlert', {
             type: 'v3',
             symbol: sym,
@@ -333,7 +370,7 @@ class MarketDataEngine extends EventEmitter {
     for (let i = 0; i < arr.length; i++) {
       const m = arr[i];
       const sym = m.s;
-      if (!sym.endsWith('USDT')) continue;
+      if (!sym || !sym.endsWith('USDT')) continue;
 
       const fr = parseFloat(m.r || 0);
       const nextTime = m.T || (now + 14400000);
@@ -346,18 +383,25 @@ class MarketDataEngine extends EventEmitter {
         nextFundingTime: nextTime
       });
 
-      // Funding Rate Anomali Tespiti (Pozitiften negatife geçiş veya <= -0.10%)
-      if (prev && ((prev.fundingRate > 0 && fr < 0) || (fr <= -0.0010))) {
+      // Funding Rate Anomali Tespiti (Pozitiften negatife geçiş veya negatif fonlama)
+      if ((prev && prev.fundingRate > 0 && fr < 0) || (fr <= -0.00015)) {
         this.emit('radarAlert', {
           type: 'fr',
           symbol: sym,
           fundingRate: fr,
-          prevFundingRate: prev.fundingRate,
+          prevFundingRate: prev ? prev.fundingRate : 0.0001,
           nextFundingTime: nextTime,
           timestamp: now
         });
       }
     }
+  }
+
+  getTopNegativeFunding(limit = 10) {
+    return Array.from(this.markPriceMap.values())
+      .filter(m => m.fundingRate < 0)
+      .sort((a, b) => a.fundingRate - b.fundingRate)
+      .slice(0, limit);
   }
 
   /**

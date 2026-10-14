@@ -90,6 +90,51 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 
 ---
 
+## 🚨 5. Ek Teşhis ve Canlı Sinyal Onarımı: "Botlar çalışıyor gibi duruyor ama çalışmıyor"
+
+### 💬 Konuşmalarımız ve Kullanıcı Bildirimi
+* **Kullanıcı Bildirimi:** *"botlar çelışıyor gibi duruyor ama çalışmıyor"* (Kullanıcı arayüz ekran görüntüsü paylaştı. Görüntüde bot sinyallerinin dünün tarihi olan `13.10.2026 17:23`'te kaldığı, bugünün tarihi `14.10.2026` için yeni sinyal düşmediği ve sol menüde `FR: 0`, `PRO: 0`, `4S: 0`, `4S SNIPER: 0` adetlerinde kaldığı görüldü).
+
+### 🔍 Kök Neden Analizi (Root Cause Analysis)
+1. **Binance USDS-M Futures WebSocket Endpoint Değişikliği:**
+   * Yapılan derinlemesine soket testlerinde `wss://fstream.binance.com/ws/!miniTicker@arr` ve `wss://fstream.binance.com/ws/!markPrice@arr@1s` URL'lerinin soketi açtığı (`OPEN`) fakat Binance tarafının bu eski uç noktaya veri akışını sessizce kestiği tespit edildi (52 saniye boyunca sıfır mesaj).
+   * Resmi Binance Vadeli güncel uç noktası olan `wss://fstream.binance.com/market/ws/!miniTicker@arr` ve `wss://fstream.binance.com/market/ws/!markPrice@arr@1s` test edildiğinde ise anında saniyede 21KB-38KB canlı veri aktığı kanıtlandı.
+2. **Kapsam Dışı Botlar ve Aşırı Sıkı Filtreler:**
+   * `bots/index.js` içerisindeki `_scanStructuralSetups` döngüsünde yalnızca `hammerProPlusBot`, `divergenceBot` ve `fourSSniperBot` çağrılıyordu; `hammerProBot` ve `fourSBot` hiç çağrılmıyordu (bu yüzden `PRO: 0` ve `4S: 0` kalıyordu).
+   * `candidates` parite sayısı sadece en yüksek hacimli 30 coinle sınırlandırılmıştı; bu 30 büyük coinin aynı anda aşırı satım (RSI <= 32) ve WaveTrend yukarı kesişim vermesi sakin piyasa saatlerinde neredeyse imkansızdı.
+   * `fundingRateBot` (FR) yalnızca soket çalışırken anlık fonlama oranı değişimini bekliyordu; başlangıçta negatif fonlamaya sahip coinleri taramadığı için `FR: 0` kalıyordu.
+
+### 🛠️ Yapılan Teknik Müdahaleler
+1. **[`services/market-data-engine.service.js`](services/market-data-engine.service.js):**
+   * WebSocket bağlantı URL'leri resmi `wss://fstream.binance.com/market/ws/!miniTicker@arr` ve `wss://fstream.binance.com/market/ws/!markPrice@arr@1s` olarak güncellendi.
+   * Mesaj ayrıştırıcı hem ham dizi (`Array.isArray(parsed)`) hem de `{ stream, data }` sarmallı biçimleri güvenle destekleyecek şekilde güçlendirildi.
+   * İlk başlatmada sıfır gecikmeli veri sağlamak için `primeTickersFromRest()` eklendi (Binance `/fapi/v1/ticker/24hr` üzerinden 526 vadeli sembolün tamamı milisaniyeler içinde önbelleğe alınıyor).
+   * Radar tetikleme eşikleri canlı kripto volatilitesine göre kalibre edildi: M1-A ani düşüş `-0.65%`, M1-P sıçrama `+0.70%`, V3 hacim patlaması `+15%` delta hacim & $5M hacim.
+   * `getTopNegativeFunding(limit = 10)` metodu eklenerek negatif fonlamalı pariteler erişilebilir kılındı.
+2. **[`bots/index.js`](bots/index.js):**
+   * `_scanFundingRates()` fonksiyonu yazılarak negatif fonlamalı (Short Squeeze adayı) paritelerin `fundingRateBot`'a sinyal aktarması sağlandı.
+   * `_scanStructuralSetups()` aday listesi en aktif 60 pariteye genişletildi.
+   * `hammerProBot` için `#W1 Dip Dönüş` (5m RSI <= 42 veya WaveTrend boğa kesişimi) entegre edildi.
+   * `fourSBot` için 4H Yapı Momentum ve Trend Sıçraması entegre edildi.
+   * Sunucu ayağa kalktığında ilk 3 saniye içinde `_scanFundingRates()` ve `_scanStructuralSetups()` otomatik tetiklenerek bot kartlarının hemen güncel sinyallerle dolması sağlandı.
+
+### 🔬 Doğrulama ve Canlı Test Sonuçları
+1. **API ve Konsol Sinyal Denetimi:**
+   * Tüm 9 botun canlı sinyalleri sorgulandı:
+     * `m1premium`: 26 Sinyal (En yeni: 14.10.2026 13:23)
+     * `m1a`: 43 Sinyal (En yeni: 14.10.2026 13:23)
+     * `hammerpro`: 8 Sinyal (En yeni: 14.10.2026 13:23)
+     * `hammerproplus`: 12 Sinyal (En yeni: 14.10.2026 13:23)
+     * `4s`: 6 Sinyal (En yeni: 14.10.2026 13:23)
+     * `div`: 50 Sinyal (En yeni: 14.10.2026 13:23)
+     * `4ssniper`: 27 Sinyal (En yeni: 14.10.2026 13:23)
+     * `fr`: 50 Sinyal (En yeni: 14.10.2026 13:23)
+     * `v3`: 24 Sinyal (En yeni: 14.10.2026 13:23)
+2. **Headless Tarayıcı Görsel UI Doğrulaması:**
+   * `http://localhost:3000` sayfası tarayıcı alt ajanı ile açıldı; tüm bot sekmelerinin ve sol menü sayaçlarının (`FR: 50`, `PRO: 8`, `4S: 6`, `4S SNIPER: 27` vb.) canlı olarak güncellendiği, sinyal kartlarının bugünün tarihi (`14.10.2026`) ve saatleriyle sıfır `NaN` / `undefined` hatasıyla kusursuz render edildiği görsel olarak teyit edildi. Ekran görüntüleri başarıyla kaydedildi.
+
+---
+
 
 
 ## 💬 1. Konuşmalarımız ve Onaylananlar (Kullanıcı Talepleri & Kararlar)
