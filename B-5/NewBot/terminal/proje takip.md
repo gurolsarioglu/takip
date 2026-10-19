@@ -714,3 +714,30 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 3. **Port Temizliği:**
    - Test sonrası port 3000 kullanıcının `.bat` dosyasından sorunsuz başlatabilmesi için temiz bırakıldı.
 
+---
+
+# 📅 19.10.2026 - REA (Reverse Engineer Anything) MCP Sunucusunun Kurulumu
+
+## 💬 1. Konuşmalarımız ve Onaylananlar
+* **Kullanıcı Talebi:** *"https://github.com/morluto/rea.git böyle bir repo var bunu mcp olarak kur bunu proje içerisinde kullanıyor olacağız"*.
+* REA'nın Antigravity'ye MCP sunucusu olarak bağlanması ve proje içinde kullanılabilir hale getirilmesi onaylandı.
+
+## 🧠 2. Düşündüklerimiz ve Mimari Kararlar
+1. **Kaynak Doğrulama:** REA'nın resmi dağıtımı `rea-agents` npm paketi (repo: `morluto/rea`, MIT). En güncel sürüm `6.7.0`; Node gereksinimi `^24.11.0` → sistemdeki `v24.11.0` uyumlu.
+2. **`npx` yerine global kurulum + `node.exe` mutlak yol:** `npx rea-agents setup` Antigravity'yi resmi client olarak desteklemiyor; ayrıca Windows'ta `.cmd` shim'leri stdio MCP başlatmada sorun çıkarabiliyor ve `npx` her açılışta ağ kontrolü yapıyor. Bu nedenle paket global kuruldu ve MCP doğrudan `node.exe <rea.mjs> mcp` ile başlatılıyor (hızlı ve deterministik).
+3. **Compact Şema Profili:** REA 207 araç sunuyor. Ajan bağlamını şişirmemek için `REA_MCP_INPUT_SCHEMA_PROFILE=compact` kullanıldı (REA girdileri yine tam kanonik şemayla doğruluyor).
+4. **Skill Konumu:** REA'nın iş akışı talimatları (`reverse-engineer-anything`) proje seviyesinde `.agents/skills/` altına konuldu; böylece repo ile birlikte versiyonlanıyor ve bu projede en yüksek öncelikle yükleniyor.
+
+## 🛠️ 3. Yaptıklarımız (Teknik ve Mimari Değişiklikler)
+1. **Global Kurulum:** `npm install --global rea-agents@6.7.0` (174 paket). `rea --version` → `6.7.0`.
+2. **MCP Kaydı:** `C:\Users\gurol.sarioglu\.gemini\config\mcp_config.json` içine `mcpServers.rea` eklendi:
+   - `command`: `C:\Program Files\nodejs\node.exe`
+   - `args`: `[...\npm\node_modules\rea-agents\scripts\rea.mjs, "mcp"]`
+   - `env`: `REA_MCP_INPUT_SCHEMA_PROFILE=compact`
+3. **Proje Skill'i:** `.agents/skills/reverse-engineer-anything/` (SKILL.md + references) paket içinden kopyalandı (skill v42, tool_count 207).
+
+## ✅ 4. Tamamlanan İşler ve Doğrulama
+1. **Stdio MCP Handshake Testi:** `initialize` → sunucu `rea 6.7.0`, protokol `2025-06-18`; `tools/list` → **207 araç** (open_binary, analyze_javascript_application, inspect_web_page, observe_web_session, trace_feature, instrument_with_frida vb.).
+2. **Config Doğrulaması:** `mcp_config.json` geçerli JSON; içindeki komut/argüman/env ile yapılan handshake de başarılı.
+3. **Not:** Native binary analizi (Ghidra/Hopper/IDA) için ayrıca bir analiz motoru gerekiyor; JavaScript/Electron/web analizi ek araç gerektirmeden çalışıyor. Araçların ajan oturumunda görünmesi için Antigravity'nin yeniden başlatılması / MCP panelinden yenilenmesi gerekiyor.
+
