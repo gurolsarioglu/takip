@@ -1,0 +1,20 @@
+__turbopack_load_page_chunks__("/[exchange]/[marketType]/[[...symbol]]", [
+  "static/chunks/10kml_7zp3l_y.js",
+  "static/chunks/0tn.xmt3de1nz.js",
+  "static/chunks/0ebhj~2v72qsx.js",
+  "static/chunks/0c6kb65vwqfg7.js",
+  "static/chunks/0kdh.7crrzg8r.js",
+  "static/chunks/0zenisknzfb~0.js",
+  "static/chunks/148tqb7q6z7c..js",
+  "static/chunks/17xiwl6zp_0mg.js",
+  "static/chunks/0vqgpe-qazyfp.js",
+  "static/chunks/0arbzw4ijp6ea.js",
+  "static/chunks/0e8.n96mwjl3r.js",
+  "static/chunks/0ngs99aq~2c40.js",
+  "static/chunks/0-qg45til74n9.js",
+  "static/chunks/104ckgkwz.c4k.js",
+  "static/chunks/0vanlyn_z_~38.js",
+  "static/chunks/0-0orkhd006iu.js",
+  "static/chunks/0bc4eg_9jock9.js",
+  "static/chunks/turbopack-0zqbac51~-ek6.js"
+])

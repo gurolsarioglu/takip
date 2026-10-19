@@ -741,3 +741,73 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 2. **Config Doğrulaması:** `mcp_config.json` geçerli JSON; içindeki komut/argüman/env ile yapılan handshake de başarılı.
 3. **Not:** Native binary analizi (Ghidra/Hopper/IDA) için ayrıca bir analiz motoru gerekiyor; JavaScript/Electron/web analizi ek araç gerektirmeden çalışıyor. Araçların ajan oturumunda görünmesi için Antigravity'nin yeniden başlatılması / MCP panelinden yenilenmesi gerekiyor.
 
+---
+
+# 📅 19.10.2026 - Visivero Terminal (terminal.visivero.com) Tersine Mühendislik Analizi (Futures Watchlist & Bot Terminal)
+
+## 💬 1. Konuşmalarımız ve Onaylananlar
+* **Kullanıcı Talebi:** *"https://terminal.visivero.com/ bu link burdaki futures izleme listesi ve bot terminali benim için önemli. grafik alanı ile ilgilenmiyorum."*
+* Uygulamanın canlı web adresi üzerinden Next.js Turbopack frontend bundle'ları, WebSocket yayınları, veri modelleri ve Bot Terminal mimarisi çözümlendi.
+
+## 🧠 2. Düşündüklerimiz ve Mimari Kararlar
+1. **Mimari Keşif:** Visivero Terminal'in bir Next.js + Turbopack uygulaması olduğu, Ant Design bileşenleri ve Zustand state yönetimi kullandığı belirlendi.
+2. **Bundle Ayrıştırması:** Kamu açık chunk'lar (`0ngs99aq~2c40.js`, `0c-qs6ywvvbwu.js`, `0ebhj~2v72qsx.js`, `0-qg45til74n9.js`) indirilerek statik AST ve string analizi yapıldı.
+3. **Canlı Akışın Doğrulanması:** Keşfedilen WebSocket sunucusuna (`wss://bots.visivero.com/ws`) doğrudan Node.js istemcisi ile bağlanılarak canlı sinyallerin (ör. M1-A ve M1 Premium) JSON formatı, göstergeleri (RSI, SRSI, WT Cross, Volume) ve Bybit/Binance ayrımı %100 doğrulandı.
+4. **Projemize Entegrasyon Uyumu:** Keşfedilen mimarinin, projemizde geliştirmekte olduğumuz 9+ stratejili Terminal Bot Hub mimarisiyle (`bots/strategies/*`, `MarketDataEngine`, `SymbolRegistry`) birebir eşleştiği görüldü.
+
+## 🛠️ 3. Yaptıklarımız (Teknik ve Mimari Bulgular)
+
+### A. Bot Terminali & Canlı Sinyal Beslemesi (Bot Feed)
+1. **WebSocket Uç Noktası:** `wss://bots.visivero.com/ws`
+   * Bağlantı parametresi gerektirmez, doğrudan canlı sinyal yayını yapar.
+   * `review/test-visivero-ws.mjs` ile canlı test edildi ve aktif olarak sinyal akışı alındı.
+2. **Tüm 12 Bot Kanalı & Tanımları:**
+   * `m1`: M1-A ("Küçük zaman diliminde odaklı içgörü" - 1m düşüş/sıçrama)
+   * `m1-premium`: M1 Premium ("Dakikalık gelişmiş analiz altyapısı")
+   * `fr`: FR ("Fonlama oranına sade bir bakış" - Alt kanal: `Simple Earn >SE`)
+   * `v3`: V3-A ("Gerçek zamanlı hacim takibi")
+   * `hammer`: Hammer Klasik ("Formasyon temelli yapısal gözlem")
+   * `hammer-pro`: Hammer Pro ("Genişletilmiş formasyon analiz çerçevesi" - Alt kanallar: `Standard S`, `1 Day 1D`)
+   * `hammer-pro-plus`: Hammer Pro Plus ("Gelişmiş yapısal formasyon altyapısı")
+   * `4s`: 4S ("4 saatlik yapıya çok yönlü bakış" - Spot & Futures)
+   * `4sniper`: 4S Sniper (Alt kanallar: `Standard S`, `1 Day & Week 1`)
+   * `div`: Divergence ("Momentum ve fiyat ilişkisi analizi")
+   * `duyuru`: Binance Resmi Duyuruları
+   * `duyuru-bybit`: Bybit Resmi Duyuruları
+3. **Canlı Sinyal JSON Şeması:**
+   ```json
+   {
+     "id": "cmvf4kxuvjs48lykhyi5mq56p",
+     "botId": "m1-premium",
+     "message": "🟢 #PBRUSDT \nBoost Value: +1.04% \nCurrent Price: 26.12\nPrevious Price: 25.85\nRSI: <b>1m.63 | 5m.64 | 1h.50 </b>\nSRSI: <b>1m.70 | 5m.63 | 1h.75 </b>",
+     "exchange": "bybit",
+     "symbol": "PBRUSDT",
+     "marketType": "futures",
+     "createdAt": "2026-10-19T10:37:34.000Z"
+   }
+   ```
+4. **İstemci Ring Buffer & Performans Kuralları:**
+   * Aktif açık kanalda en fazla 2.000 mesaj, arka plandaki kanallarda 400 mesaj tutulur.
+   * Gelen mesajlar her 200 ms'de bir arayüze toplu (batch) basılır (`setTimeout(flush, 200)`).
+   * Arama çubuğu `#COIN` etiketlerini veya serbest metni filtreler.
+
+### B. Futures İzleme Listesi (Watchlist)
+1. **Piyasa Verisi WebSocket:** `wss://data.visivero.com/ws` (`action: "subscribe_ticker"`)
+2. **Watchlist Kolonları ve Metrikleri:**
+   * `Price`: Son fiyat (anlık tick)
+   * `Chg` & `Chg%`: Değişim tutarı ve yüzdesi (`24h Rolling` veya `1D Open UTC 00:00`)
+   * `Vol` & `Vol (USD)`: İşlem hacmi (USDT veya coin bazlı)
+   * `FR (%)`: Anlık fonlama oranı (Funding Rate)
+   * `FR (h)`: Bir sonraki fonlamaya kalan saat/aralık
+   * `Orderbook`: Alış/satış emir defteri dengesi
+   * `LS Pos`: Long/Short Pozisyon Oranı
+   * `LS Acc`: Long/Short Hesap Oranı (Top Trader vs Global)
+   * `Mkt Exp`: Market Exposure
+   * Rozetler: `NEW` (Yeni listelenen), `DELIST` (Delist edilecekler)
+3. **State Mimarisi:** Zustand store (`useWatchlistStore`), filtreler (`exchange`, `marketType`, `quoteAssets: ["USDT"]`).
+
+## ✅ 4. Tamamlanan İşler ve Doğrulama
+1. **Tersine Mühendislik Scriptleri:** `review/visivero_dump/` altında tüm Next.js chunk'ları toplandı.
+2. **Canlı Akış Doğrulandı:** `review/test-visivero-ws.mjs` çalıştırıldı, Bybit ve Binance için gerçek zamanlı M1-A ve M1 Premium bot mesajları hatasız alındı.
+3. **Tüm Bulgular Arşivlendi:** Bot tanımları, REST uçları (`/api/bot-messages`), WebSocket protokolleri ve Watchlist kolon hesaplamaları projemize aktarılmaya hazır hale getirildi.
+
