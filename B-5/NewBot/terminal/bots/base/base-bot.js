@@ -10,6 +10,7 @@
  */
 
 const signalStoreService = require('../../services/signal-store.service');
+const signalBus          = require('../../services/signal-bus.service');
 
 class BaseBot {
   constructor(options = {}) {
@@ -133,6 +134,13 @@ class BaseBot {
 
     // 2. 60 Günlük kalıcı arşiv deposuna yaz
     signalStoreService.recordSignal(this.id, formatted, this.name);
+
+    // 3. Merkezi Sinyal Veriyoluna (SignalBus) yayınla (Telegram & Webhook Dispatcher)
+    signalBus.emit('signal', {
+      botId: this.id,
+      botName: this.name,
+      signal: formatted
+    });
 
     return formatted;
   }

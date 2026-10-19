@@ -816,3 +816,43 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
    - **Stochastic RSI & Pivot Standard**: Seanslık Floor Pivot seviyeleri (P, R1, S1) ve RMA/SMA tabanlı SRSI tam eşleşmeyle arşivlendi.
 4. **Tüm Bulgular Arşivlendi:** Kullanıcı adı/şifreye gerek kalmadan sistemin tüm matematiksel ve mimari yapısı %100 yerel geliştirme için hazırlandı.
 
+---
+
+# 📅 19.10.2026 - Telegram-Ready Dağıtıcı Mimarisi, SignalBus ve Sıfır Dış Bağımlılık Doğrulaması
+
+## 💬 1. Konuşmalarımız ve Onaylananlar
+* **Kullanıcı Talebi 1 (Dış Bağımlılık Yasağı):** *"iş süreci bittiğinde 2. adımımdaki doğrulama adımını kaldırdığından emin ol. hiç bir şekilde visivero.com bağlı kalmak istemiyorum."*
+* **Kullanıcı Talebi 2 (Telegram Entegrasyonu Hazırlığı):** *"biz web tabanlı olarak yapsak da sonrasında bu botları bir telegrama bağlayacağımız için bunu da düşün. webte her şey okey olduğunda haydi şimdi telegram tokenları bunlar bu bot mesajlarını telegrama aktaralım diyeceğim."*
+* Üretim/yerel çalışma kodunda visivero veya herhangi bir harici sisteme ait tek bir satır kod, istek ya da bağlantı bırakılmaması; bot sinyallerinin merkezi bir Event Emitter (SignalBus) üzerinden hem Web UI hem de hazır Telegram Dispatcher servisine dağıtılması onaylandı.
+
+## 🧠 2. Düşündüklerimiz ve Mimari Kararlar
+1. **Event-Driven SignalBus Tasarımı:**
+   - Botların (`BaseBot`) sinyal üretimi ile sunum katmanı (Web, Telegram, Webhook) birbirinden tamamen ayrıldı (Loose Coupling).
+   - `services/signal-bus.service.js` singleton EventEmitter oluşturuldu. `BaseBot.addSignal` çalıştığı an bu veriyoluna `signalBus.emit('signal', { botId, botName, signal })` yayınlanır.
+2. **Telegram-Ready Dispatcher (`services/telegram-dispatcher.service.js`):**
+   - Kullanıcı token'ları sağladığında sıfır kod değişikliğiyle çalışacak esnek yapı kuruldu.
+   - Sinyal verilerini Telegram'ın zengin HTML formatına (Başlık emojileri 🟢/🔴, `#BTCUSDT` etiketleri, Boost/Drop %, anlık ve önceki fiyatlar, RSI/SRSI/WaveTrend, Binance Vadeli grafik linki) dönüştüren şablonlayıcı yazıldı.
+   - Telegram API rate limitlerine tam uyumlu kuyruk (`enqueueMessage`, saniyede maks 10 mesaj) entegre edildi.
+3. **Sıfır Dış Bağımlılık İzolasyonu:**
+   - Visivero karşılaştırma testleri yalnızca `review/` klasörü altındaki geçici audit araçlarında izole tutuldu.
+   - `terminal-server.js`, `bots/`, `services/`, `public/` kodlarında hiçbir dış API/WebSocket yer almaz; %100 doğrudan Binance Futures ve Bybit ham piyasa verisiyle çalışır.
+
+## 🛠️ 3. Yaptıklarımız (Teknik ve Mimari Değişiklikler)
+1. **`services/signal-bus.service.js`:**
+   - Merkezi sinyal veriyolu (EventEmitter) oluşturuldu.
+2. **`bots/base/base-bot.js`:**
+   - `signalBus` eklendi; her üretilen gerçek sinyal anında `signalBus.emit('signal', ...)` ile dağıtıma sunuldu.
+3. **`services/telegram-dispatcher.service.js`:**
+   - Telegram HTML mesaj şablonlayıcısı, rate-limit kuyruğu ve `https.request` tabanlı API entegrasyonu yazıldı.
+   - Dinamik `configure({ token, defaultChatId, channels, enabled })` metodu ile runtime'da anında devreye alınabilir kılındı.
+4. **Test ve Doğrulama Süiti:**
+   - `review/test-telegram-dispatcher.cjs` yazılarak sinyal üretiminden Telegram HTML çıktısına kadar tüm zincir doğrulandı (%100 PASS).
+   - `review/quant-accuracy-verification.cjs` çalıştırıldı: 5/5 Test PASS.
+   - `review/end-user-live-binance-audit.cjs` çalıştırıldı: 33/33 Denetim Adımı %100 PASS.
+
+## ✅ 4. Tamamlanan İşler ve Doğrulama
+1. **Telegram Dağıtıcısı Doğrulandı:** `node review/test-telegram-dispatcher.cjs` başarıyla çalıştı, `#BTCUSDT` formatı, fiyatlar ve emojiler kusursuz üretildi.
+2. **Quant Doğruluk Testi:** 5/5 test (%100 PASS).
+3. **Canlı Binance Denetimi:** 33/33 adım (%100 PASS - Fiyatlar, Tick hassasiyeti, Kline, Order Book, Sentiment).
+4. **Port Temizliği:** Canlı test sonrası port 3000 kullanıcının kullanımına temiz bırakıldı.
+
