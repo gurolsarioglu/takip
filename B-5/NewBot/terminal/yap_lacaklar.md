@@ -147,6 +147,17 @@ Aşağıdaki 6 fazı sırasıyla, mevcut ön yüz (HTML/CSS/Plugin) yapısını 
 5. **Test 5 — Bellek ve Event Loop Performans Testi:**
    * 745 sembollük `!miniTicker@arr` yükü altında Node.js bellek kullanımının (Heap) sızıntı yapmadığını (Ring Buffer'ların 250 mum sınırını aşmadığını) ve API yanıt süresinin `< 50 ms` kaldığını doğrula.
 
+### Faz 7: Telegram-Ready Dağıtıcı Mimarisi ve Dış Bağımlılık Temizliği
+
+1. **Telegram-Ready Event Emitter (`services/telegram-dispatcher.service.js`):**
+   * `BaseBot.addSignal` tetiklendiğinde `signalBus.emit('signal', signalData)` event'i yayınlanır.
+   * `TelegramDispatcher` servisi bu event'i dinleyerek bot sinyalini zengin formatlı Telegram HTML/Markdown şablonuna dönüştürür (Emoji, Sembol, Fiyat, RSI/WT değerleri, TP/SL önerileri).
+   * Kullanıcı Telegram bot token ve kanal ID'lerini verdiğinde sisteme sadece `TELEGRAM_BOT_TOKEN` ve `TELEGRAM_CHANNEL_ID` girilerek tek tıkla mesaj akışı Telegram'a bağlanabilir altyapıda tutulur.
+2. **Sıfır Dış Bağımlılık Güvencesi (%100 Clean Local Execution):**
+   * Kalibrasyon için yazılan geçici test kodları yalnızca `review/` klasörü altında izole kalır.
+   * Üretim/yerel çalışma kodunda (`terminal-server.js`, `bots/`, `services/`, `public/`) hiçbir dış web sitesine (visivero vb.) ait WebSocket, HTTP veya proxy bağlantısı **asla yer almaz**. Sistem %100 doğrudan Binance/Bybit ham piyasa verisiyle çalışır.
+
 ## 4. Teslimat ve Dokümantasyon Kuralı
 
-* Yukarıdaki 6 faz tamamlanıp `node review/quant-accuracy-verification.cjs` ve mevcut uçtan uca tarayıcı testleri **%100 başarılı** olduktan sonra, yapılan mimari değişiklikleri `proje takip.md` dosyasına kronolojik olarak işle.
+* Yukarıdaki tüm fazlar tamamlanıp `node review/quant-accuracy-verification.cjs` ve mevcut uçtan uca tarayıcı testleri **%100 başarılı** olduktan sonra, yapılan mimari değişiklikleri `proje takip.md` dosyasına kronolojik olarak işle.
+* GitHub reposuna commit ve push yap.
