@@ -809,5 +809,10 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 ## ✅ 4. Tamamlanan İşler ve Doğrulama
 1. **Tersine Mühendislik Scriptleri:** `review/visivero_dump/` altında tüm Next.js chunk'ları toplandı.
 2. **Canlı Akış Doğrulandı:** `review/test-visivero-ws.mjs` çalıştırıldı, Bybit ve Binance için gerçek zamanlı M1-A ve M1 Premium bot mesajları hatasız alındı.
-3. **Tüm Bulgular Arşivlendi:** Bot tanımları, REST uçları (`/api/bot-messages`), WebSocket protokolleri ve Watchlist kolon hesaplamaları projemize aktarılmaya hazır hale getirildi.
+3. **İndikatör Algoritmaları & Formülleri Çözüldü:**
+   - `/api/script-runtime/templates` üzerinden sistemin kullandığı gerçek Python/PineScript indikatör kodları (`review/visivero_templates.json`) çekildi.
+   - **WaveTrend [LazyBear] (10, 21, SMA 4)**: `Hammer` ve `Hammer Pro` stratejilerinin temel matematiksel formülü doğrudan elde edildi.
+   - **Trader Club 5in1**: Nadaraya-Watson, Mavilim, PMax, EMA200 ve `Pivot Divergence` (`_positive_divergence_at`, `_negative_divergence_at`) algoritması çözüldü.
+   - **Stochastic RSI & Pivot Standard**: Seanslık Floor Pivot seviyeleri (P, R1, S1) ve RMA/SMA tabanlı SRSI tam eşleşmeyle arşivlendi.
+4. **Tüm Bulgular Arşivlendi:** Kullanıcı adı/şifreye gerek kalmadan sistemin tüm matematiksel ve mimari yapısı %100 yerel geliştirme için hazırlandı.
 
