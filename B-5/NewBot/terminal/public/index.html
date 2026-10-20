@@ -23,7 +23,7 @@
 
       <div class="search-box-wrap">
         <span class="search-icon-inside">🔍</span>
-        <input type="text" id="coin-search-input" class="search-input" value="BTWUSDT" placeholder="BTWUSDT" autocomplete="off" spellcheck="false" />
+        <input type="text" id="coin-search-input" class="search-input" value="BTCUSDT" placeholder="BTCUSDT" autocomplete="off" spellcheck="false" />
       </div>
 
       <div class="cockpit-quick-tags" style="display:flex; align-items:center; gap:8px; margin-left:8px;">
@@ -104,7 +104,7 @@
         <div class="snapshot-row-top">
           <div class="snapshot-coin-info">
             <div class="snapshot-icon">🟢</div>
-            <span class="snapshot-symbol" id="snap-symbol">BTWUSDT.P</span>
+            <span class="snapshot-symbol" id="snap-symbol">BTCUSDT.P</span>
             <span class="snapshot-perp-tag">Perp</span>
           </div>
           <div class="snapshot-funding-box">
@@ -312,7 +312,7 @@
   <!-- ─── 5. ALT TICKER TAPE BANT ─────────────────────────────────── -->
   <footer id="ticker-tape-footer">
     <div class="tape-items-scroll" id="tape-items-scroll">
-      <div class="tape-item"><span class="tape-symbol">BTWUSDT.P</span><span class="tape-price">1.3220</span><span class="tape-chg up">+24.85%</span></div>
+      <div class="tape-item"><span class="tape-symbol">BTCUSDT.P</span><span class="tape-price">83250.00</span><span class="tape-chg up">+2.85%</span></div>
       <div class="tape-item"><span class="tape-symbol">QNTUSDT.P</span><span class="tape-price">261.98</span><span class="tape-chg up">+50.05%</span></div>
       <div class="tape-item"><span class="tape-symbol">ONEUSDT.P</span><span class="tape-price">0.00271</span><span class="tape-chg up">+27.47%</span></div>
       <div class="tape-item"><span class="tape-symbol">GRTUSDT.P</span><span class="tape-price">0.03260</span><span class="tape-chg up">+18.78%</span></div>
@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 5. WebSocket Bağlantısını Başlat
   if (typeof WebSocketManager !== 'undefined') {
-    WebSocketManager.connect('BTWUSDT', '1m');
+    WebSocketManager.connect('BTCUSDT', '1m');
   }
 });
 </script>

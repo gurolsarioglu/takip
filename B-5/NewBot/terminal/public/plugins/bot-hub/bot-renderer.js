@@ -310,6 +310,17 @@ const BotRenderer = (() => {
   }
 
   /**
+   * Finansal fiyatları deterministik ve mikro-tick hassasiyetiyle formatlar
+   */
+  function formatCardPrice(val, symbol = null) {
+    if (val === null || val === undefined || val === '') return '—';
+    if (typeof PriceFormatter !== 'undefined' && PriceFormatter.format) {
+      return PriceFormatter.format(val, symbol);
+    }
+    return String(val);
+  }
+
+  /**
    * Verilen botId ve sinyal listesi için tam HTML kartlarını üretir
    */
   function generateSignalsHtml(botId, signals) {
@@ -349,11 +360,11 @@ const BotRenderer = (() => {
             </div>
             <div class="card-field-row">
               <span>Current Price:</span>
-              <span class="card-field-val">${s.currentPrice}</span>
+              <span class="card-field-val">${formatCardPrice(s.currentPrice, s.symbol)}</span>
             </div>
             <div class="card-field-row">
               <span>Previous Price:</span>
-              <span class="card-field-val">${s.prevPrice}</span>
+              <span class="card-field-val">${formatCardPrice(s.prevPrice, s.symbol)}</span>
             </div>
             <div class="card-field-row">
               <span>RSI:</span>
@@ -418,11 +429,11 @@ const BotRenderer = (() => {
             </div>
             <div class="card-field-row">
               <span>Current Price:</span>
-              <span class="card-field-val">${s.currentPrice}</span>
+              <span class="card-field-val">${formatCardPrice(s.currentPrice, s.symbol)}</span>
             </div>
             <div class="card-field-row">
               <span>Previous Price:</span>
-              <span class="card-field-val">${s.prevPrice}</span>
+              <span class="card-field-val">${formatCardPrice(s.prevPrice, s.symbol)}</span>
             </div>
             <div class="card-field-row">
               <span>RSI:</span>
@@ -489,11 +500,11 @@ const BotRenderer = (() => {
             </div>
             <div class="card-field-row">
               <span>Current Price:</span>
-              <span class="card-field-val">${s.currentPrice}</span>
+              <span class="card-field-val">${formatCardPrice(s.currentPrice, s.symbol)}</span>
             </div>
             <div class="card-field-row">
               <span>Previous Price:</span>
-              <span class="card-field-val">${s.prevPrice}</span>
+              <span class="card-field-val">${formatCardPrice(s.prevPrice, s.symbol)}</span>
             </div>
             <div class="card-field-row">
               <span>RSI:</span>
@@ -598,11 +609,11 @@ const BotRenderer = (() => {
             </div>
             <div class="card-field-row">
               <span>Current Price:</span>
-              <span class="card-field-val">${s.currentPrice}</span>
+              <span class="card-field-val">${formatCardPrice(s.currentPrice, s.symbol)}</span>
             </div>
             <div class="card-field-row">
               <span>Previous Price:</span>
-              <span class="card-field-val">${s.prevPrice}</span>
+              <span class="card-field-val">${formatCardPrice(s.prevPrice, s.symbol)}</span>
             </div>
             <div class="card-multi-indicator">
               RSI: <strong>1h.${s.rsi.h1}</strong> | <strong>4h.${s.rsi.h4}</strong> | <strong>1d.${s.rsi.d1}</strong>
@@ -715,11 +726,11 @@ const BotRenderer = (() => {
             </div>
             <div class="card-field-row">
               <span>Current Price:</span>
-              <span class="card-field-val">${s.currentPrice}</span>
+              <span class="card-field-val">${formatCardPrice(s.currentPrice, s.symbol)}</span>
             </div>
             <div class="card-field-row">
               <span>Previous Price:</span>
-              <span class="card-field-val">${s.prevPrice}</span>
+              <span class="card-field-val">${formatCardPrice(s.prevPrice, s.symbol)}</span>
             </div>
             <div class="card-field-row">
               <span>Volume:</span>
@@ -776,11 +787,11 @@ const BotRenderer = (() => {
             </div>
             <div class="card-field-row">
               <span>Current Price:</span>
-              <span class="card-field-val">${s.currentPrice}</span>
+              <span class="card-field-val">${formatCardPrice(s.currentPrice, s.symbol)}</span>
             </div>
             <div class="card-field-row">
               <span>Previous Price:</span>
-              <span class="card-field-val">${s.prevPrice}</span>
+              <span class="card-field-val">${formatCardPrice(s.prevPrice, s.symbol)}</span>
             </div>
             <div class="card-multi-indicator">
               RSI: <strong>1m.${s.rsi.m1}</strong> | <strong>5m.${s.rsi.m5}</strong> | <strong>1h.${s.rsi.h1}</strong>
@@ -819,11 +830,11 @@ const BotRenderer = (() => {
         </div>
         <div class="card-field-row">
           <span>Current Price:</span>
-          <span class="card-field-val">${s.currentPrice}</span>
+          <span class="card-field-val">${formatCardPrice(s.currentPrice, s.symbol)}</span>
         </div>
         <div class="card-field-row">
           <span>Previous Price:</span>
-          <span class="card-field-val">${s.prevPrice}</span>
+          <span class="card-field-val">${formatCardPrice(s.prevPrice, s.symbol)}</span>
         </div>
         <div class="card-multi-indicator">
           RSI: <strong>1m.${s.rsi.m1}</strong> | <strong>5m.${s.rsi.m5}</strong> | <strong>1h.${s.rsi.h1}</strong>

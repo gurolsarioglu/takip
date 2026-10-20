@@ -10,7 +10,7 @@ const MultiChartPlugin = (() => {
     { id: '1d', name: '1D', limit: 150 }
   ];
 
-  let currentSymbol = 'BTWUSDT';
+  let currentSymbol = 'BTCUSDT';
   const instances = []; // 4 charts instances
 
   // ─── Matematiksel İndikatör Hesaplayıcılar ─────────────────────

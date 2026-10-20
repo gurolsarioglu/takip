@@ -24,6 +24,9 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 2. **Botların Bağımsız NPX/Mikro-Servis ve Ayrı Batch Pencerelerine Taşınması:**
    * Kullanıcı: *"biz proje içerisinde botları doğru çalıştıramıyoruz farklı bir bakış açısı deneyelim botları ayrı ayır npx servisleri yapalım her bot farklı batch olsun start terminal all. bat dosyası çalıştığında botlarda ayır arı bathc file da çalışsın biz bu mesajları tarıyıcıya yazdıralım sonrasında telegrama mesaj göndermesi de kolay olur böylelikle botları ayrı ayır değerlendirerek sorunu aşmış olur. tüm dosyaları buna göre tekrar düzenle."* talimatını verdi.
    * Monolitik tek süreçte çalışan bot motoru yerine, her biri bağımsız birer CLI mikro-servisi olan 9 adet müstakil runner ve batch dosyası mimarisine geçiş kararı alındı ve otonom olarak uygulandı.
+3. **Clean Code & Hatalı/Gereksiz Kod Temizliği:**
+   * Kullanıcı: *"çok fazla gereksiz çalışan hatalı kod var bunları temizleyip clean kod mantığında çalışıyoruz."* talimatını verdi.
+   * Frontend ve bot motorunda yer alan yapay/sentetik kalıntılar (`BTWUSDT`), eski/yanıt vermeyen borsa WebSocket endpoint'i (`/ws/!miniTicker@arr`), kart render süreçlerinde eksik olan fiyat formatlama standartları baştan sona temizlendi ve clean code prensiplerine uyarlandı.
 
 ---
 
@@ -40,7 +43,11 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
    * Merkezi terminal gelen sinyali `SignalStore`'a kaydeder, WebSocket ile bağlı tüm tarayıcılara canlı kart olarak fırlatır ve `TelegramDispatcher` aracılığıyla anında Telegram kanallarına/kullanıcılarına ulaştırır.
 4. **Çift Modlu Çalışma Desteği (`STANDALONE_BOTS=true`):**
    * `terminal-server.js` artık `STANDALONE_BOTS=true` ortam değişkeniyle başlatıldığında gömülü dahili tarayıcıyı devre dışı bırakır ve tamamen bir "Sinyal ve Veri Hub'ı" olarak çalışır. Gömülü motor ise regresyon testleri ve tekil çalıştırmalar için geriye dönük uyumlu kalmaya devam eder.
-5. **Temiz Git Durumu ve Fazlalıkların Ayıklanması:**
+5. **Clean Code & Sentetik Kalıntıların Ayıklanması:**
+   * Ön yüzde kodlar taranarak tespit edilen ve gerçekte var olmayan `BTWUSDT` gibi yapay/hatalı sembol referansları (`index.html`, `multi-chart.plugin.js`, `watchlist.plugin.js`, `sentiment-modal.plugin.js`) tamamen temizlendi; meşru likit paritelerle (`BTCUSDT`, `DOGEUSDT`) değiştirildi.
+   * `watchlist.plugin.js` içindeki eski Binance WebSocket URL'si (`wss://fstream.binance.com/ws/!miniTicker@arr`) Binance tarafından sessizce düşürüldüğü için güncel ve resmi market endpoint'ine (`wss://fstream.binance.com/market/ws/!miniTicker@arr`) güncellendi; mesaj çözümleyicisi hem doğrudan array hem de `{ data }` sarmalamasını destekleyecek biçimde güçlendirildi.
+   * `bot-renderer.js` içindeki 9 bot kart şablonunda kontrolsüzce yazdırılan `${s.currentPrice}` ve `${s.prevPrice}` satırları yerine merkezi `formatCardPrice(val, symbol)` fonksiyonu entegre edilerek finansal veri basamak kırpılmaları tamamen engellendi.
+6. **Temiz Git Durumu ve Fazlalıkların Ayıklanması:**
    * Önceden sahnelenmiş (staged) olan `mobile_app` build çıktıları (`.dart_tool`, `android/.gradle` vb.) unstage edilerek repository'nin temiz ve kararlı kalması temin edildi.
 
 ---
@@ -66,19 +73,25 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
    * `start_bot_m1a.bat`, `start_bot_m1premium.bat`, `start_bot_hammerpro.bat`, `start_bot_hammerproplus.bat`, `start_bot_4s.bat`, `start_bot_4ssniper.bat`, `start_bot_v3.bat`, `start_bot_divergence.bat`, `start_bot_fundingrate.bat`
    * `start_terminal.bat` (Hub modu)
    * `start_terminal_all.bat` (Terminal Hub'ı ve 9 botun ayrı CMD pencerelerini tek tıkla başlatan master betik).
-6. **[`package.json`](package.json):**
+6. **[`public/index.html`](public/index.html), [`public/plugins/chart/multi-chart.plugin.js`](public/plugins/chart/multi-chart.plugin.js), [`public/plugins/watchlist/watchlist.plugin.js`](public/plugins/watchlist/watchlist.plugin.js), [`public/plugins/sentiment-modal/sentiment-modal.plugin.js`](public/plugins/sentiment-modal/sentiment-modal.plugin.js):**
+   * `BTWUSDT` şeklindeki hatalı/sentetik coin referansları temizlendi, yerlerine `BTCUSDT` ve `DOGEUSDT` tanımlandı.
+   * Watchlist borsa WebSocket endpoint'i Binance standartlarına uygun `wss://fstream.binance.com/market/ws/!miniTicker@arr` olarak revize edildi.
+7. **[`public/plugins/bot-hub/bot-renderer.js`](public/plugins/bot-hub/bot-renderer.js):**
+   * Tüm 9 bot kart şablonunda `formatCardPrice` helper'ı kullanıma alınarak mikro-tick basamaklarının güvenle ekrana basılması sağlandı.
+8. **[`package.json`](package.json):**
    * Her bot için hem NPM script'leri (`npm run bot:m1a`, `npm run bot:v3`, `npm run bots:all` vb.) hem de global `bin` komutları eklendi (`npx bot-m1a`, `npx bot-fr`).
-7. **[`bots/index.js`](bots/index.js):**
+9. **[`bots/index.js`](bots/index.js):**
    * `emitSignal` fonksiyonu 9 botun ID'lerini doğrudan tanıyıp etiketleyecek şekilde genişletildi.
    * `startBackgroundEngine()` fonksiyonu `process.env.STANDALONE_BOTS === 'true'` durumunda harici bağımsız botlara çakışma olmaksızın alan bırakacak şekilde uyarlandı.
-8. **[`terminal-server.js`](terminal-server.js):**
-   * Port 3000 üzerinde başlatıldı; Binance WebSocket akışları ve Quant sinyal tarama motorları devreye alındı.
+10. **[`terminal-server.js`](terminal-server.js):**
+    * Port 3000 üzerinde başlatıldı; Binance WebSocket akışları ve Quant sinyal tarama motorları devreye alındı.
 
 ---
 
 ## ✅ 4. Tamamlanan İşler ve Doğrulama
 * **Git Senkronizasyonu:** `git pull origin master` -> `Already up to date.`
 * **Birim & Regresyon Testleri:** `npm test` -> 8/8 Regresyon Testi ve 5/5 Quant Doğrulama Testi PASS (%100 Başarılı).
+* **Clean Code & Hata Ayıklama:** Sentetik coinler, eskimiş borsa WebSocket adresleri ve ham fiyat basımları arındırıldı.
 * **Telegram & SignalBus Entegrasyonu:** `node review/test-telegram-dispatcher.cjs` -> PASS.
 * **Fiyat Hassasiyet & 60 Günlük Arşiv Testi:** `node review/verify-signal-store-precision.cjs` -> PASS (8/8).
 * **Bağımsız Runner Doğrulaması:** `node bots/runners/m1a-drop.runner.js` ve diğer runner'ların sembol taraması, indikatör hesaplaması ve `/api/signals/emit` köprüsü başarıyla doğrulandı.

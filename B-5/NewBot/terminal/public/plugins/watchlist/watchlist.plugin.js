@@ -15,7 +15,7 @@ const WatchlistPlugin = (() => {
   let allTickers = [];
   let currentFilter = 'all'; // 'all', 'favorites', 'gainers', 'losers', 'funding', 'volume'
   let searchQuery = '';
-  let activeSymbol = 'BTWUSDT';
+  let activeSymbol = 'BTCUSDT';
   let pollInterval = null;
   let tickerWs = null;
   let rowElementMap = new Map(); // symbol -> { row, priceCell, chgPill, lastPrice }
@@ -28,7 +28,7 @@ const WatchlistPlugin = (() => {
 
   // Favoriler (LocalStorage)
   const FAVORITES_STORAGE_KEY = 'alpha_terminal_favorites';
-  let favoritesSet = new Set(['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BTWUSDT', 'SUIUSDT']);
+  let favoritesSet = new Set(['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'SUIUSDT', 'DOGEUSDT']);
 
   function loadFavorites() {
     try {
@@ -270,7 +270,7 @@ const WatchlistPlugin = (() => {
     }
 
     try {
-      tickerWs = new WebSocket('wss://fstream.binance.com/ws/!miniTicker@arr');
+      tickerWs = new WebSocket('wss://fstream.binance.com/market/ws/!miniTicker@arr');
     } catch (e) {
       console.warn('[Watchlist WS] Bağlantı hatası:', e);
       reconnectTimer = setTimeout(connectTickerStream, 4000);
@@ -283,7 +283,8 @@ const WatchlistPlugin = (() => {
 
     tickerWs.onmessage = (event) => {
       try {
-        const raw = JSON.parse(event.data);
+        const parsed = JSON.parse(event.data);
+        const raw = Array.isArray(parsed) ? parsed : (parsed.data || parsed);
         if (!Array.isArray(raw)) return;
 
         raw.forEach(m => {

@@ -3,7 +3,7 @@
  * Kırmızı okla gösterilen [◫] butonuna basıldığında açılan 4 barlı piyasa duyarlılık penceresi.
  */
 const TickerSnapshot = (() => {
-  let activeSymbol = 'BTWUSDT';
+  let activeSymbol = 'BTCUSDT';
   let modalOpen = false;
   let updateTimer = null;
 
