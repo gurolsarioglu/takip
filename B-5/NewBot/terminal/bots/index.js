@@ -72,65 +72,95 @@ class BotManager {
 
     const rawSym = (signalData.coin || signalData.symbol).toUpperCase();
     const symbol = rawSym;
-    const botType = (signalData.botType || '').toLowerCase();
+    const botId = (signalData.botId || signalData.botType || '').toLowerCase();
     const timeframe = (signalData.timeframe || '').toLowerCase();
     const affectedBots = [];
 
     // Fiyatı SymbolRegistry ile resmi tickSize'a formatla
-    if (signalData.price) {
-      signalData.price = formatCryptoPrice(signalData.price, symbol);
+    if (signalData.price || signalData.currentPrice) {
+      const p = signalData.price || signalData.currentPrice;
+      signalData.price = formatCryptoPrice(p, symbol);
+      signalData.currentPrice = signalData.price;
     }
 
-    // 1. 4S / 4Spro / 4S Sniper
-    if (botType.includes('4s') || botType.includes('sniper') || timeframe === '4h') {
-      const isSniper = signalData.strategy === 'NW UP' || botType.includes('sniper');
-      if (isSniper) {
-        fourSSniperBot.ingest(signalData);
-        affectedBots.push('4ssniper');
-      } else {
-        fourSBot.ingest(signalData);
-        affectedBots.push('4s');
-      }
-    }
-
-    // 2. Divergence
-    if (
-      signalData.rsi1hDiv ||
-      signalData.rsi4hDiv ||
-      signalData.rsi1dDiv ||
-      signalData.rsi1wDiv ||
-      botType.includes('1gpro') ||
-      botType.includes('div') ||
-      (signalData.strategy && signalData.strategy.includes('DIVERGENCE'))
-    ) {
-      divergenceBot.ingest(signalData);
-      affectedBots.push('div');
-    }
-
-    // 3. 15m Hunter / Hammer Pro / Hammer Pro Plus / M1A
-    if (
-      botType.includes('15m') ||
-      timeframe === '15m' ||
-      botType.includes('hammer') ||
-      botType.includes('m1')
-    ) {
-      hammerProPlusBot.ingest(signalData);
-      hammerProBot.ingest(signalData);
-      affectedBots.push('hammerproplus', 'hammerpro');
-
-      if (signalData.position === 'Short' || botType.includes('m1a')) {
-        m1aDropBot.ingest(signalData);
-        affectedBots.push('m1a');
-      }
-      if (signalData.position === 'Long' || botType.includes('m1p')) {
-        m1PremiumBot.ingest(signalData);
-        affectedBots.push('m1premium');
-      }
-    }
-
-    if (affectedBots.length === 0) {
-      hammerProPlusBot.ingest(signalData);
+    // ─── Doğrudan botId Eşlemesi (Bağımsız Runner Servisleri için) ───
+    if (botId === 'm1a') {
+      m1aDropBot.addSignal(signalData);
+      affectedBots.push('m1a');
+    } else if (botId === 'm1premium' || botId === 'm1p') {
+      m1PremiumBot.addSignal(signalData);
+      affectedBots.push('m1premium');
+    } else if (botId === 'hammerproplus') {
+      hammerProPlusBot.addSignal(signalData);
       affectedBots.push('hammerproplus');
+    } else if (botId === 'hammerpro') {
+      hammerProBot.addSignal(signalData);
+      affectedBots.push('hammerpro');
+    } else if (botId === '4ssniper') {
+      fourSSniperBot.addSignal(signalData);
+      affectedBots.push('4ssniper');
+    } else if (botId === '4s') {
+      fourSBot.addSignal(signalData);
+      affectedBots.push('4s');
+    } else if (botId === 'div' || botId === 'divergence') {
+      divergenceBot.addSignal(signalData);
+      affectedBots.push('div');
+    } else if (botId === 'v3' || botId === 'volume') {
+      v3VolumeBot.addSignal(signalData);
+      affectedBots.push('v3');
+    } else if (botId === 'fr' || botId === 'funding') {
+      fundingRateBot.addSignal(signalData);
+      affectedBots.push('fr');
+    } else {
+      // ─── Genel / Karma Hunter Botları için Geriye Dönük Uyumluluk ───
+      if (botId.includes('4s') || botId.includes('sniper') || timeframe === '4h') {
+        const isSniper = signalData.strategy === 'NW UP' || botId.includes('sniper');
+        if (isSniper) {
+          fourSSniperBot.ingest(signalData);
+          affectedBots.push('4ssniper');
+        } else {
+          fourSBot.ingest(signalData);
+          affectedBots.push('4s');
+        }
+      }
+
+      if (
+        signalData.rsi1hDiv ||
+        signalData.rsi4hDiv ||
+        signalData.rsi1dDiv ||
+        signalData.rsi1wDiv ||
+        botId.includes('1gpro') ||
+        botId.includes('div') ||
+        (signalData.strategy && signalData.strategy.includes('DIVERGENCE'))
+      ) {
+        divergenceBot.ingest(signalData);
+        affectedBots.push('div');
+      }
+
+      if (
+        botId.includes('15m') ||
+        timeframe === '15m' ||
+        botId.includes('hammer') ||
+        botId.includes('m1')
+      ) {
+        hammerProPlusBot.ingest(signalData);
+        hammerProBot.ingest(signalData);
+        affectedBots.push('hammerproplus', 'hammerpro');
+
+        if (signalData.position === 'Short' || botId.includes('m1a')) {
+          m1aDropBot.ingest(signalData);
+          affectedBots.push('m1a');
+        }
+        if (signalData.position === 'Long' || botId.includes('m1p')) {
+          m1PremiumBot.ingest(signalData);
+          affectedBots.push('m1premium');
+        }
+      }
+
+      if (affectedBots.length === 0) {
+        hammerProPlusBot.ingest(signalData);
+        affectedBots.push('hammerproplus');
+      }
     }
 
     return {
@@ -143,10 +173,18 @@ class BotManager {
   /**
    * Gerçek Quant Arka Plan Motorunu Başlatır (İki Aşamalı Huni Mimarisi)
    */
-  startBackgroundEngine() {
+  startBackgroundEngine(force = false) {
     if (this.isEngineRunning) return;
-    this.isEngineRunning = true;
+    
+    // STANDALONE_BOTS=true modunda merkezi sunucu sadece HUB olarak çalışır,
+    // botlar ise kendi ayrı batch pencerelerinde çalışıp sinyalleri buraya POST eder.
+    if (!force && process.env.STANDALONE_BOTS === 'true') {
+      console.log('  [BotManager] 📡 Sinyal Hub Modu Aktif (STANDALONE_BOTS=true)');
+      console.log('  [BotManager] Botlar bağımsız batch servislerinden (/api/signals/emit) bekleniyor...');
+      return;
+    }
 
+    this.isEngineRunning = true;
     console.log('[BotManager] Quant Arka Plan Motoru baslatiliyor (Sifir Sahte Tohum)...');
 
     // 1. Piyasa Veri Motorunu Başlat (WebSocket Radarı)

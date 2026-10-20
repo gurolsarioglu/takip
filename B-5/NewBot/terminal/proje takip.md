@@ -21,6 +21,9 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 1. **Repodan Güncelleme ve Çalıştırma:**
    * Kullanıcı: *"repodan güncel dosyaları çek ve çalıştır"* talimatını verdi.
    * Otonom İcraat Kuralı doğrultusunda ara onay beklenmeksizin uzak repo (`origin/master`) senkronize edildi, testler icra edildi, tespit edilen mikro basamak hatası giderildi ve `terminal-server.js` canlı olarak başlatıldı.
+2. **Botların Bağımsız NPX/Mikro-Servis ve Ayrı Batch Pencerelerine Taşınması:**
+   * Kullanıcı: *"biz proje içerisinde botları doğru çalıştıramıyoruz farklı bir bakış açısı deneyelim botları ayrı ayır npx servisleri yapalım her bot farklı batch olsun start terminal all. bat dosyası çalıştığında botlarda ayır arı bathc file da çalışsın biz bu mesajları tarıyıcıya yazdıralım sonrasında telegrama mesaj göndermesi de kolay olur böylelikle botları ayrı ayır değerlendirerek sorunu aşmış olur. tüm dosyaları buna göre tekrar düzenle."* talimatını verdi.
+   * Monolitik tek süreçte çalışan bot motoru yerine, her biri bağımsız birer CLI mikro-servisi olan 9 adet müstakil runner ve batch dosyası mimarisine geçiş kararı alındı ve otonom olarak uygulandı.
 
 ---
 
@@ -28,7 +31,16 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 1. **Mikro Fiyat Hassasiyetinde Kesin Koruma (0.004890 / 0.00001850):**
    * `price-formatter` modülünde `getDecimalPlaces` çağrısında sayısal float değerlerin (`0.00489`) string'e çevrilerek string kesiti üzerinden basamak aranması sebebiyle dinamik basamak kuralı (abs < 0.01 ise 6 basamak, abs < 0.0001 ise 8 basamak) devre dışı kalıyordu.
    * `typeof val === 'string'` kontrolü yapılarak; yalnızca metin olarak gelenlerin orijinal karakter dizilimi korunacak, sayısal float olarak gelenlerin ise piyasa büyüklüğüne göre kesin 6 ve 8 basamak hassasiyeti alması sağlandı.
-2. **Temiz Git Durumu ve Fazlalıkların Ayıklanması:**
+2. **Monolitik Süreçten Bağımsız Mikro-Servis Mimarisine Geçiş:**
+   * Tek bir Node.js sürecinde tüm botları çalıştırmak, her bir botun taradığı pariteleri, filtre eşiklerini, ara hesaplamalarını ve olası takılmaları izlemeyi imkansız kılıyordu.
+   * Her bot bağımsız bir Node.js CLI betiği (`bots/runners/*.runner.js`) ve bağımsız bir `.bat` dosyası haline getirildi.
+   * Böylece kullanıcı terminalde her botun CMD penceresinde taranan coinleri, hesaplanan RSI/WaveTrend/Hacim/Fonlama değerlerini anlık olarak okuyabilecek; dilediği botu tek başına yeniden başlatıp ayarlayabilecektir.
+3. **Merkezi Web Terminali & Telegram Köprüsü (`/api/signals/emit` ve `SignalBus`):**
+   * Her bağımsız bot runner'ı, tespit ettiği gerçek sinyalleri yerel REST endpoint'i `http://localhost:3000/api/signals/emit` üzerinden merkezi terminale JSON POST eder.
+   * Merkezi terminal gelen sinyali `SignalStore`'a kaydeder, WebSocket ile bağlı tüm tarayıcılara canlı kart olarak fırlatır ve `TelegramDispatcher` aracılığıyla anında Telegram kanallarına/kullanıcılarına ulaştırır.
+4. **Çift Modlu Çalışma Desteği (`STANDALONE_BOTS=true`):**
+   * `terminal-server.js` artık `STANDALONE_BOTS=true` ortam değişkeniyle başlatıldığında gömülü dahili tarayıcıyı devre dışı bırakır ve tamamen bir "Sinyal ve Veri Hub'ı" olarak çalışır. Gömülü motor ise regresyon testleri ve tekil çalıştırmalar için geriye dönük uyumlu kalmaya devam eder.
+5. **Temiz Git Durumu ve Fazlalıkların Ayıklanması:**
    * Önceden sahnelenmiş (staged) olan `mobile_app` build çıktıları (`.dart_tool`, `android/.gradle` vb.) unstage edilerek repository'nin temiz ve kararlı kalması temin edildi.
 
 ---
@@ -38,16 +50,39 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
    * `getDecimalPlaces` fonksiyonunda sayısal değerlerin string uzunluğuna göre değil, değer aralığına göre (örn. `abs < 0.01 -> 6 basamak`) formatlanması sağlandı.
 2. **[`public/core/price-formatter.js`](public/core/price-formatter.js):**
    * Frontend tarafındaki ayna fonksiyon aynı hassasiyet kuralıyla senkronize edildi.
-3. **[`terminal-server.js`](terminal-server.js):**
-   * Port 3000 üzerinde arka plan daemon görevi olarak başlatıldı; Binance WebSocket akışları ve Quant sinyal tarama motorları devreye alındı.
+3. **[`bots/runners/runner-helper.js`](bots/runners/runner-helper.js):**
+   * 9 bağımsız runner için ortak modül: Binance REST veri çekimi, terminal proxy entegrasyonu, TradingView uyumlu RSI/WaveTrend/EMA hesaplamaları, ANSI renkli konsol loglama ve `/api/signals/emit` POST köprüsü inşa edildi.
+4. **9 Bağımsız Bot CLI Runner Betiği ([`bots/runners/*.runner.js`](bots/runners/)):**
+   * `m1a-drop.runner.js`: 1 Dakikalık ani sert düşüş ve tepki radarı.
+   * `m1-premium.runner.js`: 1 Dakikalık agresif hacimli kırılım radarı.
+   * `hammer-pro.runner.js`: 15 Dakikalık Hammer & WaveTrend dip dönüş radarı.
+   * `hammer-pro-plus.runner.js`: 15 Dakikalık Çekiç + Balina Alış + Düşen Takoz radarı.
+   * `four-s.runner.js`: 4 Saatlik Makro Trend Takip & EMA200 sıçrama radarı.
+   * `four-s-sniper.runner.js`: 4 Saatlik Keskin Nişancı (Dip/Tepki + Yüksek Hacim) radarı.
+   * `v3-volume.runner.js`: 5 Dakikalık Anlık Hacim & Delta Volüme Patlaması radarı.
+   * `divergence.runner.js`: 15M/1H Fiyat-RSI Boğa & Ayı Uyumsuzluk radarı.
+   * `funding-rate.runner.js`: Aşırı Negatif/Pozitif Fonlama ve Short Squeeze radarı.
+5. **9 Ayrı Batch Dosyası & 1 Master Çalıştırıcı:**
+   * `start_bot_m1a.bat`, `start_bot_m1premium.bat`, `start_bot_hammerpro.bat`, `start_bot_hammerproplus.bat`, `start_bot_4s.bat`, `start_bot_4ssniper.bat`, `start_bot_v3.bat`, `start_bot_divergence.bat`, `start_bot_fundingrate.bat`
+   * `start_terminal.bat` (Hub modu)
+   * `start_terminal_all.bat` (Terminal Hub'ı ve 9 botun ayrı CMD pencerelerini tek tıkla başlatan master betik).
+6. **[`package.json`](package.json):**
+   * Her bot için hem NPM script'leri (`npm run bot:m1a`, `npm run bot:v3`, `npm run bots:all` vb.) hem de global `bin` komutları eklendi (`npx bot-m1a`, `npx bot-fr`).
+7. **[`bots/index.js`](bots/index.js):**
+   * `emitSignal` fonksiyonu 9 botun ID'lerini doğrudan tanıyıp etiketleyecek şekilde genişletildi.
+   * `startBackgroundEngine()` fonksiyonu `process.env.STANDALONE_BOTS === 'true'` durumunda harici bağımsız botlara çakışma olmaksızın alan bırakacak şekilde uyarlandı.
+8. **[`terminal-server.js`](terminal-server.js):**
+   * Port 3000 üzerinde başlatıldı; Binance WebSocket akışları ve Quant sinyal tarama motorları devreye alındı.
 
 ---
 
 ## ✅ 4. Tamamlanan İşler ve Doğrulama
 * **Git Senkronizasyonu:** `git pull origin master` -> `Already up to date.`
-* **Birim & Regresyon Testleri:** `npm test` -> 8/8 Regresyon Testi ve 5/5 Quant Doğrulama Testi PASS.
+* **Birim & Regresyon Testleri:** `npm test` -> 8/8 Regresyon Testi ve 5/5 Quant Doğrulama Testi PASS (%100 Başarılı).
 * **Telegram & SignalBus Entegrasyonu:** `node review/test-telegram-dispatcher.cjs` -> PASS.
 * **Fiyat Hassasiyet & 60 Günlük Arşiv Testi:** `node review/verify-signal-store-precision.cjs` -> PASS (8/8).
+* **Bağımsız Runner Doğrulaması:** `node bots/runners/m1a-drop.runner.js` ve diğer runner'ların sembol taraması, indikatör hesaplaması ve `/api/signals/emit` köprüsü başarıyla doğrulandı.
+* **Master Batch Yapısı:** `start_terminal_all.bat` ile 9 ayrı CMD penceresi ve ana hub terminali birbirinden bağımsız izlenebilir hale getirildi.
 * **Canlı Sunucu Doğrulaması:** `http://localhost:3000` HTTP 200 OK ile çalışıyor.
 
 ---
