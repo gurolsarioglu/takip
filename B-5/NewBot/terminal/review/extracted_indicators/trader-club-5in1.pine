@@ -1,0 +1,251 @@
+//@version=5
+indicator("REA-Trader Club 5in1 [V.2 Pro]", shorttitle="REA-TC 5in1", overlay=true, max_lines_count=500, max_boxes_count=500, max_labels_count=500)
+
+// ==============================================================================
+// 1. ANA MODÜL SEÇİMLERİ (GİRDİLER EN ÜST)
+// ==============================================================================
+show_ema200     = input.bool(true,  "EMA 200")
+show_pmax       = input.bool(true,  "Pmax")
+show_linreg     = input.bool(true,  "Linreg")
+show_mavilim    = input.bool(true,  "Mavilim")
+show_nadaray    = input.bool(true,  "Nadaraya Watson")
+
+// ==============================================================================
+// 2. EMA200 SETTINGS
+// ==============================================================================
+grp_ema         = "EMA200 SETTINGS"
+ema_tf          = input.timeframe("240", "EMA200 TimeFrame", group=grp_ema)
+ema_len         = input.int(200, "Uzunluk", minval=1, group=grp_ema)
+ema_src         = input.source(close, "Kaynak", group=grp_ema)
+ema_offset      = input.int(0, "Uzantı", group=grp_ema)
+
+// ==============================================================================
+// 3. LINREG SETTINGS
+// ==============================================================================
+grp_lin         = "LINREG SETTINGS"
+linreg_len      = input.int(100, "Uzunluk", minval=10, group=grp_lin)
+use_up_dev      = input.bool(true, "Üst Sapma", inline="lin_up", group=grp_lin)
+up_mult         = input.float(2.0, "", inline="lin_up", step=0.1, group=grp_lin)
+use_dn_dev      = input.bool(true, "Alt Sapma", inline="lin_dn", group=grp_lin)
+dn_mult         = input.float(2.0, "", inline="lin_dn", step=0.1, group=grp_lin)
+linreg_src      = input.source(close, "Kaynak", group=grp_lin)
+
+grp_lin_disp    = "LINREG DISPLAY SETTINGS"
+show_pearson    = input.bool(true, "Pearson R'sini Göster", group=grp_lin_disp)
+lin_extend_l    = input.bool(false, "Çizgileri Sola Uzat", group=grp_lin_disp)
+lin_extend_r    = input.bool(true, "Çizgileri Sağa Uzat", group=grp_lin_disp)
+
+grp_lin_col     = "LINREG COLOR SETTINGS"
+col_lin_up      = input.color(color.new(#3B82F6, 85), "Linreg Üst Dolgu", inline="lin_c", group=grp_lin_col)
+col_lin_dn      = input.color(color.new(#EF4444, 85), "Linreg Alt Dolgu", inline="lin_c", group=grp_lin_col)
+
+// ==============================================================================
+// 4. MAVILIM SETTINGS
+// ==============================================================================
+grp_mavi        = "MAVİLİM SETTINGS"
+mavi_prev_ver   = input.bool(false, "Show Previous Version of MavilimW?", group=grp_mavi)
+fmal            = input.int(3, "First Moving Average length", minval=1, group=grp_mavi)
+smal            = input.int(5, "Second Moving Average length", minval=1, group=grp_mavi)
+
+// ==============================================================================
+// 5. PMAX SETTINGS
+// ==============================================================================
+grp_pmax        = "PMAX SETTINGS"
+pmax_src        = input.source(hl2, "Kaynak", group=grp_pmax)
+pmax_atr_len    = input.int(10, "ATR Uzunluğu", minval=1, group=grp_pmax)
+pmax_atr_mult   = input.float(3.0, "ATR Çarpanı", step=0.1, group=grp_pmax)
+pmax_mav_type   = input.string("EMA", "Moving Average Type", options=["EMA", "SMA", "WMA"], group=grp_pmax)
+pmax_mav_len    = input.int(9, "Moving Average Length", minval=1, group=grp_pmax)
+change_atr_mthd = input.bool(true, "Change ATR Calculation Method ?", group=grp_pmax)
+normalize_atr   = input.bool(false, "Normalize ATR ?", group=grp_pmax)
+show_mavg       = input.bool(true, "Show Moving Average?", group=grp_pmax)
+show_signals    = input.bool(true, "Show Crossing Signals?", group=grp_pmax)
+show_px_signals = input.bool(false, "Show Price/Pmax Crossing Signals?", group=grp_pmax)
+highlighter_on  = input.bool(false, "Highlighter On/Off ?", group=grp_pmax)
+
+// ==============================================================================
+// 6. NADARAYA WATSON SETTINGS
+// ==============================================================================
+grp_nad         = "NADARAYA WATSON SETTINGS"
+nad_h           = input.float(8.0, "Bandwidth", minval=0.5, step=0.5, group=grp_nad)
+nad_mult        = input.float(3.0, "Çarpan", minval=0.5, step=0.5, group=grp_nad)
+nad_src         = input.source(close, "Kaynak", group=grp_nad)
+nad_repaint     = input.bool(true, "Repainting Smoothing", tooltip="Repainting açıkken son barlarda pürüzsüz kernel çalışır.", group=grp_nad)
+col_nad_up      = input.color(#14B8A6, "Nadaraya Üst Renk", inline="nad_c", group=grp_nad)
+col_nad_dn      = input.color(#EF4444, "Nadaraya Alt Renk", inline="nad_c", group=grp_nad)
+
+
+// ==============================================================================
+// HESAPLAMALAR
+// ==============================================================================
+
+// ------------------------------------------------------------------------------
+// 1. EMA 200 (HTF)
+// ------------------------------------------------------------------------------
+ema200_calc = ta.ema(ema_src, ema_len)
+ema200_htf  = request.security(syminfo.tickerid, ema_tf, ema200_calc, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_off)
+plot(show_ema200 ? ema200_htf : na, title="EMA200", color=#F59E0B, offset=ema_offset, linewidth=2)
+
+// ------------------------------------------------------------------------------
+// 2. MAVILIMW
+// ------------------------------------------------------------------------------
+tmal    = fmal + smal
+fmal_2  = smal + tmal
+ftmal   = tmal + fmal_2
+smal_2  = fmal_2 + ftmal
+
+m1   = ta.wma(close, fmal)
+m2   = ta.wma(m1, smal)
+m3   = ta.wma(m2, tmal)
+m4   = ta.wma(m3, fmal_2)
+m5   = ta.wma(m4, ftmal)
+mavw = ta.wma(m5, smal_2)
+
+mavw_col = mavw > mavw[1] ? #2563EB : (mavw < mavw[1] ? #DC2626 : #EAB308)
+plot(show_mavilim ? mavw : na, title="MAVW", color=mavw_col, linewidth=2)
+
+// ------------------------------------------------------------------------------
+// 3. PMAX (PROFIT MAXIMIZER)
+// ------------------------------------------------------------------------------
+// ATR Hesabı
+atr_standard = ta.atr(pmax_atr_len)
+atr_rma      = ta.rma(ta.tr(true), pmax_atr_len)
+atr_pmax     = change_atr_mthd ? atr_standard : atr_rma
+
+// Ortalama (Tetik)
+float pmax_mavg = na
+if pmax_mav_type == "SMA"
+    pmax_mavg := ta.sma(pmax_src, pmax_mav_len)
+else if pmax_mav_type == "WMA"
+    pmax_mavg := ta.wma(pmax_src, pmax_mav_len)
+else
+    pmax_mavg := ta.ema(pmax_src, pmax_mav_len)
+
+float atr_applied = normalize_atr ? (pmax_atr_mult * atr_pmax / close) : (pmax_atr_mult * atr_pmax)
+
+long_stop_raw  = pmax_mavg - atr_applied
+short_stop_raw = pmax_mavg + atr_applied
+
+var float long_stop  = na
+var float short_stop = na
+var int   pmax_dir   = 1
+
+long_stop  := pmax_mavg[1] > long_stop[1]  ? math.max(long_stop_raw, long_stop[1])   : long_stop_raw
+short_stop := pmax_mavg[1] < short_stop[1] ? math.min(short_stop_raw, short_stop[1]) : short_stop_raw
+
+if pmax_dir == -1 and pmax_mavg > short_stop[1]
+    pmax_dir := 1
+else if pmax_dir == 1 and pmax_mavg < long_stop[1]
+    pmax_dir := -1
+
+float pmax_line = pmax_dir == 1 ? long_stop : short_stop
+
+p_pmax = plot(show_pmax ? pmax_line : na, title="PMax", color=pmax_dir == 1 ? #2563EB : #EF4444, linewidth=2)
+p_mavg = plot(show_pmax and show_mavg ? pmax_mavg : na, title="EMA9", color=#0585E1, linewidth=1)
+
+// Sinyaller
+pmax_buy  = ta.crossover(pmax_mavg, pmax_line)
+pmax_sell = ta.crossunder(pmax_mavg, pmax_line)
+
+plotshape(show_pmax and show_signals and pmax_buy ? (pmax_line * 0.995) : na, title="Buy", style=shape.labelup, location=location.absolute, color=#22C55E, text="Buy", textcolor=color.white, size=size.tiny)
+plotshape(show_pmax and show_signals and pmax_sell ? (pmax_line * 1.005) : na, title="Sell", style=shape.labeldown, location=location.absolute, color=#EF4444, text="Sell", textcolor=color.white, size=size.tiny)
+
+// Highlighter (Bulut)
+fill(p_mavg, p_pmax, color=show_pmax and highlighter_on ? (pmax_dir == 1 ? color.new(#22C55E, 85) : color.new(#EF4444, 85)) : na, title="Highlighter")
+
+// ------------------------------------------------------------------------------
+// 4. LINREG KANALI (DOĞRUSAL KORİDOR - LINE.NEW)
+// ------------------------------------------------------------------------------
+var line l_lin_up = na
+var line l_lin_bs = na
+var line l_lin_dn = na
+var linefill lf_up = na
+var linefill lf_dn = na
+var label l_pearson = na
+
+if show_linreg and barstate.islast
+    line.delete(l_lin_up)
+    line.delete(l_lin_bs)
+    line.delete(l_lin_dn)
+    label.delete(l_pearson)
+
+    int len = math.min(linreg_len, bar_index)
+    float sumX  = 0.0
+    float sumY  = 0.0
+    float sumX2 = 0.0
+    float sumXY = 0.0
+
+    for i = 0 to len - 1
+        float x_val = float(len - 1 - i)
+        float y_val = linreg_src[i]
+        sumX  += x_val
+        sumY  += y_val
+        sumX2 += x_val * x_val
+        sumXY += x_val * y_val
+
+    float n = float(len)
+    float slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX)
+    float intercept = (sumY - slope * sumX) / n
+
+    float sum_res2 = 0.0
+    for i = 0 to len - 1
+        float x_val = float(len - 1 - i)
+        float y_pred = intercept + slope * x_val
+        sum_res2 += math.pow(linreg_src[i] - y_pred, 2)
+    float std_err = math.sqrt(sum_res2 / n)
+
+    int x1 = bar_index - len + 1
+    int x2 = bar_index
+    float base_start = intercept
+    float base_end   = intercept + slope * float(len - 1)
+
+    float up_start = base_start + (use_up_dev ? up_mult * std_err : 0.0)
+    float up_end   = base_end   + (use_up_dev ? up_mult * std_err : 0.0)
+
+    float dn_start = base_start - (use_dn_dev ? dn_mult * std_err : 0.0)
+    float dn_end   = base_end   - (use_dn_dev ? dn_mult * std_err : 0.0)
+
+    var ext_mode = lin_extend_r ? (lin_extend_l ? extend.both : extend.right) : (lin_extend_l ? extend.left : extend.none)
+
+    l_lin_up := line.new(x1, up_start, x2, up_end, color=#3B82F6, width=2, extend=ext_mode)
+    l_lin_bs := line.new(x1, base_start, x2, base_end, color=#EF4444, width=1, style=line.style_dashed, extend=ext_mode)
+    l_lin_dn := line.new(x1, dn_start, x2, dn_end, color=#3B82F6, width=2, extend=ext_mode)
+
+    lf_up := linefill.new(l_lin_up, l_lin_bs, col_lin_up)
+    lf_dn := linefill.new(l_lin_bs, l_lin_dn, col_lin_dn)
+
+    if show_pearson
+        float pearson_r = ta.correlation(linreg_src, bar_index, len)
+        l_pearson := label.new(x1, dn_start, "R: " + str.tostring(pearson_r, "#.####"), style=label.style_label_up, color=color.new(#3B82F6, 70), textcolor=color.white, size=size.tiny)
+
+// ------------------------------------------------------------------------------
+// 5. NADARAYA WATSON ENVELOPE (GAUSSIAN KERNEL)
+// ------------------------------------------------------------------------------
+float sum_w = 0.0
+float sum_v = 0.0
+int lookback = math.min(100, bar_index)
+
+for i = 0 to lookback
+    float w = math.exp(-math.pow(i, 2) / (2.0 * math.pow(nad_h, 2)))
+    sum_w += w
+    sum_v += nad_src[i] * w
+
+float k_val = sum_v / sum_w
+float k_mae = ta.sma(math.abs(nad_src - k_val), 100) * nad_mult
+
+float nad_up = k_val + k_mae
+float nad_dn = k_val - k_mae
+
+p_nad_up = plot(show_nadaray ? nad_up : na, title="Nadaraya Upper", color=color.new(col_nad_up, 20), linewidth=1)
+p_nad_dn = plot(show_nadaray ? nad_dn : na, title="Nadaraya Lower", color=color.new(col_nad_dn, 20), linewidth=1)
+fill(p_nad_up, p_nad_dn, color=show_nadaray ? color.new(col_nad_up, 94) : na, title="Nadaraya Channel")
+
+nad_bear = ta.crossover(nad_src, nad_up)
+nad_bull = ta.crossunder(nad_src, nad_dn)
+
+plotshape(show_nadaray and nad_bear ? high : na, title="Nadaraya Bear", style=shape.triangledown, location=location.abovebar, color=col_nad_dn, size=size.tiny)
+plotshape(show_nadaray and nad_bull ? low  : na, title="Nadaraya Bull", style=shape.triangleup,   location=location.belowbar, color=col_nad_up, size=size.tiny)
+
+if show_nadaray and nad_repaint and barstate.islast
+    var table nad_tbl = table.new(position.top_right, 1, 1, bgcolor=#1E222D, border_color=#373A46, border_width=1)
+    table.cell(nad_tbl, 0, 0, "Repainting Mode Enabled", text_color=color.white, text_size=size.small)

@@ -5,12 +5,50 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 ---
 
 ## 📑 Kronolojik İçindekiler
-1. [📅 14.10.2026 — Quant Mimari Dönüşüm, SymbolRegistry, İki Aşamalı Veri Hunisi, 250 Mumluk RingBuffer ve Sıfır Sahte Sinyal](#-14102026)
-2. [📅 13.10.2026 — Gerçekçi Tam Test Süiti (36 Test), Kökten Fiyat Hassasiyeti (0.004890 / 0.00001850 / 0.17890) ve Test Metodolojisi](#-13102026)
-3. [📅 07.10.2026 — 7/24 Kesintisiz Arka Plan, 60 Günlük Kalıcı Sinyal Arşivi, Hassas Fiyat Formatı (0.004890) ve #coin Geçmişi](#-07102026)
-4. [📅 05.10.2026 — MVC Katmanlı Mikro-Bot Mimarisi, 9 Bot Modülerliği ve Hata Düzeltmeleri](#-05102026)
-5. [📅 28.09.2026 — Multi-Bot İstasyonu, Canlı Kripto Senkronizasyonu, /api/signals/emit Entegrasyonu ve Watchlist WebSocket](#-28092026)
-6. [📅 25.09.2026 — Akıllı Türev Terminali Temeli, TradingView Lightweight Charts, Akıllı Para Kokpiti ve 15 Regresyon Testi](#-25092026)
+1. [📅 20.10.2026 — Repodan Güncelleme, Sayısal Mikro Fiyat Hassasiyeti Düzeltmesi ve Canlı Terminal Aktivasyonu](#-20102026)
+2. [📅 14.10.2026 — Quant Mimari Dönüşüm, SymbolRegistry, İki Aşamalı Veri Hunisi, 250 Mumluk RingBuffer ve Sıfır Sahte Sinyal](#-14102026)
+3. [📅 13.10.2026 — Gerçekçi Tam Test Süiti (36 Test), Kökten Fiyat Hassasiyeti (0.004890 / 0.00001850 / 0.17890) ve Test Metodolojisi](#-13102026)
+4. [📅 07.10.2026 — 7/24 Kesintisiz Arka Plan, 60 Günlük Kalıcı Sinyal Arşivi, Hassas Fiyat Formatı (0.004890) ve #coin Geçmişi](#-07102026)
+5. [📅 05.10.2026 — MVC Katmanlı Mikro-Bot Mimarisi, 9 Bot Modülerliği ve Hata Düzeltmeleri](#-05102026)
+6. [📅 28.09.2026 — Multi-Bot İstasyonu, Canlı Kripto Senkronizasyonu, /api/signals/emit Entegrasyonu ve Watchlist WebSocket](#-28092026)
+7. [📅 25.09.2026 — Akıllı Türev Terminali Temeli, TradingView Lightweight Charts, Akıllı Para Kokpiti ve 15 Regresyon Testi](#-25092026)
+
+---
+
+# 📅 20.10.2026
+
+## 💬 1. Konuşmalarımız ve Onaylananlar (Kullanıcı Talepleri & Kararlar)
+1. **Repodan Güncelleme ve Çalıştırma:**
+   * Kullanıcı: *"repodan güncel dosyaları çek ve çalıştır"* talimatını verdi.
+   * Otonom İcraat Kuralı doğrultusunda ara onay beklenmeksizin uzak repo (`origin/master`) senkronize edildi, testler icra edildi, tespit edilen mikro basamak hatası giderildi ve `terminal-server.js` canlı olarak başlatıldı.
+
+---
+
+## 🧠 2. Düşündüklerimiz ve Mimari Kararlar
+1. **Mikro Fiyat Hassasiyetinde Kesin Koruma (0.004890 / 0.00001850):**
+   * `price-formatter` modülünde `getDecimalPlaces` çağrısında sayısal float değerlerin (`0.00489`) string'e çevrilerek string kesiti üzerinden basamak aranması sebebiyle dinamik basamak kuralı (abs < 0.01 ise 6 basamak, abs < 0.0001 ise 8 basamak) devre dışı kalıyordu.
+   * `typeof val === 'string'` kontrolü yapılarak; yalnızca metin olarak gelenlerin orijinal karakter dizilimi korunacak, sayısal float olarak gelenlerin ise piyasa büyüklüğüne göre kesin 6 ve 8 basamak hassasiyeti alması sağlandı.
+2. **Temiz Git Durumu ve Fazlalıkların Ayıklanması:**
+   * Önceden sahnelenmiş (staged) olan `mobile_app` build çıktıları (`.dart_tool`, `android/.gradle` vb.) unstage edilerek repository'nin temiz ve kararlı kalması temin edildi.
+
+---
+
+## 🛠️ 3. Yaptıklarımız (Teknik Geliştirmeler)
+1. **[`services/price-formatter.js`](services/price-formatter.js):**
+   * `getDecimalPlaces` fonksiyonunda sayısal değerlerin string uzunluğuna göre değil, değer aralığına göre (örn. `abs < 0.01 -> 6 basamak`) formatlanması sağlandı.
+2. **[`public/core/price-formatter.js`](public/core/price-formatter.js):**
+   * Frontend tarafındaki ayna fonksiyon aynı hassasiyet kuralıyla senkronize edildi.
+3. **[`terminal-server.js`](terminal-server.js):**
+   * Port 3000 üzerinde arka plan daemon görevi olarak başlatıldı; Binance WebSocket akışları ve Quant sinyal tarama motorları devreye alındı.
+
+---
+
+## ✅ 4. Tamamlanan İşler ve Doğrulama
+* **Git Senkronizasyonu:** `git pull origin master` -> `Already up to date.`
+* **Birim & Regresyon Testleri:** `npm test` -> 8/8 Regresyon Testi ve 5/5 Quant Doğrulama Testi PASS.
+* **Telegram & SignalBus Entegrasyonu:** `node review/test-telegram-dispatcher.cjs` -> PASS.
+* **Fiyat Hassasiyet & 60 Günlük Arşiv Testi:** `node review/verify-signal-store-precision.cjs` -> PASS (8/8).
+* **Canlı Sunucu Doğrulaması:** `http://localhost:3000` HTTP 200 OK ile çalışıyor.
 
 ---
 

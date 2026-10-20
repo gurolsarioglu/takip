@@ -11,9 +11,11 @@ const PriceFormatter = (() => {
 
     if (val === null || val === undefined || val === '') return 2;
 
-    const str = String(val).trim();
-    if (str.includes('.') && !str.includes('e') && !str.includes('E')) {
-      return str.split('.')[1].length;
+    if (typeof val === 'string') {
+      const str = val.trim();
+      if (str.includes('.') && !str.includes('e') && !str.includes('E')) {
+        return str.split('.')[1].length;
+      }
     }
 
     const num = typeof val === 'number' ? val : Number(val);

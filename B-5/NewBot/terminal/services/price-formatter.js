@@ -19,10 +19,12 @@ function getDecimalPlaces(val, symbol = null) {
   if (val === null || val === undefined || val === '') return 2;
 
   // String olarak geldiyse orijinal basamak sayısını tespit et
-  const str = String(val).trim();
-  if (str.includes('.') && !str.includes('e') && !str.includes('E')) {
-    const fraction = str.split('.')[1];
-    return fraction.length;
+  if (typeof val === 'string') {
+    const str = val.trim();
+    if (str.includes('.') && !str.includes('e') && !str.includes('E')) {
+      const fraction = str.split('.')[1];
+      return fraction.length;
+    }
   }
 
   const num = typeof val === 'number' ? val : Number(val);

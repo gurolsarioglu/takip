@@ -1,0 +1,175 @@
+//@version=5
+indicator("Trader Club S/R [Open Source]", shorttitle="TC S/R", overlay=true, max_lines_count=500, max_boxes_count=500, max_labels_count=500)
+
+// ==========================================
+// INPUTS
+// ==========================================
+grp_main    = "Temel Ayarlar"
+enable_sr   = input.bool(true, "Destek / Dirençleri Etkinleştir", group=grp_main)
+rb          = input.int(10, "Pivot Sol/Sağ Bar Sayısı (rb)", minval=1, group=grp_main)
+prd         = input.int(284, "Geriye Dönük Tarama Barı (prd)", minval=10, group=grp_main)
+chan_width  = input.float(10.0, "Kanal Genişlik % (channel_width)", minval=0.1, step=0.5, group=grp_main)
+strength_sr = input.int(2, "Min. Dokunma Gücü (strength_sr)", minval=1, group=grp_main)
+
+grp_visual  = "Görünüm & Zonelar"
+use_zones   = input.bool(true, "S/R Seviye Bölgelerini (Zone) Göster", group=grp_visual)
+use_hl_zones= input.bool(true, "En Yüksek / En Düşük Zone Göster", group=grp_visual)
+zone_width  = input.float(2.0, "Zone Kalınlık % (zone_width)", minval=0.1, step=0.5, group=grp_visual)
+expand_sr   = input.bool(true, "Çizgileri Sağa Uzat", group=grp_visual)
+color_sup   = input.color(#00DBFF, "Destek Rengi (Boğa)", group=grp_visual)
+color_res   = input.color(#E91E63, "Direnç Rengi (Ayı)", group=grp_visual)
+line_width  = input.int(2, "Çizgi Kalınlığı", minval=1, maxval=4, group=grp_visual)
+label_offset= input.int(15, "Etiket Sağa Kaydırma (Bar)", minval=0, maxval=100, group=grp_visual)
+
+// ==========================================
+// PIVOT HESAPLAMA
+// ==========================================
+ph = ta.pivothigh(high, rb, rb)
+pl = ta.pivotlow(low, rb, rb)
+
+// ==========================================
+// ÇİZİM VE HESAPLAMA VERİ YAPILARI
+// ==========================================
+var line[]   lines_sr   = array.new_line()
+var box[]    boxes_sr   = array.new_box()
+var label[]  labels_sr  = array.new_label()
+
+var line     line_hi    = na
+var line     line_lo    = na
+var box      box_hi     = na
+var box      box_lo     = na
+var label    label_hi   = na
+var label    label_lo   = na
+
+// ==========================================
+// ALGORİTMA: S/R SEVİYELERİNİ BELİRLEME
+// ==========================================
+// Sadece son bar veya her yeni pivot onaylandığında çalıştır
+if enable_sr and barstate.islast
+    // Eski çizimleri temizle
+    if array.size(lines_sr) > 0
+        for i = 0 to array.size(lines_sr) - 1
+            line.delete(array.get(lines_sr, i))
+        array.clear(lines_sr)
+    if array.size(boxes_sr) > 0
+        for i = 0 to array.size(boxes_sr) - 1
+            box.delete(array.get(boxes_sr, i))
+        array.clear(boxes_sr)
+    if array.size(labels_sr) > 0
+        for i = 0 to array.size(labels_sr) - 1
+            label.delete(array.get(labels_sr, i))
+        array.clear(labels_sr)
+
+    line.delete(line_hi)
+    line.delete(line_lo)
+    box.delete(box_hi)
+    box.delete(box_lo)
+    label.delete(label_hi)
+    label.delete(label_lo)
+
+    // Periyot içindeki en yüksek ve en düşük
+    hi_prd = ta.highest(high, prd)
+    lo_prd = ta.lowest(low, prd)
+    cwidth = (hi_prd - lo_prd) * (chan_width / 100.0)
+    zwidth = (ta.highest(high, 300) - ta.lowest(low, 300)) * (zone_width / 100.0)
+
+    // Pivot noktalarını topla (son prd bar içinde)
+    var float[] pv_prices = array.new_float()
+    var int[]   pv_bars   = array.new_int()
+    var bool[]  pv_is_hi  = array.new_bool()
+    array.clear(pv_prices)
+    array.clear(pv_bars)
+    array.clear(pv_is_hi)
+
+    float highest_level = lo_prd
+    float lowest_level  = hi_prd
+
+    // Geriye dönük pivot tarama
+    int limit_bar = math.min(prd, bar_index)
+    for i = 0 to limit_bar
+        ph_val = ph[i]
+        pl_val = pl[i]
+        if not na(ph_val)
+            array.push(pv_prices, high[i + rb])
+            array.push(pv_bars, bar_index - (i + rb))
+            array.push(pv_is_hi, true)
+            highest_level := math.max(highest_level, high[i + rb])
+            lowest_level  := math.min(lowest_level, high[i + rb])
+        if not na(pl_val)
+            array.push(pv_prices, low[i + rb])
+            array.push(pv_bars, bar_index - (i + rb))
+            array.push(pv_is_hi, false)
+            highest_level := math.max(highest_level, low[i + rb])
+            lowest_level  := math.min(lowest_level, low[i + rb])
+
+    int pv_count = array.size(pv_prices)
+    var bool[] visited = array.new_bool(math.max(1, pv_count), false)
+    if pv_count > 0
+        array.fill(visited, false)
+
+    // Kümeleme ve temas sayısı (strength) hesaplama
+    var float[] active_levels = array.new_float()
+    var int[]   active_bars   = array.new_int()
+    array.clear(active_levels)
+    array.clear(active_bars)
+
+    if pv_count > 0
+        for i = 0 to math.min(pv_count - 1, 40)
+            if not array.get(visited, i)
+                float base_p = array.get(pv_prices, i)
+                int   base_b = array.get(pv_bars, i)
+                float upl = base_p + cwidth
+                float dnl = base_p - cwidth
+                
+                int touches = 0
+                for j = 0 to math.min(pv_count - 1, 40)
+                    if not array.get(visited, j)
+                        float cand_p = array.get(pv_prices, j)
+                        if cand_p >= dnl and cand_p <= upl
+                            touches += 1
+                
+                if touches >= strength_sr
+                    // Eşleşenleri işaretle
+                    for j = 0 to math.min(pv_count - 1, 40)
+                        float cand_p = array.get(pv_prices, j)
+                        if cand_p >= dnl and cand_p <= upl
+                            array.set(visited, j, true)
+                    
+                    if array.size(active_levels) < 21
+                        array.push(active_levels, base_p)
+                        array.push(active_bars, base_b)
+
+    // 1. En Yüksek ve En Düşük Seviye Çizimi
+    color hi_col = close >= highest_level ? color_sup : color_res
+    color lo_col = close >= lowest_level  ? color_sup : color_res
+
+    int start_x_hl = expand_sr ? (bar_index - math.min(311, bar_index)) : (bar_index - 50)
+    int end_x      = bar_index + label_offset
+
+    line_hi := line.new(start_x_hl, highest_level, end_x, highest_level, xloc=xloc.bar_index, color=hi_col, width=line_width, extend=expand_sr ? extend.right : extend.none)
+    line_lo := line.new(start_x_hl, lowest_level,  end_x, lowest_level,  xloc=xloc.bar_index, color=lo_col, width=line_width, extend=expand_sr ? extend.right : extend.none)
+
+    label_hi := label.new(end_x, highest_level, "High Level: " + str.tostring(highest_level, "#.##"), xloc=xloc.bar_index, style=label.style_label_left, color=color.new(hi_col, 80), textcolor=hi_col, size=size.small)
+    label_lo := label.new(end_x, lowest_level,  "Low Level: "  + str.tostring(lowest_level, "#.##"),  xloc=xloc.bar_index, style=label.style_label_left, color=color.new(lo_col, 80), textcolor=lo_col, size=size.small)
+
+    if use_hl_zones and zwidth > 0
+        box_hi := box.new(start_x_hl, highest_level + zwidth, end_x, highest_level - zwidth, xloc=xloc.bar_index, border_color=color.new(hi_col, 90), bgcolor=color.new(hi_col, 80), extend=expand_sr ? extend.right : extend.none)
+        box_lo := box.new(start_x_hl, lowest_level + zwidth,  end_x, lowest_level - zwidth,  xloc=xloc.bar_index, border_color=color.new(lo_col, 90), bgcolor=color.new(lo_col, 80), extend=expand_sr ? extend.right : extend.none)
+
+    // 2. Kümelenmiş S/R Seviyeleri Çizimi
+    int total_sr = array.size(active_levels)
+    if total_sr > 0
+        for k = 0 to total_sr - 1
+            float sr_p = array.get(active_levels, k)
+            int   sr_b = array.get(active_bars, k)
+            color sr_col = close >= sr_p ? color_sup : color_res
+            int   sr_start_x = expand_sr ? (bar_index - math.min(355, bar_index)) : math.max(0, sr_b)
+
+            line l = line.new(sr_start_x, sr_p, end_x, sr_p, xloc=xloc.bar_index, color=sr_col, width=line_width, extend=expand_sr ? extend.right : extend.none)
+            label lb = label.new(end_x, sr_p, str.tostring(sr_p, "#.##"), xloc=xloc.bar_index, style=label.style_label_left, color=color.new(sr_col, 85), textcolor=sr_col, size=size.tiny)
+            array.push(lines_sr, l)
+            array.push(labels_sr, lb)
+
+            if use_zones and zwidth > 0
+                box b = box.new(sr_start_x, sr_p + zwidth, end_x, sr_p - zwidth, xloc=xloc.bar_index, border_color=color.new(sr_col, 90), bgcolor=color.new(sr_col, 85), extend=expand_sr ? extend.right : extend.none)
+                array.push(boxes_sr, b)
