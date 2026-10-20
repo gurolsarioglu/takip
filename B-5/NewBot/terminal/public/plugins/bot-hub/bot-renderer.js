@@ -722,7 +722,7 @@ const BotRenderer = (() => {
             </div>
             <div class="card-field-row">
               <span>${label}</span>
-              <span style="color: ${valColor}; font-weight: 700;">${s.dropValue}</span>
+              <span style="color: ${valColor}; font-weight: 700;">${s.dropValue || s.boostValue}</span>
             </div>
             <div class="card-field-row">
               <span>Current Price:</span>

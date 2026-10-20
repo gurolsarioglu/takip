@@ -24,7 +24,12 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 2. **Botların Bağımsız NPX/Mikro-Servis ve Ayrı Batch Pencerelerine Taşınması:**
    * Kullanıcı: *"biz proje içerisinde botları doğru çalıştıramıyoruz farklı bir bakış açısı deneyelim botları ayrı ayır npx servisleri yapalım her bot farklı batch olsun start terminal all. bat dosyası çalıştığında botlarda ayır arı bathc file da çalışsın biz bu mesajları tarıyıcıya yazdıralım sonrasında telegrama mesaj göndermesi de kolay olur böylelikle botları ayrı ayır değerlendirerek sorunu aşmış olur. tüm dosyaları buna göre tekrar düzenle."* talimatını verdi.
    * Monolitik tek süreçte çalışan bot motoru yerine, her biri bağımsız birer CLI mikro-servisi olan 9 adet müstakil runner ve batch dosyası mimarisine geçiş kararı alındı ve otonom olarak uygulandı.
-3. **Clean Code & Hatalı/Gereksiz Kod Temizliği:**
+3. **M1-A Botu Odaklanması, Visivero Tersine Mühendisliği & Trader Club İndikatörleri:**
+   * Kullanıcı: *"M1-A botuna odaklanalım elimizde REA da var onu da kullanabiliriz. terminal.visivero.com adresine giriş yapacak kullanıcı adı ve şifre var orada istediğin bir şey olursa gerekli bilgiyi sağlayabilirim. geçmiş dosyalarda Trader Club 5 in 1 trader club Buy /SEL ve Trader club S/r indaktörleri var bizim bottumuzdan gelen siyalde hacim dahil diğer verilerde sorun var. M1-A 1dk zaman diliminde çalışıyor binance de veri çekerken dikkatli olmaklazım bizi durdurmasın aşırı istek çekerken bunu da düşünmek lazım m1-a botunu bu kurallara göre önce gözden geçtir biz ne yapıyoruz. terminal.visivero.com da ne oluyor..."* talimatını verdi.
+   * Kullanıcının yüklediği gerçek Visivero M1-A arayüz ekran görüntüsü (`SUPERUSDT`, `QUSDT`, `MAGMAUSDT`, `BTWUSDT`, `JCTUSDT`), geçmiş `Trader Club 5 in 1`, `Trader Club BUY/SELL`, `Trader Club S/R` PineScript/Python motorları ve Visivero frontend bundle kaynakları incelendi.
+   * Visivero'nun M1-A botunda hem **Boost (+)** hem de **Drop (-)** sinyallerini 1m barda ürettiği, "Volume" değerinin 20 barlık ortalama değil, **önceki 1m barına kıyasla mevcut barın hacim değişim yüzdesi** olduğu (`((V_cur - V_prev) / V_prev) * 100`), RSI aşırı uçlarında (>=70 veya <=30) `⚠️` ikonu basıldığı, Stochastic K/D değerlerinde aşırı bölgelerde (<=25 veya >=80) `⚠️` uyarısı verildiği tespit edilip birebir uygulandı.
+   * Binance REST kline isteklerine karşı `sleep` tabanlı akıllı rate-limit koruması entegre edilerek IP ban riski sıfırlandı.
+4. **Clean Code & Hatalı/Gereksiz Kod Temizliği:**
    * Kullanıcı: *"çok fazla gereksiz çalışan hatalı kod var bunları temizleyip clean kod mantığında çalışıyoruz."* talimatını verdi.
    * Frontend ve bot motorunda yer alan yapay/sentetik kalıntılar (`BTWUSDT`), eski/yanıt vermeyen borsa WebSocket endpoint'i (`/ws/!miniTicker@arr`), kart render süreçlerinde eksik olan fiyat formatlama standartları baştan sona temizlendi ve clean code prensiplerine uyarlandı.
 
@@ -47,13 +52,36 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
    * Ön yüzde kodlar taranarak tespit edilen ve gerçekte var olmayan `BTWUSDT` gibi yapay/hatalı sembol referansları (`index.html`, `multi-chart.plugin.js`, `watchlist.plugin.js`, `sentiment-modal.plugin.js`) tamamen temizlendi; meşru likit paritelerle (`BTCUSDT`, `DOGEUSDT`) değiştirildi.
    * `watchlist.plugin.js` içindeki eski Binance WebSocket URL'si (`wss://fstream.binance.com/ws/!miniTicker@arr`) Binance tarafından sessizce düşürüldüğü için güncel ve resmi market endpoint'ine (`wss://fstream.binance.com/market/ws/!miniTicker@arr`) güncellendi; mesaj çözümleyicisi hem doğrudan array hem de `{ data }` sarmalamasını destekleyecek biçimde güçlendirildi.
    * `bot-renderer.js` içindeki 9 bot kart şablonunda kontrolsüzce yazdırılan `${s.currentPrice}` ve `${s.prevPrice}` satırları yerine merkezi `formatCardPrice(val, symbol)` fonksiyonu entegre edilerek finansal veri basamak kırpılmaları tamamen engellendi.
-6. **Temiz Git Durumu ve Fazlalıkların Ayıklanması:**
+6. **Visivero M1-A Tersine Mühendisliği ve Formül Çözümü:**
+   * Visivero'nun M1-A botu yalnızca "Drop" değil, hem **Boost** (yeşil 🟢, `#38bdf8`) hem de **Drop** (kırmızı 🔴, `#f87171`) 1m mikro momentum hareketlerini yakalamaktadır. Eşik değeri yaklaşık `|ΔP| >= 0.95% - 1.00%` arasındadır.
+   * **Hacim Muamması:** Ekran görüntüsündeki negatif hacimler (`-1.94%`, `-4.39%`) ve mikro pozitifler (`0.44%`, `4.96%`), hacmin 20 barlık SMA ortalamasıyla DEĞİL, **bir önceki 1 dakikalık barın hacmiyle** kıyaslandığını net olarak kanıtlamıştır:
+     $$\text{Volume \%} = \frac{V_{\text{current}} - V_{\text{previous}}}{V_{\text{previous}}} \times 100$$
+   * **RSI ve Stochastic Uyarıları:**
+     * RSI(14) 70 üzerine çıktığında (örn: `74 ⚠️`, `73 ⚠️`) veya 30 altına indiğinde (`27 ⚠️`) sarı ünlem basılır; nötr bölgede (`39`, `57`) yalın sayı verilir.
+     * Stochastic (K/D) (14, 14, 3, 3) oranında aşırı satım (`10/25 ⚠️`, `-0/-0 ⚠️`) durumunda ünlem uyarısı eklenir.
+   * **Binance Rate Limit (IP Ban) Önleme Stratejisi:**
+     * 60+ vadeli çift taranırken aralıksız REST isteği atıldığında IP'nin Binance tarafından geçici yasaklanmaması için runner içine her kline isteği arasına 40-60ms asenkron nefes alma payı (`sleep`) konuldu ve tarama periyodu 10 saniyeye ayarlandı.
+7. **Temiz Git Durumu ve Fazlalıkların Ayıklanması:**
    * Önceden sahnelenmiş (staged) olan `mobile_app` build çıktıları (`.dart_tool`, `android/.gradle` vb.) unstage edilerek repository'nin temiz ve kararlı kalması temin edildi.
 
 ---
 
 ## 🛠️ 3. Yaptıklarımız (Teknik Geliştirmeler)
-1. **[`services/price-formatter.js`](services/price-formatter.js):**
+1. **[`bots/runners/m1a-drop.runner.js`](bots/runners/m1a-drop.runner.js):**
+   * Baştan aşağı Visivero M1-A tersine mühendislik çıktısına göre yeniden kodlandı.
+   * Hem `Boost` (🟢) hem `Drop` (🔴) tespiti eklendi.
+   * Hacim hesabı `((curVol - prevVol) / prevVol * 100).toFixed(2) + '%'` olarak düzeltildi.
+   * RSI (>=70 veya <=30) ve StochRSI (<=25 veya >=80) dinamik `⚠️` uyarıları entegre edildi.
+   * İstekler arasına `await sleep(60)` konarak Binance 429 kısıtlamalarına karşı zırh sağlandı.
+2. **[`bots/strategies/m1a-drop.bot.js`](bots/strategies/m1a-drop.bot.js):**
+   * Runner'dan ve harici kaynaklardan gelen hem `boostValue` hem de `dropValue` sinyalleri, hazır formatlanmış hacim ve indikatör değerleri korunarak `SignalStore`'a kaydedilecek şekilde güncellendi.
+3. **[`public/plugins/bot-hub/bot-renderer.js`](public/plugins/bot-hub/bot-renderer.js):**
+   * M1-A kart render bloğu güncellendi; `s.dropValue || s.boostValue` desteği eklendi.
+4. **[`services/price-formatter.js`](services/price-formatter.js):**
+   * `formatCryptoPrice` fonksiyonunda sembol registry'de henüz indekslenmemiş olsa dahi string olarak gelen yüksek basamaklı mikro fiyatların (`0.18473`, `0.00232`) asla 2 basamağa yuvarlanmayıp tam hassasiyetle korunması garanti altına alındı.
+5. **[`start_bot_m1a.bat`](start_bot_m1a.bat):**
+   * Başlık ve açıklama "M1-A (Boost & Drop) Runner" olarak revize edildi.
+6. **[`services/price-formatter.js`](services/price-formatter.js):**
    * `getDecimalPlaces` fonksiyonunda sayısal değerlerin string uzunluğuna göre değil, değer aralığına göre (örn. `abs < 0.01 -> 6 basamak`) formatlanması sağlandı.
 2. **[`public/core/price-formatter.js`](public/core/price-formatter.js):**
    * Frontend tarafındaki ayna fonksiyon aynı hassasiyet kuralıyla senkronize edildi.

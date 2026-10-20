@@ -122,30 +122,37 @@ class M1ADropBot extends BaseBot {
     }
 
     const valFormatted = valNum >= 0 ? `+${valNum.toFixed(2)}%` : `${valNum.toFixed(2)}%`;
-    const volFormatted = volNum >= 0 ? `+${volNum.toFixed(2)}%` : `${volNum.toFixed(2)}%`;
+    const volFormatted = typeof s.volume === 'string' && s.volume.includes('%') 
+      ? s.volume 
+      : (volNum >= 0 ? `+${volNum.toFixed(2)}%` : `${volNum.toFixed(2)}%`);
 
     // RSI Değerleri (Aşırı değerde ⚠️ alarmı)
-    const rawRsi = parseInt(s.rsi, 10);
-    const rsiNum = !isNaN(rawRsi) ? rawRsi : (valNum < 0 ? 65 : 75);
-    const rsiFormatted = `${rsiNum}${rsiNum >= 75 || rsiNum <= 25 ? ' ⚠️' : ''}`;
+    let rsiFormatted = s.rsi;
+    if (!rsiFormatted) {
+      const rawRsi = parseInt(s.rsi, 10);
+      const rsiNum = !isNaN(rawRsi) ? rawRsi : (valNum < 0 ? 65 : 75);
+      rsiFormatted = `${rsiNum}${rsiNum >= 70 || rsiNum <= 30 ? ' ⚠️' : ''}`;
+    }
 
     // Stochastic formatı
     const stochFormatted = this.formatStochastic(s.stochK, s.stochD, s.stochastic);
 
     const card = {
-      id: 'm1a_' + Date.now(),
+      id: s.id || ('m1a_' + Date.now()),
       symbol: symbol,
       type: type,
       dot: dot,
-      dropValue: valFormatted,
-      currentPrice: formatCryptoPrice(s.price),
+      dropValue: type === 'drop' ? (s.dropValue || valFormatted) : undefined,
+      boostValue: type === 'boost' ? (s.boostValue || valFormatted) : undefined,
+      currentPrice: formatCryptoPrice(s.currentPrice || s.price, symbol),
       prevPrice: prevPriceStr,
       volume: volFormatted,
       rsi: rsiFormatted,
       stochastic: stochFormatted,
       btcStatus: s.btcStatus || 'Normal',
-      dateLabel: 'Today',
-      time: nowTime
+      strategy: s.strategy || (type === 'drop' ? '1m Mikro Drop' : '1m Mikro Boost'),
+      dateLabel: s.dateLabel || 'Today',
+      time: s.time || nowTime
     };
 
     return this.addSignal(card);

@@ -48,10 +48,24 @@ function formatCryptoPrice(rawPrice, precisionOrSymbol = null) {
 
   // 1. Eğer parametre bir sembol string'i ise (örn: 'BTCUSDT', 'DOGEUSDT')
   if (typeof precisionOrSymbol === 'string' && isNaN(Number(precisionOrSymbol))) {
-    const precision = symbolRegistry.getPrecision(precisionOrSymbol);
+    const meta = symbolRegistry.getSymbol(precisionOrSymbol);
+    if (meta && !meta.isFallback) {
+      const precision = meta.decimals;
+      const n = typeof rawPrice === 'number' ? rawPrice : parseFloat(rawPrice);
+      if (isNaN(n)) return '0.00';
+      return n.toFixed(precision);
+    }
+    // Sembol henüz registry'ye çekilmemiş veya fallback ise:
+    if (typeof rawPrice === 'string') {
+      const str = rawPrice.trim();
+      if (/^-?\d+(\.\d+)?$/.test(str) && !str.includes('e') && !str.includes('E')) {
+        return str;
+      }
+    }
+    const dec = getDecimalPlaces(rawPrice);
     const n = typeof rawPrice === 'number' ? rawPrice : parseFloat(rawPrice);
     if (isNaN(n)) return '0.00';
-    return n.toFixed(precision);
+    return n.toFixed(dec);
   }
 
   // 2. Eğer açıkça bir sayısal precision belirtilmişse
