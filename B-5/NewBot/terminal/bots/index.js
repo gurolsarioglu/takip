@@ -225,26 +225,40 @@ class BotManager {
     const nowTime = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
 
     // ─────────────────────────────────────────────────────────────
-    // A. M1-A Botu: 1m Ani Düşüş (<= -0.65%), Hacim > Ortalama, StochRSI Düşüşü
+    // A. M1-A Botu: 1m Ani Düşüş/Yükseliş, Bar-over-bar Hacim Değişimi, RSI/StochRSI
     // ─────────────────────────────────────────────────────────────
     if (alert.type === 'm1a') {
       if (!m1aDropBot.canEmitSignal(sym, '1m', null, 180000)) return;
 
       const klines1m = await marketDataEngine.getKlines(sym, '1m', 30);
-      if (klines1m.length < 20) return;
+      if (klines1m.length < 5) return;
 
-      const vols = klines1m.map(k => k.volume);
-      const avgVol = vols.slice(-21, -1).reduce((a, b) => a + b, 0) / 20;
-      const curVol = vols[vols.length - 1];
-      if (curVol < avgVol * 1.05) return;
+      const curBar = klines1m[klines1m.length - 1];
+      const prevBar = klines1m[klines1m.length - 2];
+
+      // Visivero Standardı: Önceki 1m barına göre hacim değişim oranı: ((curBar.volume - prevBar.volume) / prevBar.volume) * 100
+      let volChangePct = 0;
+      if (prevBar && prevBar.volume > 0) {
+        volChangePct = ((curBar.volume - prevBar.volume) / prevBar.volume) * 100;
+      }
+      const volumeFormatted = `${volChangePct.toFixed(2)}%`;
 
       const closes = klines1m.map(k => k.close);
       const rsiRes = quantIndicators.calculateRSI(closes, 14);
-      const stoch = quantIndicators.calculateStochRSI(rsiRes.rsiSeries, 14, 3, 3);
-      if (stoch.k > 75) return;
+      const rsiVal = Math.round(rsiRes.rsi);
+      const rsiFormatted = (rsiVal >= 70 || rsiVal <= 30) ? `${rsiVal} ⚠️` : `${rsiVal}`;
 
+      const stoch = quantIndicators.calculateStochRSI(rsiRes.rsiSeries, 14, 3, 3);
+      let kVal = Math.round(stoch.k);
+      let dVal = Math.round(stoch.d);
+      if (isNaN(kVal)) kVal = 0;
+      if (isNaN(dVal)) dVal = 0;
+      const stochWarning = (kVal <= 25 && dVal <= 25) || (kVal >= 80 && dVal >= 80);
+      const stochasticFormatted = `${kVal}/${dVal}${stochWarning ? ' ⚠️' : ''}`;
+
+      const isDrop = alert.dropPct <= 0;
+      const dot = isDrop ? '🔴' : '🟢';
       const prevPrice = computePrevPrice(alert.price, alert.dropPct, sym);
-      const volChangePct = avgVol > 0 ? ((curVol - avgVol) / avgVol * 100).toFixed(2) : '0.00';
 
       m1aDropBot.addSignal({
         id: `m1a_${sym}_${now}`,
@@ -252,19 +266,20 @@ class BotManager {
         timestamp: now,
         isoDate: dateObj.toISOString(),
         dateStr,
-        type: 'drop',
-        dot: '🔴',
-        dropValue: `${alert.dropPct.toFixed(2)}%`,
-        currentPrice: formatCryptoPrice(alert.price, sym),
+        type: isDrop ? 'drop' : 'boost',
+        dot,
+        dropValue: isDrop ? `${alert.dropPct.toFixed(2)}%` : undefined,
+        boostValue: !isDrop ? `+${alert.dropPct.toFixed(2)}%` : undefined,
+        currentPrice: alert.priceStr || formatCryptoPrice(alert.price, sym),
         prevPrice,
-        volume: `+${volChangePct}%`,
-        rsi: `${Math.round(rsiRes.rsi)}${rsiRes.rsi <= 25 ? ' ⚠️' : ''}`,
-        stochastic: `${Math.round(stoch.k)}/${Math.round(stoch.d)}`,
+        volume: volumeFormatted,
+        rsi: rsiFormatted,
+        stochastic: stochasticFormatted,
         btcStatus: 'Normal',
         dateLabel: dateStr,
         time: nowTime
       });
-      console.log(`[QuantEngine Sinyal] M1-A: ${sym} (${alert.dropPct.toFixed(2)}%)`);
+      console.log(`[QuantEngine Sinyal] M1-A: ${sym} (${alert.dropPct.toFixed(2)}% | Vol: ${volumeFormatted})`);
       return;
     }
 

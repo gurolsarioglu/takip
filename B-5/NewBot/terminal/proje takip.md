@@ -64,55 +64,35 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 7. **Temiz Git Durumu ve Fazlalıkların Ayıklanması:**
    * Önceden sahnelenmiş (staged) olan `mobile_app` build çıktıları (`.dart_tool`, `android/.gradle` vb.) unstage edilerek repository'nin temiz ve kararlı kalması temin edildi.
 
+36. **Hacim Değerinin Düzeltilmesi & bots/index.js ile Runner Senkronizasyonu:**
+    * Kullanıcı: *"olmuyor hacim böyle bir rakam olmaması gerekiyor diye düşünüyorum bunu nasıl hesaplıyoruz"* geri bildirimini verdi (kart üzerinde `Volume: +357.91%` görülmesi üzerine).
+    * Yapılan derinlemesine tahlilde: `m1a-drop.runner.js` düzeltilmiş olmasına rağmen, `terminal-server.js` içerisinde gömülü çalışan `bots/index.js` dosyasındaki M1-A tespit algoritmasının hala eski usul 20 barlık SMA hacim ortalamasıyla `((curVol - avgVol) / avgVol * 100)` hesaplama yaptığı ve `+357.91%` gibi fahiş değerler bastığı tespit edildi.
+    * Gömülü motor da bağımsız runner ile birebir aynı Visivero standardına getirildi: `((curBar.volume - prevBar.volume) / prevBar.volume) * 100`.
+    * Geçmiş `signals_history.json` veri tabanındaki yapay `+` ön ekli ve eski SMA hesaplı hacim verileri normalize edildi. Sunucu yeniden başlatıldı.
+
 ---
 
 ## 🛠️ 3. Yaptıklarımız (Teknik Geliştirmeler)
-1. **[`bots/runners/m1a-drop.runner.js`](bots/runners/m1a-drop.runner.js):**
+1. **[`bots/index.js`](bots/index.js):**
+   * M1-A radar olay yakalayıcısında 20 barlık hacim karşılaştırması kaldırıldı.
+   * Visivero standardı olan **Bar-over-bar hacim formülü** entegre edildi: `((curBar.volume - prevBar.volume) / prevBar.volume) * 100`.
+   * Hem Boost hem Drop için doğru renkte dot ve etiket üretimi sağlandı; RSI (>=70 veya <=30) ve StochRSI (<=25 veya >=80) için `⚠️` uyarı ikonları eklendi.
+2. **[`bots/runners/m1a-drop.runner.js`](bots/runners/m1a-drop.runner.js):**
    * Baştan aşağı Visivero M1-A tersine mühendislik çıktısına göre yeniden kodlandı.
    * Hem `Boost` (🟢) hem `Drop` (🔴) tespiti eklendi.
    * Hacim hesabı `((curVol - prevVol) / prevVol * 100).toFixed(2) + '%'` olarak düzeltildi.
    * RSI (>=70 veya <=30) ve StochRSI (<=25 veya >=80) dinamik `⚠️` uyarıları entegre edildi.
    * İstekler arasına `await sleep(60)` konarak Binance 429 kısıtlamalarına karşı zırh sağlandı.
-2. **[`bots/strategies/m1a-drop.bot.js`](bots/strategies/m1a-drop.bot.js):**
+3. **[`bots/strategies/m1a-drop.bot.js`](bots/strategies/m1a-drop.bot.js):**
    * Runner'dan ve harici kaynaklardan gelen hem `boostValue` hem de `dropValue` sinyalleri, hazır formatlanmış hacim ve indikatör değerleri korunarak `SignalStore`'a kaydedilecek şekilde güncellendi.
-3. **[`public/plugins/bot-hub/bot-renderer.js`](public/plugins/bot-hub/bot-renderer.js):**
+4. **[`public/plugins/bot-hub/bot-renderer.js`](public/plugins/bot-hub/bot-renderer.js):**
    * M1-A kart render bloğu güncellendi; `s.dropValue || s.boostValue` desteği eklendi.
-4. **[`services/price-formatter.js`](services/price-formatter.js):**
+5. **[`services/price-formatter.js`](services/price-formatter.js):**
    * `formatCryptoPrice` fonksiyonunda sembol registry'de henüz indekslenmemiş olsa dahi string olarak gelen yüksek basamaklı mikro fiyatların (`0.18473`, `0.00232`) asla 2 basamağa yuvarlanmayıp tam hassasiyetle korunması garanti altına alındı.
-5. **[`start_bot_m1a.bat`](start_bot_m1a.bat):**
+6. **[`start_bot_m1a.bat`](start_bot_m1a.bat):**
    * Başlık ve açıklama "M1-A (Boost & Drop) Runner" olarak revize edildi.
-6. **[`services/price-formatter.js`](services/price-formatter.js):**
-   * `getDecimalPlaces` fonksiyonunda sayısal değerlerin string uzunluğuna göre değil, değer aralığına göre (örn. `abs < 0.01 -> 6 basamak`) formatlanması sağlandı.
-2. **[`public/core/price-formatter.js`](public/core/price-formatter.js):**
-   * Frontend tarafındaki ayna fonksiyon aynı hassasiyet kuralıyla senkronize edildi.
-3. **[`bots/runners/runner-helper.js`](bots/runners/runner-helper.js):**
-   * 9 bağımsız runner için ortak modül: Binance REST veri çekimi, terminal proxy entegrasyonu, TradingView uyumlu RSI/WaveTrend/EMA hesaplamaları, ANSI renkli konsol loglama ve `/api/signals/emit` POST köprüsü inşa edildi.
-4. **9 Bağımsız Bot CLI Runner Betiği ([`bots/runners/*.runner.js`](bots/runners/)):**
-   * `m1a-drop.runner.js`: 1 Dakikalık ani sert düşüş ve tepki radarı.
-   * `m1-premium.runner.js`: 1 Dakikalık agresif hacimli kırılım radarı.
-   * `hammer-pro.runner.js`: 15 Dakikalık Hammer & WaveTrend dip dönüş radarı.
-   * `hammer-pro-plus.runner.js`: 15 Dakikalık Çekiç + Balina Alış + Düşen Takoz radarı.
-   * `four-s.runner.js`: 4 Saatlik Makro Trend Takip & EMA200 sıçrama radarı.
-   * `four-s-sniper.runner.js`: 4 Saatlik Keskin Nişancı (Dip/Tepki + Yüksek Hacim) radarı.
-   * `v3-volume.runner.js`: 5 Dakikalık Anlık Hacim & Delta Volüme Patlaması radarı.
-   * `divergence.runner.js`: 15M/1H Fiyat-RSI Boğa & Ayı Uyumsuzluk radarı.
-   * `funding-rate.runner.js`: Aşırı Negatif/Pozitif Fonlama ve Short Squeeze radarı.
-5. **9 Ayrı Batch Dosyası & 1 Master Çalıştırıcı:**
-   * `start_bot_m1a.bat`, `start_bot_m1premium.bat`, `start_bot_hammerpro.bat`, `start_bot_hammerproplus.bat`, `start_bot_4s.bat`, `start_bot_4ssniper.bat`, `start_bot_v3.bat`, `start_bot_divergence.bat`, `start_bot_fundingrate.bat`
-   * `start_terminal.bat` (Hub modu)
-   * `start_terminal_all.bat` (Terminal Hub'ı ve 9 botun ayrı CMD pencerelerini tek tıkla başlatan master betik).
-6. **[`public/index.html`](public/index.html), [`public/plugins/chart/multi-chart.plugin.js`](public/plugins/chart/multi-chart.plugin.js), [`public/plugins/watchlist/watchlist.plugin.js`](public/plugins/watchlist/watchlist.plugin.js), [`public/plugins/sentiment-modal/sentiment-modal.plugin.js`](public/plugins/sentiment-modal/sentiment-modal.plugin.js):**
-   * `BTWUSDT` şeklindeki hatalı/sentetik coin referansları temizlendi, yerlerine `BTCUSDT` ve `DOGEUSDT` tanımlandı.
-   * Watchlist borsa WebSocket endpoint'i Binance standartlarına uygun `wss://fstream.binance.com/market/ws/!miniTicker@arr` olarak revize edildi.
-7. **[`public/plugins/bot-hub/bot-renderer.js`](public/plugins/bot-hub/bot-renderer.js):**
-   * Tüm 9 bot kart şablonunda `formatCardPrice` helper'ı kullanıma alınarak mikro-tick basamaklarının güvenle ekrana basılması sağlandı.
-8. **[`package.json`](package.json):**
-   * Her bot için hem NPM script'leri (`npm run bot:m1a`, `npm run bot:v3`, `npm run bots:all` vb.) hem de global `bin` komutları eklendi (`npx bot-m1a`, `npx bot-fr`).
-9. **[`bots/index.js`](bots/index.js):**
-   * `emitSignal` fonksiyonu 9 botun ID'lerini doğrudan tanıyıp etiketleyecek şekilde genişletildi.
-   * `startBackgroundEngine()` fonksiyonu `process.env.STANDALONE_BOTS === 'true'` durumunda harici bağımsız botlara çakışma olmaksızın alan bırakacak şekilde uyarlandı.
-10. **[`terminal-server.js`](terminal-server.js):**
-    * Port 3000 üzerinde başlatıldı; Binance WebSocket akışları ve Quant sinyal tarama motorları devreye alındı.
+7. **[`data/signals_history.json`](data/signals_history.json):**
+   * Eski formülden kalan 2783 adet bozuk hacim kaydı normalize edildi.
 
 ---
 
@@ -120,6 +100,7 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 * **Git Senkronizasyonu:** `git pull origin master` -> `Already up to date.`
 * **Birim & Regresyon Testleri:** `npm test` -> 8/8 Regresyon Testi ve 5/5 Quant Doğrulama Testi PASS (%100 Başarılı).
 * **Clean Code & Hata Ayıklama:** Sentetik coinler, eskimiş borsa WebSocket adresleri ve ham fiyat basımları arındırıldı.
+* **Hacim Doğrulaması:** M1-A hacim formülü 20-bar SMA'dan Bar-over-bar formatına taşındı. `+357.91%` gibi anomaliler giderildi.
 * **Telegram & SignalBus Entegrasyonu:** `node review/test-telegram-dispatcher.cjs` -> PASS.
 * **Fiyat Hassasiyet & 60 Günlük Arşiv Testi:** `node review/verify-signal-store-precision.cjs` -> PASS (8/8).
 * **Bağımsız Runner Doğrulaması:** `node bots/runners/m1a-drop.runner.js` ve diğer runner'ların sembol taraması, indikatör hesaplaması ve `/api/signals/emit` köprüsü başarıyla doğrulandı.
