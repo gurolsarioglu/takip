@@ -1,0 +1,97 @@
+{
+  "sourcePath": "visivero_dump\\0-qg45til74n9.js",
+  "bundleSha256": "29920c343683e713e7fd3a30e2cf402c21068a912432d50575567b513e1374a2",
+  "inertExtraction": true,
+  "templates": [
+    {
+      "id": "visivero-bb",
+      "name": "BB",
+      "literalCharStart": 1123464,
+      "literalCharEnd": 1125448,
+      "literalByteStart": 1129785,
+      "literalByteEnd": 1131769,
+      "sourceSha256": "db9b97d2248f77cc1fe730dac48c38306773ec5339aa0b3a5c829e3100480c48"
+    },
+    {
+      "id": "visivero-dema",
+      "name": "DEMA",
+      "literalCharStart": 1125677,
+      "literalCharEnd": 1126858,
+      "literalByteStart": 1131998,
+      "literalByteEnd": 1133179,
+      "sourceSha256": "cc1b51f41174f9e0a987fa40ec9c430956386bd6cbd050dd93124aa23181ebe8"
+    },
+    {
+      "id": "visivero-open-interest",
+      "name": "Open Interest",
+      "literalCharStart": 1127108,
+      "literalCharEnd": 1129646,
+      "literalByteStart": 1133429,
+      "literalByteEnd": 1135967,
+      "sourceSha256": "96435c84f9457ec10984339342647b7898a87ef1a152ec6c3039dd6ef47970cd"
+    },
+    {
+      "id": "visivero-pivot",
+      "name": "Pivot Points Standard",
+      "literalCharStart": 1129911,
+      "literalCharEnd": 1142791,
+      "literalByteStart": 1136232,
+      "literalByteEnd": 1149112,
+      "sourceSha256": "59d3d2a2733194ae069dd374316a6a42399708cfb9505ada4035041c0e387d5f"
+    },
+    {
+      "id": "visivero-rsi",
+      "name": "RSI",
+      "literalCharStart": 1143012,
+      "literalCharEnd": 1153528,
+      "literalByteStart": 1149333,
+      "literalByteEnd": 1159849,
+      "sourceSha256": "434706ffc95a90e98c5abb9ffb04ace4d01c5b1c6bed02d96f0eb1a164e1e5d9"
+    },
+    {
+      "id": "visivero-srsi",
+      "name": "Stochastic RSI",
+      "literalCharStart": 1153775,
+      "literalCharEnd": 1155830,
+      "literalByteStart": 1160096,
+      "literalByteEnd": 1162151,
+      "sourceSha256": "5048de1ca3b15a076ec147f245145011f4430c9c49a99cee3a54b6c905745358"
+    },
+    {
+      "id": "visivero-tc-buy-sell",
+      "name": "TC Buy-Sell",
+      "literalCharStart": 1156074,
+      "literalCharEnd": 1178207,
+      "literalByteStart": 1162395,
+      "literalByteEnd": 1184528,
+      "sourceSha256": "3dedfab1e166aecf9ef1078067cfa7f6c21e596a91830bfdb29d8a7a1748ff4d"
+    },
+    {
+      "id": "visivero-tc-sr",
+      "name": "TC S-R",
+      "literalCharStart": 1178444,
+      "literalCharEnd": 1188900,
+      "literalByteStart": 1184765,
+      "literalByteEnd": 1195221,
+      "sourceSha256": "cc54e506c2a78eafbb9ad2f90aa3c147aaec25d34bf84d8089d922beba172ac4"
+    },
+    {
+      "id": "visivero-5in1",
+      "name": "Trader Club 5in1",
+      "literalCharStart": 1189137,
+      "literalCharEnd": 1227203,
+      "literalByteStart": 1195458,
+      "literalByteEnd": 1233536,
+      "sourceSha256": "5115056d2aea59cb41e74eca77384922cc276373934c2915c37ea454fc42bd43"
+    },
+    {
+      "id": "visivero-wt-cross",
+      "name": "WT Cross",
+      "literalCharStart": 1227443,
+      "literalCharEnd": 1230322,
+      "literalByteStart": 1233776,
+      "literalByteEnd": 1236655,
+      "sourceSha256": "4f16df4a6c379182172859e192834e0d6fd10ae0bda3566e4ac0c5c55b430b20"
+    }
+  ]
+}

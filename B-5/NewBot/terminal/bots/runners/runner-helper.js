@@ -11,6 +11,9 @@ const http  = require('http');
 const https = require('https');
 const symbolRegistry  = require('../../services/symbol-registry.service');
 const quantIndicators = require('../../services/quant-indicators.service');
+const botData = require('../../services/bot-data.service');
+const { createScanLoop } = require('../../services/scan-loop.service');
+const strategyRules = require('../strategy-rules');
 const { formatCryptoPrice, computePrevPrice, formatPrice } = require('../../services/price-formatter');
 
 const TERMINAL_HOST = process.env.TERMINAL_HOST || 'localhost';
@@ -134,7 +137,7 @@ async function getWatchlist() {
             priceNum: price,
             volUsd: parseFloat(t.quoteVolume || 0),
             chgPct: parseFloat(t.priceChangePercent || 0),
-            fr: premMap.get(t.symbol) || 0.0001
+            fr: premMap.get(t.symbol) ?? null
           });
         });
       }
@@ -189,8 +192,8 @@ async function getSentiment(symbol) {
       if (Array.isArray(acc) && acc.length > 0) {
         return {
           topAccount: {
-            longAccount: (parseFloat(acc[0].longAccount) * 100).toFixed(1),
-            shortAccount: (parseFloat(acc[0].shortAccount) * 100).toFixed(1),
+            longPct: parseFloat(acc[0].longAccount) * 100,
+            shortPct: parseFloat(acc[0].shortAccount) * 100,
             longShortRatio: acc[0].longShortRatio
           }
         };
@@ -265,6 +268,10 @@ module.exports = {
   getSentiment,
   symbolRegistry,
   quantIndicators,
+  botData,
+  createScanLoop,
+  isSignalAccepted: botData.isSignalAccepted,
+  strategyRules,
   formatCryptoPrice,
   computePrevPrice,
   formatPrice,

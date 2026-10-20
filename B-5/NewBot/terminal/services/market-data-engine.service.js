@@ -66,6 +66,9 @@ class MarketDataEngine extends EventEmitter {
 
     // 250 Mumluk Kline Ring Buffer Havuzu: "${symbol}_${interval}" -> RingBuffer(250)
     this.klineBuffers = new Map();
+    this.klineUpdatedAt = new Map();
+    this.klineRequests = new Map();
+    this.klineCacheTtlMs = 1500;
 
     // Rate Limiting (Token Bucket)
     this.requestQueue = [];
@@ -327,7 +330,7 @@ class MarketDataEngine extends EventEmitter {
         const vol1mChange = quoteVol - oldest.vol;
 
         // Anlık M1-A ve M1-Premium Radar Olayları (Kalibre edilmiş gerçekçi eşikler)
-        if (price1mChangePct <= -0.65) {
+        if (Math.abs(price1mChangePct) >= 0.95) {
           this.emit('radarAlert', {
             type: 'm1a',
             symbol: sym,
@@ -337,7 +340,8 @@ class MarketDataEngine extends EventEmitter {
             volUsd: quoteVol,
             timestamp: now
           });
-        } else if (price1mChangePct >= 0.70) {
+        }
+        if (price1mChangePct >= 0.70) {
           this.emit('radarAlert', {
             type: 'm1premium',
             symbol: sym,
@@ -389,7 +393,7 @@ class MarketDataEngine extends EventEmitter {
           type: 'fr',
           symbol: sym,
           fundingRate: fr,
-          prevFundingRate: prev ? prev.fundingRate : 0.0001,
+          prevFundingRate: prev ? prev.fundingRate : null,
           nextFundingTime: nextTime,
           timestamp: now
         });
@@ -412,39 +416,45 @@ class MarketDataEngine extends EventEmitter {
     const cleanSym = String(symbol).toUpperCase().trim();
     const key = `${cleanSym}_${interval}`;
 
-    let buffer = this.klineBuffers.get(key);
-    if (!buffer || buffer.length < Math.min(limit, 50)) {
-      buffer = new RingBuffer(250);
-      this.klineBuffers.set(key, buffer);
-
-      // Binance REST ile 250 mumu tek seferde ısıt (Warm-up)
-      try {
-        const raw = await this.safeFetch(
-          `https://fapi.binance.com/fapi/v1/klines?symbol=${cleanSym}&interval=${interval}&limit=250`,
-          1
-        );
-
-        if (Array.isArray(raw)) {
-          raw.forEach(k => {
-            buffer.push({
-              time: Math.floor(k[0] / 1000),
-              openTime: k[0],
-              open: parseFloat(k[1]),
-              high: parseFloat(k[2]),
-              low: parseFloat(k[3]),
-              close: parseFloat(k[4]),
-              volume: parseFloat(k[5]),
-              closeTime: k[6],
-              quoteVolume: parseFloat(k[7])
-            });
-          });
-        }
-      } catch (e) {
-        console.warn(`[MarketDataEngine] ${key} klines warm-up hatasi:`, e.message);
-      }
+    const count = Math.max(1, Math.min(250, Number(limit) || 250));
+    const buffer = this.klineBuffers.get(key);
+    const ts = this.klineUpdatedAt.get(key);
+    if (buffer && ts !== undefined && Date.now() - ts < this.klineCacheTtlMs) {
+      return buffer.getAll().slice(-count);
     }
-
-    return buffer.getAll();
+    let request = this.klineRequests.get(key);
+    if (!request) {
+      request = (async () => {
+        try {
+          const raw = await this.safeFetch(
+            `https://fapi.binance.com/fapi/v1/klines?symbol=${cleanSym}&interval=${interval}&limit=250`, 2);
+          if (!Array.isArray(raw) || raw.length === 0) throw new Error('Empty kline response');
+          const fresh = new RingBuffer(250);
+          const observedAt = Date.now();
+          for (const k of raw) {
+            const candle = { time: Math.floor(k[0] / 1000), openTime: Number(k[0]),
+              open: Number(k[1]), high: Number(k[2]), low: Number(k[3]), close: Number(k[4]),
+              volume: Number(k[5]), closeTime: Number(k[6]), quoteVolume: Number(k[7]),
+              isClosed: Number(k[6]) < observedAt, observedAt, raw: k.slice() };
+            if (![candle.openTime, candle.open, candle.high, candle.low, candle.close,
+              candle.volume, candle.closeTime].every(Number.isFinite) || candle.close <= 0) {
+              throw new Error('Invalid kline data');
+            }
+            fresh.push(candle);
+          }
+          this.klineBuffers.set(key, fresh);
+          this.klineUpdatedAt.set(key, observedAt);
+          return fresh.getAll();
+        } catch (e) {
+          console.warn(`[MarketDataEngine] ${key} klines refresh failed:`, e.message);
+          return [];
+        } finally {
+          this.klineRequests.delete(key);
+        }
+      })();
+      this.klineRequests.set(key, request);
+    }
+    return (await request).slice(-count);
   }
 
   /**

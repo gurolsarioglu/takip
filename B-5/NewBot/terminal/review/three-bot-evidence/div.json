@@ -1,0 +1,910 @@
+{
+  "url": "https://terminal.visivero.com/api/bot-messages?bot_id=div&limit=100&exchange=binance&market_type=FUTURES",
+  "observedAt": "2026-10-20T11:45:05.189Z",
+  "credentialsUsed": false,
+  "response": {
+    "messages": [
+      {
+        "id": "cmvfbzf0ok2phlykh913fgiaj",
+        "botId": "div",
+        "message": "🔴 #RAMUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.85% \nCurrent Price: 8.59\nPrevious Price: 8.67\nRSI: <b>1h.69 | 4h.52 | 1d.31 </b>\nSRSI: <b>1h.48 | 4h.98❗️ | 1d.12 </b>",
+        "exchange": "binance",
+        "symbol": "RAMUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T14:09:43.369Z"
+      },
+      {
+        "id": "cmvfbzqkfk2pklykhs3juk6hk",
+        "botId": "div",
+        "message": "🔴 #RKLBUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.28% \nCurrent Price: 51.72\nPrevious Price: 52.14\nRSI: <b>1h.53 | 4h.40 | 1d.28 </b>\nSRSI: <b>1h.26 | 4h.88 | 1d.6 </b>",
+        "exchange": "binance",
+        "symbol": "RKLBUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T14:09:58.335Z"
+      },
+      {
+        "id": "cmvfbzrblk2pllykhnomg6epn",
+        "botId": "div",
+        "message": "🟢 #RLCUSDT  \nStrategy: 1H RSI SMA CROSSED\nBoost Value: +4.36% \nCurrent Price: 0.7059\nPrevious Price: 0.6834\nRSI: <b>1h.37 | 4h.30 | 1d.53 </b>\nSRSI: <b>1h.22 | 4h.1 | 1d.0❗️ </b>",
+        "exchange": "binance",
+        "symbol": "RLCUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T14:09:59.313Z"
+      },
+      {
+        "id": "cmvfc058jk2pvlykhgj8nqwl4",
+        "botId": "div",
+        "message": "🟢 #SECZUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +9.79% \nCurrent Price: 9.46\nPrevious Price: 9.5\nRSI: <b>1h.32 | 4h.36 | 1d.30❗️ </b>\nSRSI: <b>1h.22 | 4h.73 | 1d.77 </b>",
+        "exchange": "binance",
+        "symbol": "SECZUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T14:10:17.348Z"
+      },
+      {
+        "id": "cmvfc0d9ak2pylykh50x3nrmo",
+        "botId": "div",
+        "message": "🟢 #SKDDUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.43% \nCurrent Price: 11.032\nPrevious Price: 11.123\nRSI: <b>1h.24❗️ | 4h.42 | 1d.64 </b>\nSRSI: <b>1h.21 | 4h.0 | 1d.86 </b>",
+        "exchange": "binance",
+        "symbol": "SKDDUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T14:10:27.742Z"
+      },
+      {
+        "id": "cmvfc0eshk2pzlykh4o5zi6cp",
+        "botId": "div",
+        "message": "🔴 #SKHYUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.09% \nCurrent Price: 143.06\nPrevious Price: 142.55\nRSI: <b>1h.74❗️ | 4h.55 | 1d.33 </b>\nSRSI: <b>1h.79 | 4h.100❗️ | 1d.10 </b>",
+        "exchange": "binance",
+        "symbol": "SKHYUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T14:10:29.727Z"
+      },
+      {
+        "id": "cmvfc0fjik2q0lykh8f026ucw",
+        "botId": "div",
+        "message": "🟢 #SKLUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.73% \nCurrent Price: 0.004266\nPrevious Price: 0.004267\nRSI: <b>1h.31 | 4h.33 | 1d.41 </b>\nSRSI: <b>1h.6❗️ | 4h.36 | 1d.0❗️ </b>",
+        "exchange": "binance",
+        "symbol": "SKLUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T14:10:30.702Z"
+      },
+      {
+        "id": "cmvfc0h9dk2q1lykhttat999t",
+        "botId": "div",
+        "message": "🔴 #SKUUUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.01% \nCurrent Price: 16.5\nPrevious Price: 16.38\nRSI: <b>1h.74❗️ | 4h.54 | 1d.31 </b>\nSRSI: <b>1h.75 | 4h.100❗️ | 1d.8 </b>",
+        "exchange": "binance",
+        "symbol": "SKUUUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T14:10:32.928Z"
+      },
+      {
+        "id": "cmvfc1b50k2qelykhdsb4jv5r",
+        "botId": "div",
+        "message": "🔴 #STRCUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.22% \nCurrent Price: 98.54\nPrevious Price: 98.59\nRSI: <b>1h.69 | 4h.54 | 1d.47 </b>\nSRSI: <b>1h.74 | 4h.99❗️ | 1d.21 </b>\nPivot: %0.19 ⚠️",
+        "exchange": "binance",
+        "symbol": "STRCUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T14:11:11.653Z"
+      },
+      {
+        "id": "cmvfc2bndk2rclykhtqecb4x7",
+        "botId": "div",
+        "message": "🔴 #TSLLUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +4.25% \nCurrent Price: 9.28\nPrevious Price: 9.28\nRSI: <b>1h.67 | 4h.54 | 1d.44 </b>\nSRSI: <b>1h.60 | 4h.81 | 1d.25 </b>",
+        "exchange": "binance",
+        "symbol": "TSLLUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T14:11:58.970Z"
+      },
+      {
+        "id": "cmvfc2hx5k2rmlykh26haop3g",
+        "botId": "div",
+        "message": "🔴 #TWSTUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +5.37% \nCurrent Price: 137.52\nPrevious Price: 135.3\nRSI: <b>1h.72❗️ | 4h.50 | 1d.35 </b>\nSRSI: <b>1h.41 | 4h.91❗️ | 1d.3 </b>",
+        "exchange": "binance",
+        "symbol": "TWSTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T14:12:07.097Z"
+      },
+      {
+        "id": "cmvfc2xokk2rplykhbj6rhh1i",
+        "botId": "div",
+        "message": "🟢 #UVXYUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.96% \nCurrent Price: 17.22\nPrevious Price: 17.43\nRSI: <b>1h.32 | 4h.43 | 1d.50 </b>\nSRSI: <b>1h.66 | 4h.8 | 1d.74 </b>",
+        "exchange": "binance",
+        "symbol": "UVXYUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T14:12:27.524Z"
+      },
+      {
+        "id": "cmvfdubnek56slykhvcx3r9zn",
+        "botId": "div",
+        "message": "🔴 #ATOMUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.56% \nCurrent Price: 1.769\nPrevious Price: 1.771\nRSI: <b>1h.65 | 4h.55 | 1d.50 </b>\nSRSI: <b>1h.63 | 4h.93❗️ | 1d.8 </b>",
+        "exchange": "binance",
+        "symbol": "ATOMUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T15:01:44.954Z"
+      },
+      {
+        "id": "cmvfdudwjk56xlykhaa4ux2m4",
+        "botId": "div",
+        "message": "🟢 #AUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.69% \nCurrent Price: 0.08522\nPrevious Price: 0.08517\nRSI: <b>1h.27❗️ | 4h.34 | 1d.41 </b>\nSRSI: <b>1h.1❗️ | 4h.9 | 1d.32 </b>\nPivot: %0.77 ⚠️",
+        "exchange": "binance",
+        "symbol": "AUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T15:01:47.875Z"
+      },
+      {
+        "id": "cmvfdw529k59elykh2x8wasv9",
+        "botId": "div",
+        "message": "🟢 #CBRSUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +7.48% \nCurrent Price: 123.3\nPrevious Price: 123.71\nRSI: <b>1h.36 | 4h.33 | 1d.23❗️ </b>\nSRSI: <b>1h.9❗️ | 4h.82 | 1d.3❗️ </b>",
+        "exchange": "binance",
+        "symbol": "CBRSUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T15:03:09.729Z"
+      },
+      {
+        "id": "cmvfdwtbvk5arlykhktd4d1sn",
+        "botId": "div",
+        "message": "🔴 #CRVUSDC  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +4.08% \nCurrent Price: 0.3624\nPrevious Price: 0.3593\nRSI: <b>1h.65 | 4h.60 | 1d.53 </b>\nSRSI: <b>1h.44 | 4h.93❗️ | 1d.48 </b>",
+        "exchange": "binance",
+        "symbol": "CRVUSDC",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T15:03:41.179Z"
+      },
+      {
+        "id": "cmvfdwu2kk5aslykhsc48j49r",
+        "botId": "div",
+        "message": "🔴 #CRVUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +4.16% \nCurrent Price: 0.363\nPrevious Price: 0.3603\nRSI: <b>1h.65 | 4h.60 | 1d.53 </b>\nSRSI: <b>1h.45 | 4h.92❗️ | 1d.48 </b>",
+        "exchange": "binance",
+        "symbol": "CRVUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T15:03:42.140Z"
+      },
+      {
+        "id": "cmvfdx7e6k5bmlykhk19fv9wb",
+        "botId": "div",
+        "message": "🟢 #CYPHUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +7.46% \nCurrent Price: 2.521\nPrevious Price: 2.535\nRSI: <b>1h.36 | 4h.41 | 1d.39 </b>\nSRSI: <b>1h.0❗️ | 4h.54 | 1d.51 </b>",
+        "exchange": "binance",
+        "symbol": "CYPHUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T15:03:59.407Z"
+      },
+      {
+        "id": "cmvfdy7vzk5dklykh1oy0bd27",
+        "botId": "div",
+        "message": "🟢 #EVAAUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.91% \nCurrent Price: 0.5315\nPrevious Price: 0.5316\nRSI: <b>1h.29❗️ | 4h.29❗️ | 1d.37 </b>\nSRSI: <b>1h.0❗️ | 4h.38 | 1d.0❗️ </b>\nPivot: %0.22 ⚠️",
+        "exchange": "binance",
+        "symbol": "EVAAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T15:04:46.703Z"
+      },
+      {
+        "id": "cmvfe4ld2k5vqlykhbk0wt93d",
+        "botId": "div",
+        "message": "🔴 #QQQUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.54% \nCurrent Price: 723.25\nPrevious Price: 722.15\nRSI: <b>1h.72❗️ | 4h.56 | 1d.43 </b>\nSRSI: <b>1h.32 | 4h.96❗️ | 1d.15 </b>\nPivot: %0.30 ⚠️",
+        "exchange": "binance",
+        "symbol": "QQQUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T15:09:44.102Z"
+      },
+      {
+        "id": "cmvfe6er7k5w7lykhkd9m9dju",
+        "botId": "div",
+        "message": "🟢 #SQQQUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.67% \nCurrent Price: 37.01\nPrevious Price: 37.13\nRSI: <b>1h.28❗️ | 4h.42 | 1d.56 </b>\nSRSI: <b>1h.71 | 4h.4 | 1d.83 </b>\nPivot: %0.14 ⚠️",
+        "exchange": "binance",
+        "symbol": "SQQQUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T15:11:08.851Z"
+      },
+      {
+        "id": "cmvfe6u2kk5wglykhqs3xbt6l",
+        "botId": "div",
+        "message": "🟢 #SYRUPUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.90% \nCurrent Price: 0.18714\nPrevious Price: 0.18745\nRSI: <b>1h.37 | 4h.33 | 1d.32 </b>\nSRSI: <b>1h.26 | 4h.32 | 1d.0❗️ </b>",
+        "exchange": "binance",
+        "symbol": "SYRUPUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T15:11:28.701Z"
+      },
+      {
+        "id": "cmvfe76y9k5wrlykhkx054roc",
+        "botId": "div",
+        "message": "🟢 #TMFUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.27% \nCurrent Price: 27.59\nPrevious Price: 27.61\nRSI: <b>1h.29❗️ | 4h.44 | 1d.53 </b>\nSRSI: <b>1h.4❗️ | 4h.15 | 1d.88 </b>\nPivot: %0.51 ⚠️",
+        "exchange": "binance",
+        "symbol": "TMFUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T15:11:45.393Z"
+      },
+      {
+        "id": "cmvfe7a3vk5wulykh3diz35jm",
+        "botId": "div",
+        "message": "🔴 #TQQQUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.61% \nCurrent Price: 71.76\nPrevious Price: 71.57\nRSI: <b>1h.71❗️ | 4h.55 | 1d.41 </b>\nSRSI: <b>1h.29 | 4h.96❗️ | 1d.14 </b>",
+        "exchange": "binance",
+        "symbol": "TQQQUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T15:11:49.483Z"
+      },
+      {
+        "id": "cmvfe7hrzk5x5lykhmep2ryy9",
+        "botId": "div",
+        "message": "🔴 #TSLAUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.19% \nCurrent Price: 367.4\nPrevious Price: 367.15\nRSI: <b>1h.74❗️ | 4h.58 | 1d.49 </b>\nSRSI: <b>1h.87 | 4h.77 | 1d.31 </b>\nPivot: %0.48 ⚠️",
+        "exchange": "binance",
+        "symbol": "TSLAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T15:11:59.423Z"
+      },
+      {
+        "id": "cmvfe7u9tk5xilykhthmmr25b",
+        "botId": "div",
+        "message": "🟢 #UBUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.57% \nCurrent Price: 0.11611\nPrevious Price: 0.1163\nRSI: <b>1h.35 | 4h.38 | 1d.38 </b>\nSRSI: <b>1h.6❗️ | 4h.19 | 1d.22 </b>",
+        "exchange": "binance",
+        "symbol": "UBUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T15:12:15.618Z"
+      },
+      {
+        "id": "cmvffxs1sk7lvlykh5pkrt1xe",
+        "botId": "div",
+        "message": "🔴 #1000PEPEUSDC  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.16% \nCurrent Price: 0.0041142\nPrevious Price: 0.0041104\nRSI: <b>1h.64 | 4h.58 | 1d.51 </b>\nSRSI: <b>1h.14 | 4h.98❗️ | 1d.35 </b>",
+        "exchange": "binance",
+        "symbol": "1000PEPEUSDC",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T16:00:25.408Z"
+      },
+      {
+        "id": "cmvffxss9k7lwlykhqwmhwf56",
+        "botId": "div",
+        "message": "🔴 #1000PEPEUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.18% \nCurrent Price: 0.0041194\nPrevious Price: 0.0041158\nRSI: <b>1h.64 | 4h.58 | 1d.51 </b>\nSRSI: <b>1h.14 | 4h.98❗️ | 1d.36 </b>",
+        "exchange": "binance",
+        "symbol": "1000PEPEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T16:00:26.362Z"
+      },
+      {
+        "id": "cmvfg23v5k7wtlykhbu9rj2ce",
+        "botId": "div",
+        "message": "🔴 #CSOPSKHYNIX2LUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.53% \nCurrent Price: 2.525\nPrevious Price: 2.538\nRSI: <b>1h.70 | 4h.52 | 1d.27 </b>\nSRSI: <b>1h.47 | 4h.99❗️ | 1d.9 </b>",
+        "exchange": "binance",
+        "symbol": "CSOPSKHYNIX2LUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T16:03:47.345Z"
+      },
+      {
+        "id": "cmvfgaie8k870lykhnqc4r48x",
+        "botId": "div",
+        "message": "🔴 #SAMSUNGUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.20% \nCurrent Price: 166.14\nPrevious Price: 166.69\nRSI: <b>1h.68 | 4h.59 | 1d.37 </b>\nSRSI: <b>1h.20 | 4h.99❗️ | 1d.15 </b>\nPivot: %0.21 ⚠️",
+        "exchange": "binance",
+        "symbol": "SAMSUNGUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T16:10:19.424Z"
+      },
+      {
+        "id": "cmvfgatuok879lykhzfsi056g",
+        "botId": "div",
+        "message": "🔴 #SKHYNIXUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.55% \nCurrent Price: 978.68\nPrevious Price: 982.95\nRSI: <b>1h.69 | 4h.56 | 1d.32 </b>\nSRSI: <b>1h.41 | 4h.99❗️ | 1d.12 </b>",
+        "exchange": "binance",
+        "symbol": "SKHYNIXUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T16:10:34.272Z"
+      },
+      {
+        "id": "cmvfgbkqyk89slykhixbv66el",
+        "botId": "div",
+        "message": "🔴 #SPYUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.30% \nCurrent Price: 769.47\nPrevious Price: 770.45\nRSI: <b>1h.60 | 4h.53 | 1d.48 </b>\nSRSI: <b>1h.30 | 4h.87 | 1d.23 </b>\nPivot: %0.09 ⚠️",
+        "exchange": "binance",
+        "symbol": "SPYUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T16:11:09.131Z"
+      },
+      {
+        "id": "cmvfgcrprk8dilykhgz11wnpb",
+        "botId": "div",
+        "message": "🔴 #TSMUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.18% \nCurrent Price: 425.65\nPrevious Price: 426.43\nRSI: <b>1h.67 | 4h.59 | 1d.40 </b>\nSRSI: <b>1h.57 | 4h.99❗️ | 1d.8 </b>\nPivot: %0.65 ⚠️",
+        "exchange": "binance",
+        "symbol": "TSMUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T16:12:04.816Z"
+      },
+      {
+        "id": "cmvfi5x7bk9vrlykhubbohsr7",
+        "botId": "div",
+        "message": "🟢 #BSPUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +3.17% \nCurrent Price: 46.19\nPrevious Price: 46.16\nRSI: <b>1h.37 | 4h.42 | 1d.59 </b>\nSRSI: <b>1h.11 | 4h.0 | 1d.60 </b>",
+        "exchange": "binance",
+        "symbol": "BSPUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T17:02:44.567Z"
+      },
+      {
+        "id": "cmvfi9ertka0rlykhllxlhfxe",
+        "botId": "div",
+        "message": "🔴 #GRVTUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +3.91% \nCurrent Price: 0.2297\nPrevious Price: 0.2302\nRSI: <b>1h.72❗️ | 4h.63 | 1d.59 </b>\nSRSI: <b>1h.80 | 4h.85 | 1d.31 </b>\nPivot: %0.91 ⚠️",
+        "exchange": "binance",
+        "symbol": "GRVTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T17:05:27.305Z"
+      },
+      {
+        "id": "cmvfiaotbka1nlykhv47s53lc",
+        "botId": "div",
+        "message": "🟢 #JPMUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.63% \nCurrent Price: 337.06\nPrevious Price: 337.06\nRSI: <b>1h.29❗️ | 4h.41 | 1d.47 </b>\nSRSI: <b>1h.21 | 4h.0 | 1d.88 </b>\nPivot: %0.21 ⚠️",
+        "exchange": "binance",
+        "symbol": "JPMUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T17:06:26.976Z"
+      },
+      {
+        "id": "cmvfibpgika1ulykhnmokqe61",
+        "botId": "div",
+        "message": "🔴 #MAGMAUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +3.25% \nCurrent Price: 0.28188\nPrevious Price: 0.28055\nRSI: <b>1h.70 | 4h.75❗️ | 1d.60 </b>\nSRSI: <b>1h.73 | 4h.87 | 1d.100❗️ </b>\nPivot: %0.34 ⚠️",
+        "exchange": "binance",
+        "symbol": "MAGMAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T17:07:14.466Z"
+      },
+      {
+        "id": "cmvfigqc3ka40lykhlesn9usl",
+        "botId": "div",
+        "message": "🔴 #SUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.09% \nCurrent Price: 0.05554\nPrevious Price: 0.05574\nRSI: <b>1h.65 | 4h.55 | 1d.63 </b>\nSRSI: <b>1h.90 | 4h.83 | 1d.35 </b>",
+        "exchange": "binance",
+        "symbol": "SUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T17:11:08.883Z"
+      },
+      {
+        "id": "cmvfkduh9kb82lykh4kfog18c",
+        "botId": "div",
+        "message": "🟢 #FLEXUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.47% \nCurrent Price: 88.2\nPrevious Price: 88.25\nRSI: <b>1h.32 | 4h.31 | 1d.24❗️ </b>\nSRSI: <b>1h.0❗️ | 4h.71 | 1d.0❗️ </b>",
+        "exchange": "binance",
+        "symbol": "FLEXUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T18:04:53.518Z"
+      },
+      {
+        "id": "cmvfke4dbkb8nlykhv04xo0gh",
+        "botId": "div",
+        "message": "🟢 #GDXUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.62% \nCurrent Price: 87.06\nPrevious Price: 86.99\nRSI: <b>1h.40 | 4h.47 | 1d.44 </b>\nSRSI: <b>1h.16 | 4h.8 | 1d.82 </b>\nPivot: %0.20 ⚠️",
+        "exchange": "binance",
+        "symbol": "GDXUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T18:05:06.336Z"
+      },
+      {
+        "id": "cmvfkm5gakbcclykh8wacbc1p",
+        "botId": "div",
+        "message": "🟢 #THEUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +5.51% \nCurrent Price: 0.05166\nPrevious Price: 0.05158\nRSI: <b>1h.33 | 4h.34 | 1d.25❗️ </b>\nSRSI: <b>1h.10 | 4h.62 | 1d.0❗️ </b>\nPivot: %0.75 ⚠️",
+        "exchange": "binance",
+        "symbol": "THEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T18:11:20.987Z"
+      },
+      {
+        "id": "cmvfknlglkbd4lykhs89o40s4",
+        "botId": "div",
+        "message": "🟢 #WLFIUSDC  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.49% \nCurrent Price: 0.05381\nPrevious Price: 0.05385\nRSI: <b>1h.20❗️ | 4h.24❗️ | 1d.37 </b>\nSRSI: <b>1h.12 | 4h.18 | 1d.57 </b>\nPivot: %0.17 ⚠️",
+        "exchange": "binance",
+        "symbol": "WLFIUSDC",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T18:12:28.389Z"
+      },
+      {
+        "id": "cmvfknm72kbd5lykh83x3ol4b",
+        "botId": "div",
+        "message": "🟢 #WLFIUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.49% \nCurrent Price: 0.05388\nPrevious Price: 0.0539\nRSI: <b>1h.20❗️ | 4h.23❗️ | 1d.37 </b>\nSRSI: <b>1h.13 | 4h.19 | 1d.57 </b>\nPivot: %0.04 ⚠️",
+        "exchange": "binance",
+        "symbol": "WLFIUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T18:12:29.343Z"
+      },
+      {
+        "id": "cmvfkojq4kbe1lykh5vhbq92n",
+        "botId": "div",
+        "message": "🔴 #ZMUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.26% \nCurrent Price: 97.22\nPrevious Price: 97.4\nRSI: <b>1h.75❗️ | 4h.63 | 1d.56 </b>\nSRSI: <b>1h.84 | 4h.92❗️ | 1d.23 </b>",
+        "exchange": "binance",
+        "symbol": "ZMUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T18:13:12.796Z"
+      },
+      {
+        "id": "cmvfme7qukcgdlykhvfp5jtrl",
+        "botId": "div",
+        "message": "🟢 #ALLOUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.12% \nCurrent Price: 0.20318\nPrevious Price: 0.20326\nRSI: <b>1h.32 | 4h.33 | 1d.26❗️ </b>\nSRSI: <b>1h.4❗️ | 4h.58 | 1d.0❗️ </b>",
+        "exchange": "binance",
+        "symbol": "ALLOUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T19:01:09.943Z"
+      },
+      {
+        "id": "cmvfmh355kcgvlykhzagbfy71",
+        "botId": "div",
+        "message": "🟢 #COINUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.94% \nCurrent Price: 169.32\nPrevious Price: 169.23\nRSI: <b>1h.27❗️ | 4h.38 | 1d.41 </b>\nSRSI: <b>1h.1❗️ | 4h.41 | 1d.32 </b>\nPivot: %0.80 ⚠️",
+        "exchange": "binance",
+        "symbol": "COINUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T19:03:23.946Z"
+      },
+      {
+        "id": "cmvfmhkjzkcgylykhuebtn672",
+        "botId": "div",
+        "message": "🔴 #CTRUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +10.29% \nCurrent Price: 0.016862\nPrevious Price: 0.016706\nRSI: <b>1h.86❗️ | 4h.83❗️ | 1d.72❗️ </b>\nSRSI: <b>1h.90 | 4h.85 | 1d.34 </b>",
+        "exchange": "binance",
+        "symbol": "CTRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T19:03:46.512Z"
+      },
+      {
+        "id": "cmvfmsfl6kcnmlykhje7stgg5",
+        "botId": "div",
+        "message": "🟢 #USARUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.27% \nCurrent Price: 10.11\nPrevious Price: 10.15\nRSI: <b>1h.29❗️ | 4h.33 | 1d.26❗️ </b>\nSRSI: <b>1h.5❗️ | 4h.34 | 1d.64 </b>",
+        "exchange": "binance",
+        "symbol": "USARUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T19:12:13.290Z"
+      },
+      {
+        "id": "cmvfmtd9jkcnnlykh7yetzeui",
+        "botId": "div",
+        "message": "🔴 #XNYUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +8.69% \nCurrent Price: 0.00572\nPrevious Price: 0.005669\nRSI: <b>1h.74❗️ | 4h.72❗️ | 1d.47 </b>\nSRSI: <b>1h.72 | 4h.88 | 1d.26 </b>",
+        "exchange": "binance",
+        "symbol": "XNYUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T19:12:56.936Z"
+      },
+      {
+        "id": "cmvfojghbkdy0lykhl1hjbwqg",
+        "botId": "div",
+        "message": "🔴 #AMZNUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.57% \nCurrent Price: 263.02\nPrevious Price: 262.83\nRSI: <b>1h.85❗️ | 4h.74❗️ | 1d.59 </b>\nSRSI: <b>1h.75 | 4h.97❗️ | 1d.36 </b>\nPivot: %0.57 ⚠️",
+        "exchange": "binance",
+        "symbol": "AMZNUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:01:13.775Z"
+      },
+      {
+        "id": "cmvfol8ugkdzqlykhxx9nvhmw",
+        "botId": "div",
+        "message": "🟢 #BOTUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +3.55% \nCurrent Price: 22.83\nPrevious Price: 22.74\nRSI: <b>1h.25❗️ | 4h.28❗️ | 1d.32 </b>\nSRSI: <b>1h.9❗️ | 4h.15 | 1d.1❗️ </b>",
+        "exchange": "binance",
+        "symbol": "BOTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:02:37.193Z"
+      },
+      {
+        "id": "cmvfooeg9ke2xlykha60s47an",
+        "botId": "div",
+        "message": "🟢 #FRAXUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.18% \nCurrent Price: 0.2557\nPrevious Price: 0.2547\nRSI: <b>1h.38 | 4h.27❗️ | 1d.34 </b>\nSRSI: <b>1h.58 | 4h.46 | 1d.0❗️ </b>",
+        "exchange": "binance",
+        "symbol": "FRAXUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:05:04.426Z"
+      },
+      {
+        "id": "cmvfory15ke8llykhkk4y74sr",
+        "botId": "div",
+        "message": "🔴 #MRNAUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.75% \nCurrent Price: 227.42\nPrevious Price: 227.18\nRSI: <b>1h.67 | 4h.60 | 1d.62 </b>\nSRSI: <b>1h.75 | 4h.96❗️ | 1d.22 </b>",
+        "exchange": "binance",
+        "symbol": "MRNAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:07:49.769Z"
+      },
+      {
+        "id": "cmvfowgxwkehdlykheqmfx5nt",
+        "botId": "div",
+        "message": "🔴 #TBTUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.54% \nCurrent Price: 40.63\nPrevious Price: 40.69\nRSI: <b>1h.66 | 4h.58 | 1d.46 </b>\nSRSI: <b>1h.80 | 4h.98❗️ | 1d.9 </b>\nPivot: %0.06 ⚠️",
+        "exchange": "binance",
+        "symbol": "TBTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:11:20.900Z"
+      },
+      {
+        "id": "cmvfowovqkehmlykhrbj7jh6e",
+        "botId": "div",
+        "message": "🟢 #TMFUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.73% \nCurrent Price: 27.49\nPrevious Price: 27.4\nRSI: <b>1h.33 | 4h.43 | 1d.52 </b>\nSRSI: <b>1h.15 | 4h.3 | 1d.88 </b>\nPivot: %0.15 ⚠️",
+        "exchange": "binance",
+        "symbol": "TMFUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:11:31.190Z"
+      },
+      {
+        "id": "cmvfr0pcekfb8lykhu0a0i08y",
+        "botId": "div",
+        "message": "🟢 #SONYUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.45% \nCurrent Price: 24.78\nPrevious Price: 24.78\nRSI: <b>1h.31 | 4h.45 | 1d.62 </b>\nSRSI: <b>1h.11 | 4h.0 | 1d.84 </b>\nPivot: %0.27 ⚠️",
+        "exchange": "binance",
+        "symbol": "SONYUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T21:10:37.646Z"
+      },
+      {
+        "id": "cmvfr2l99kfbqlykh3bwhrhmp",
+        "botId": "div",
+        "message": "🟢 #USDBRLUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.25% \nCurrent Price: 5.0363\nPrevious Price: 5.0362\nRSI: <b>1h.27❗️ | 4h.33 | 1d.45 </b>\nSRSI: <b>1h.26 | 4h.0 | 1d.47 </b>\nPivot: %0.74 ⚠️",
+        "exchange": "binance",
+        "symbol": "USDBRLUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T21:12:05.661Z"
+      },
+      {
+        "id": "cmvfst2smkg4ylykh38ywhfxq",
+        "botId": "div",
+        "message": "🔴 #ACNUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.60% \nCurrent Price: 237.33\nPrevious Price: 237.33\nRSI: <b>1h.77❗️ | 4h.74❗️ | 1d.80❗️ </b>\nSRSI: <b>1h.93❗️ | 4h.86 | 1d.94❗️ </b>\nPivot: %0.92 ⚠️",
+        "exchange": "binance",
+        "symbol": "ACNUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T22:00:41.062Z"
+      },
+      {
+        "id": "cmvfv5w9jkgvolykhin4t3ofv",
+        "botId": "div",
+        "message": "🔴 #KITEUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.80% \nCurrent Price: 0.12249\nPrevious Price: 0.12259\nRSI: <b>1h.64 | 4h.55 | 1d.46 </b>\nSRSI: <b>1h.48 | 4h.91❗️ | 1d.14 </b>\nPivot: %0.14 ⚠️",
+        "exchange": "binance",
+        "symbol": "KITEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T23:06:38.360Z"
+      },
+      {
+        "id": "cmvfv762akgvplykhj9ps7lpn",
+        "botId": "div",
+        "message": "🔴 #MINIMAXUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.76% \nCurrent Price: 23.88\nPrevious Price: 23.89\nRSI: <b>1h.81❗️ | 4h.58 | 1d.35 </b>\nSRSI: <b>1h.77 | 4h.97❗️ | 1d.15 </b>\nPivot: %0.22 ⚠️",
+        "exchange": "binance",
+        "symbol": "MINIMAXUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T23:07:37.714Z"
+      },
+      {
+        "id": "cmvfvbqankgwdlykhi5p9w63p",
+        "botId": "div",
+        "message": "🔴 #SUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.83% \nCurrent Price: 0.0584\nPrevious Price: 0.05892\nRSI: <b>1h.67 | 4h.61 | 1d.65 </b>\nSRSI: <b>1h.57 | 4h.98❗️ | 1d.39 </b>\nPivot: %0.25 ⚠️",
+        "exchange": "binance",
+        "symbol": "SUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T23:11:10.559Z"
+      },
+      {
+        "id": "cmvfx5cffkhrwlykh6fhlss41",
+        "botId": "div",
+        "message": "🔴 #BEAMXUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.84% \nCurrent Price: 0.003058\nPrevious Price: 0.00306\nRSI: <b>1h.70❗️ | 4h.61 | 1d.69 </b>\nSRSI: <b>1h.91❗️ | 4h.100❗️ | 1d.21 </b>\nPivot: %0.38 ⚠️",
+        "exchange": "binance",
+        "symbol": "BEAMXUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:02:11.883Z"
+      },
+      {
+        "id": "cmvfzebzdkjudlykharciojgo",
+        "botId": "div",
+        "message": "🟢 #GEVUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.54% \nCurrent Price: 905.21\nPrevious Price: 905.1\nRSI: <b>1h.31 | 4h.34 | 1d.35 </b>\nSRSI: <b>1h.4❗️ | 4h.20 | 1d.1❗️ </b>",
+        "exchange": "binance",
+        "symbol": "GEVUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T01:05:10.441Z"
+      },
+      {
+        "id": "cmvfzhoszkjvglykhrirpzg60",
+        "botId": "div",
+        "message": "🟢 #MPUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.26% \nCurrent Price: 38.96\nPrevious Price: 39.04\nRSI: <b>1h.25❗️ | 4h.28❗️ | 1d.32 </b>\nSRSI: <b>1h.8❗️ | 4h.2 | 1d.5❗️ </b>\nPivot: %0.27 ⚠️",
+        "exchange": "binance",
+        "symbol": "MPUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T01:07:47.028Z"
+      },
+      {
+        "id": "cmvfzkugbkjynlykhkgm9sood",
+        "botId": "div",
+        "message": "🟢 #SIRENUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +5.12% \nCurrent Price: 0.02158\nPrevious Price: 0.02181\nRSI: <b>1h.35 | 4h.38 | 1d.43 </b>\nSRSI: <b>1h.77 | 4h.2 | 1d.36 </b>",
+        "exchange": "binance",
+        "symbol": "SIRENUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T01:10:14.316Z"
+      },
+      {
+        "id": "cmvg1jfx3klvilykh41itjpnf",
+        "botId": "div",
+        "message": "🔴 #GIGADEVUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +5.24% \nCurrent Price: 43.63\nPrevious Price: 43.74\nRSI: <b>1h.65 | 4h.59 | 1d.35 </b>\nSRSI: <b>1h.58 | 4h.99❗️ | 1d.38 </b>\nWT: <b>  1d🟢</b>\nPivot: %0.11 ⚠️",
+        "exchange": "binance",
+        "symbol": "GIGADEVUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T02:05:08.056Z"
+      },
+      {
+        "id": "cmvg1jrs5klvulykh00wbhxdl",
+        "botId": "div",
+        "message": "🔴 #GRVTUSDT  \nStrategy: 1H RSI SMA CROSSED\nBoost Value: +7.16% \nCurrent Price: 0.243\nPrevious Price: 0.25\nRSI: <b>1h.71❗️ | 4h.72❗️ | 1d.64 </b>\nSRSI: <b>1h.73 | 4h.100❗️ | 1d.52 </b>",
+        "exchange": "binance",
+        "symbol": "GRVTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T02:05:23.429Z"
+      },
+      {
+        "id": "cmvg1mfqfklzflykhev1o84ft",
+        "botId": "div",
+        "message": "🔴 #METISUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +3.53% \nCurrent Price: 4.043\nPrevious Price: 4.088\nRSI: <b>1h.65 | 4h.60 | 1d.65 </b>\nSRSI: <b>1h.82 | 4h.87 | 1d.71 </b>",
+        "exchange": "binance",
+        "symbol": "METISUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T02:07:27.783Z"
+      },
+      {
+        "id": "cmvg1smy2km30lykhw6270cmi",
+        "botId": "div",
+        "message": "🔴 #VVVUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +5.52% \nCurrent Price: 24.512\nPrevious Price: 24.537\nRSI: <b>1h.62 | 4h.59 | 1d.50 </b>\nSRSI: <b>1h.71 | 4h.98❗️ | 1d.55 </b>",
+        "exchange": "binance",
+        "symbol": "VVVUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T02:12:17.066Z"
+      },
+      {
+        "id": "cmvg1swrnkm33lykh7y5iqdrt",
+        "botId": "div",
+        "message": "🔴 #WMTUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.74% \nCurrent Price: 119.5\nPrevious Price: 119.51\nRSI: <b>1h.61 | 4h.63 | 1d.73❗️ </b>\nSRSI: <b>1h.98❗️ | 4h.34 | 1d.89 </b>",
+        "exchange": "binance",
+        "symbol": "WMTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T02:12:29.795Z"
+      },
+      {
+        "id": "cmvg3w1x9kn2xlykh28tl59uk",
+        "botId": "div",
+        "message": "🔴 #STRCUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.66% \nCurrent Price: 98.87\nPrevious Price: 98.87\nRSI: <b>1h.63 | 4h.58 | 1d.50 </b>\nSRSI: <b>1h.15 | 4h.93❗️ | 1d.41 </b>\nPivot: %0.52 ⚠️",
+        "exchange": "binance",
+        "symbol": "STRCUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T03:10:55.677Z"
+      },
+      {
+        "id": "cmvg3wibnkn36lykhpq4ey2e3",
+        "botId": "div",
+        "message": "🔴 #TEAMUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.29% \nCurrent Price: 215.54\nPrevious Price: 215.64\nRSI: <b>1h.70 | 4h.63 | 1d.64 </b>\nSRSI: <b>1h.96❗️ | 4h.98❗️ | 1d.54 </b>",
+        "exchange": "binance",
+        "symbol": "TEAMUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T03:11:16.932Z"
+      },
+      {
+        "id": "cmvg5onw7kodzlykhymqwnu67",
+        "botId": "div",
+        "message": "🔴 #ALTUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +19.45% \nCurrent Price: 0.010107\nPrevious Price: 0.010162\nRSI: <b>1h.80❗️ | 4h.72❗️ | 1d.76❗️ </b>\nSRSI: <b>1h.96❗️ | 4h.85 | 1d.100❗️ </b>",
+        "exchange": "binance",
+        "symbol": "ALTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:01:10.136Z"
+      },
+      {
+        "id": "cmvg5u6t9koh4lykhz18es55p",
+        "botId": "div",
+        "message": "🔴 #GRVTUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +8.75% \nCurrent Price: 0.2556\nPrevious Price: 0.2586\nRSI: <b>1h.75❗️ | 4h.74❗️ | 1d.68 </b>\nSRSI: <b>1h.33 | 4h.96❗️ | 1d.57 </b>",
+        "exchange": "binance",
+        "symbol": "GRVTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:05:27.934Z"
+      },
+      {
+        "id": "cmvg5z5dtkoozlykhbe9huuwx",
+        "botId": "div",
+        "message": "🟢 #POPMARTUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.66% \nCurrent Price: 17.57\nPrevious Price: 17.57\nRSI: <b>1h.36 | 4h.25❗️ | 1d.23❗️ </b>\nSRSI: <b>1h.24 | 4h.54 | 1d.13 </b>",
+        "exchange": "binance",
+        "symbol": "POPMARTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:09:19.361Z"
+      },
+      {
+        "id": "cmvg61bfckorklykhjiir3pm7",
+        "botId": "div",
+        "message": "🔴 #STABLEUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.97% \nCurrent Price: 0.02575\nPrevious Price: 0.02586\nRSI: <b>1h.66 | 4h.54 | 1d.45 </b>\nSRSI: <b>1h.82 | 4h.98❗️ | 1d.34 </b>",
+        "exchange": "binance",
+        "symbol": "STABLEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:11:00.504Z"
+      },
+      {
+        "id": "cmvg7usrdkq7tlykh885eew8v",
+        "botId": "div",
+        "message": "🔴 #AWEUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.41% \nCurrent Price: 0.06655\nPrevious Price: 0.06662\nRSI: <b>1h.68 | 4h.64 | 1d.54 </b>\nSRSI: <b>1h.62 | 4h.99❗️ | 1d.72 </b>",
+        "exchange": "binance",
+        "symbol": "AWEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T05:01:55.610Z"
+      },
+      {
+        "id": "cmvga02ygksk7lykhupgvragl",
+        "botId": "div",
+        "message": "🔴 #B2USDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +3.96% \nCurrent Price: 0.4321\nPrevious Price: 0.4316\nRSI: <b>1h.74❗️ | 4h.60 | 1d.44 </b>\nSRSI: <b>1h.84 | 4h.98❗️ | 1d.25 </b>",
+        "exchange": "binance",
+        "symbol": "B2USDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T06:02:01.336Z"
+      },
+      {
+        "id": "cmvga1aboksmalykhihsguxtr",
+        "botId": "div",
+        "message": "🟢 #BTWUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +8.55% \nCurrent Price: 1.7624\nPrevious Price: 1.774\nRSI: <b>1h.35 | 4h.40 | 1d.53 </b>\nSRSI: <b>1h.46 | 4h.16 | 1d.18 </b>\nWT: <b>  1d🔴</b>",
+        "exchange": "binance",
+        "symbol": "BTWUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T06:02:57.540Z"
+      },
+      {
+        "id": "cmvga6w3fksr3lykhja4s88dl",
+        "botId": "div",
+        "message": "🟢 #LUMIAUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.46% \nCurrent Price: 0.08402\nPrevious Price: 0.08444\nRSI: <b>1h.34 | 4h.35 | 1d.45 </b>\nSRSI: <b>1h.52 | 4h.6 | 1d.11 </b>",
+        "exchange": "binance",
+        "symbol": "LUMIAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T06:07:19.035Z"
+      },
+      {
+        "id": "cmvgcar7vkupzlykhn9pn296k",
+        "botId": "div",
+        "message": "🔴 #IOUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.70% \nCurrent Price: 0.1586\nPrevious Price: 0.1582\nRSI: <b>1h.67 | 4h.55 | 1d.51 </b>\nSRSI: <b>1h.72 | 4h.100❗️ | 1d.15 </b>",
+        "exchange": "binance",
+        "symbol": "IOUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T07:06:18.572Z"
+      },
+      {
+        "id": "cmvgcgsmskusalykhnr9u5i2b",
+        "botId": "div",
+        "message": "🔴 #STARUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +5.89% \nCurrent Price: 0.03578\nPrevious Price: 0.03605\nRSI: <b>1h.66 | 4h.64 | 1d.43 </b>\nSRSI: <b>1h.29 | 4h.93❗️ | 1d.72 </b>",
+        "exchange": "binance",
+        "symbol": "STARUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T07:11:00.340Z"
+      },
+      {
+        "id": "cmvgci8cakut4lykhr58di9z3",
+        "botId": "div",
+        "message": "🔴 #UNHUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.63% \nCurrent Price: 409.01\nPrevious Price: 409.09\nRSI: <b>1h.68 | 4h.70 | 1d.72❗️ </b>\nSRSI: <b>1h.93❗️ | 4h.100❗️ | 1d.87 </b>\nPivot: %0.74 ⚠️",
+        "exchange": "binance",
+        "symbol": "UNHUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T07:12:07.354Z"
+      },
+      {
+        "id": "cmvge9y0pkw7elykhzfgvo792",
+        "botId": "div",
+        "message": "🟢 #ASMLUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.54% \nCurrent Price: 1624.9\nPrevious Price: 1622.04\nRSI: <b>1h.35 | 4h.38 | 1d.34 </b>\nSRSI: <b>1h.17 | 4h.23 | 1d.13 </b>\nPivot: %0.75 ⚠️",
+        "exchange": "binance",
+        "symbol": "ASMLUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:01:39.961Z"
+      },
+      {
+        "id": "cmvgecbhikwchlykhq10b6r02",
+        "botId": "div",
+        "message": "🔴 #COLLECTUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +6.49% \nCurrent Price: 0.0246\nPrevious Price: 0.02464\nRSI: <b>1h.68 | 4h.67 | 1d.57 </b>\nSRSI: <b>1h.78 | 4h.94❗️ | 1d.100❗️ </b>",
+        "exchange": "binance",
+        "symbol": "COLLECTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:03:30.726Z"
+      },
+      {
+        "id": "cmvgeg91pkwi6lykhsjg6kdwk",
+        "botId": "div",
+        "message": "🟢 #HK0992USDT  \nStrategy: 4H RSI DIVERGENCE\nBoost Value: +5.82% \nCurrent Price: 25.42\nPrevious Price: 25.3\nRSI: <b>1h.18❗️ | 4h.24❗️ | 1d.25❗️ </b>\nSRSI: <b>1h.4 | 4h.3❗️ | 1d.10 </b>\nWT: <b>  1d🟢</b>\nPivot: %0.71 ⚠️",
+        "exchange": "binance",
+        "symbol": "HK0992USDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:06:34.190Z"
+      },
+      {
+        "id": "cmvggfr9cky29lykh7zl4rwx4",
+        "botId": "div",
+        "message": "🔴 #BATUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.65% \nCurrent Price: 0.20139\nPrevious Price: 0.20167\nRSI: <b>1h.70 | 4h.62 | 1d.68 </b>\nSRSI: <b>1h.83 | 4h.100❗️ | 1d.12 </b>",
+        "exchange": "binance",
+        "symbol": "BATUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T09:02:10.369Z"
+      },
+      {
+        "id": "cmvggjx0uky62lykh4t1p14ze",
+        "botId": "div",
+        "message": "🟢 #GMXUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.63% \nCurrent Price: 8.17\nPrevious Price: 8.171\nRSI: <b>1h.34 | 4h.40 | 1d.48 </b>\nSRSI: <b>1h.24 | 4h.29 | 1d.18 </b>",
+        "exchange": "binance",
+        "symbol": "GMXUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T09:05:24.463Z"
+      },
+      {
+        "id": "cmvggol3okyb4lykhxz2uui6i",
+        "botId": "div",
+        "message": "🟢 #PAXGUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.52% \nCurrent Price: 4119.55\nPrevious Price: 4119.87\nRSI: <b>1h.36 | 4h.37 | 1d.39 </b>\nSRSI: <b>1h.39 | 4h.12 | 1d.64 </b>\nPivot: %0.24 ⚠️",
+        "exchange": "binance",
+        "symbol": "PAXGUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T09:09:02.293Z"
+      },
+      {
+        "id": "cmvggsarukyerlykh699xrse4",
+        "botId": "div",
+        "message": "🔴 #TRUSTUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.66% \nCurrent Price: 0.04956\nPrevious Price: 0.04965\nRSI: <b>1h.61 | 4h.50 | 1d.36 </b>\nSRSI: <b>1h.54 | 4h.94❗️ | 1d.14 </b>\nPivot: %0.59 ⚠️",
+        "exchange": "binance",
+        "symbol": "TRUSTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T09:11:55.530Z"
+      },
+      {
+        "id": "cmvggsdr1kyeylykhy2vjhbqw",
+        "botId": "div",
+        "message": "🔴 #TSLLUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.57% \nCurrent Price: 9.51\nPrevious Price: 9.58\nRSI: <b>1h.57 | 4h.57 | 1d.48 </b>\nSRSI: <b>1h.17 | 4h.92❗️ | 1d.49 </b>\nPivot: %0.56 ⚠️",
+        "exchange": "binance",
+        "symbol": "TSLLUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T09:11:59.389Z"
+      },
+      {
+        "id": "cmvgilbsal0w2lykhj9zhyau1",
+        "botId": "div",
+        "message": "🔴 #BMTUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +6.85% \nCurrent Price: 0.01811\nPrevious Price: 0.01844\nRSI: <b>1h.65 | 4h.62 | 1d.48 </b>\nSRSI: <b>1h.55 | 4h.87 | 1d.45 </b>",
+        "exchange": "binance",
+        "symbol": "BMTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T10:02:29.482Z"
+      },
+      {
+        "id": "cmvgiphb6l13llykhm3zao2za",
+        "botId": "div",
+        "message": "🟢 #HK0992USDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +3.50% \nCurrent Price: 25.15\nPrevious Price: 25.11\nRSI: <b>1h.17❗️ | 4h.21❗️ | 1d.24❗️ </b>\nSRSI: <b>1h.8❗️ | 4h.0 | 1d.9❗️ </b>\nWT: <b>  1d🟢</b>",
+        "exchange": "binance",
+        "symbol": "HK0992USDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T10:05:43.266Z"
+      },
+      {
+        "id": "cmvgiqw1cl16llykhkb8q39y8",
+        "botId": "div",
+        "message": "🟢 #LGELECTRONICSUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.64% \nCurrent Price: 122.33\nPrevious Price: 121.81\nRSI: <b>1h.32 | 4h.35 | 1d.31 </b>\nSRSI: <b>1h.7❗️ | 4h.38 | 1d.11 </b>",
+        "exchange": "binance",
+        "symbol": "LGELECTRONICSUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T10:06:49.007Z"
+      },
+      {
+        "id": "cmvgiygjal1l1lykh726j40rm",
+        "botId": "div",
+        "message": "🟢 #XAUUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.39% \nCurrent Price: 4121.68\nPrevious Price: 4121.25\nRSI: <b>1h.33 | 4h.35 | 1d.40 </b>\nSRSI: <b>1h.33 | 4h.10 | 1d.65 </b>\nPivot: %0.26 ⚠️",
+        "exchange": "binance",
+        "symbol": "XAUUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T10:12:42.166Z"
+      },
+      {
+        "id": "cmvgiys5sl1lclykhae9k16tx",
+        "botId": "div",
+        "message": "🟢 #YBUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +1.55% \nCurrent Price: 0.05988\nPrevious Price: 0.06014\nRSI: <b>1h.32 | 4h.29❗️ | 1d.24❗️ </b>\nSRSI: <b>1h.13 | 4h.56 | 1d.0❗️ </b>\nPivot: %0.00 ⚠️",
+        "exchange": "binance",
+        "symbol": "YBUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T10:12:57.232Z"
+      },
+      {
+        "id": "cmvgkoaiyl3nplykhzr31w7ff",
+        "botId": "div",
+        "message": "🔴 #ADBEUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.50% \nCurrent Price: 249.6\nPrevious Price: 249.34\nRSI: <b>1h.69 | 4h.62 | 1d.57 </b>\nSRSI: <b>1h.45 | 4h.100❗️ | 1d.77 </b>",
+        "exchange": "binance",
+        "symbol": "ADBEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T11:00:47.050Z"
+      },
+      {
+        "id": "cmvgkorcel3p4lykhf23kjgr1",
+        "botId": "div",
+        "message": "🔴 #ALTUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +9.13% \nCurrent Price: 0.010999\nPrevious Price: 0.010943\nRSI: <b>1h.74❗️ | 4h.79❗️ | 1d.80❗️ </b>\nSRSI: <b>1h.44 | 4h.100❗️ | 1d.100❗️ </b>",
+        "exchange": "binance",
+        "symbol": "ALTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T11:01:08.847Z"
+      },
+      {
+        "id": "cmvgkr7ycl3tblykhrbzzg79r",
+        "botId": "div",
+        "message": "🟢 #CATUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +0.75% \nCurrent Price: 715.76\nPrevious Price: 716.46\nRSI: <b>1h.30 | 4h.27❗️ | 1d.26❗️ </b>\nSRSI: <b>1h.0❗️ | 4h.6 | 1d.4❗️ </b>\nPivot: %0.61 ⚠️",
+        "exchange": "binance",
+        "symbol": "CATUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T11:03:03.684Z"
+      },
+      {
+        "id": "cmvgkrfial3tdlykh5vo18sfq",
+        "botId": "div",
+        "message": "🔴 #CHIPUSDT  \nStrategy: 1H RSI DIVERGENCE\nBoost Value: +2.16% \nCurrent Price: 0.04424\nPrevious Price: 0.04414\nRSI: <b>1h.66 | 4h.49 | 1d.45 </b>\nSRSI: <b>1h.72 | 4h.99❗️ | 1d.7 </b>\nWT: <b>1h🔴  </b>",
+        "exchange": "binance",
+        "symbol": "CHIPUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T11:03:13.474Z"
+      }
+    ],
+    "hasMore": true
+  }
+}

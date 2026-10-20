@@ -1,0 +1,542 @@
+[
+  {
+    "botId": "div",
+    "id": "cmvfbzf0ok2phlykh913fgiaj",
+    "symbol": "RAMUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:09:43.369Z",
+    "file": "RAMUSDT-1h-1792418983369.json",
+    "count": 750,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfbzf0ok2phlykh913fgiaj",
+    "symbol": "RAMUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T14:09:43.369Z",
+    "file": "RAMUSDT-4h-1792418983369.json",
+    "count": 332,
+    "latestClosedAt": 1792411199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfbzf0ok2phlykh913fgiaj",
+    "symbol": "RAMUSDT",
+    "interval": "1d",
+    "eventTime": "2026-10-19T14:09:43.369Z",
+    "file": "RAMUSDT-1d-1792418983369.json",
+    "count": 56,
+    "latestClosedAt": 1792367999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgkrfial3tdlykh5vo18sfq",
+    "symbol": "CHIPUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T11:03:13.474Z",
+    "file": "CHIPUSDT-1h-1792494193474.json",
+    "count": 750,
+    "latestClosedAt": 1792493999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgkrfial3tdlykh5vo18sfq",
+    "symbol": "CHIPUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T11:03:13.474Z",
+    "file": "CHIPUSDT-4h-1792494193474.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgkrfial3tdlykh5vo18sfq",
+    "symbol": "CHIPUSDT",
+    "interval": "1d",
+    "eventTime": "2026-10-20T11:03:13.474Z",
+    "file": "CHIPUSDT-1d-1792494193474.json",
+    "count": 188,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfbzrblk2pllykhnomg6epn",
+    "symbol": "RLCUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:09:59.313Z",
+    "file": "RLCUSDT-1h-1792418999313.json",
+    "count": 750,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfbzrblk2pllykhnomg6epn",
+    "symbol": "RLCUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T14:09:59.313Z",
+    "file": "RLCUSDT-4h-1792418999313.json",
+    "count": 750,
+    "latestClosedAt": 1792411199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfbzrblk2pllykhnomg6epn",
+    "symbol": "RLCUSDT",
+    "interval": "1d",
+    "eventTime": "2026-10-19T14:09:59.313Z",
+    "file": "RLCUSDT-1d-1792418999313.json",
+    "count": 750,
+    "latestClosedAt": 1792367999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvg1jrs5klvulykh00wbhxdl",
+    "symbol": "GRVTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T02:05:23.429Z",
+    "file": "GRVTUSDT-1h-1792461923429.json",
+    "count": 750,
+    "latestClosedAt": 1792461599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvg1jrs5klvulykh00wbhxdl",
+    "symbol": "GRVTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T02:05:23.429Z",
+    "file": "GRVTUSDT-4h-1792461923429.json",
+    "count": 484,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvg1jrs5klvulykh00wbhxdl",
+    "symbol": "GRVTUSDT",
+    "interval": "1d",
+    "eventTime": "2026-10-20T02:05:23.429Z",
+    "file": "GRVTUSDT-1d-1792461923429.json",
+    "count": 82,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgeg91pkwi6lykhsjg6kdwk",
+    "symbol": "HK0992USDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T08:06:34.190Z",
+    "file": "HK0992USDT-1h-1792483594190.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgeg91pkwi6lykhsjg6kdwk",
+    "symbol": "HK0992USDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:06:34.190Z",
+    "file": "HK0992USDT-4h-1792483594190.json",
+    "count": 261,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgeg91pkwi6lykhsjg6kdwk",
+    "symbol": "HK0992USDT",
+    "interval": "1d",
+    "eventTime": "2026-10-20T08:06:34.190Z",
+    "file": "HK0992USDT-1d-1792483594190.json",
+    "count": 44,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfge5h2k8fglykhjapbm6uk",
+    "symbol": "TSLAUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T16:13:09.303Z",
+    "file": "TSLAUSDT-1h-1792426389303.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfge5h2k8fglykhjapbm6uk",
+    "symbol": "TSLAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T16:13:09.303Z",
+    "file": "TSLAUSDT-4h-1792426389303.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfge5h2k8fglykhjapbm6uk",
+    "symbol": "TSLAUSDT",
+    "interval": "1d",
+    "eventTime": "2026-10-19T16:13:09.303Z",
+    "file": "TSLAUSDT-1d-1792426389303.json",
+    "count": 265,
+    "latestClosedAt": 1792367999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeq7a5kwr1lykh25u2g3l2",
+    "symbol": "UNITREEUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T08:14:18.462Z",
+    "file": "UNITREEUSDT-1h-1792484058462.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeq7a5kwr1lykh25u2g3l2",
+    "symbol": "UNITREEUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:14:18.462Z",
+    "file": "UNITREEUSDT-4h-1792484058462.json",
+    "count": 375,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeq7a5kwr1lykh25u2g3l2",
+    "symbol": "UNITREEUSDT",
+    "interval": "1d",
+    "eventTime": "2026-10-20T08:14:18.462Z",
+    "file": "UNITREEUSDT-1d-1792484058462.json",
+    "count": 63,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfget2ok8ftlykhxlm3nzid",
+    "symbol": "UVXYUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T16:13:39.888Z",
+    "file": "UVXYUSDT-1h-1792426419888.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfget2ok8ftlykhxlm3nzid",
+    "symbol": "UVXYUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T16:13:39.888Z",
+    "file": "UVXYUSDT-4h-1792426419888.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfget2ok8ftlykhxlm3nzid",
+    "symbol": "UVXYUSDT",
+    "interval": "1d",
+    "eventTime": "2026-10-19T16:13:39.888Z",
+    "file": "UVXYUSDT-1d-1792426419888.json",
+    "count": 131,
+    "latestClosedAt": 1792367999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeqxqbkwrilykhyob71ydj",
+    "symbol": "WLFIUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T08:14:52.739Z",
+    "file": "WLFIUSDT-1h-1792484092739.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeqxqbkwrilykhyob71ydj",
+    "symbol": "WLFIUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:14:52.739Z",
+    "file": "WLFIUSDT-4h-1792484092739.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeqxqbkwrilykhyob71ydj",
+    "symbol": "WLFIUSDT",
+    "interval": "1d",
+    "eventTime": "2026-10-20T08:14:52.739Z",
+    "file": "WLFIUSDT-1d-1792484092739.json",
+    "count": 424,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfooqnnke30lykhh2o9oa9i",
+    "symbol": "FRAXUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T20:05:20.244Z",
+    "file": "FRAXUSDT-1h-1792440320244.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfooqnnke30lykhh2o9oa9i",
+    "symbol": "FRAXUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:05:20.244Z",
+    "file": "FRAXUSDT-4h-1792440320244.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfooqnnke30lykhh2o9oa9i",
+    "symbol": "FRAXUSDT",
+    "interval": "1d",
+    "eventTime": "2026-10-19T20:05:20.244Z",
+    "file": "FRAXUSDT-1d-1792440320244.json",
+    "count": 278,
+    "latestClosedAt": 1792367999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeg92gkwi7lykh7xpap2bd",
+    "symbol": "HK0992USDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T08:06:34.216Z",
+    "file": "HK0992USDT-1h-1792483594216.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeg92gkwi7lykh7xpap2bd",
+    "symbol": "HK0992USDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:06:34.216Z",
+    "file": "HK0992USDT-4h-1792483594216.json",
+    "count": 261,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeg92gkwi7lykh7xpap2bd",
+    "symbol": "HK0992USDT",
+    "interval": "1d",
+    "eventTime": "2026-10-20T08:06:34.216Z",
+    "file": "HK0992USDT-1d-1792483594216.json",
+    "count": 44,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfooqnqke31lykh83jdyjqm",
+    "symbol": "FRAXUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T20:05:20.247Z",
+    "file": "FRAXUSDT-1h-1792440320247.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfooqnqke31lykh83jdyjqm",
+    "symbol": "FRAXUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:05:20.247Z",
+    "file": "FRAXUSDT-4h-1792440320247.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfooqnqke31lykh83jdyjqm",
+    "symbol": "FRAXUSDT",
+    "interval": "1d",
+    "eventTime": "2026-10-19T20:05:20.247Z",
+    "file": "FRAXUSDT-1d-1792440320247.json",
+    "count": 278,
+    "latestClosedAt": 1792367999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfp0ftokejelykh7m3p3m2m",
+    "symbol": "我踏马来了USDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T20:14:26.077Z",
+    "file": "我踏马来了USDT-1h-1792440866077.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfp0ftokejelykh7m3p3m2m",
+    "symbol": "我踏马来了USDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:14:26.077Z",
+    "file": "我踏马来了USDT-4h-1792440866077.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfp0ftokejelykh7m3p3m2m",
+    "symbol": "我踏马来了USDT",
+    "interval": "1d",
+    "eventTime": "2026-10-19T20:14:26.077Z",
+    "file": "我踏马来了USDT-1d-1792440866077.json",
+    "count": 272,
+    "latestClosedAt": 1792367999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsnwyh2ivlykhhhb76con",
+    "symbol": "SKDDUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:29:01.714Z",
+    "file": "SKDDUSDT-1h-1792272541714.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsnwyh2ivlykhhhb76con",
+    "symbol": "SKDDUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-17T21:29:01.714Z",
+    "file": "SKDDUSDT-4h-1792272541714.json",
+    "count": 322,
+    "latestClosedAt": 1792267199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsnwyh2ivlykhhhb76con",
+    "symbol": "SKDDUSDT",
+    "interval": "1d",
+    "eventTime": "2026-10-17T21:29:01.714Z",
+    "file": "SKDDUSDT-1d-1792272541714.json",
+    "count": 54,
+    "latestClosedAt": 1792195199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvg0slilklc1lykhhujwjkv3",
+    "symbol": "1000RATSUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T01:44:15.597Z",
+    "file": "1000RATSUSDT-1h-1792460655597.json",
+    "count": 750,
+    "latestClosedAt": 1792457999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvg0slilklc1lykhhujwjkv3",
+    "symbol": "1000RATSUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T01:44:15.597Z",
+    "file": "1000RATSUSDT-4h-1792460655597.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvg0slilklc1lykhhujwjkv3",
+    "symbol": "1000RATSUSDT",
+    "interval": "1d",
+    "eventTime": "2026-10-20T01:44:15.597Z",
+    "file": "1000RATSUSDT-1d-1792460655597.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwu61ph38nlykhn2o4y1pn",
+    "symbol": "XTZUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:30:11.869Z",
+    "file": "XTZUSDT-1h-1792272611869.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwu61ph38nlykhn2o4y1pn",
+    "symbol": "XTZUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-17T21:30:11.869Z",
+    "file": "XTZUSDT-4h-1792272611869.json",
+    "count": 750,
+    "latestClosedAt": 1792267199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwu61ph38nlykhn2o4y1pn",
+    "symbol": "XTZUSDT",
+    "interval": "1d",
+    "eventTime": "2026-10-17T21:30:11.869Z",
+    "file": "XTZUSDT-1d-1792272611869.json",
+    "count": 750,
+    "latestClosedAt": 1792195199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvgm6uodl5ehlykhlfrjdy4r",
+    "symbol": "PLAYUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T11:43:12.589Z",
+    "file": "PLAYUSDT-1h-1792496592589.json",
+    "count": 750,
+    "latestClosedAt": 1792493999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvgm6uodl5ehlykhlfrjdy4r",
+    "symbol": "PLAYUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T11:43:12.589Z",
+    "file": "PLAYUSDT-4h-1792496592589.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvgm6uodl5ehlykhlfrjdy4r",
+    "symbol": "PLAYUSDT",
+    "interval": "1d",
+    "eventTime": "2026-10-20T11:43:12.589Z",
+    "file": "PLAYUSDT-1d-1792496592589.json",
+    "count": 447,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvey8pe8jk19lykhl490uvvn",
+    "symbol": "CTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T07:45:02.096Z",
+    "file": "CTUSDT-1h-1792395902096.json",
+    "count": 433,
+    "latestClosedAt": 1792393199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvey8pe8jk19lykhl490uvvn",
+    "symbol": "CTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T07:45:02.096Z",
+    "file": "CTUSDT-4h-1792395902096.json",
+    "count": 109,
+    "latestClosedAt": 1792382399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvey8pe8jk19lykhl490uvvn",
+    "symbol": "CTUSDT",
+    "interval": "1d",
+    "eventTime": "2026-10-19T07:45:02.096Z",
+    "file": "CTUSDT-1d-1792395902096.json",
+    "count": 19,
+    "latestClosedAt": 1792367999999
+  }
+]

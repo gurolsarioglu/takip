@@ -5,6 +5,9 @@
  */
 
 const {
+  createScanLoop,
+  isSignalAccepted,
+  strategyRules,
   getWatchlist,
   getKlines,
   postSignal,
@@ -38,7 +41,7 @@ async function scan() {
     if (now - lastSeen < 180000) continue; // 3 dk cooldown
 
     try {
-      const klines1m = await getKlines(sym, '1m', 30);
+      const klines1m = await getKlines(sym, '1m', 250);
       if (klines1m.length < 20) continue;
 
       const lastBar = klines1m[klines1m.length - 1];
@@ -58,20 +61,21 @@ async function scan() {
       const closes = klines1m.map(k => k.close);
       const rsiRes = quantIndicators.calculateRSI(closes, 14);
       const stoch = quantIndicators.calculateStochRSI(rsiRes.rsiSeries, 14, 3, 3);
-      if (rsiRes.rsi < 55 && stoch.k < 60) continue;
+      if (!strategyRules.shouldEmit(BOT_ID, { changePct: boostPct, volumeRatio: avgVol > 0 ? curVol / avgVol : null, rsi: rsiRes.rsi, stochK: stoch.k })) continue;
 
       const div = quantIndicators.detectPivotDivergence(klines1m, rsiRes.rsiSeries);
 
-      seenMap.set(sym, now);
-      totalSignalsFound++;
 
       const dateObj = new Date(now);
       const dateStr = dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
       const nowTime = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-      const prevPrice = computePrevPrice(lastBar.close, boostPct, sym);
+      const prevPrice = formatCryptoPrice(prevBar.close, sym);
 
       const signalPayload = {
         botId: BOT_ID,
+        source: 'binance-rest',
+        strategyVersion: 'local-hypothesis-v1',
+        observedAt: Date.now(),
         botType: BOT_ID,
         id: `m1p_${sym}_${now}`,
         symbol: sym,
@@ -85,13 +89,13 @@ async function scan() {
         strategy: '1m Momentum Sıçraması',
         rsi: {
           m1: `${Math.round(rsiRes.rsi)} ❗`,
-          m5: '55',
-          h1: '48'
+          m5: '—',
+          h1: '—'
         },
         srsi: {
           m1: `${Math.round(stoch.k)} ❗`,
-          m5: `${Math.round(stoch.d)}`,
-          h1: '35'
+          m5: '—',
+          h1: '—'
         },
         divergence: div.hasBullDiv || div.hasBearDiv ? '1m ✅' : undefined,
         isFavorite: boostPct >= 1.50,
@@ -100,6 +104,10 @@ async function scan() {
       };
 
       const hubResult = await postSignal(signalPayload);
+      if (isSignalAccepted(hubResult)) {
+        seenMap.set(sym, now);
+        totalSignalsFound++;
+      }
       logger.signal(BOT_NAME, signalPayload, hubResult);
 
     } catch (err) {
@@ -112,10 +120,9 @@ async function start() {
   logger.header(BOT_ID, BOT_NAME, BOT_DESC);
   logger.info(`${BOT_NAME} tarama motoru baslatildi (Her 6 saniyede bir tarar)...`);
 
-  await scan();
-  setInterval(() => {
-    scan().catch(e => logger.warn(`Tarama hatasi: ${e.message}`));
-  }, 6000);
+  const loop = createScanLoop(scan, 6000, { onError: e => logger.warn(`Tarama hatasi: ${e.message}`) });
+  await loop.run();
 }
 
-start();
+if (require.main === module) start();
+module.exports = { scan, start };

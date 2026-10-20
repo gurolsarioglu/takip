@@ -5,8 +5,12 @@
  */
 
 const {
+  createScanLoop,
+  isSignalAccepted,
+  strategyRules,
   getWatchlist,
   postSignal,
+  botData,
   logger
 } = require('./runner-helper');
 
@@ -23,8 +27,12 @@ async function scan() {
   if (!watchlist || watchlist.length === 0) return;
 
   // Negatif fonlama oranına göre sırala
+  const previousRates = new Map(prevRateMap);
+  for (const item of watchlist) {
+    if (Number.isFinite(item.fr)) prevRateMap.set(item.symbol, item.fr);
+  }
   const negativeList = watchlist
-    .filter(w => typeof w.fr === 'number')
+    .filter(w => Number.isFinite(w.fr) && w.fr < 0)
     .sort((a, b) => a.fr - b.fr);
 
   const now = Date.now();
@@ -41,24 +49,21 @@ async function scan() {
     scanned++;
     logger.scan(BOT_NAME, scanned, totalSignalsFound);
 
-    const prevFr = prevRateMap.get(sym);
-    prevRateMap.set(sym, item.fr);
+    const prevFr = previousRates.get(sym);
 
     // Sadece negatif olanları veya belirgin düşenleri ele al
-    if (item.fr >= 0) continue;
+    if (!strategyRules.shouldEmit(BOT_ID, { rate: item.fr })) continue;
 
     const lastSeen = seenMap.get(sym) || 0;
     if (now - lastSeen < 600000) continue; // 10 dk cooldown
 
-    seenMap.set(sym, now);
-    totalSignalsFound++;
-
-    const frPct = (item.fr * 100).toFixed(4);
-    const prevFrPct = prevFr !== undefined ? (prevFr * 100).toFixed(4) : '+0.0100';
     const isFlip = prevFr !== undefined && prevFr > 0 && item.fr < 0;
 
     const signalPayload = {
       botId: BOT_ID,
+        source: 'binance-rest',
+        strategyVersion: 'local-hypothesis-v1',
+        observedAt: Date.now(),
       botType: BOT_ID,
       id: `fr_${sym}_${now}`,
       symbol: sym,
@@ -67,16 +72,17 @@ async function scan() {
       dateStr,
       dot: isFlip ? '🟢' : '🔴',
       alertText: isFlip ? 'Funding changed from + to - (Short Squeeze)' : 'Negative Funding (Short Squeeze Candidate)',
-      fundingRate: `${frPct}%`,
-      previousFunding: `${prevFrPct}%`,
-      difference: `${(item.fr - (prevFr || 0.0001)).toFixed(4)}%`,
-      timeRemaining: '04:00:00',
+      ...botData.fundingFields(item.fr, prevFr, item.nextFundingTime, now),
       strategy: isFlip ? 'Funding Flip (+ -> -)' : 'Aşırı Negatif Fonlama',
       dateLabel: dateStr,
       time: nowTime
     };
 
     const hubResult = await postSignal(signalPayload);
+    if (isSignalAccepted(hubResult)) {
+      seenMap.set(sym, now);
+      totalSignalsFound++;
+    }
     logger.signal(BOT_NAME, signalPayload, hubResult);
   }
 }
@@ -85,10 +91,9 @@ async function start() {
   logger.header(BOT_ID, BOT_NAME, BOT_DESC);
   logger.info(`${BOT_NAME} tarama motoru baslatildi (Her 20 saniyede bir tarar)...`);
 
-  await scan();
-  setInterval(() => {
-    scan().catch(e => logger.warn(`Tarama hatasi: ${e.message}`));
-  }, 20000);
+  const loop = createScanLoop(scan, 20000, { onError: e => logger.warn(`Tarama hatasi: ${e.message}`) });
+  await loop.run();
 }
 
-start();
+if (require.main === module) start();
+module.exports = { scan, start };

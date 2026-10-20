@@ -70,10 +70,18 @@ class QuantIndicatorsService {
 
     const latestRsi = rsiSeries[rsiSeries.length - 1] ?? 50;
     const latestRsiSma = rsiSmaSeries[rsiSmaSeries.length - 1] ?? 50;
+    const prevRsi = rsiSeries.length > 1 ? rsiSeries[rsiSeries.length - 2] : latestRsi;
+    const prevRsiSma = rsiSmaSeries.length > 1 ? rsiSmaSeries[rsiSmaSeries.length - 2] : latestRsiSma;
+    const rsiSmaCrossUp = prevRsi <= prevRsiSma && latestRsi > latestRsiSma;
+    const rsiSmaCrossDown = prevRsi >= prevRsiSma && latestRsi < latestRsiSma;
 
     return {
       rsi: latestRsi,
       rsiSma: latestRsiSma,
+      prevRsi,
+      prevRsiSma,
+      rsiSmaCrossUp,
+      rsiSmaCrossDown,
       rsiSeries,
       rsiSmaSeries
     };
@@ -215,9 +223,13 @@ class QuantIndicatorsService {
     const wt2 = parseFloat(wt2Series[len - 1].toFixed(2));
     const pWt1 = len > 1 ? parseFloat(wt1Series[len - 2].toFixed(2)) : wt1;
     const pWt2 = len > 1 ? parseFloat(wt2Series[len - 2].toFixed(2)) : wt2;
+    const ppWt1 = len > 2 ? parseFloat(wt1Series[len - 3].toFixed(2)) : pWt1;
+    const ppWt2 = len > 2 ? parseFloat(wt2Series[len - 3].toFixed(2)) : pWt2;
 
     const crossUp = pWt1 <= pWt2 && wt1 > wt2;
     const crossDown = pWt1 >= pWt2 && wt1 < wt2;
+    const closedCrossUp = ppWt1 <= ppWt2 && pWt1 > pWt2;
+    const closedCrossDown = ppWt1 >= ppWt2 && pWt1 < pWt2;
 
     return {
       wt1,
@@ -226,6 +238,8 @@ class QuantIndicatorsService {
       prevWt2: pWt2,
       crossUp,
       crossDown,
+      closedCrossUp,
+      closedCrossDown,
       isOversold: wt1 <= -60,
       isOverbought: wt1 >= 60,
       wt1Series,
@@ -240,7 +254,7 @@ class QuantIndicatorsService {
     if (!Array.isArray(series) || series.length === 0) return 0;
     if (series.length < period) {
       const sum = series.reduce((a, b) => a + b, 0);
-      return parseFloat((sum / series.length).toFixed(4));
+      return sum / series.length;
     }
 
     const alpha = 2 / (period + 1);
@@ -248,7 +262,7 @@ class QuantIndicatorsService {
     for (let i = 1; i < series.length; i++) {
       ema = alpha * series[i] + (1 - alpha) * ema;
     }
-    return parseFloat(ema.toFixed(4));
+    return ema;
   }
 
   /**
@@ -274,11 +288,11 @@ class QuantIndicatorsService {
     const pivotDistancePct = P > 0 ? parseFloat((Math.abs(currentPrice - P) / P * 100).toFixed(2)) : 0;
 
     return {
-      p: parseFloat(P.toFixed(4)),
-      s1: parseFloat(S1.toFixed(4)),
-      s2: parseFloat(S2.toFixed(4)),
-      r1: parseFloat(R1.toFixed(4)),
-      r2: parseFloat(R2.toFixed(4)),
+      p: P,
+      s1: S1,
+      s2: S2,
+      r1: R1,
+      r2: R2,
       pivotDistancePct
     };
   }
@@ -411,20 +425,31 @@ class QuantIndicatorsService {
     const deltaVolPct = this.calculateDeltaVolume(volumes, 20);
     const divergence = this.detectPivotDivergence(candles, rsiData.rsiSeries);
 
+    const ema200DistPct = ema200 > 0
+      ? parseFloat((Math.abs(latestCandle.close - ema200) / ema200 * 100).toFixed(2))
+      : null;
+
     return {
       rsi: rsiData.rsi,
       rsiSma: rsiData.rsiSma,
+      prevRsi: rsiData.prevRsi,
+      prevRsiSma: rsiData.prevRsiSma,
+      rsiSmaCrossUp: rsiData.rsiSmaCrossUp,
+      rsiSmaCrossDown: rsiData.rsiSmaCrossDown,
       srsiK: stochData.k,
       srsiD: stochData.d,
       wt1: wtData.wt1,
       wt2: wtData.wt2,
       wtCrossUp: wtData.crossUp,
       wtCrossDown: wtData.crossDown,
+      wtCrossUpClosed: wtData.closedCrossUp,
+      wtCrossDownClosed: wtData.closedCrossDown,
       wtOversold: wtData.isOversold,
       wtOverbought: wtData.isOverbought,
       ema20,
       ema50,
       ema200,
+      ema200DistPct,
       pivots,
       deltaVolPct,
       divergence

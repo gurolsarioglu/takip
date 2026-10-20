@@ -1,0 +1,30 @@
+{
+  "source": "Authenticated browser DOM, /api/bot-messages; Binance FUTURES; latest 20 per bot",
+  "sampleSize": 180,
+  "sampleLimitations": "Historical latest-message windows differ per bot; all responses haveMore=true. Not a paired local/reference run. Representative records below are selected from the 180 observations.",
+  "historicalObservationClock": {"estimatedOffsetMs":295766,"roundTripMs":468,"localBefore":"2026-10-20T11:13:59.938Z","localAfter":"2026-10-20T11:14:00.406Z","binanceTime":"2026-10-20T11:18:55.938Z"},
+  "clockAfterUserCorrection": {"localBefore":"2026-10-20T11:27:29.287Z","localAfter":"2026-10-20T11:27:29.724Z","binanceTime":"2026-10-20T11:27:29.924Z","estimatedOffsetMs":418.5,"roundTripMs":437},
+  "clockPolicy": "Historical offset applies only to historical local observations. Preserve reference createdAt unchanged. Never apply old offset after clock correction. Single request midpoint is an estimate, not proof of precise synchronization.",
+  "botSummary": [
+    {"bot":"m1a","count":20,"up":9,"down":11,"firstEvent":"2026-10-20T11:14:40.320Z","lastEvent":"2026-10-20T11:16:51.502Z","finding":"Repeated same-symbol records about 10 seconds apart; some distinct IDs about 250ms apart."},
+    {"bot":"m1premium","count":20,"up":14,"down":6,"finding":"Both directions observed, contradicting positive-only local rule."},
+    {"bot":"hammerpro","count":20,"up":3,"down":17,"finding":"W1 strategy and 1m WaveTrend displayed; bearish overbought signals exist."},
+    {"bot":"hammerproplus","count":20,"up":3,"down":17,"finding":"Both directions and USDC symbols observed."},
+    {"bot":"4s","count":20,"up":19,"down":1,"finding":"Green examples below local h1 RSI>=58 threshold; h4 and daily fields displayed."},
+    {"bot":"4ssniper","count":20,"up":13,"down":7,"finding":"NW UP/DOWN and 4H RSI DIVERGENCE; some positioning below 55%."},
+    {"bot":"div","count":20,"up":9,"down":11,"finding":"Timeframe-specific divergence strategy labels."},
+    {"bot":"v3","count":20,"finding":"All event timestamps second zero; observed volume changes below 15%; displayed 24h volume in base units."},
+    {"bot":"fr","count":20,"finding":"Minute batches and repeated symbols; sample does not establish exact threshold or lifecycle."}
+  ],
+  "representativeRecords": [
+    {"id":"cmvgl65hcl4hnlykhgwx6nwkz","botId":"m1","symbol":"COLLECTUSDT","createdAt":"2026-10-20T11:14:40.320Z","direction":"up","boostPct":1.58,"currentPrice":0.02382,"previousPrice":0.02348,"rsi":31},
+    {"id":"cmvgl9qzxl4ktlykht3xlzgio","botId":"m1-premium","symbol":"DOODUSDT","createdAt":"2026-10-20T11:17:28.174Z","direction":"up","boostPct":1.4,"rsi":{"1m":65,"5m":73,"1h":86}},
+    {"id":"cmvgbkpyvku59lykh9v35rq5s","botId":"hammer-pro","symbol":"SPACEUSDT","createdAt":"2026-10-20T06:46:03.896Z","direction":"down","strategy":"W1","wt":"1m down","rsi":{"1m":59,"5m":58,"1h":60}},
+    {"id":"cmveyap44jk31lykh6ihge03z","botId":"hammer-pro-plus","symbol":"CTUSDT","createdAt":"2026-10-19T07:46:35.044Z","direction":"down","strategy":"S1","boostPct":3.06,"rsi":{"1m":73,"5m":94,"1h":79}},
+    {"id":"cmvfoklzukdz3lykhjn2qswka","botId":"4s","symbol":"BANANAS31USDT","createdAt":"2026-10-19T20:02:07.579Z","direction":"up","boostPct":2.14,"currentPrice":0.006061,"previousPrice":0.006053,"rsi":{"1h":45,"4h":39,"1d":25}},
+    {"id":"cmvge9h0jkw6tlykhws4y41ft","botId":"4sniper","symbol":"ALTUSDT","createdAt":"2026-10-20T08:01:17.923Z","direction":"down","strategy":"NW DOWN","rsi":{"1h":85,"4h":77,"1d":79}},
+    {"id":"cmvgcar7vkupzlykhn9pn296k","botId":"div","symbol":"IOUSDT","createdAt":"2026-10-20T07:06:18.572Z","direction":"down","strategy":"1H RSI DIVERGENCE"},
+    {"id":"cmvg4yqddknx7lykhqukmf1mg","botId":"v3","symbol":"IMXUSDT","createdAt":"2026-10-20T03:41:00.290Z","volumeChangePct":11.48,"volume24hBase":16237287},
+    {"id":"cmvgji555l2a8lykhoj4mdhlp","botId":"fr","symbol":"CSOPSKHYNIX2LUSDT","createdAt":"2026-10-20T10:28:00.521Z","fundingText":"-0.0014","previousFundingText":"0.0000","differenceText":"0.001367","remainingText":"01:31:59"}
+  ]
+}

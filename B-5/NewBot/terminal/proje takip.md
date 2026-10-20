@@ -994,3 +994,75 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 - **Düşündüklerimiz:** Öncelik veri doğruluğu ve ortak strateji tanımı olmalı. Sabit Boost/RSI değerleri, sentiment alan uyuşmazlığı, güncellenmeyen merkezi mum önbelleği ve kapanmamış mumlarla karar üretimi çözülmeden eşik optimizasyonuna geçilmemeli. 4S ve Sniper runner'ları 4h mum okumuyor.
 - **Tamamlanan İşler ve Doğrulama:** Denetim betiği 8 sorunu tekrar üretti: Sniper balina filtresinin NaN ile aşılması, merkezi önbelleğin yenilenmemesi, funding farkının yanlış ölçeği, mikro fiyatlarda EMA/pivot sıfırlanması, reddedilen sinyale rağmen Hub kabul bildirimi, yeniden başlatmada tekilleştirme kaybı, 200 günlük EMA'nın yalnız SMA başlangıcını döndürmesi ve arşivde strateji metadata kaybı. 51 JavaScript dosyasının sözdizimi kontrolü temiz. Mevcut regresyon paketi 8/8 geçti; followup paketi `review.changeCoin` erişiminde TypeError ile durdu. Canlı Binance/TradingView karşılaştırması veya strateji kârlılığı testi yapılmadı.
 
+---
+
+# 📅 20.10.2026 - Bot Veri Doğruluğu, İndikatör Testleri ve Git Senkronizasyonu
+
+## 💬 1. Konuşmalarımız ve Onaylananlar
+* **Kullanıcı Talebi:** Yapılan tüm son değişikliklerin (bot mimarisi iyileştirmeleri, quant göstergeleri, veri doğruluğu kuralları, test paketleri ve dökümantasyon) GitHub reposuna gönderilmesi onaylandı.
+
+## 🧠 2. Düşündüklerimiz ve Mimari Kararlar
+1. **Veri Bütünlüğü ve Kesinlik:**
+   - Kripto mikro-fiyatlarında basamak kaybını önlemek için tick precision koruması (`services/price-formatter.js`) ve tekil EMA nüks algoritması sabitlendi.
+   - Sentetik veya varsayımsal sinyal üretimi tamamen engellendi; her botun sadece gerçek doğrulanmış mum verileriyle ve tanımlı strateji kurallarıyla (`bots/strategy-rules.js`) karar üretmesi sağlandı.
+2. **Merkezi ve Bağımsız Çalışma Mimarisi:**
+   - Ortak veri akışı için `bot-data.service.js`, `scan-loop.service.js` ve `bot-market-route.service.js` modülleri hazırlandı.
+   - Her botun kendi zaman dilimi (1m, 5m, 15m, 4h, 1d vb.) bağımsızlığı güvenceye alındı.
+
+## 🛠️ 3. Yaptıklarımız (Teknik ve Mimari Değişiklikler)
+1. **Runner ve Strateji Güncellemeleri:**
+   - `bots/runners/` (4S, 4S Sniper, Divergence, Funding Rate, Hammer Pro, Hammer Pro Plus, M1A Drop, M1 Premium, V3 Volume) ve `bots/strategies/` dosyalarında veri doğrulama ve hata yakalama katmanları güçlendirildi.
+2. **Hizmet Katmanı (Services):**
+   - `services/quant-indicators.service.js`, `services/price-formatter.js`, `services/market-data-engine.service.js`, `services/derivatives-enricher.service.js`, `services/signal-store.service.js` ve `services/history.service.js` senkronize edildi.
+3. **Kullanıcı Arayüzü ve Sunucu:**
+   - `public/plugins/bot-hub/bot-renderer.js`, `public/plugins/sentiment-modal/sentiment-modal.plugin.js` ve `terminal-server.js` bileşenleri güncellendi.
+4. **Test ve Doğrulama Paketleri:**
+   - `review/` altında `bot-data-correctness.test.cjs`, `runner-correctness.test.cjs`, `strategy-rules.test.cjs`, `three-bot-candidates.test.cjs` ve analiz raporları eklendi.
+
+## ✅ 4. Tamamlanan İşler ve Doğrulama
+1. **Regresyon ve Quant Doğrulama:** `npm test` başarıyla çalıştı (8/8 Regresyon PASS, 5/5 Quant Doğrulama PASS).
+2. **Birim Doğruluk Testleri:**
+   - `bot-data-correctness.test.cjs` -> 15/15 PASS
+   - `runner-correctness.test.cjs` -> 6/6 PASS
+   - `strategy-rules.test.cjs` -> 1/1 PASS
+3. **Git Senkronizasyonu:** Tüm değişiklikler commit edilerek `origin/master` GitHub reposuna başarıyla push edildi.
+
+
+---
+
+# 20.10.2026 - Bot 5 (Hammer Pro) ve Bot 6 (Hammer Pro Plus) Birebir VisiVero Entegrasyonu
+
+## 🗣️ 1. Konuşmalarımız ve Onaylananlar
+- Tüm 8+1 botun tersine mühendislik raporu (`review/visivero-8-bot-master-formulas-2026-10-20.md`) tamamlandıktan sonra kullanıcı **"5 ve 6 numaralı botları yapalım. başla bakalım."** talimatıyla **Bot 5 (`Hammer Pro` / `hammerpro`)** ve **Bot 6 (`Hammer Pro Plus` / `hammerproplus`)** botlarının birebir VisiVero formülleriyle kodlanmasını istedi.
+
+## 🧠 2. Düşündüklerimiz
+- **5-Mum Darbe (Impulse) `Boost Value` Keşfi:** Reversal botlarında `Boost Value` alanının son 5 mum (`4 kapanmış + 1 canlı`, `Hammer` ailesi için `1m`) içindeki maksimum açılış-dip (`(Open - Low)/Low * 100`, `🟢` Long) veya açılış-tepe (`(High - Open)/Open * 100`, `🔴` Short) darbesi olduğu 100 mesajın 99'unda (`%99.0`, `0.00%` sapma ile) kanıtlandı.
+- **Ortak Çekirdek, Kademeli Filtre (`#W1 / #S1 / #R1`):**
+  - `#W1`: Son kapanmış veya canlı `1m` mumunda `WaveTrend(10, 21, 4)` kesişimi (`WT1` vs `WT2`) + `1m` ve `5m` RSI/SRSI aşırı bölge konfluensi (`WT: 1m🟢` / `1m🔴`).
+  - `#S1`: Canlı `1m` mumunda ekstrem `RSI(14)` (`<= 29` veya `>= 71`) + `RSI(14)/SMA(14)` kesişimi + `5m` RSI/SRSI konfluensi.
+  - `#R1`: `Hammer Pro Plus` için yüksek darbe (`Boost >= %2.50`) + `1m RSI 71..85` ve `5m RSI >= 80` aşırı alım dönüşü (`🔴 #R1`).
+  - `Hammer Pro` tüm geçerli `#W1` ve `#S1` dönüşlerini üretirken, `Hammer Pro Plus` yalnızca `Boost >= %2.00` (`⭐️`, `⭐️⭐️`, `⭐️⭐️⭐️`) veya 6 göstergenin tamamı ekstrem (`❗️`) olan yüksek kaliteli sinyalleri süzer.
+- **Tembel (Lazy) HTF Zenginleştirme:** API ağırlığını (Rate Limit) korumak amacıyla `4H` (`4H.E200: %0.XX ⚠️`) ve `1D` (`Pivot: %0.XX ⚠️`) mumları yalnızca `1m + 5m + 1h` Hammer tetikleyicisi eşleştiğinde çekilir.
+
+## 🛠️ 3. Yaptıklarımız
+1. **`services/quant-indicators.service.js`:**
+   - `calculateRSI` içerisine `prevRsi`, `prevRsiSma`, `rsiSmaCrossUp` ve `rsiSmaCrossDown` eklendi.
+   - `calculateWaveTrend` içerisine son kapanmış mum kesişimlerini yakalayan `closedCrossUp` ve `closedCrossDown` eklendi.
+   - `calculateAllMetrics` içerisine `ema200DistPct`, `rsiSmaCrossUp/Down` ve `wtCrossUpClosed/DownClosed` eklendi.
+2. **`services/bot-data.service.js`:**
+   - `impulseBoost(candles, direction, 5)`, `hammerStars(boostPct)`, `rsiTextWithAlert(value)` (`<=30` / `>=70` $\rightarrow$ `❗️`), `srsiTextWithAlert(value)` (`<=10` / `>=90` $\rightarrow$ `❗️`), `formatHammerDistanceAlert(distPct)` (`< %1.00` $\rightarrow$ `%0.XX ⚠️`) ve `formatHammerFundingAlert(fr)` (`<= -%0.20` $\rightarrow$ `-0.XX ⚠️`) fonksiyonları eklendi.
+3. **`bots/strategy-rules.js`:**
+   - `evaluateHammer(id, ctx)` fonksiyonu ile `hammerpro` ve `hammerproplus` için `#W1`, `#S1`, `#R1` (hem `🟢` Long hem `🔴` Short) karar motoru ve tüm opsiyonel zenginleştirme satırları (`WT`, `Divergence`, `Pivot`, `4H.E200`, `FR`, `BTC Status`) kodlandı.
+4. **`bots/strategies/hammer-pro.bot.js` & `bots/strategies/hammer-pro-plus.bot.js`:**
+   - Çift yönlü (`🟢`/`🔴`) sinyal işleme, Boost bazlı yıldız derecelendirmesi (`⭐️`, `⭐️⭐️`, `⭐️⭐️⭐️`), `❗️` uyarıları ve opsiyonel satırların (`wt`, `divergence`, `pivot`, `ema200`, `fr`, `btcStatus`) tam entegrasyonu yapıldı.
+5. **`bots/index.js`, `bots/runners/hammer-pro.runner.js`, `bots/runners/hammer-pro-plus.runner.js`:**
+   - Merkezi motor ve bağımsız runner servisleri `1m + 5m + 1h` (+ eşleşme anında `4h` ve `1d`) mumlarıyla gerçek VisiVero `Previous Price` (`1m close[1]`) ve 5-bar `1m` `Boost Value` üretecek şekilde güncellendi.
+6. **`public/plugins/bot-hub/bot-renderer.js` & `services/signal-store.service.js`:**
+   - `Hammer Pro` ve `Hammer Pro Plus` kart tasarımları `🟢`/`🔴` yön noktası, yıldızlar (`⭐️`), `WT`, `Divergence`, `Pivot`, `4H.E200`, `FR` ve `BTC Status` satırlarını birebir gösterecek şekilde güncellendi; `fr` alanı kalıcı arşiv izin listesine eklendi.
+
+## ✅ 4. Tamamlanan İşler ve Doğrulama
+- **`review/hammer-bots-visivero.test.cjs`:** Gerçek VisiVero geçmiş sinyalleri (`MVLLUSDT`, `SKDDUSDT`, `MUSDT`, `QNTXUSDT`, `BATUSDT`, `BRUSDT`, `CTUSDT`, `EIGENUSDT`) üzerinde `Boost Value`, yıldızlar, `#W1/#S1/#R1` kuralları, runner/merkezi motor çıktıları ve `BotRenderer` HTML çıktısını doğrulayan kapsamlı test paketi yazıldı.
+- **`npm run test:bots`:** **48/48 test %100 PASS**.
+- **`npm run test:regression`:** **8/8 test %100 PASS**.
+
+

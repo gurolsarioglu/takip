@@ -69,7 +69,8 @@ class BotController {
       console.log(`[Signal Ingest] ✅ Yeni sinyal eklendi: #${result.symbol} -> [${result.affectedBots.join(', ')}] [${result.time}]`);
       
       return res.json({
-        success: true,
+        success: result.affectedBots.length > 0,
+        accepted: result.affectedBots.length > 0,
         symbol: result.symbol,
         affectedBots: result.affectedBots,
         time: result.time

@@ -111,26 +111,29 @@ const TickerSnapshot = (() => {
       if (!res.ok) return;
       const data = await res.json();
 
+      const pct = value => Number.isFinite(value) ? value.toFixed(2) + '%' : '—';
+      const width = value => Number.isFinite(value) ? value + '%' : '0%';
+
       // 1. ORDER BOOK (Depth)
-      const ob = data.orderBook || { bidPct: 50, askPct: 50 };
+      const ob = data.orderBook || { bidPct: null, askPct: null };
       const obB = document.getElementById('modal-val-ob-b');
       const obS = document.getElementById('modal-val-ob-s');
       const obBar = document.getElementById('modal-bar-ob');
       if (obB && obS && obBar) {
-        obB.textContent = `B ${ob.bidPct.toFixed(2)}%`;
-        obS.textContent = `${ob.askPct.toFixed(2)}% S`;
-        obBar.style.width = `${ob.bidPct}%`;
+        obB.textContent = `B ${pct(ob.bidPct)}`;
+        obS.textContent = `${pct(ob.askPct)} S`;
+        obBar.style.width = width(ob.bidPct);
       }
 
       // 2. LONG/SHORT POSITIONS (Balina Net Pozisyon)
-      const pos = data.topPosition || { longPct: 50, shortPct: 50 };
+      const pos = data.topPosition || { longPct: null, shortPct: null };
       const posL = document.getElementById('modal-val-pos-l');
       const posS = document.getElementById('modal-val-pos-s');
       const posBar = document.getElementById('modal-bar-pos');
       if (posL && posS && posBar) {
-        posL.textContent = `L ${pos.longPct.toFixed(2)}%`;
-        posS.textContent = `${pos.shortPct.toFixed(2)}% S`;
-        posBar.style.width = `${pos.longPct}%`;
+        posL.textContent = `L ${pct(pos.longPct)}`;
+        posS.textContent = `${pct(pos.shortPct)} S`;
+        posBar.style.width = width(pos.longPct);
       }
 
       // Snapshot'taki ana L/S çubuğunu da senkronize et!
@@ -138,31 +141,31 @@ const TickerSnapshot = (() => {
       const snapL = document.getElementById('snap-ls-lbl-l');
       const snapS = document.getElementById('snap-ls-lbl-s');
       if (snapTrack && snapL && snapS) {
-        snapTrack.style.width = `${pos.longPct}%`;
-        snapL.textContent = `L ${pos.longPct.toFixed(2)}%`;
-        snapS.textContent = `${pos.shortPct.toFixed(2)}% S`;
+        snapTrack.style.width = width(pos.longPct);
+        snapL.textContent = `L ${pct(pos.longPct)}`;
+        snapS.textContent = `${pct(pos.shortPct)} S`;
       }
 
       // 3. TRADER POSITIONING (Balina Hesap Oranı)
-      const acc = data.topAccount || { longPct: 50, shortPct: 50 };
+      const acc = data.topAccount || { longPct: null, shortPct: null };
       const accL = document.getElementById('modal-val-acc-l');
       const accS = document.getElementById('modal-val-acc-s');
       const accBar = document.getElementById('modal-bar-acc');
       if (accL && accS && accBar) {
-        accL.textContent = `L ${acc.longPct.toFixed(2)}%`;
-        accS.textContent = `${acc.shortPct.toFixed(2)}% S`;
-        accBar.style.width = `${acc.longPct}%`;
+        accL.textContent = `L ${pct(acc.longPct)}`;
+        accS.textContent = `${pct(acc.shortPct)} S`;
+        accBar.style.width = width(acc.longPct);
       }
 
       // 4. MARKET EXPOSURE (Perakende Dağılımı)
-      const glob = data.globalExposure || { longPct: 50, shortPct: 50 };
+      const glob = data.globalExposure || { longPct: null, shortPct: null };
       const globL = document.getElementById('modal-val-glob-l');
       const globS = document.getElementById('modal-val-glob-s');
       const globBar = document.getElementById('modal-bar-glob');
       if (globL && globS && globBar) {
-        globL.textContent = `L ${glob.longPct.toFixed(2)}%`;
-        globS.textContent = `${glob.shortPct.toFixed(2)}% S`;
-        globBar.style.width = `${glob.longPct}%`;
+        globL.textContent = `L ${pct(glob.longPct)}`;
+        globS.textContent = `${pct(glob.shortPct)} S`;
+        globBar.style.width = width(glob.longPct);
       }
     } catch (e) {
       console.warn('[ModalData] fetch error:', e);

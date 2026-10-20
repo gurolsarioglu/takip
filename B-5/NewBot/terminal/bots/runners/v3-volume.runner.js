@@ -5,6 +5,9 @@
  */
 
 const {
+  createScanLoop,
+  isSignalAccepted,
+  strategyRules,
   getWatchlist,
   getKlines,
   postSignal,
@@ -37,17 +40,15 @@ async function scan() {
     if (now - lastSeen < 300000) continue; // 5 dk cooldown
 
     try {
-      const klines5m = await getKlines(sym, '5m', 25);
+      const klines5m = await getKlines(sym, '5m', 250);
       if (klines5m.length < 20) continue;
 
       const vols = klines5m.map(k => k.volume);
       const deltaVolPct = quantIndicators.calculateDeltaVolume(vols, 20);
 
       // Delta Hacim Eşiği: en az +15%
-      if (deltaVolPct < 15.0) continue;
+      if (!strategyRules.shouldEmit(BOT_ID, { deltaVolPct, volUsd: item.volUsd })) continue;
 
-      seenMap.set(sym, now);
-      totalSignalsFound++;
 
       const dateObj = new Date(now);
       const dateStr = dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -58,6 +59,9 @@ async function scan() {
 
       const signalPayload = {
         botId: BOT_ID,
+        source: 'binance-rest',
+        strategyVersion: 'local-hypothesis-v1',
+        observedAt: Date.now(),
         botType: BOT_ID,
         id: `v3_${sym}_${now}`,
         symbol: sym,
@@ -73,6 +77,10 @@ async function scan() {
       };
 
       const hubResult = await postSignal(signalPayload);
+      if (isSignalAccepted(hubResult)) {
+        seenMap.set(sym, now);
+        totalSignalsFound++;
+      }
       logger.signal(BOT_NAME, signalPayload, hubResult);
 
     } catch (err) {
@@ -85,10 +93,9 @@ async function start() {
   logger.header(BOT_ID, BOT_NAME, BOT_DESC);
   logger.info(`${BOT_NAME} tarama motoru baslatildi (Her 15 saniyede bir tarar)...`);
 
-  await scan();
-  setInterval(() => {
-    scan().catch(e => logger.warn(`Tarama hatasi: ${e.message}`));
-  }, 15000);
+  const loop = createScanLoop(scan, 15000, { onError: e => logger.warn(`Tarama hatasi: ${e.message}`) });
+  await loop.run();
 }
 
-start();
+if (require.main === module) start();
+module.exports = { scan, start };

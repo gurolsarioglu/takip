@@ -1,0 +1,50 @@
+{
+  "source": "https://terminal.visivero.com/binance/futures/BTCUSDT",
+  "captureMethod": "Authorized signed-in UI; visible card text only",
+  "exchange": "binance",
+  "market": "FUTURES",
+  "limitations": [
+    "Bounded visible samples, not a complete feed export.",
+    "Card times show HH:mm and UTC+3; full event date and seconds were not exposed by the inspected DOM.",
+    "Some displayed card times are later than the observation clock. Do not assign dates or treat observation time as event time.",
+    "These observations disprove existing local assumptions but do not reveal complete server-side trigger formulas."
+  ],
+  "samples": [
+    {"bot":"m1a","observedAt":"2026-10-20T10:24:55.156Z","cards":[
+      "🔴 #BMTUSDTDrop Value: -2.31%Current Price: 0.01857Previous Price: 0.01901Volume: -9.70%RSI: 46Stochastic (K/D): 43/51BTC Status: Normal13:29",
+      "🔴 #CTRUSDTDrop Value: -2.04%Current Price: 0.014727Previous Price: 0.015032Volume: -4.93%RSI: 28⚠️Stochastic (K/D): 26/40BTC Status: Normal13:29"
+    ]},
+    {"bot":"m1premium","observedAt":"2026-10-20T10:26:09.451Z","cards":[
+      "🔴 #BMTUSDT ⭐️Boost Value: -2.26% Current Price: 0.01858Previous Price: 0.01901RSI: 1m.47 | 5m.59 | 1h.75SRSI: 1m.37 | 5m.29 | 1h.6113:29",
+      "🔴 #CTRUSDT ⭐️Boost Value: -2.18% Current Price: 0.014705Previous Price: 0.015032RSI: 1m.28❗️ | 5m.47 | 1h.45SRSI: 1m.23 | 5m.9❗️ | 1h.1813:29"
+    ]},
+    {"bot":"4s","observedAt":"2026-10-20T10:26:23.773Z","cards":[
+      "🔴 #BRUSDT  Market: FUTURESBoost Value: +19.37% Current Price: 0.59053Previous Price: 0.59362RSI: 1h.51 | 4h.60 | 1d.52SRSI: 1h.7 | 4h.60 | 1d.84Trader Positioning: 52.85% 🟢Market Exposure: 52.29% 🟢07:02",
+      "🟢 #LUMIAUSDT  Market: FUTURESBoost Value: +3.26% Current Price: 0.08601Previous Price: 0.08593RSI: 1h.42 | 4h.38 | 1d.46SRSI: 1h.85 | 4h.13 | 1d.12Trader Positioning: 51.39% 🟢Market Exposure: 59.62% 🔴07:07"
+    ]},
+    {"bot":"hammerproplus","observedAt":"2026-10-20T10:27:47.494Z","cards":[
+      "🔴 #CTRUSDT ⭐️⭐️Strategy: #W1Boost Value: +3.19% Current Price: 0.014634Previous Price: 0.014698RSI: 1m.78❗️ | 5m.88❗️ | 1h.80❗️SRSI: 1m.62 | 5m.93❗️ | 1h.77WT: 1m🔴17:29",
+      "🔴 #XNYUSDT ⭐️⭐️⭐️Strategy: #S1Boost Value: +7.93% Current Price: 0.005387Previous Price: 0.005492RSI: 1m.87❗️ | 5m.94❗️ | 1h.85❗️SRSI: 1m.84 | 5m.100❗️ | 1h.50BTC Status: Volatilite ⚡️17:49"
+    ]},
+    {"bot":"hammerpro","observedAt":"2026-10-20T10:30:22.523Z","cards":[
+      "🔴 #BASEDUSDT Strategy: #W1Boost Value: +1.45% Current Price: 0.04784Previous Price: 0.04779RSI: 1m.66 | 5m.72❗️ | 1h.50SRSI: 1m.9 | 5m.100❗️ | 1h.89WT: 1m🔴10:06",
+      "🔴 #HUSDT Strategy: #W1Boost Value: +1.22% Current Price: 0.05693Previous Price: 0.05685RSI: 1m.64 | 5m.66 | 1h.55SRSI: 1m.32 | 5m.88 | 1h.72WT: 1m🔴Pivot: %0.24 ⚠️10:18"
+    ]},
+    {"bot":"4ssniper","observedAt":"2026-10-20T10:30:23.194Z","cards":[
+      "🟢 #BERAUSDT  Strategy: 4H RSI DIVERGENCEBoost Value: +3.03% Current Price: 0.1619Previous Price: 0.1628RSI: 1h.31 | 4h.28❗️ | 1d.33SRSI: 1h.0 | 4h.79 | 1d.0❗️Trader Positioning: 52.26% 🔴Market Exposure: 60.49% 🔴11:02",
+      "🔴 #BRUSDT  Strategy: NW DOWNBoost Value: +26.31% Current Price: 0.6936Previous Price: 0.70071RSI: 1h.64 | 4h.67 | 1d.58SRSI: 1h.55 | 4h.57 | 1d.93❗️Trader Positioning: 53.3% 🔴Market Exposure: 52.27% 🔴11:02"
+    ]},
+    {"bot":"div","observedAt":"2026-10-20T10:30:23.938Z","cards":[
+      "🔴 #UNHUSDT  Strategy: 1H RSI DIVERGENCEBoost Value: +0.63% Current Price: 409.01Previous Price: 409.09RSI: 1h.68 | 4h.70 | 1d.72❗️SRSI: 1h.93❗️ | 4h.100❗️ | 1d.87Pivot: %0.74 ⚠️10:12",
+      "🟢 #ASMLUSDT  Strategy: 1H RSI DIVERGENCEBoost Value: +1.54% Current Price: 1624.9Previous Price: 1622.04RSI: 1h.35 | 4h.38 | 1d.34SRSI: 1h.17 | 4h.23 | 1d.13Pivot: %0.75 ⚠️11:01"
+    ]},
+    {"bot":"fr","observedAt":"2026-10-20T10:30:24.729Z","cards":[
+      "#CTUSDTFunding Rate: -0.2615Time Remaining: 01:25:5913:34",
+      "#ERAUSDTFunding Rate: -0.2255Time Remaining: 00:25:5913:34"
+    ]},
+    {"bot":"v3","observedAt":"2026-10-20T10:30:25.597Z","cards":[
+      "#DOODUSDTHacim: +12.04%24s Hacim: 1.261.919.761 DOOD12:58",
+      "#1000CATUSDTHacim: +11.85%24s Hacim: 509.336.169 1000CAT13:09"
+    ]}
+  ]
+}

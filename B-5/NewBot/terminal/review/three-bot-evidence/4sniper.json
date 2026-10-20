@@ -1,0 +1,910 @@
+{
+  "url": "https://terminal.visivero.com/api/bot-messages?bot_id=4sniper&limit=100&exchange=binance&market_type=FUTURES",
+  "observedAt": "2026-10-20T11:45:05.424Z",
+  "credentialsUsed": false,
+  "response": {
+    "messages": [
+      {
+        "id": "cmvfge5h2k8fglykhjapbm6uk",
+        "botId": "4sniper",
+        "message": "🔴 #TSLAUSDT  \nStrategy: NW DOWN\nBoost Value: +4.01% \nCurrent Price: 368.06\nPrevious Price: 368.93\nRSI: <b>1h.73❗️ | 4h.59 | 1d.50 </b>\nSRSI: <b>1h.97❗️ | 4h.85 | 1d.31 </b>\nTrader Positioning: 74.23% 🟢\nMarket Exposure: 73.98% 🟢",
+        "exchange": "binance",
+        "symbol": "TSLAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T16:13:09.303Z"
+      },
+      {
+        "id": "cmvfge69dk8fhlykhrufbxxx2",
+        "botId": "4sniper",
+        "message": "🔴 #TSLLUSDT  \nStrategy: NW DOWN\nBoost Value: +8.08% \nCurrent Price: 9.58\nPrevious Price: 9.61\nRSI: <b>1h.73❗️ | 4h.59 | 1d.49 </b>\nSRSI: <b>1h.98❗️ | 4h.87 | 1d.31 </b>\nTrader Positioning: 64.04% 🟢\nMarket Exposure: 62.5% 🟢",
+        "exchange": "binance",
+        "symbol": "TSLLUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T16:13:10.321Z"
+      },
+      {
+        "id": "cmvfgek2rk8fklykhca8gisij",
+        "botId": "4sniper",
+        "message": "🔴 #UNITREEUSDT  \nStrategy: NW DOWN\nBoost Value: +13.80% \nCurrent Price: 72.08\nPrevious Price: 72.21\nRSI: <b>1h.72❗️ | 4h.76❗️ | 1d.59 </b>\nSRSI: <b>1h.15 | 4h.82 | 1d.100❗️ </b>\nTrader Positioning: 55.65% 🔴\nMarket Exposure: 57.89% 🔴",
+        "exchange": "binance",
+        "symbol": "UNITREEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T16:13:28.227Z"
+      },
+      {
+        "id": "cmvfget2ok8ftlykhxlm3nzid",
+        "botId": "4sniper",
+        "message": "🟢 #UVXYUSDT  \nStrategy: NW UP\nBoost Value: +5.51% \nCurrent Price: 17.16\nPrevious Price: 17.16\nRSI: <b>1h.32 | 4h.43 | 1d.50 </b>\nSRSI: <b>1h.38 | 4h.5❗️ | 1d.74 </b>\nTrader Positioning: 61.56% 🟢\nMarket Exposure: 53.74% 🟢",
+        "exchange": "binance",
+        "symbol": "UVXYUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T16:13:39.888Z"
+      },
+      {
+        "id": "cmvfgfafik8g8lykhgq0idczy",
+        "botId": "4sniper",
+        "message": "🟢 #WLFIUSDC  \nStrategy: NW UP\nBoost Value: +5.55% \nCurrent Price: 0.05449\nPrevious Price: 0.05433\nRSI: <b>1h.21❗️ | 4h.28❗️ | 1d.39 </b>\nSRSI: <b>1h.2 | 4h.21 | 1d.57 </b>\nTrader Positioning: 69.67% 🟢\nMarket Exposure: 59.63% 🟢",
+        "exchange": "binance",
+        "symbol": "WLFIUSDC",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T16:14:02.382Z"
+      },
+      {
+        "id": "cmvfgfb6lk8g9lykh1u9h7gfn",
+        "botId": "4sniper",
+        "message": "🟢 #WLFIUSDT  \nStrategy: NW UP\nBoost Value: +5.59% \nCurrent Price: 0.05456\nPrevious Price: 0.05441\nRSI: <b>1h.20❗️ | 4h.28❗️ | 1d.39 </b>\nSRSI: <b>1h.2 | 4h.22 | 1d.57 </b>\nTrader Positioning: 61.9% 🟢\nMarket Exposure: 53.03% 🟢",
+        "exchange": "binance",
+        "symbol": "WLFIUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T16:14:03.358Z"
+      },
+      {
+        "id": "cmvfgfya5k8gqlykhd5l5oan5",
+        "botId": "4sniper",
+        "message": "🔴 #XNYUSDT  \nStrategy: NW DOWN\nBoost Value: +24.52% \nCurrent Price: 0.005208\nPrevious Price: 0.005023\nRSI: <b>1h.65 | 4h.61 | 1d.39 </b>\nSRSI: <b>1h.65 | 4h.88 | 1d.16 </b>\nTrader Positioning: 75.53% 🟢\nMarket Exposure: 73.39% 🟢",
+        "exchange": "binance",
+        "symbol": "XNYUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T16:14:33.293Z"
+      },
+      {
+        "id": "cmvfoj4spkdxrlykh0869lav8",
+        "botId": "4sniper",
+        "message": "🔴 #AGTUSDT  \nStrategy: NW DOWN\nBoost Value: +41.78% \nCurrent Price: 0.093179\nPrevious Price: 0.093352\nRSI: <b>1h.63 | 4h.67 | 1d.78❗️ </b>\nSRSI: <b>1h.61 | 4h.44 | 1d.82 </b>\nTrader Positioning: 65.93% 🔴\nMarket Exposure: 61.33% 🔴",
+        "exchange": "binance",
+        "symbol": "AGTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:00:58.633Z"
+      },
+      {
+        "id": "cmvfojlbnkdy3lykhwdqeq4ey",
+        "botId": "4sniper",
+        "message": "🔴 #AMZNUSDT  \nStrategy: NW DOWN\nBoost Value: +4.00% \nCurrent Price: 262.98\nPrevious Price: 262.83\nRSI: <b>1h.85❗️ | 4h.73❗️ | 1d.59 </b>\nSRSI: <b>1h.75 | 4h.97❗️ | 1d.36 </b>\nTrader Positioning: 63% 🟢\nMarket Exposure: 60.63% 🟢",
+        "exchange": "binance",
+        "symbol": "AMZNUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:01:20.051Z"
+      },
+      {
+        "id": "cmvfojx3ukdy7lykh8oo8ej8m",
+        "botId": "4sniper",
+        "message": "🟢 #ARIAUSDT  \nStrategy: NW UP\nBoost Value: +16.56% \nCurrent Price: 0.04364\nPrevious Price: 0.04345\nRSI: <b>1h.42 | 4h.51 | 1d.57 </b>\nSRSI: <b>1h.31 | 4h.0❗️ | 1d.81 </b>\nTrader Positioning: 67.94% 🟢\nMarket Exposure: 68.55% 🟢",
+        "exchange": "binance",
+        "symbol": "ARIAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:01:35.321Z"
+      },
+      {
+        "id": "cmvfoka37kdyilykh8s1rjmab",
+        "botId": "4sniper",
+        "message": "🟢 #AUSDT  \nStrategy: NW UP\nBoost Value: +4.48% \nCurrent Price: 0.08779\nPrevious Price: 0.08774\nRSI: <b>1h.43 | 4h.38 | 1d.43 </b>\nSRSI: <b>1h.93 | 4h.13 | 1d.32 </b>\nTrader Positioning: 55.31% 🔴\nMarket Exposure: 65.09% 🔴",
+        "exchange": "binance",
+        "symbol": "AUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:01:52.147Z"
+      },
+      {
+        "id": "cmvfokblfkdyjlykhhyi5pupx",
+        "botId": "4sniper",
+        "message": "🔴 #AVAUSDT  \nStrategy: NW DOWN\nBoost Value: +12.24% \nCurrent Price: 0.4298\nPrevious Price: 0.4288\nRSI: <b>1h.64 | 4h.69 | 1d.75❗️ </b>\nSRSI: <b>1h.74 | 4h.69 | 1d.75 </b>\nTrader Positioning: 50.88% 🔴\nMarket Exposure: 50.31% 🔴",
+        "exchange": "binance",
+        "symbol": "AVAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:01:54.100Z"
+      },
+      {
+        "id": "cmvfokfpvkdyllykh7wb9xa7t",
+        "botId": "4sniper",
+        "message": "🔴 #AWEUSDT  \nStrategy: NW DOWN\nBoost Value: +4.37% \nCurrent Price: 0.06624\nPrevious Price: 0.06624\nRSI: <b>1h.74❗️ | 4h.63 | 1d.53 </b>\nSRSI: <b>1h.100❗️ | 4h.96❗️ | 1d.39 </b>\nTrader Positioning: 57.01% 🟢\nMarket Exposure: 51.51% 🟢",
+        "exchange": "binance",
+        "symbol": "AWEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:01:59.444Z"
+      },
+      {
+        "id": "cmvfokx8dkdzdlykhxzxn2x0i",
+        "botId": "4sniper",
+        "message": "🔴 #BEAMXUSDT  \nStrategy: NW DOWN\nBoost Value: +3.60% \nCurrent Price: 0.003014\nPrevious Price: 0.003022\nRSI: <b>1h.70 | 4h.59 | 1d.68 </b>\nSRSI: <b>1h.98❗️ | 4h.99❗️ | 1d.14 </b>\nTrader Positioning: 54.63% 🟢\nMarket Exposure: 53.78% 🔴",
+        "exchange": "binance",
+        "symbol": "BEAMXUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:02:22.141Z"
+      },
+      {
+        "id": "cmvfollehke06lykh5ecbqhcc",
+        "botId": "4sniper",
+        "message": "🔴 #BRUSDT  \nStrategy: NW DOWN\nBoost Value: +19.37% \nCurrent Price: 0.69367\nPrevious Price: 0.68478\nRSI: <b>1h.76❗️ | 4h.77❗️ | 1d.58 </b>\nSRSI: <b>1h.100❗️ | 4h.100❗️ | 1d.86 </b>\nTrader Positioning: 53% 🔴\nMarket Exposure: 50.15% 🔴",
+        "exchange": "binance",
+        "symbol": "BRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:02:53.465Z"
+      },
+      {
+        "id": "cmvfolrohke0klykhtxi78lik",
+        "botId": "4sniper",
+        "message": "🟢 #BTWUSDT  \nStrategy: NW UP\nBoost Value: +15.06% \nCurrent Price: 1.9626\nPrevious Price: 1.9771\nRSI: <b>1h.43 | 4h.45 | 1d.58 </b>\nSRSI: <b>1h.93 | 4h.16 | 1d.39 </b>\nTrader Positioning: 64.1% 🔴\nMarket Exposure: 60.29% 🔴",
+        "exchange": "binance",
+        "symbol": "BTWUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:03:01.602Z"
+      },
+      {
+        "id": "cmvfompfpke0zlykhtpe4z2sw",
+        "botId": "4sniper",
+        "message": "🟢 #CRMLUSDT  \nStrategy: NW UP\nBoost Value: +7.13% \nCurrent Price: 6.51\nPrevious Price: 6.511\nRSI: <b>1h.23❗️ | 4h.36 | 1d.36 </b>\nSRSI: <b>1h.0 | 4h.0❗️ | 1d.63 </b>\nTrader Positioning: 68.73% 🟢\nMarket Exposure: 61.2% 🟢",
+        "exchange": "binance",
+        "symbol": "CRMLUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:03:45.349Z"
+      },
+      {
+        "id": "cmvfomxxbke12lykh3ldh9gi0",
+        "botId": "4sniper",
+        "message": "🔴 #CTRUSDT  \nStrategy: NW DOWN\nBoost Value: +15.72% \nCurrent Price: 0.016823\nPrevious Price: 0.016794\nRSI: <b>1h.86❗️ | 4h.83❗️ | 1d.72❗️ </b>\nSRSI: <b>1h.91❗️ | 4h.100❗️ | 1d.34 </b>\nTrader Positioning: 53.78% 🟢\nMarket Exposure: 57.34% 🟢",
+        "exchange": "binance",
+        "symbol": "CTRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:03:56.348Z"
+      },
+      {
+        "id": "cmvfon8kbke1glykhmbacff13",
+        "botId": "4sniper",
+        "message": "🟢 #DATAIPUSDC  \nStrategy: NW UP\nBoost Value: +4.01% \nCurrent Price: 0.1518\nPrevious Price: 0.1514\nRSI: <b>1h.31 | 4h.25❗️ | 1d.23❗️ </b>\nSRSI: <b>1h.76 | 4h.33 | 1d.0❗️ </b>\nTrader Positioning: 61.7% 🟢\nMarket Exposure: 62.36% 🟢",
+        "exchange": "binance",
+        "symbol": "DATAIPUSDC",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:04:10.140Z"
+      },
+      {
+        "id": "cmvfon9o5ke1ilykhrjux56ex",
+        "botId": "4sniper",
+        "message": "🟢 #DATAIPUSDT  \nStrategy: NW UP\nBoost Value: +4.07% \nCurrent Price: 0.1519\nPrevious Price: 0.1516\nRSI: <b>1h.30 | 4h.24❗️ | 1d.23❗️ </b>\nSRSI: <b>1h.73 | 4h.32 | 1d.0❗️ </b>\nTrader Positioning: 57.55% 🟢\nMarket Exposure: 50.72% 🟢",
+        "exchange": "binance",
+        "symbol": "DATAIPUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:04:11.573Z"
+      },
+      {
+        "id": "cmvfonfcgke1plykhdgebinsu",
+        "botId": "4sniper",
+        "message": "🟢 #DJTUSDT  \nStrategy: NW UP\nBoost Value: +6.40% \nCurrent Price: 6.463\nPrevious Price: 6.461\nRSI: <b>1h.24❗️ | 4h.17❗️ | 1d.16❗️ </b>\nSRSI: <b>1h.8 | 4h.1❗️ | 1d.8❗️ </b>\nTrader Positioning: 60.98% 🟢\nMarket Exposure: 60.61% 🟢",
+        "exchange": "binance",
+        "symbol": "DJTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:04:18.929Z"
+      },
+      {
+        "id": "cmvfonux7ke22lykhmzjjvdfl",
+        "botId": "4sniper",
+        "message": "🔴 #ELSAUSDT  \nStrategy: NW DOWN\nBoost Value: +10.21% \nCurrent Price: 0.07197\nPrevious Price: 0.07188\nRSI: <b>1h.66 | 4h.71❗️ | 1d.77❗️ </b>\nSRSI: <b>1h.100❗️ | 4h.47 | 1d.100❗️ </b>\nTrader Positioning: 63.19% 🟢\nMarket Exposure: 66.86% 🟢",
+        "exchange": "binance",
+        "symbol": "ELSAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:04:39.116Z"
+      },
+      {
+        "id": "cmvfonxy2ke28lykh69obxk16",
+        "botId": "4sniper",
+        "message": "🟢 #ENSOUSDT  \nStrategy: NW UP\nBoost Value: +5.38% \nCurrent Price: 0.6012\nPrevious Price: 0.595\nRSI: <b>1h.28❗️ | 4h.14❗️ | 1d.21❗️ </b>\nSRSI: <b>1h.29 | 4h.12 | 1d.0❗️ </b>\nTrader Positioning: 51.73% 🔴\nMarket Exposure: 62.41% 🔴",
+        "exchange": "binance",
+        "symbol": "ENSOUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:04:43.035Z"
+      },
+      {
+        "id": "cmvfooqnnke30lykhh2o9oa9i",
+        "botId": "4sniper",
+        "message": "🟢 #FRAXUSDT  \nStrategy: 4H RSI DIVERGENCE\nBoost Value: +2.66% \nCurrent Price: 0.2561\nPrevious Price: 0.2547\nRSI: <b>1h.39 | 4h.27❗️ | 1d.34 </b>\nSRSI: <b>1h.61 | 4h.47 | 1d.0❗️ </b>\nTrader Positioning: 75.64% 🟢\nMarket Exposure: 72.52% 🟢",
+        "exchange": "binance",
+        "symbol": "FRAXUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:05:20.244Z"
+      },
+      {
+        "id": "cmvfooqnqke31lykh83jdyjqm",
+        "botId": "4sniper",
+        "message": "🟢 #FRAXUSDT  \nStrategy: 4H RSI SMA CROSSED\nBoost Value: +2.66% \nCurrent Price: 0.2561\nPrevious Price: 0.2547\nRSI: <b>1h.39 | 4h.27❗️ | 1d.34 </b>\nSRSI: <b>1h.61 | 4h.47 | 1d.0❗️ </b>\nTrader Positioning: 75.64% 🟢\nMarket Exposure: 72.52% 🟢",
+        "exchange": "binance",
+        "symbol": "FRAXUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:05:20.247Z"
+      },
+      {
+        "id": "cmvfoqlb9ke7elykhsuhhwbzv",
+        "botId": "4sniper",
+        "message": "🟢 #JPMUSDT  \nStrategy: NW UP\nBoost Value: +1.05% \nCurrent Price: 334.42\nPrevious Price: 334.09\nRSI: <b>1h.23❗️ | 4h.35 | 1d.43 </b>\nSRSI: <b>1h.4 | 4h.2❗️ | 1d.84 </b>\nTrader Positioning: 65.37% 🟢\nMarket Exposure: 65.86% 🟢",
+        "exchange": "binance",
+        "symbol": "JPMUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:06:46.630Z"
+      },
+      {
+        "id": "cmvfosl1ske9flykh9m31f41q",
+        "botId": "4sniper",
+        "message": "🟢 #MUBARAKUSDT  \nStrategy: 4H RSI DIVERGENCE\nBoost Value: +1.94% \nCurrent Price: 0.05272\nPrevious Price: 0.05258\nRSI: <b>1h.40 | 4h.34 | 1d.43 </b>\nSRSI: <b>1h.21 | 4h.37 | 1d.1❗️ </b>\nTrader Positioning: 60.01% 🔴\nMarket Exposure: 68.49% 🔴",
+        "exchange": "binance",
+        "symbol": "MUBARAKUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:08:19.601Z"
+      },
+      {
+        "id": "cmvfota2qkea7lykhrob4r6vz",
+        "botId": "4sniper",
+        "message": "🟢 #NXPCUSDT  \nStrategy: NW UP\nBoost Value: +3.74% \nCurrent Price: 0.1509\nPrevious Price: 0.1514\nRSI: <b>1h.30 | 4h.29❗️ | 1d.23❗️ </b>\nSRSI: <b>1h.0 | 4h.12 | 1d.0❗️ </b>\nTrader Positioning: 57.39% 🔴\nMarket Exposure: 67.59% 🔴",
+        "exchange": "binance",
+        "symbol": "NXPCUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:08:52.035Z"
+      },
+      {
+        "id": "cmvfou2gwkebulykhwnkdt360",
+        "botId": "4sniper",
+        "message": "🔴 #PHAUSDT  \nStrategy: NW DOWN\nBoost Value: +26.94% \nCurrent Price: 0.06399\nPrevious Price: 0.06307\nRSI: <b>1h.87❗️ | 4h.74❗️ | 1d.57 </b>\nSRSI: <b>1h.100❗️ | 4h.98❗️ | 1d.27 </b>\nTrader Positioning: 50.22% 🔴\nMarket Exposure: 52.02% 🔴",
+        "exchange": "binance",
+        "symbol": "PHAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:09:28.833Z"
+      },
+      {
+        "id": "cmvfou37qkebylykh2pq48d2w",
+        "botId": "4sniper",
+        "message": "🟢 #PIEVERSEUSDT  \nStrategy: 4H RSI SMA CROSSED\nBoost Value: +1.59% \nCurrent Price: 1.0531\nPrevious Price: 1.0506\nRSI: <b>1h.43 | 4h.31 | 1d.28❗️ </b>\nSRSI: <b>1h.24 | 4h.56 | 1d.0❗️ </b>\nTrader Positioning: 52.55% 🔴\nMarket Exposure: 54.51% 🔴",
+        "exchange": "binance",
+        "symbol": "PIEVERSEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:09:29.798Z"
+      },
+      {
+        "id": "cmvfourk0keejlykhrq2ps8fy",
+        "botId": "4sniper",
+        "message": "🔴 #QUSDT  \nStrategy: NW DOWN\nBoost Value: +45.81% \nCurrent Price: 0.131556\nPrevious Price: 0.141612\nRSI: <b>1h.52 | 4h.62 | 1d.87❗️ </b>\nSRSI: <b>1h.21 | 4h.5 | 1d.89 </b>\nTrader Positioning: 58.31% 🔴\nMarket Exposure: 52.89% 🔴",
+        "exchange": "binance",
+        "symbol": "QUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:10:01.345Z"
+      },
+      {
+        "id": "cmvfow4lykegxlykh97y7vu4k",
+        "botId": "4sniper",
+        "message": "🟢 #SIRENUSDT  \nStrategy: NW UP\nBoost Value: +15.52% \nCurrent Price: 0.02125\nPrevious Price: 0.02129\nRSI: <b>1h.32 | 4h.37 | 1d.43 </b>\nSRSI: <b>1h.47 | 4h.2❗️ | 1d.55 </b>\nTrader Positioning: 79.94% 🟢\nMarket Exposure: 78.34% 🟢",
+        "exchange": "binance",
+        "symbol": "SIRENUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:11:04.918Z"
+      },
+      {
+        "id": "cmvfow5e8keh0lykhg72640u1",
+        "botId": "4sniper",
+        "message": "🟢 #SKDDUSDT  \nStrategy: NW UP\nBoost Value: +6.18% \nCurrent Price: 10.972\nPrevious Price: 11.05\nRSI: <b>1h.36 | 4h.43 | 1d.64 </b>\nSRSI: <b>1h.97 | 4h.13 | 1d.86 </b>\nTrader Positioning: 67.96% 🔴\nMarket Exposure: 66.21% 🔴",
+        "exchange": "binance",
+        "symbol": "SKDDUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:11:05.936Z"
+      },
+      {
+        "id": "cmvfox6iakei4lykhqx6pze8i",
+        "botId": "4sniper",
+        "message": "🔴 #STRCUSDT  \nStrategy: NW DOWN\nBoost Value: +0.77% \nCurrent Price: 98.91\nPrevious Price: 98.72\nRSI: <b>1h.68 | 4h.58 | 1d.50 </b>\nSRSI: <b>1h.43 | 4h.96❗️ | 1d.24 </b>\nTrader Positioning: 51.23% 🟢\nMarket Exposure: 52.48% 🟢",
+        "exchange": "binance",
+        "symbol": "STRCUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:11:54.035Z"
+      },
+      {
+        "id": "cmvfoxcx5keiflykhous1quwq",
+        "botId": "4sniper",
+        "message": "🔴 #SUSDT  \nStrategy: NW DOWN\nBoost Value: +5.89% \nCurrent Price: 0.05737\nPrevious Price: 0.05749\nRSI: <b>1h.65 | 4h.59 | 1d.64 </b>\nSRSI: <b>1h.66 | 4h.98❗️ | 1d.38 </b>\nTrader Positioning: 58.56% 🟢\nMarket Exposure: 57.55% 🟢",
+        "exchange": "binance",
+        "symbol": "SUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:12:02.345Z"
+      },
+      {
+        "id": "cmvfoy6z4keiolykhdmty960o",
+        "botId": "4sniper",
+        "message": "🔴 #TSLAUSDT  \nStrategy: NW DOWN\nBoost Value: +4.01% \nCurrent Price: 368.45\nPrevious Price: 368.77\nRSI: <b>1h.70❗️ | 4h.59 | 1d.50 </b>\nSRSI: <b>1h.84 | 4h.99❗️ | 1d.32 </b>\nTrader Positioning: 72.85% 🟢\nMarket Exposure: 73.19% 🟢",
+        "exchange": "binance",
+        "symbol": "TSLAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:12:41.296Z"
+      },
+      {
+        "id": "cmvfoylg1keirlykh3bgyfqut",
+        "botId": "4sniper",
+        "message": "🔴 #UNITREEUSDT  \nStrategy: NW DOWN\nBoost Value: +7.27% \nCurrent Price: 72.73\nPrevious Price: 72.69\nRSI: <b>1h.74❗️ | 4h.78❗️ | 1d.60 </b>\nSRSI: <b>1h.15 | 4h.83 | 1d.100❗️ </b>\nTrader Positioning: 56.64% 🔴\nMarket Exposure: 58.11% 🔴",
+        "exchange": "binance",
+        "symbol": "UNITREEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:13:00.050Z"
+      },
+      {
+        "id": "cmvfozn58kej4lykhh7u68icq",
+        "botId": "4sniper",
+        "message": "🔴 #XNYUSDT  \nStrategy: NW DOWN\nBoost Value: +24.52% \nCurrent Price: 0.005907\nPrevious Price: 0.005856\nRSI: <b>1h.76❗️ | 4h.74❗️ | 1d.50 </b>\nSRSI: <b>1h.77 | 4h.100❗️ | 1d.29 </b>\nTrader Positioning: 70.12% 🟢\nMarket Exposure: 67.95% 🟢",
+        "exchange": "binance",
+        "symbol": "XNYUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:13:48.909Z"
+      },
+      {
+        "id": "cmvfp0ftokejelykh7m3p3m2m",
+        "botId": "4sniper",
+        "message": "🟢 #我踏马来了USDT  \nStrategy: 4H RSI SMA CROSSED\nBoost Value: +3.39% \nCurrent Price: 0.009852\nPrevious Price: 0.009795\nRSI: <b>1h.43 | 4h.30 | 1d.38 </b>\nSRSI: <b>1h.89 | 4h.31 | 1d.10 </b>\nTrader Positioning: 78.38% 🟢\nMarket Exposure: 76.55% 🟢",
+        "exchange": "binance",
+        "symbol": "我踏马来了USDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T20:14:26.077Z"
+      },
+      {
+        "id": "cmvfx42ockhm4lykh09k2yzf3",
+        "botId": "4sniper",
+        "message": "🔴 #AGTUSDT  \nStrategy: NW DOWN\nBoost Value: +17.05% \nCurrent Price: 0.085151\nPrevious Price: 0.08661\nRSI: <b>1h.52 | 4h.61 | 1d.76❗️ </b>\nSRSI: <b>1h.38 | 4h.28 | 1d.73 </b>\nTrader Positioning: 67.77% 🔴\nMarket Exposure: 64.5% 🔴",
+        "exchange": "binance",
+        "symbol": "AGTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:01:12.588Z"
+      },
+      {
+        "id": "cmvfx4h3bkhmylykhcyeuqkrv",
+        "botId": "4sniper",
+        "message": "🔴 #ALTUSDT  \nStrategy: NW DOWN\nBoost Value: +5.38% \nCurrent Price: 0.009192\nPrevious Price: 0.009214\nRSI: <b>1h.68 | 4h.63 | 1d.68 </b>\nSRSI: <b>1h.98❗️ | 4h.51 | 1d.99❗️ </b>\nTrader Positioning: 65.9% 🟢\nMarket Exposure: 62.55% 🟢",
+        "exchange": "binance",
+        "symbol": "ALTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:01:31.271Z"
+      },
+      {
+        "id": "cmvfx4kapkhn6lykhggo3tzv4",
+        "botId": "4sniper",
+        "message": "🔴 #AMZNUSDT  \nStrategy: NW DOWN\nBoost Value: +4.00% \nCurrent Price: 263.73\nPrevious Price: 263.64\nRSI: <b>1h.86❗️ | 4h.74❗️ | 1d.60 </b>\nSRSI: <b>1h.77 | 4h.96❗️ | 1d.65 </b>\nTrader Positioning: 62.92% 🟢\nMarket Exposure: 60.64% 🟢",
+        "exchange": "binance",
+        "symbol": "AMZNUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:01:35.425Z"
+      },
+      {
+        "id": "cmvfx4wltkho9lykhsqy8y4e9",
+        "botId": "4sniper",
+        "message": "🟢 #ARIAUSDT  \nStrategy: NW UP\nBoost Value: +16.56% \nCurrent Price: 0.04243\nPrevious Price: 0.04268\nRSI: <b>1h.39 | 4h.49 | 1d.56 </b>\nSRSI: <b>1h.24 | 4h.0❗️ | 1d.61 </b>\nTrader Positioning: 67.15% 🟢\nMarket Exposure: 68.1% 🟢",
+        "exchange": "binance",
+        "symbol": "ARIAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:01:51.378Z"
+      },
+      {
+        "id": "cmvfx5nx4khselykhbzl4184k",
+        "botId": "4sniper",
+        "message": "🔴 #AVAUSDT  \nStrategy: NW DOWN\nBoost Value: +12.24% \nCurrent Price: 0.4207\nPrevious Price: 0.4228\nRSI: <b>1h.59 | 4h.66 | 1d.73❗️ </b>\nSRSI: <b>1h.37 | 4h.66 | 1d.67 </b>\nTrader Positioning: 52% 🔴\nMarket Exposure: 51.41% 🔴",
+        "exchange": "binance",
+        "symbol": "AVAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:02:26.776Z"
+      },
+      {
+        "id": "cmvfx65t0kht5lykhfna00d9i",
+        "botId": "4sniper",
+        "message": "🔴 #BATUSDT  \nStrategy: NW DOWN\nBoost Value: +8.42% \nCurrent Price: 0.19414\nPrevious Price: 0.19317\nRSI: <b>1h.66 | 4h.58 | 1d.67 </b>\nSRSI: <b>1h.75 | 4h.97❗️ | 1d.10 </b>\nTrader Positioning: 53.82% 🟢\nMarket Exposure: 51.21% 🟢",
+        "exchange": "binance",
+        "symbol": "BATUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:02:49.956Z"
+      },
+      {
+        "id": "cmvfx6aaakhthlykhk6s3snf6",
+        "botId": "4sniper",
+        "message": "🔴 #BEAMXUSDT  \nStrategy: NW DOWN\nBoost Value: +3.60% \nCurrent Price: 0.003056\nPrevious Price: 0.00306\nRSI: <b>1h.70 | 4h.61 | 1d.69 </b>\nSRSI: <b>1h.90❗️ | 4h.99❗️ | 1d.21 </b>\nTrader Positioning: 54.68% 🟢\nMarket Exposure: 53.6% 🔴",
+        "exchange": "binance",
+        "symbol": "BEAMXUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:02:55.762Z"
+      },
+      {
+        "id": "cmvfx6z6tkhv3lykh5w0lzk32",
+        "botId": "4sniper",
+        "message": "🔴 #BRUSDT  \nStrategy: NW DOWN\nBoost Value: +19.37% \nCurrent Price: 0.70632\nPrevious Price: 0.70907\nRSI: <b>1h.74❗️ | 4h.77❗️ | 1d.59 </b>\nSRSI: <b>1h.95❗️ | 4h.99❗️ | 1d.94❗️ </b>\nTrader Positioning: 51.94% 🔴\nMarket Exposure: 50.54% 🟢",
+        "exchange": "binance",
+        "symbol": "BRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:03:28.037Z"
+      },
+      {
+        "id": "cmvfx841qkhxplykh2wj0aqld",
+        "botId": "4sniper",
+        "message": "🟢 #CRMLUSDT  \nStrategy: NW UP\nBoost Value: +7.13% \nCurrent Price: 6.448\nPrevious Price: 6.441\nRSI: <b>1h.30 | 4h.34 | 1d.35 </b>\nSRSI: <b>1h.20 | 4h.0❗️ | 1d.54 </b>\nTrader Positioning: 62.01% 🟢\nMarket Exposure: 57.18% 🟢",
+        "exchange": "binance",
+        "symbol": "CRMLUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:04:20.991Z"
+      },
+      {
+        "id": "cmvfx8estkhxylykhynon4dkg",
+        "botId": "4sniper",
+        "message": "🔴 #CTRUSDT  \nStrategy: NW DOWN\nBoost Value: +15.72% \nCurrent Price: 0.017177\nPrevious Price: 0.017351\nRSI: <b>1h.83❗️ | 4h.82❗️ | 1d.72❗️ </b>\nSRSI: <b>1h.91❗️ | 4h.98❗️ | 1d.65 </b>\nTrader Positioning: 55.03% 🟢\nMarket Exposure: 58.87% 🟢",
+        "exchange": "binance",
+        "symbol": "CTRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:04:34.925Z"
+      },
+      {
+        "id": "cmvfx8ueckhz9lykh9ik2pvts",
+        "botId": "4sniper",
+        "message": "🟢 #DJTUSDT  \nStrategy: NW UP\nBoost Value: +6.40% \nCurrent Price: 6.477\nPrevious Price: 6.479\nRSI: <b>1h.24❗️ | 4h.18❗️ | 1d.16❗️ </b>\nSRSI: <b>1h.14 | 4h.4❗️ | 1d.4❗️ </b>\nTrader Positioning: 57.28% 🟢\nMarket Exposure: 60.99% 🟢",
+        "exchange": "binance",
+        "symbol": "DJTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:04:55.141Z"
+      },
+      {
+        "id": "cmvfx9by7ki0plykhrroouc2y",
+        "botId": "4sniper",
+        "message": "🔴 #ELSAUSDT  \nStrategy: NW DOWN\nBoost Value: +10.21% \nCurrent Price: 0.07029\nPrevious Price: 0.06842\nRSI: <b>1h.58 | 4h.65 | 1d.74❗️ </b>\nSRSI: <b>1h.60 | 4h.38 | 1d.98❗️ </b>\nTrader Positioning: 61.23% 🟢\nMarket Exposure: 64.73% 🟢",
+        "exchange": "binance",
+        "symbol": "ELSAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:05:17.887Z"
+      },
+      {
+        "id": "cmvfxfyl1ki77lykh4kchb38g",
+        "botId": "4sniper",
+        "message": "🔴 #PHAUSDT  \nStrategy: NW DOWN\nBoost Value: +26.94% \nCurrent Price: 0.06306\nPrevious Price: 0.06222\nRSI: <b>1h.72❗️ | 4h.72❗️ | 1d.56 </b>\nSRSI: <b>1h.67 | 4h.97❗️ | 1d.49 </b>\nTrader Positioning: 53.67% 🟢\nMarket Exposure: 50% 🟢",
+        "exchange": "binance",
+        "symbol": "PHAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:10:27.157Z"
+      },
+      {
+        "id": "cmvfxh0u1ki97lykhrgmsce0k",
+        "botId": "4sniper",
+        "message": "🔴 #QUSDT  \nStrategy: NW DOWN\nBoost Value: +16.60% \nCurrent Price: 0.131291\nPrevious Price: 0.133272\nRSI: <b>1h.51 | 4h.61 | 1d.86❗️ </b>\nSRSI: <b>1h.34 | 4h.5 | 1d.84 </b>\nTrader Positioning: 58.76% 🔴\nMarket Exposure: 53.3% 🔴",
+        "exchange": "binance",
+        "symbol": "QUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:11:16.729Z"
+      },
+      {
+        "id": "cmvfxie04kiaolykhmvzu45ae",
+        "botId": "4sniper",
+        "message": "🟢 #SIRENUSDT  \nStrategy: NW UP\nBoost Value: +8.85% \nCurrent Price: 0.02093\nPrevious Price: 0.02154\nRSI: <b>1h.32 | 4h.37 | 1d.42 </b>\nSRSI: <b>1h.58 | 4h.1❗️ | 1d.35 </b>\nTrader Positioning: 79.03% 🟢\nMarket Exposure: 77.93% 🟢",
+        "exchange": "binance",
+        "symbol": "SIRENUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:12:20.452Z"
+      },
+      {
+        "id": "cmvfxjlcskibhlykhm3upq61e",
+        "botId": "4sniper",
+        "message": "🔴 #SUSDT  \nStrategy: NW DOWN\nBoost Value: +5.89% \nCurrent Price: 0.05806\nPrevious Price: 0.05857\nRSI: <b>1h.64 | 4h.60 | 1d.65 </b>\nSRSI: <b>1h.55 | 4h.98❗️ | 1d.46 </b>\nTrader Positioning: 63.37% 🟢\nMarket Exposure: 61.9% 🟢",
+        "exchange": "binance",
+        "symbol": "SUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:13:16.637Z"
+      },
+      {
+        "id": "cmvfxlm8lkic3lykh3kc8a9dy",
+        "botId": "4sniper",
+        "message": "🟢 #WLFIUSDC  \nStrategy: NW UP\nBoost Value: +5.55% \nCurrent Price: 0.05412\nPrevious Price: 0.05398\nRSI: <b>1h.34 | 4h.27❗️ | 1d.38 </b>\nSRSI: <b>1h.51 | 4h.3❗️ | 1d.31 </b>\nTrader Positioning: 70.94% 🟢\nMarket Exposure: 58.21% 🟢",
+        "exchange": "binance",
+        "symbol": "WLFIUSDC",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:14:51.093Z"
+      },
+      {
+        "id": "cmvfxlmzkkic4lykh04dzvuad",
+        "botId": "4sniper",
+        "message": "🟢 #WLFIUSDT  \nStrategy: NW UP\nBoost Value: +5.59% \nCurrent Price: 0.05417\nPrevious Price: 0.05405\nRSI: <b>1h.34 | 4h.26❗️ | 1d.38 </b>\nSRSI: <b>1h.52 | 4h.3❗️ | 1d.30 </b>\nTrader Positioning: 57.8% 🟢\nMarket Exposure: 52.11% 🔴",
+        "exchange": "binance",
+        "symbol": "WLFIUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:14:52.065Z"
+      },
+      {
+        "id": "cmvfxlxkekicblykhhj6e804j",
+        "botId": "4sniper",
+        "message": "🔴 #XNYUSDT  \nStrategy: NW DOWN\nBoost Value: +24.52% \nCurrent Price: 0.00605\nPrevious Price: 0.005943\nRSI: <b>1h.76❗️ | 4h.76❗️ | 1d.52 </b>\nSRSI: <b>1h.79 | 4h.100❗️ | 1d.63 </b>\nTrader Positioning: 67.54% 🟢\nMarket Exposure: 65.99% 🟢",
+        "exchange": "binance",
+        "symbol": "XNYUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T00:15:05.774Z"
+      },
+      {
+        "id": "cmvg5od9kkodjlykhxwj9ytse",
+        "botId": "4sniper",
+        "message": "🔴 #AGTUSDT  \nStrategy: NW DOWN\nBoost Value: +17.05% \nCurrent Price: 0.090493\nPrevious Price: 0.090631\nRSI: <b>1h.57 | 4h.64 | 1d.78❗️ </b>\nSRSI: <b>1h.53 | 4h.27 | 1d.75 </b>\nTrader Positioning: 66.59% 🔴\nMarket Exposure: 63.17% 🔴",
+        "exchange": "binance",
+        "symbol": "AGTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:00:56.360Z"
+      },
+      {
+        "id": "cmvg5osuwkoe4lykhtehd9iod",
+        "botId": "4sniper",
+        "message": "🔴 #ALTUSDT  \nStrategy: NW DOWN\nBoost Value: +20.31% \nCurrent Price: 0.010101\nPrevious Price: 0.010162\nRSI: <b>1h.79❗️ | 4h.72❗️ | 1d.75❗️ </b>\nSRSI: <b>1h.96❗️ | 4h.85 | 1d.100❗️ </b>\nTrader Positioning: 60.95% 🟢\nMarket Exposure: 60.14% 🟢",
+        "exchange": "binance",
+        "symbol": "ALTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:01:16.569Z"
+      },
+      {
+        "id": "cmvg5ow9kkoe5lykhfeyrl36h",
+        "botId": "4sniper",
+        "message": "🔴 #AMZNUSDT  \nStrategy: NW DOWN\nBoost Value: +4.00% \nCurrent Price: 264.16\nPrevious Price: 264.18\nRSI: <b>1h.74❗️ | 4h.75❗️ | 1d.60 </b>\nSRSI: <b>1h.21 | 4h.98❗️ | 1d.66 </b>\nTrader Positioning: 62.55% 🟢\nMarket Exposure: 60.4% 🟢",
+        "exchange": "binance",
+        "symbol": "AMZNUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:01:20.985Z"
+      },
+      {
+        "id": "cmvg5p869koedlykhkzwflb4n",
+        "botId": "4sniper",
+        "message": "🟢 #ARIAUSDT  \nStrategy: NW UP\nBoost Value: +7.73% \nCurrent Price: 0.04104\nPrevious Price: 0.04101\nRSI: <b>1h.36 | 4h.46 | 1d.54 </b>\nSRSI: <b>1h.1 | 4h.0❗️ | 1d.59 </b>\nTrader Positioning: 65.86% 🟢\nMarket Exposure: 66.4% 🟢",
+        "exchange": "binance",
+        "symbol": "ARIAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:01:36.417Z"
+      },
+      {
+        "id": "cmvg5q48akoevlykh8n02gefv",
+        "botId": "4sniper",
+        "message": "🔴 #BATUSDT  \nStrategy: NW DOWN\nBoost Value: +8.42% \nCurrent Price: 0.19635\nPrevious Price: 0.19579\nRSI: <b>1h.66 | 4h.59 | 1d.67 </b>\nSRSI: <b>1h.74 | 4h.100❗️ | 1d.11 </b>\nTrader Positioning: 54.07% 🟢\nMarket Exposure: 51.94% 🟢",
+        "exchange": "binance",
+        "symbol": "BATUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:02:17.956Z"
+      },
+      {
+        "id": "cmvg5q8kykoeylykhfkdw9q2z",
+        "botId": "4sniper",
+        "message": "🔴 #BEAMXUSDT  \nStrategy: NW DOWN\nBoost Value: +3.60% \nCurrent Price: 0.003075\nPrevious Price: 0.003075\nRSI: <b>1h.70 | 4h.62 | 1d.69 </b>\nSRSI: <b>1h.85 | 4h.100❗️ | 1d.22 </b>\nTrader Positioning: 54.44% 🟢\nMarket Exposure: 53.38% 🔴",
+        "exchange": "binance",
+        "symbol": "BEAMXUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:02:23.603Z"
+      },
+      {
+        "id": "cmvg5r3qjkofslykh68h2fsvb",
+        "botId": "4sniper",
+        "message": "🟢 #BTWUSDT  \nStrategy: NW UP\nBoost Value: +15.06% \nCurrent Price: 1.9118\nPrevious Price: 1.906\nRSI: <b>1h.42 | 4h.44 | 1d.56 </b>\nSRSI: <b>1h.67 | 4h.22 | 1d.18 </b>\nTrader Positioning: 66.2% 🔴\nMarket Exposure: 63.11% 🔴",
+        "exchange": "binance",
+        "symbol": "BTWUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:03:03.979Z"
+      },
+      {
+        "id": "cmvg5sbumkogalykho7rnagvu",
+        "botId": "4sniper",
+        "message": "🔴 #CTRUSDT  \nStrategy: NW DOWN\nBoost Value: +15.72% \nCurrent Price: 0.018312\nPrevious Price: 0.018125\nRSI: <b>1h.85❗️ | 4h.87❗️ | 1d.76❗️ </b>\nSRSI: <b>1h.71 | 4h.100❗️ | 1d.67 </b>\nTrader Positioning: 53.66% 🟢\nMarket Exposure: 58.07% 🟢",
+        "exchange": "binance",
+        "symbol": "CTRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:04:01.151Z"
+      },
+      {
+        "id": "cmvg5sl7gkogjlykhgwcaet30",
+        "botId": "4sniper",
+        "message": "🟢 #DATAIPUSDC  \nStrategy: NW UP\nBoost Value: +4.91% \nCurrent Price: 0.1477\nPrevious Price: 0.1478\nRSI: <b>1h.27❗️ | 4h.22❗️ | 1d.22❗️ </b>\nSRSI: <b>1h.11 | 4h.21 | 1d.0❗️ </b>\nTrader Positioning: 68.53% 🟢\nMarket Exposure: 66.29% 🟢",
+        "exchange": "binance",
+        "symbol": "DATAIPUSDC",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:04:13.276Z"
+      },
+      {
+        "id": "cmvg5sm4hkogklykh2v0950oz",
+        "botId": "4sniper",
+        "message": "🟢 #DATAIPUSDT  \nStrategy: NW UP\nBoost Value: +5.28% \nCurrent Price: 0.1479\nPrevious Price: 0.1481\nRSI: <b>1h.28❗️ | 4h.21❗️ | 1d.22❗️ </b>\nSRSI: <b>1h.20 | 4h.20 | 1d.0❗️ </b>\nTrader Positioning: 56.74% 🟢\nMarket Exposure: 50.67% 🔴",
+        "exchange": "binance",
+        "symbol": "DATAIPUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:04:14.465Z"
+      },
+      {
+        "id": "cmvg5srrnkogrlykh7ljkyhda",
+        "botId": "4sniper",
+        "message": "🟢 #DJTUSDT  \nStrategy: NW UP\nBoost Value: +6.40% \nCurrent Price: 6.47\nPrevious Price: 6.474\nRSI: <b>1h.26❗️ | 4h.18❗️ | 1d.16❗️ </b>\nSRSI: <b>1h.32 | 4h.6❗️ | 1d.4❗️ </b>\nTrader Positioning: 58.03% 🟢\nMarket Exposure: 59.66% 🟢",
+        "exchange": "binance",
+        "symbol": "DJTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:04:21.779Z"
+      },
+      {
+        "id": "cmvg5uxfxkohvlykhmrw2juba",
+        "botId": "4sniper",
+        "message": "🔴 #GRVTUSDT  \nStrategy: NW DOWN\nBoost Value: +12.94% \nCurrent Price: 0.2562\nPrevious Price: 0.2586\nRSI: <b>1h.75❗️ | 4h.75❗️ | 1d.69 </b>\nSRSI: <b>1h.34 | 4h.97❗️ | 1d.58 </b>\nTrader Positioning: 57.07% 🟢\nMarket Exposure: 58.56% 🟢",
+        "exchange": "binance",
+        "symbol": "GRVTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:06:02.446Z"
+      },
+      {
+        "id": "cmvg5xpkskooplykhql0fhu9g",
+        "botId": "4sniper",
+        "message": "🔴 #METISUSDT  \nStrategy: NW DOWN\nBoost Value: +5.98% \nCurrent Price: 4.105\nPrevious Price: 4.114\nRSI: <b>1h.68 | 4h.62 | 1d.66 </b>\nSRSI: <b>1h.84 | 4h.99❗️ | 1d.74 </b>\nTrader Positioning: 68.37% 🟢\nMarket Exposure: 62.04% 🟢",
+        "exchange": "binance",
+        "symbol": "METISUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:08:12.220Z"
+      },
+      {
+        "id": "cmvg601qokoq7lykh29zjhjw6",
+        "botId": "4sniper",
+        "message": "🔴 #PHAUSDT  \nStrategy: NW DOWN\nBoost Value: +26.94% \nCurrent Price: 0.06045\nPrevious Price: 0.06193\nRSI: <b>1h.61 | 4h.65 | 1d.54 </b>\nSRSI: <b>1h.27 | 4h.89 | 1d.45 </b>\nTrader Positioning: 56.54% 🟢\nMarket Exposure: 53.43% 🟢",
+        "exchange": "binance",
+        "symbol": "PHAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:10:01.297Z"
+      },
+      {
+        "id": "cmvg61sr3kos6lykh71b88cnk",
+        "botId": "4sniper",
+        "message": "🟢 #SIRENUSDT  \nStrategy: NW UP\nBoost Value: +8.85% \nCurrent Price: 0.02162\nPrevious Price: 0.02227\nRSI: <b>1h.38 | 4h.39 | 1d.43 </b>\nSRSI: <b>1h.87 | 4h.6❗️ | 1d.36 </b>\nTrader Positioning: 78.26% 🟢\nMarket Exposure: 77.3% 🟢",
+        "exchange": "binance",
+        "symbol": "SIRENUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:11:22.960Z"
+      },
+      {
+        "id": "cmvg64k83kovqlykhaggsd243",
+        "botId": "4sniper",
+        "message": "🔴 #UNITREEUSDT  \nStrategy: 4H RSI DIVERGENCE\nBoost Value: +13.46% \nCurrent Price: 77.96\nPrevious Price: 78.54\nRSI: <b>1h.79❗️ | 4h.81❗️ | 1d.67 </b>\nSRSI: <b>1h.90❗️ | 4h.89 | 1d.100❗️ </b>\nTrader Positioning: 55.91% 🔴\nMarket Exposure: 56.84% 🔴",
+        "exchange": "binance",
+        "symbol": "UNITREEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:13:31.875Z"
+      },
+      {
+        "id": "cmvg64k87kovrlykhzsr7g7hv",
+        "botId": "4sniper",
+        "message": "🔴 #UNITREEUSDT  \nStrategy: NW DOWN\nBoost Value: +13.46% \nCurrent Price: 77.96\nPrevious Price: 78.54\nRSI: <b>1h.79❗️ | 4h.81❗️ | 1d.67 </b>\nSRSI: <b>1h.90❗️ | 4h.89 | 1d.100❗️ </b>\nTrader Positioning: 55.91% 🔴\nMarket Exposure: 56.84% 🔴",
+        "exchange": "binance",
+        "symbol": "UNITREEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:13:31.879Z"
+      },
+      {
+        "id": "cmvg64oqykovslykho91z1d4m",
+        "botId": "4sniper",
+        "message": "🟢 #USDEXUSDT  \nStrategy: 4H RSI DIVERGENCE\nBoost Value: +8.13% \nCurrent Price: 10.26\nPrevious Price: 10.28\nRSI: <b>1h.43 | 4h.39 | 1d.19❗️ </b>\nSRSI: <b>1h.21 | 4h.52 | 1d.NaN </b>\nTrader Positioning: 64.56% 🟢\nMarket Exposure: 66.15% 🟢",
+        "exchange": "binance",
+        "symbol": "USDEXUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:13:37.738Z"
+      },
+      {
+        "id": "cmvg6597wkowalykha3e7vw6y",
+        "botId": "4sniper",
+        "message": "🔴 #WLDUSDC  \nStrategy: NW DOWN\nBoost Value: +6.03% \nCurrent Price: 0.5458\nPrevious Price: 0.5431\nRSI: <b>1h.80❗️ | 4h.63 | 1d.56 </b>\nSRSI: <b>1h.100❗️ | 4h.100❗️ | 1d.39 </b>\nTrader Positioning: 68.91% 🟢\nMarket Exposure: 53.42% 🟢",
+        "exchange": "binance",
+        "symbol": "WLDUSDC",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:14:04.268Z"
+      },
+      {
+        "id": "cmvg659zgkowblykhn2v6gmpo",
+        "botId": "4sniper",
+        "message": "🔴 #WLDUSDT  \nStrategy: NW DOWN\nBoost Value: +6.06% \nCurrent Price: 0.5467\nPrevious Price: 0.5443\nRSI: <b>1h.80❗️ | 4h.63 | 1d.56 </b>\nSRSI: <b>1h.100❗️ | 4h.100❗️ | 1d.39 </b>\nTrader Positioning: 65.21% 🟢\nMarket Exposure: 61.49% 🟢",
+        "exchange": "binance",
+        "symbol": "WLDUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:14:05.260Z"
+      },
+      {
+        "id": "cmvg65arwkowclykhcidf4s88",
+        "botId": "4sniper",
+        "message": "🟢 #WLFIUSDC  \nStrategy: NW UP\nBoost Value: +5.55% \nCurrent Price: 0.05402\nPrevious Price: 0.05384\nRSI: <b>1h.35 | 4h.27❗️ | 1d.38 </b>\nSRSI: <b>1h.71 | 4h.3❗️ | 1d.30 </b>\nTrader Positioning: 70.25% 🟢\nMarket Exposure: 56.32% 🟢",
+        "exchange": "binance",
+        "symbol": "WLFIUSDC",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:14:06.284Z"
+      },
+      {
+        "id": "cmvg65boykowdlykhshf0pdxj",
+        "botId": "4sniper",
+        "message": "🟢 #WLFIUSDT  \nStrategy: NW UP\nBoost Value: +5.59% \nCurrent Price: 0.05407\nPrevious Price: 0.05389\nRSI: <b>1h.35 | 4h.27❗️ | 1d.37 </b>\nSRSI: <b>1h.70 | 4h.3❗️ | 1d.29 </b>\nTrader Positioning: 55.37% 🟢\nMarket Exposure: 54.23% 🔴",
+        "exchange": "binance",
+        "symbol": "WLFIUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T04:14:07.474Z"
+      },
+      {
+        "id": "cmvge9h0jkw6tlykhws4y41ft",
+        "botId": "4sniper",
+        "message": "🔴 #ALTUSDT  \nStrategy: NW DOWN\nBoost Value: +20.31% \nCurrent Price: 0.010744\nPrevious Price: 0.010649\nRSI: <b>1h.85❗️ | 4h.77❗️ | 1d.79❗️ </b>\nSRSI: <b>1h.97❗️ | 4h.100❗️ | 1d.100❗️ </b>\nTrader Positioning: 58.41% 🟢\nMarket Exposure: 58.84% 🟢",
+        "exchange": "binance",
+        "symbol": "ALTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:01:17.923Z"
+      },
+      {
+        "id": "cmvge9wzvkw7dlykhgx3xcb0n",
+        "botId": "4sniper",
+        "message": "🟢 #ARIAUSDT  \nStrategy: NW UP\nBoost Value: +7.73% \nCurrent Price: 0.03973\nPrevious Price: 0.04002\nRSI: <b>1h.33 | 4h.44 | 1d.53 </b>\nSRSI: <b>1h.3 | 4h.0❗️ | 1d.58 </b>\nTrader Positioning: 67.1% 🟢\nMarket Exposure: 66.95% 🟢",
+        "exchange": "binance",
+        "symbol": "ARIAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:01:38.635Z"
+      },
+      {
+        "id": "cmvgeav14kw8ilykh4w0ank22",
+        "botId": "4sniper",
+        "message": "🔴 #BATUSDT  \nStrategy: NW DOWN\nBoost Value: +8.42% \nCurrent Price: 0.19686\nPrevious Price: 0.19778\nRSI: <b>1h.64 | 4h.59 | 1d.67 </b>\nSRSI: <b>1h.70 | 4h.99❗️ | 1d.11 </b>\nTrader Positioning: 53.81% 🟢\nMarket Exposure: 52.09% 🟢",
+        "exchange": "binance",
+        "symbol": "BATUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:02:22.744Z"
+      },
+      {
+        "id": "cmvgeb1rhkw8mlykh9091ehsc",
+        "botId": "4sniper",
+        "message": "🟢 #BERAUSDT  \nStrategy: 4H RSI DIVERGENCE\nBoost Value: +3.03% \nCurrent Price: 0.1619\nPrevious Price: 0.1628\nRSI: <b>1h.31 | 4h.28❗️ | 1d.33 </b>\nSRSI: <b>1h.0 | 4h.79 | 1d.0❗️ </b>\nTrader Positioning: 52.26% 🔴\nMarket Exposure: 60.49% 🔴",
+        "exchange": "binance",
+        "symbol": "BERAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:02:31.469Z"
+      },
+      {
+        "id": "cmvgebna5kw8wlykhg1kiqjs9",
+        "botId": "4sniper",
+        "message": "🔴 #BRUSDT  \nStrategy: NW DOWN\nBoost Value: +26.31% \nCurrent Price: 0.6936\nPrevious Price: 0.70071\nRSI: <b>1h.64 | 4h.67 | 1d.58 </b>\nSRSI: <b>1h.55 | 4h.57 | 1d.93❗️ </b>\nTrader Positioning: 53.3% 🔴\nMarket Exposure: 52.27% 🔴",
+        "exchange": "binance",
+        "symbol": "BRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:02:59.358Z"
+      },
+      {
+        "id": "cmvgebtz2kwc3lykh98a5fbnk",
+        "botId": "4sniper",
+        "message": "🟢 #BTWUSDT  \nStrategy: NW UP\nBoost Value: +15.54% \nCurrent Price: 1.6208\nPrevious Price: 1.6635\nRSI: <b>1h.29❗️ | 4h.37 | 1d.51 </b>\nSRSI: <b>1h.21 | 4h.6❗️ | 1d.18 </b>\nTrader Positioning: 61.06% 🔴\nMarket Exposure: 58.7% 🔴",
+        "exchange": "binance",
+        "symbol": "BTWUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:03:08.030Z"
+      },
+      {
+        "id": "cmvged2xxkwdqlykh0yar44y4",
+        "botId": "4sniper",
+        "message": "🟢 #CTRUSDT  \nStrategy: NW UP\nBoost Value: +30.62% \nCurrent Price: 0.01392\nPrevious Price: 0.013991\nRSI: <b>1h.37 | 4h.48 | 1d.53 </b>\nSRSI: <b>1h.0 | 4h.43 | 1d.34 </b>\nTrader Positioning: 67.33% 🟢\nMarket Exposure: 67.87% 🟢",
+        "exchange": "binance",
+        "symbol": "CTRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:04:06.310Z"
+      },
+      {
+        "id": "cmvgeddqgkwdslykhrdshzdtk",
+        "botId": "4sniper",
+        "message": "🟢 #DATAIPUSDC  \nStrategy: NW UP\nBoost Value: +4.91% \nCurrent Price: 0.143\nPrevious Price: 0.1435\nRSI: <b>1h.19❗️ | 4h.20❗️ | 1d.21❗️ </b>\nSRSI: <b>1h.0 | 4h.5❗️ | 1d.0❗️ </b>\nTrader Positioning: 67.13% 🟢\nMarket Exposure: 62.84% 🟢",
+        "exchange": "binance",
+        "symbol": "DATAIPUSDC",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:04:20.296Z"
+      },
+      {
+        "id": "cmvgedeh6kwdtlykhjzhef6qp",
+        "botId": "4sniper",
+        "message": "🟢 #DATAIPUSDT  \nStrategy: NW UP\nBoost Value: +5.28% \nCurrent Price: 0.1431\nPrevious Price: 0.144\nRSI: <b>1h.20❗️ | 4h.19❗️ | 1d.21❗️ </b>\nSRSI: <b>1h.1 | 4h.5❗️ | 1d.0❗️ </b>\nTrader Positioning: 56.72% 🟢\nMarket Exposure: 50.04% 🟢",
+        "exchange": "binance",
+        "symbol": "DATAIPUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:04:21.259Z"
+      },
+      {
+        "id": "cmvgedk2okwe0lykhooibmpbe",
+        "botId": "4sniper",
+        "message": "🟢 #DJTUSDT  \nStrategy: NW UP\nBoost Value: +5.25% \nCurrent Price: 6.438\nPrevious Price: 6.454\nRSI: <b>1h.25❗️ | 4h.17❗️ | 1d.16❗️ </b>\nSRSI: <b>1h.83 | 4h.4❗️ | 1d.4❗️ </b>\nTrader Positioning: 58.45% 🟢\nMarket Exposure: 59.7% 🟢",
+        "exchange": "binance",
+        "symbol": "DJTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:04:28.511Z"
+      },
+      {
+        "id": "cmvgefthdkwh9lykhhioqfugt",
+        "botId": "4sniper",
+        "message": "🔴 #GRVTUSDT  \nStrategy: NW DOWN\nBoost Value: +12.94% \nCurrent Price: 0.2553\nPrevious Price: 0.2562\nRSI: <b>1h.71❗️ | 4h.74❗️ | 1d.68 </b>\nSRSI: <b>1h.7 | 4h.93❗️ | 1d.57 </b>\nTrader Positioning: 56.85% 🟢\nMarket Exposure: 58.52% 🟢",
+        "exchange": "binance",
+        "symbol": "GRVTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:06:14.017Z"
+      },
+      {
+        "id": "cmvgeg92gkwi7lykh7xpap2bd",
+        "botId": "4sniper",
+        "message": "🟢 #HK0992USDT  \nStrategy: 4H RSI DIVERGENCE\nBoost Value: +5.82% \nCurrent Price: 25.42\nPrevious Price: 25.3\nRSI: <b>1h.18❗️ | 4h.24❗️ | 1d.25❗️ </b>\nSRSI: <b>1h.4 | 4h.3❗️ | 1d.10 </b>\nTrader Positioning: 64.29% 🟢\nMarket Exposure: 62.22% 🟢",
+        "exchange": "binance",
+        "symbol": "HK0992USDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:06:34.216Z"
+      },
+      {
+        "id": "cmvgeglbukwjslykh6u9ukn8n",
+        "botId": "4sniper",
+        "message": "🟢 #ICNTUSDT  \nStrategy: NW UP\nBoost Value: +8.91% \nCurrent Price: 0.1542\nPrevious Price: 0.1572\nRSI: <b>1h.32 | 4h.45 | 1d.62 </b>\nSRSI: <b>1h.0 | 4h.0❗️ | 1d.70 </b>\nTrader Positioning: 62.15% 🟢\nMarket Exposure: 63.53% 🟢",
+        "exchange": "binance",
+        "symbol": "ICNTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:06:50.106Z"
+      },
+      {
+        "id": "cmvgehfg4kwlflykhb1hgb9l8",
+        "botId": "4sniper",
+        "message": "🔴 #JCTUSDT  \nStrategy: NW DOWN\nBoost Value: +35.85% \nCurrent Price: 0.002773\nPrevious Price: 0.002791\nRSI: <b>1h.91❗️ | 4h.79❗️ | 1d.66 </b>\nSRSI: <b>1h.99❗️ | 4h.99❗️ | 1d.45 </b>\nTrader Positioning: 55.57% 🟢\nMarket Exposure: 55.75% 🟢",
+        "exchange": "binance",
+        "symbol": "JCTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:07:29.140Z"
+      },
+      {
+        "id": "cmvgelsjokwnslykhaba6gfux",
+        "botId": "4sniper",
+        "message": "🔴 #PHAUSDT  \nStrategy: NW DOWN\nBoost Value: +26.94% \nCurrent Price: 0.0606\nPrevious Price: 0.06168\nRSI: <b>1h.57 | 4h.65 | 1d.54 </b>\nSRSI: <b>1h.11 | 4h.88 | 1d.45 </b>\nTrader Positioning: 56% 🟢\nMarket Exposure: 53.53% 🟢",
+        "exchange": "binance",
+        "symbol": "PHAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:10:52.738Z"
+      },
+      {
+        "id": "cmvgem2pakwo1lykhv0e2hxcw",
+        "botId": "4sniper",
+        "message": "🟢 #POPMARTUSDT  \nStrategy: NW UP\nBoost Value: +5.31% \nCurrent Price: 17.28\nPrevious Price: 17.33\nRSI: <b>1h.31 | 4h.20❗️ | 1d.21❗️ </b>\nSRSI: <b>1h.29 | 4h.18 | 1d.10❗️ </b>\nTrader Positioning: 69.72% 🟢\nMarket Exposure: 67.61% 🟢",
+        "exchange": "binance",
+        "symbol": "POPMARTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:11:05.902Z"
+      },
+      {
+        "id": "cmvgenfs2kwoxlykhghab8xwk",
+        "botId": "4sniper",
+        "message": "🟢 #SIRENUSDT  \nStrategy: NW UP\nBoost Value: +8.85% \nCurrent Price: 0.023\nPrevious Price: 0.02304\nRSI: <b>1h.46 | 4h.42 | 1d.46 </b>\nSRSI: <b>1h.91 | 4h.15 | 1d.38 </b>\nTrader Positioning: 73.93% 🟢\nMarket Exposure: 74.18% 🟢",
+        "exchange": "binance",
+        "symbol": "SIRENUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:12:09.506Z"
+      },
+      {
+        "id": "cmvgeq7a5kwr1lykh25u2g3l2",
+        "botId": "4sniper",
+        "message": "🔴 #UNITREEUSDT  \nStrategy: NW DOWN\nBoost Value: +13.46% \nCurrent Price: 77.41\nPrevious Price: 77.77\nRSI: <b>1h.70 | 4h.78❗️ | 1d.67 </b>\nSRSI: <b>1h.40 | 4h.91❗️ | 1d.100❗️ </b>\nTrader Positioning: 54.64% 🔴\nMarket Exposure: 56.12% 🔴",
+        "exchange": "binance",
+        "symbol": "UNITREEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:14:18.462Z"
+      },
+      {
+        "id": "cmvgeqwyzkwrhlykhhylbba65",
+        "botId": "4sniper",
+        "message": "🟢 #WLFIUSDC  \nStrategy: NW UP\nBoost Value: +1.27% \nCurrent Price: 0.05371\nPrevious Price: 0.05368\nRSI: <b>1h.32 | 4h.24❗️ | 1d.36 </b>\nSRSI: <b>1h.61 | 4h.1❗️ | 1d.29 </b>\nTrader Positioning: 72.76% 🟢\nMarket Exposure: 57.32% 🟢",
+        "exchange": "binance",
+        "symbol": "WLFIUSDC",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:14:51.756Z"
+      },
+      {
+        "id": "cmvgeqxqbkwrilykhyob71ydj",
+        "botId": "4sniper",
+        "message": "🟢 #WLFIUSDT  \nStrategy: NW UP\nBoost Value: +1.34% \nCurrent Price: 0.05376\nPrevious Price: 0.05373\nRSI: <b>1h.32 | 4h.23❗️ | 1d.36 </b>\nSRSI: <b>1h.60 | 4h.1❗️ | 1d.29 </b>\nTrader Positioning: 54.4% 🟢\nMarket Exposure: 55.11% 🔴",
+        "exchange": "binance",
+        "symbol": "WLFIUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-20T08:14:52.739Z"
+      }
+    ],
+    "hasMore": true
+  }
+}

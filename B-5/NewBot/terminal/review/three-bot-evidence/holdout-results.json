@@ -1,0 +1,378 @@
+{
+  "hypothesesSha256": "3c02ca6df4416cd9e2094b98fd26df8f0ca5bc9d5b876101d631753d10ea2216",
+  "policy": "New reference IDs after initial 300-message sample. Positive-condition check only, not precision/recall. NW price independently reconstructed from Binance trades. API record time may lag trigger.",
+  "results": [
+    {
+      "id": "cmvgmtpdql614lykhgt9d0lss",
+      "botId": "4sniper",
+      "symbol": "AGTUSDT",
+      "strategy": "NW UP",
+      "direction": "up",
+      "referenceRecordTime": "2026-10-20T12:00:58.814Z",
+      "referencePrice": 0.067895,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 0.067866,
+      "binanceTradeTime": 1792497658785,
+      "tradeAgeMs": 29,
+      "band": {
+        "center": 0.07801843938744137,
+        "upper": 0.08180775952309847,
+        "lower": 0.07422911925178426
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgmtsgdl61ilykh42ru99qx",
+      "botId": "4sniper",
+      "symbol": "AIOTUSDT",
+      "strategy": "NW DOWN",
+      "direction": "down",
+      "referenceRecordTime": "2026-10-20T12:01:02.797Z",
+      "referencePrice": 0.05916,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 0.05916,
+      "binanceTradeTime": 1792497660466,
+      "tradeAgeMs": 2331,
+      "band": {
+        "center": 0.054914298559206466,
+        "upper": 0.05841127973508564,
+        "lower": 0.05141731738332729
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgmu3cgl61qlykh6eh7d9ri",
+      "botId": "4sniper",
+      "symbol": "ALTUSDT",
+      "strategy": "NW DOWN",
+      "direction": "down",
+      "referenceRecordTime": "2026-10-20T12:01:16.913Z",
+      "referencePrice": 0.010391,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 0.010396,
+      "binanceTradeTime": 1792497676862,
+      "tradeAgeMs": 51,
+      "band": {
+        "center": 0.00933794755275294,
+        "upper": 0.00968401203968787,
+        "lower": 0.00899188306581801
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgmuijol62llykhfdxcfprc",
+      "botId": "4sniper",
+      "symbol": "ARIAUSDT",
+      "strategy": "NW UP",
+      "direction": "up",
+      "referenceRecordTime": "2026-10-20T12:01:36.612Z",
+      "referencePrice": 0.04101,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 0.04101,
+      "binanceTradeTime": 1792497694789,
+      "tradeAgeMs": 1823,
+      "band": {
+        "center": 0.044427692150950986,
+        "upper": 0.04733169556523546,
+        "lower": 0.04152368873666651
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgmvelfl65alykh18stm1qg",
+      "botId": "4sniper",
+      "symbol": "AXLUSDT",
+      "strategy": "NW UP",
+      "direction": "up",
+      "referenceRecordTime": "2026-10-20T12:02:18.147Z",
+      "referencePrice": 0.05317,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 0.05314,
+      "binanceTradeTime": 1792497737731,
+      "tradeAgeMs": 416,
+      "band": {
+        "center": 0.05551295851195907,
+        "upper": 0.0578561146781023,
+        "lower": 0.053169802345815836
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgmvqk9l65tlykhh5oo9jo1",
+      "botId": "4sniper",
+      "symbol": "BATUSDT",
+      "strategy": "NW DOWN",
+      "direction": "down",
+      "referenceRecordTime": "2026-10-20T12:02:33.658Z",
+      "referencePrice": 0.20245,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 0.20236,
+      "binanceTradeTime": 1792497753442,
+      "tradeAgeMs": 216,
+      "band": {
+        "center": 0.18813214262545186,
+        "upper": 0.19562079223873308,
+        "lower": 0.18064349301217064
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgmvvs7l668lykhs8u2w21q",
+      "botId": "4sniper",
+      "symbol": "BEAMXUSDT",
+      "strategy": "NW DOWN",
+      "direction": "down",
+      "referenceRecordTime": "2026-10-20T12:02:40.423Z",
+      "referencePrice": 0.003262,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 0.003257,
+      "binanceTradeTime": 1792497760338,
+      "tradeAgeMs": 85,
+      "band": {
+        "center": 0.002994970441480706,
+        "upper": 0.0031110403102728363,
+        "lower": 0.002878900572688576
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgmwr7pl688lykhw1u5ct8s",
+      "botId": "4sniper",
+      "symbol": "BOTUSDT",
+      "strategy": "NW UP",
+      "direction": "up",
+      "referenceRecordTime": "2026-10-20T12:03:21.157Z",
+      "referencePrice": 21.42,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 21.42,
+      "binanceTradeTime": 1792497780500,
+      "tradeAgeMs": 20657,
+      "band": {
+        "center": 23.223128268356305,
+        "upper": 24.703821544926473,
+        "lower": 21.742434991786137
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgmww74l68clykh9rywd5oj",
+      "botId": "4sniper",
+      "symbol": "BRUSDT",
+      "strategy": "NW DOWN",
+      "direction": "down",
+      "referenceRecordTime": "2026-10-20T12:03:27.616Z",
+      "referencePrice": 0.67433,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 0.67401,
+      "binanceTradeTime": 1792497807540,
+      "tradeAgeMs": 76,
+      "band": {
+        "center": 0.5850016682889253,
+        "upper": 0.6668127509038297,
+        "lower": 0.5031905856740209
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgmx4tjl68olykhzhjwnywj",
+      "botId": "4sniper",
+      "symbol": "BTWUSDT",
+      "strategy": "NW UP",
+      "direction": "up",
+      "referenceRecordTime": "2026-10-20T12:03:38.792Z",
+      "referencePrice": 1.8255,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 1.8249,
+      "binanceTradeTime": 1792497818205,
+      "tradeAgeMs": 587,
+      "band": {
+        "center": 2.0126117858523216,
+        "upper": 2.166152371074341,
+        "lower": 1.8590712006303023
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgmy8agl6allykh6peodmg1",
+      "botId": "4sniper",
+      "symbol": "COMPUSDT",
+      "strategy": "NW DOWN",
+      "direction": "down",
+      "referenceRecordTime": "2026-10-20T12:04:29.944Z",
+      "referencePrice": 22.85,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 22.85,
+      "binanceTradeTime": 1792497862674,
+      "tradeAgeMs": 7270,
+      "band": {
+        "center": 21.662830191297854,
+        "upper": 22.51641648700829,
+        "lower": 20.809243895587418
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgmzo0vl6chlykhiav81w2p",
+      "botId": "4sniper",
+      "symbol": "DATAIPUSDC",
+      "strategy": "NW UP",
+      "direction": "up",
+      "referenceRecordTime": "2026-10-20T12:05:36.992Z",
+      "referencePrice": 0.141,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 0.1413,
+      "binanceTradeTime": 1792497935886,
+      "tradeAgeMs": 1106,
+      "band": {
+        "center": 0.152633949325433,
+        "upper": 0.1599219301302855,
+        "lower": 0.14534596852058052
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgmzoxyl6cklykhmiuoq55k",
+      "botId": "4sniper",
+      "symbol": "DATAIPUSDT",
+      "strategy": "NW UP",
+      "direction": "up",
+      "referenceRecordTime": "2026-10-20T12:05:38.183Z",
+      "referencePrice": 0.1413,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 0.1415,
+      "binanceTradeTime": 1792497935967,
+      "tradeAgeMs": 2216,
+      "band": {
+        "center": 0.15286930661719533,
+        "upper": 0.16015385640487764,
+        "lower": 0.14558475682951302
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgn000ml6d7lykhq65yb3s5",
+      "botId": "4sniper",
+      "symbol": "DOODUSDT",
+      "strategy": "NW DOWN",
+      "direction": "down",
+      "referenceRecordTime": "2026-10-20T12:05:52.535Z",
+      "referencePrice": 0.001501,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 0.001505,
+      "binanceTradeTime": 1792497952465,
+      "tradeAgeMs": 70,
+      "band": {
+        "center": 0.0013696253841311433,
+        "upper": 0.0014629111670584542,
+        "lower": 0.0012763396012038324
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgn0g9hl6dxlykh75io0sji",
+      "botId": "4sniper",
+      "symbol": "ERAUSDT",
+      "strategy": "NW DOWN",
+      "direction": "down",
+      "referenceRecordTime": "2026-10-20T12:06:13.590Z",
+      "referencePrice": 0.075,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 0.07497,
+      "binanceTradeTime": 1792497973474,
+      "tradeAgeMs": 116,
+      "band": {
+        "center": 0.06889523439169778,
+        "upper": 0.0729472891094838,
+        "lower": 0.06484317967391177
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgn1fkll6ftlykhaii1n4wh",
+      "botId": "4sniper",
+      "symbol": "GMEUSDT",
+      "strategy": "NW UP",
+      "direction": "up",
+      "referenceRecordTime": "2026-10-20T12:06:59.350Z",
+      "referencePrice": 25.58,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "error": "No Binance trade before record time"
+    },
+    {
+      "id": "cmvgn1p1il6gflykh86z7tatt",
+      "botId": "4sniper",
+      "symbol": "GRVTUSDT",
+      "strategy": "NW DOWN",
+      "direction": "down",
+      "referenceRecordTime": "2026-10-20T12:07:11.622Z",
+      "referencePrice": 0.2546,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 0.2546,
+      "binanceTradeTime": 1792498031432,
+      "tradeAgeMs": 190,
+      "band": {
+        "center": 0.2344001700013511,
+        "upper": 0.2514794447800574,
+        "lower": 0.2173208952226448
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgn3bisl6j0lykhvmc3h3go",
+      "botId": "4sniper",
+      "symbol": "JCTUSDT",
+      "strategy": "NW DOWN",
+      "direction": "down",
+      "referenceRecordTime": "2026-10-20T12:08:27.413Z",
+      "referencePrice": 0.003935,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 0.003942,
+      "binanceTradeTime": 1792498107403,
+      "tradeAgeMs": 10,
+      "band": {
+        "center": 0.0024208194414468876,
+        "upper": 0.0027594564526360124,
+        "lower": 0.0020821824302577627
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgn7h42l6nblykh2nikkwop",
+      "botId": "4sniper",
+      "symbol": "POPMARTUSDT",
+      "strategy": "NW UP",
+      "direction": "up",
+      "referenceRecordTime": "2026-10-20T12:11:41.283Z",
+      "referencePrice": 17.27,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 17.27,
+      "binanceTradeTime": 1792498276409,
+      "tradeAgeMs": 24874,
+      "band": {
+        "center": 17.728329566025227,
+        "upper": 18.084709988446555,
+        "lower": 17.3719491436039
+      },
+      "matches": true
+    },
+    {
+      "id": "cmvgnc3xfl6r5lykh2yn25ozb",
+      "botId": "4sniper",
+      "symbol": "UNITREEUSDT",
+      "strategy": "NW DOWN",
+      "direction": "down",
+      "referenceRecordTime": "2026-10-20T12:15:17.476Z",
+      "referencePrice": 76.23,
+      "method": "NWE h8 mult3 repaint500; Binance trade at or before API record time",
+      "binancePrice": 76.24,
+      "binanceTradeTime": 1792498515820,
+      "tradeAgeMs": 1656,
+      "band": {
+        "center": 71.97342816438584,
+        "upper": 75.73222826621702,
+        "lower": 68.21462806255465
+      },
+      "matches": true
+    }
+  ]
+}

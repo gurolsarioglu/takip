@@ -1,0 +1,9 @@
+{
+  "status": "research candidates; frozen before inspecting a new reference window",
+  "baseReferenceFiles": ["three-bot-evidence/div.json", "three-bot-evidence/4sniper.json", "three-bot-evidence/hammer-pro-plus.json"],
+  "sniperNW": {"timeframe":"4h","window":500,"kernel":"Gaussian","bandwidth":8,"multiplier":3,"repaint":true,"source":"close","up":"latest source < lower band","down":"latest source > upper band","displayRsi":"live RSI14; snapshot may differ from trigger","unknown":["universe","additional filters","scan cadence and ordering","dedup lifecycle","NW-vs-RSI priority"]},
+  "hammerW1": {"timeframe":"1m","bar":"last completed","indicator":"WaveTrend","channelLength":10,"averageLength":21,"signalLength":4,"up":"WT1 crosses above WT2","down":"WT1 crosses below WT2","unknown":["extreme RSI/WT filters","Boost baseline","stars","universe","dedup lifecycle"]},
+  "rsiSmaCross": {"rsiLength":14,"smoothing":"SMA14 of RSI","bar":"live close candidate","timeframe":"strategy label","unknown":["intrabar first cross vs persistent state","threshold gate","cooldown"]},
+  "divergence": {"status":"unresolved; standard RSI-pivot and default 5in1 candidates do not explain most labels"},
+  "warning":"Matching positive reference conditions is not precision/recall or operational independence. API createdAt is record time until trigger timestamp semantics are verified. Full Sniper includes a separate 1dws subchannel."
+}

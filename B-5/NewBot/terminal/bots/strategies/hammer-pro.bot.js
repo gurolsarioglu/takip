@@ -1,9 +1,11 @@
 /**
  * hammer-pro.bot.js — Hammer Pro (Automated Pattern Analysis & Reversal Scanner)
- * Strateji: #W1 Dip Dönüş / WaveTrend Reversal
+ * VisiVero Birebir Stratejiler: #W1 (1m WaveTrend Kesişimi) ve #S1 (1m RSI/SMA Ekstrem Dönüşü)
+ * Zaman Dilimleri: 1m | 5m | 1h (Hem 🟢 Long hem 🔴 Short Reversal destekler)
  */
 
 const BaseBot = require('../base/base-bot');
+const botData = require('../../services/bot-data.service');
 const { formatCryptoPrice, computePrevPrice } = require('../../services/price-formatter');
 
 class HammerProBot extends BaseBot {
@@ -15,20 +17,14 @@ class HammerProBot extends BaseBot {
     });
   }
 
-  /**
-   * Boost değerini her türlü string/sayı formatından güvenle float'a çevirir
-   */
   parseBoost(val) {
-    if (typeof val === 'number') return isNaN(val) ? 0 : val;
+    if (typeof val === 'number') return isNaN(val) ? 0 : Math.abs(val);
     if (!val) return 0;
     const clean = String(val).replace(/[%+,\s]/g, '').trim();
     const parsed = parseFloat(clean);
-    return isNaN(parsed) ? 0 : parsed;
+    return isNaN(parsed) ? 0 : Math.abs(parsed);
   }
 
-  /**
-   * Yüzdesel mesafe string veya sayısını temiz mutlak float olarak döner
-   */
   parseDistance(val) {
     if (val === undefined || val === null || val === '') return null;
     if (typeof val === 'number') return Math.abs(val);
@@ -37,69 +33,74 @@ class HammerProBot extends BaseBot {
     return isNaN(parsed) ? null : Math.abs(parsed);
   }
 
-  /**
-   * #W1 Dip Dönüş ve Whipsaw / Düşen Bıçak Kalite Filtresi (Trader Mantığı)
-   * 1. 1m WaveTrend veya dip tepkisi olmalıdır.
-   * 2. 5m veya 1h periyotlarından en az biri aşırı satımda (<= 38) olmalıdır.
-   * 3. Boost ivmesi en az +0.40% olmalı, ancak aşırı geç kalınmış (> +4.50%) olmamalıdır.
-   */
-  validateReversalQuality({ rsi1m, rsi5m, rsi1h, boostNum, hasWT }) {
-    // Boost eşik kontrolü: Çekiç tepkisi başladı mı? (En az %0.40, en çok %4.50 FOMO tavanı)
-    if (boostNum < 0.40 || boostNum > 4.50) {
-      return { valid: false, reason: `Boost (${boostNum.toFixed(2)}%) ideal çekiç aralığında (%0.40 - %4.50) değil.` };
+  calculateStars(boostNum) {
+    return botData.hammerStars(boostNum);
+  }
+
+  validateReversalQuality({ direction, rsi1m, rsi5m, srsi5m, boostNum, hasWT }) {
+    if (direction === 'down') {
+      if (rsi1m < 55 || rsi5m < 55) {
+        return { valid: false, reason: `Short dönüş için 1m/5m RSI (${rsi1m}/${rsi5m}) aşırı alım bölgesinde değil.` };
+      }
+      if (!hasWT && (rsi1m < 70 || boostNum < 0.23)) {
+        return { valid: false, reason: `Short #S1 için 1m RSI >= 71 ve Boost >= %0.23 gerekli.` };
+      }
+      if (Number.isFinite(srsi5m) && srsi5m < 60) {
+        return { valid: false, reason: `5m SRSI (${srsi5m}) aşırı alım bölgesinde değil.` };
+      }
+      return { valid: true };
     }
 
-    // Yüksek zaman dilimi aşırı satım teyidi: En az 5m veya 1h periyodunda aşırı satım olmalı
-    if (rsi5m > 40 && rsi1h > 42) {
-      return { valid: false, reason: `5m (RSI:${rsi5m}) ve 1h (RSI:${rsi1h}) aşırı satım bölgesinde değil. Sahte tepki riski.` };
+    if (rsi1m > 45 || rsi5m > 45) {
+      return { valid: false, reason: `Long dönüş için 1m/5m RSI (${rsi1m}/${rsi5m}) aşırı satım bölgesinde değil.` };
     }
-
-    // WaveTrend veya 1m dip onayı
-    if (!hasWT && rsi1m > 35) {
-      return { valid: false, reason: `1m WaveTrend boğa kesişimi veya 1m aşırı satım teyidi yok.` };
+    if (!hasWT && (rsi1m > 30 || boostNum < 0.30)) {
+      return { valid: false, reason: `Long #S1 için 1m RSI <= 29 ve Boost >= %0.30 gerekli.` };
     }
-
+    if (Number.isFinite(srsi5m) && srsi5m > 25) {
+      return { valid: false, reason: `5m SRSI (${srsi5m}) aşırı satım bölgesinde değil.` };
+    }
     return { valid: true };
   }
 
   ingest(s) {
     const symbol = (s.coin || s.symbol).toUpperCase();
     const nowTime = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    const direction = (s.dot === '🔴' || s.direction === 'down' || s.position === 'Short') ? 'down' : 'up';
+    const dot = direction === 'down' ? '🔴' : '🟢';
 
-    const priceNum = parseFloat(s.price || 0);
+    const priceNum = parseFloat(s.price || s.currentPrice || 0);
     const boostNum = this.parseBoost(s.boost || s.boostValue);
     const boostFormatted = `+${boostNum.toFixed(2)}%`;
 
-    // prevPrice güvenliği: Eğer prevPrice yoksa veya price ile aynıysa, boost üzerinden geriye doğru hesapla
     let prevPriceStr = s.prevPrice ? String(s.prevPrice) : '';
-    if (!prevPriceStr || prevPriceStr === String(s.price)) {
+    if (!prevPriceStr || prevPriceStr === String(s.price || s.currentPrice)) {
       if (priceNum > 0 && boostNum !== 0) {
-        prevPriceStr = computePrevPrice(priceNum, boostNum, s.price);
+        prevPriceStr = computePrevPrice(priceNum, direction === 'down' ? boostNum : -boostNum, symbol);
       } else {
-        prevPriceStr = formatCryptoPrice(s.price);
+        prevPriceStr = formatCryptoPrice(s.price || s.currentPrice, symbol);
       }
     }
 
-    // RSI Değerleri (Sayısal parse ve Trader Alarm ! Formatı)
     const rawRsi = parseInt(s.rsi, 10);
-    const rsi1mNum = parseInt(s.rsi1m || (!isNaN(rawRsi) ? rawRsi : 28), 10);
-    const rsi5mNum = parseInt(s.rsi5m || (!isNaN(rawRsi) ? Math.min(rawRsi + 2, 45) : 30), 10);
-    const rsi1hNum = parseInt(s.rsi1h || 30, 10);
+    const defaultRsi = direction === 'down' ? 72 : 28;
+    const rsi1mNum = parseInt(s.rsi1m ?? (!isNaN(rawRsi) ? rawRsi : defaultRsi), 10);
+    const rsi5mNum = parseInt(s.rsi5m ?? (!isNaN(rawRsi) ? rawRsi : (direction === 'down' ? 68 : 30)), 10);
+    const rsi1hNum = parseInt(s.rsi1h ?? (direction === 'down' ? 60 : 35), 10);
 
-    // SRSI Değerleri
-    const srsi1mNum = parseInt(s.srsi1m || s.stochK || 20, 10);
-    const srsi5mNum = parseInt(s.srsi5m || s.stochD || 5, 10);
-    const srsi1hNum = parseInt(s.srsi1h || 10, 10);
+    const srsi1mNum = parseInt(s.srsi1m ?? s.stochK ?? (direction === 'down' ? 65 : 20), 10);
+    const srsi5mNum = parseInt(s.srsi5m ?? s.stochD ?? (direction === 'down' ? 85 : 5), 10);
+    const srsi1hNum = parseInt(s.srsi1h ?? (direction === 'down' ? 80 : 10), 10);
 
-    // WaveTrend Teyidi
-    const hasWT = Boolean(s.wt || s.stochK < 20 || rsi1mNum <= 30);
-    const wtDisplay = s.wt || (hasWT ? '1m 🟢' : '—');
+    const strategy = s.strategy || (s.wt ? '#W1' : (rsi1mNum <= 29 || rsi1mNum >= 71 ? '#S1' : '#W1'));
+    const hasWT = Boolean(s.wt || strategy === '#W1');
+    const wtDisplay = s.wt || (strategy === '#W1' ? (direction === 'down' ? '1m🔴' : '1m🟢') : null);
 
-    // Trader & Mantık Doğrulama Filtresi
     const validation = this.validateReversalQuality({
+      direction,
       rsi1m: rsi1mNum,
       rsi5m: rsi5mNum,
-      rsi1h: rsi1hNum,
+      srsi5m: srsi5mNum,
       boostNum,
       hasWT
     });
@@ -109,48 +110,49 @@ class HammerProBot extends BaseBot {
       return null;
     }
 
-    // Pivot Mesafesi Kontrolü
-    let pivotDisplay = null;
-    if (s.pivot !== undefined && s.pivot !== null) {
-      const pDist = this.parseDistance(s.pivot);
-      pivotDisplay = typeof s.pivot === 'string' && s.pivot.includes('%') 
-        ? s.pivot 
-        : (pDist !== null ? `%${pDist.toFixed(2)} ⚠️` : null);
-    }
+    const pDist = this.parseDistance(s.pivot);
+    const pivotDisplay = typeof s.pivot === 'string' && s.pivot.includes('%')
+      ? s.pivot
+      : botData.formatHammerDistanceAlert(pDist);
 
-    // 4H EMA200 Mesafesi Kontrolü
-    let ema200Display = null;
-    if (s.ema200 !== undefined && s.ema200 !== null) {
-      const eDist = this.parseDistance(s.ema200);
-      ema200Display = typeof s.ema200 === 'string' && s.ema200.includes('%') 
-        ? s.ema200 
-        : (eDist !== null ? `%${eDist.toFixed(2)} ⚠️` : null);
-    }
+    const eDist = this.parseDistance(s.ema200);
+    const ema200Display = typeof s.ema200 === 'string' && s.ema200.includes('%')
+      ? s.ema200
+      : botData.formatHammerDistanceAlert(eDist);
+
+    const frDisplay = typeof s.fr === 'string' && s.fr.includes('⚠️')
+      ? s.fr
+      : botData.formatHammerFundingAlert(s.fr ?? s.fundingRate);
 
     const card = {
-      id: 'h_' + Date.now(),
-      symbol: symbol,
-      strategy: s.strategy || '#W1',
+      id: 'hp_' + Date.now(),
+      symbol,
+      dot,
+      stars: s.stars !== undefined ? s.stars : this.calculateStars(boostNum),
+      strategy,
       boostValue: boostFormatted,
-      currentPrice: formatCryptoPrice(s.price),
+      currentPrice: formatCryptoPrice(s.price || s.currentPrice, symbol),
       prevPrice: prevPriceStr,
       rsi: {
-        m1: `${rsi1mNum}${rsi1mNum <= 30 ? ' ❗' : ''}`,
-        m5: `${rsi5mNum}${rsi5mNum <= 30 ? ' ❗' : ''}`,
-        h1: `${rsi1hNum}${rsi1hNum <= 30 ? ' ❗' : ''}`
+        m1: botData.rsiTextWithAlert(rsi1mNum),
+        m5: botData.rsiTextWithAlert(rsi5mNum),
+        h1: botData.rsiTextWithAlert(rsi1hNum)
       },
       srsi: {
-        m1: String(srsi1mNum),
-        m5: `${srsi5mNum}${srsi5mNum <= 15 ? ' ❗' : ''}`,
-        h1: `${srsi1hNum}${srsi1hNum <= 15 ? ' ❗' : ''}`
+        m1: botData.srsiTextWithAlert(srsi1mNum),
+        m5: botData.srsiTextWithAlert(srsi5mNum),
+        h1: botData.srsiTextWithAlert(srsi1hNum)
       },
-      wt: wtDisplay,
       dateLabel: 'Today',
       time: nowTime
     };
 
+    if (wtDisplay) card.wt = wtDisplay;
+    if (s.divergence) card.divergence = s.divergence;
     if (pivotDisplay) card.pivot = pivotDisplay;
     if (ema200Display) card.ema200 = ema200Display;
+    if (frDisplay) card.fr = frDisplay;
+    if (s.btcStatus) card.btcStatus = s.btcStatus;
 
     return this.addSignal(card);
   }

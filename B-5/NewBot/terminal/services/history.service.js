@@ -6,6 +6,7 @@
 const fs    = require('fs');
 const path  = require('path');
 const https = require('https');
+const quantIndicators = require('./quant-indicators.service');
 
 const DATA_DIR  = path.join(__dirname, '..', 'data');
 const DATA_FILE = path.join(DATA_DIR, 'daily_history.json');
@@ -87,17 +88,7 @@ function fetchJson(url) {
  * k = 2 / (period + 1)
  */
 function calculateEMA(prices, period = 200) {
-  if (!prices || prices.length === 0) return 0;
-  const k = 2 / (period + 1);
-
-  // Başlangıç için ilk N günün SMA'sı veya ilk fiyat
-  const initSlice = prices.slice(0, Math.min(period, prices.length));
-  let ema = initSlice.reduce((a, b) => a + b, 0) / initSlice.length;
-
-  for (let i = initSlice.length; i < prices.length; i++) {
-    ema = (prices[i] - ema) * k + ema;
-  }
-  return parseFloat(ema.toFixed(6));
+  return quantIndicators.calculateEMA(prices, period);
 }
 
 /**

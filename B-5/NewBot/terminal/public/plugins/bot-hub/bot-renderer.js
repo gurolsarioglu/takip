@@ -327,6 +327,27 @@ const BotRenderer = (() => {
     if (!signals || !signals.length) {
       return `<div style="text-align:center;color:#64748b;padding:24px;font-size:12px;">Sinyal taranıyor...</div>`;
     }
+    // External signals are text, never markup. Missing metrics remain visibly unknown.
+    const escapeText = value => String(value).replace(/[&<>"']/g, ch =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
+    const missing = { m1: '—', m5: '—', h1: '—', h4: '—', d1: '—' };
+    signals = signals.map(signal => {
+      const clean = {};
+      for (const [key, value] of Object.entries(signal)) {
+        clean[key] = typeof value === 'string' ? escapeText(value) : value;
+      }
+      for (const key of ['rsi', 'srsi']) {
+        if (signal[key] && typeof signal[key] === 'object') {
+          clean[key] = { ...missing };
+          for (const [tf, value] of Object.entries(signal[key])) clean[key][tf] = value == null ? '—' : escapeText(value);
+        } else if (botId !== 'm1a' || signal[key] == null) clean[key] = { ...missing };
+      }
+      for (const key of ['boostValue', 'fundingRate', 'previousFunding', 'difference',
+        'timeRemaining', 'traderPositioning', 'marketExposure', 'stochastic', 'volume']) {
+        if (clean[key] == null) clean[key] = '—';
+      }
+      return clean;
+    });
 
     // ─── 1. Hammer Pro Plus ──────────────────────────────────────────
     if (botId === 'hammerproplus') {
@@ -340,7 +361,8 @@ const BotRenderer = (() => {
           html += `<div class="signal-date-divider"><span>${lastDate}</span></div>`;
         }
         const dot = s.dot || '🟢';
-        const titleColor = '#38bdf8';
+        const titleColor = dot === '🔴' ? '#f87171' : '#38bdf8';
+        const frLine = s.fr || (s.fundingRate && s.fundingRate !== '—' ? s.fundingRate : null);
 
         html += `
           <div class="signal-card" data-symbol="${s.symbol}">
@@ -378,15 +400,35 @@ const BotRenderer = (() => {
                 <strong>1m.${s.srsi.m1}</strong> | <strong>5m.${s.srsi.m5}</strong> | <strong>1h.${s.srsi.h1}</strong>
               </span>
             </div>
-            ${s.wt ? `
+            ${s.wt && s.wt !== '—' ? `
             <div class="card-field-row">
               <span>WT:</span>
               <span class="card-field-val" style="font-weight: 600;">${s.wt}</span>
+            </div>` : ''}
+            ${s.divergence ? `
+            <div class="card-field-row">
+              <span>Divergence:</span>
+              <span class="card-field-val" style="color: #10b981; font-weight: 600;">${s.divergence}</span>
             </div>` : ''}
             ${s.pivot ? `
             <div class="card-field-row">
               <span>Pivot:</span>
               <span class="card-field-val" style="color: #f59e0b; font-weight: 600;">${s.pivot}</span>
+            </div>` : ''}
+            ${s.ema200 ? `
+            <div class="card-field-row">
+              <span>4H.E200:</span>
+              <span class="card-field-val" style="color: #f59e0b; font-weight: 600;">${s.ema200}</span>
+            </div>` : ''}
+            ${frLine ? `
+            <div class="card-field-row">
+              <span>FR:</span>
+              <span class="card-field-val" style="color: #f87171; font-weight: 600;">${frLine}</span>
+            </div>` : ''}
+            ${s.btcStatus ? `
+            <div class="card-field-row">
+              <span>BTC Status:</span>
+              <span class="card-field-val" style="color: #fbbf24; font-weight: 600;">${s.btcStatus}</span>
             </div>` : ''}
             <div class="card-footer">
               <span class="card-link-icon" title="1. Ekranda Aç">↗ Grafikte Göster</span>
@@ -814,16 +856,32 @@ const BotRenderer = (() => {
       return html;
     }
 
-    // ─── 9. Hammer Pro (#W1 Reversal) ───────────────────────────────
-    return signals.map(s => `
+    // ─── 9. Hammer Pro (#W1 / #S1 Reversal) ─────────────────────────
+    let html = '';
+    let lastDate = null;
+
+    signals.forEach(s => {
+      const dateTag = getSignalDateLabel(s);
+      if (dateTag && dateTag !== lastDate) {
+        lastDate = dateTag;
+        html += `<div class="signal-date-divider"><span>${lastDate}</span></div>`;
+      }
+      const dot = s.dot || '🟢';
+      const titleColor = dot === '🔴' ? '#f87171' : '#38bdf8';
+      const frLine = s.fr || (s.fundingRate && s.fundingRate !== '—' ? s.fundingRate : null);
+
+      html += `
       <div class="signal-card" data-symbol="${s.symbol}">
         <div class="card-top-row">
-          <span class="card-symbol">🟢 <span class="card-coin-tag" data-coin="${s.symbol}" title="Son 60 günlük sinyal geçmişini aç">#${s.symbol}</span></span>
+          <span class="card-symbol" style="color: ${titleColor}; font-weight:700;">
+            ${dot} <span class="card-coin-tag" data-coin="${s.symbol}" title="Son 60 günlük sinyal geçmişini aç">#${s.symbol}</span> ${s.stars ? `<span class="card-star" style="color:#fbbf24;margin-left:4px;">${s.stars}</span>` : ''}
+          </span>
         </div>
+        ${s.strategy ? `
         <div class="card-field-row">
           <span>Strategy:</span>
           <span style="color:#38bdf8;font-weight:700;">${s.strategy}</span>
-        </div>
+        </div>` : ''}
         <div class="card-field-row">
           <span>Boost Value:</span>
           <span class="card-boost-val">${s.boostValue}</span>
@@ -842,10 +900,16 @@ const BotRenderer = (() => {
         <div class="card-multi-indicator">
           SRSI: <strong>1m.${s.srsi.m1}</strong> | <strong>5m.${s.srsi.m5}</strong> | <strong>1h.${s.srsi.h1}</strong>
         </div>
+        ${s.wt ? `
         <div class="card-field-row" style="margin-top:3px;">
           <span>WT:</span>
-          <span style="font-weight:700;">${s.wt || '—'}</span>
-        </div>
+          <span style="font-weight:700;">${s.wt}</span>
+        </div>` : ''}
+        ${s.divergence ? `
+          <div class="card-alert-line" style="color: #10b981;">
+            <span>Divergence: ${s.divergence}</span>
+          </div>
+        ` : ''}
         ${s.pivot ? `
           <div class="card-alert-line">
             <span>Pivot: ${s.pivot}</span>
@@ -856,12 +920,24 @@ const BotRenderer = (() => {
             <span>4H.E200: ${s.ema200}</span>
           </div>
         ` : ''}
+        ${frLine ? `
+          <div class="card-alert-line" style="color: #f87171;">
+            <span>FR: ${frLine}</span>
+          </div>
+        ` : ''}
+        ${s.btcStatus ? `
+          <div class="card-alert-line" style="color: #fbbf24;">
+            <span>BTC Status: ${s.btcStatus}</span>
+          </div>
+        ` : ''}
         <div class="card-footer">
           <span class="card-link-icon" title="1. Ekranda Aç">↗ Grafikte Göster</span>
           <span class="card-time">${formatSignalDateTime(s)}</span>
         </div>
       </div>
-    `).join('');
+      `;
+    });
+    return html;
   }
 
   if (typeof document !== 'undefined') {

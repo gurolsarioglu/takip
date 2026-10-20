@@ -195,8 +195,9 @@ class SignalStoreService {
     const timeStr = signalData.time || dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
 
     // Fiyat hassasiyetini eksiksiz koru
-    const curPriceFormatted = formatCryptoPrice(signalData.currentPrice || signalData.price);
-    const prevPriceFormatted = formatCryptoPrice(signalData.prevPrice);
+    const current = signalData.currentPrice ?? signalData.price;
+    const curPriceFormatted = current == null ? null : formatCryptoPrice(current, symbol);
+    const prevPriceFormatted = signalData.prevPrice == null ? null : formatCryptoPrice(signalData.prevPrice, symbol);
 
     const record = {
       id: signalData.id || `${cleanBotId}_${timestamp}`,
@@ -231,6 +232,13 @@ class SignalStoreService {
       volume: signalData.volume || null
     };
 
+    for (const key of ['timeframe', 'candleOpenTime', 'candleCloseTime', 'isClosed', 'type',
+      'divergence', 'fr', 'isFavorite', 'previousFunding', 'nextFundingTime', 'alertText', 'traderDot',
+      'exposureDot', 'displaySymbol', 'observedAt', 'marketEventTime', 'source',
+      'strategyVersion', 'measuredChangePct', 'lifecycleId', 'lifecycleState']) {
+      if (signalData[key] !== undefined) record[key] = signalData[key];
+    }
+
     // Aynı id veya 2 saniye içinde aynı bot+symbol sinyalini mükerrer kaydetme
     const isDuplicate = this.signals.slice(0, 10).some(s => 
       s.id === record.id || 
@@ -250,7 +258,7 @@ class SignalStoreService {
       this.scheduleSave();
     }
 
-    return record;
+    return isDuplicate ? null : record;
   }
 
   /**

@@ -10,6 +10,9 @@
  */
 
 const {
+  createScanLoop,
+  isSignalAccepted,
+  strategyRules,
   getWatchlist,
   getKlines,
   postSignal,
@@ -47,7 +50,7 @@ async function scan() {
 
     try {
       // 1m periyodunda son 35 mumu çek
-      const klines1m = await getKlines(sym, '1m', 35);
+      const klines1m = await getKlines(sym, '1m', 250);
       if (!klines1m || klines1m.length < 20) {
         await sleep(40);
         continue;
@@ -66,7 +69,7 @@ async function scan() {
       const absChange = Math.abs(priceChangePct);
 
       // Eşik: 1m içinde en az |1.00%| hareket (veya mikro piyasada güçlü momentum >= 0.95%)
-      if (absChange < 0.95) {
+      if (!strategyRules.shouldEmit(BOT_ID, { changePct: priceChangePct })) {
         await sleep(40);
         continue;
       }
@@ -106,8 +109,6 @@ async function scan() {
       const currentPriceStr = formatCryptoPrice(curBar.close, sym);
       const prevPriceStr = formatCryptoPrice(prevBar.close, sym);
 
-      seenMap.set(sym, now);
-      totalSignalsFound++;
 
       const dateObj = new Date(now);
       const dateStr = dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -119,6 +120,9 @@ async function scan() {
 
       const signalPayload = {
         botId: BOT_ID,
+        source: 'binance-rest',
+        strategyVersion: 'local-hypothesis-v1',
+        observedAt: Date.now(),
         botType: BOT_ID,
         id: `m1a_${sym}_${now}`,
         symbol: sym,
@@ -134,13 +138,17 @@ async function scan() {
         volume: volumeFormatted,
         rsi: rsiFormatted,
         stochastic: stochasticFormatted,
-        btcStatus: 'Normal',
+        btcStatus: null,
         strategy: isDrop ? '1m Mikro Drop' : '1m Mikro Boost',
         dateLabel: dateStr,
         time: nowTime
       };
 
       const hubResult = await postSignal(signalPayload);
+      if (isSignalAccepted(hubResult)) {
+        seenMap.set(sym, now);
+        totalSignalsFound++;
+      }
       logger.signal(BOT_NAME, signalPayload, hubResult);
 
       // İstekler arası rate-limit nefes alma aralığı (Binance 429 koruması)
@@ -158,12 +166,9 @@ async function start() {
   logger.info(`${BOT_NAME} motoru başlatıldı. Rate-limit korumalı 1m döngüsü devrede.`);
 
   // İlk tarama
-  await scan();
-
-  // 1 dakikalık mumları yakalamak için periyodik akıllı tarama (10 saniye aralıkla)
-  setInterval(() => {
-    scan().catch(e => logger.warn(`Tarama hatası: ${e.message}`));
-  }, 10000);
+  const loop = createScanLoop(scan, 10000, { onError: e => logger.warn(`Tarama hatasi: ${e.message}`) });
+  await loop.run();
 }
 
-start();
+if (require.main === module) start();
+module.exports = { scan, start };

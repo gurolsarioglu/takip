@@ -8,6 +8,21 @@
 
 const symbolRegistry = require('./symbol-registry.service');
 
+// Expand the shortest round-trip representation without inventing a decimal scale.
+function plainNumber(number) {
+  const text = String(number);
+  if (!/[eE]/.test(text)) return text;
+  const [mantissa, exponent] = text.split(/[eE]/);
+  const negative = mantissa.startsWith('-');
+  const unsigned = negative ? mantissa.slice(1) : mantissa;
+  const [integer, fraction = ''] = unsigned.split('.');
+  const digits = integer + fraction;
+  const point = integer.length + Number(exponent);
+  const result = point <= 0 ? '0.' + '0'.repeat(-point) + digits : point >= digits.length
+    ? digits + '0'.repeat(point - digits.length) : digits.slice(0, point) + '.' + digits.slice(point);
+  return (negative ? '-' : '') + result;
+}
+
 /**
  * Verilen fiyat değerinin gerçek ondalık basamak sayısını tespit eder.
  */
@@ -62,10 +77,9 @@ function formatCryptoPrice(rawPrice, precisionOrSymbol = null) {
         return str;
       }
     }
-    const dec = getDecimalPlaces(rawPrice);
     const n = typeof rawPrice === 'number' ? rawPrice : parseFloat(rawPrice);
-    if (isNaN(n)) return '0.00';
-    return n.toFixed(dec);
+    if (!Number.isFinite(n)) return '0.00';
+    return plainNumber(n);
   }
 
   // 2. Eğer açıkça bir sayısal precision belirtilmişse
@@ -87,8 +101,7 @@ function formatCryptoPrice(rawPrice, precisionOrSymbol = null) {
   if (isNaN(num)) return '0.00';
   if (num === 0) return '0.00';
 
-  const dec = getDecimalPlaces(rawPrice);
-  return num.toFixed(dec);
+  return Number.isFinite(num) ? plainNumber(num) : '0.00';
 }
 
 /**
@@ -102,19 +115,13 @@ function formatPrice(rawPrice, symbol) {
  * Boost/Drop oranına göre önceki fiyatı (prevPrice) orijinal hassasiyeti koruyarak hesaplar.
  */
 function computePrevPrice(priceNum, changePct, originalPriceOrSymbol) {
-  if (!priceNum || isNaN(priceNum) || !changePct || isNaN(changePct)) {
-    return originalPriceOrSymbol ? String(originalPriceOrSymbol) : '0.00';
-  }
-
+  if (!Number.isFinite(priceNum) || priceNum <= 0 || !Number.isFinite(changePct) || changePct <= -100) return null;
+  if (changePct === 0) return formatCryptoPrice(priceNum, originalPriceOrSymbol);
   const computed = priceNum / (1 + changePct / 100);
-  let decimals = 2;
   if (typeof originalPriceOrSymbol === 'string' && isNaN(Number(originalPriceOrSymbol))) {
-    decimals = symbolRegistry.getPrecision(originalPriceOrSymbol);
-  } else {
-    decimals = getDecimalPlaces(originalPriceOrSymbol || priceNum);
+    return formatCryptoPrice(computed, originalPriceOrSymbol);
   }
-
-  return computed.toFixed(decimals);
+  return computed.toFixed(getDecimalPlaces(originalPriceOrSymbol || priceNum));
 }
 
 module.exports = {

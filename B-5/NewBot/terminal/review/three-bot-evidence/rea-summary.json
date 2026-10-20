@@ -1,0 +1,13 @@
+{
+  "evidenceId": "ev_911f0212a68650ab7058f323bee0299f621ca609b4d37d68c9800ebb2fce89dc",
+  "authority": "shipped-artifact",
+  "confidence": "derived",
+  "selectedSource": "0-qg45til74n9.js",
+  "bundleSha256": "29920c343683e713e7fd3a30e2cf402c21068a912432d50575567b513e1374a2",
+  "visitedAstNodes": 404087,
+  "findings": 58,
+  "parseFailures": 0,
+  "unselectedFiles": 38,
+  "limitations": ["Static inert analysis only, no target execution", "Graph coverage incomplete", "Chart templates do not establish bot server implementation"],
+  "fullLocalEvidence": "../visivero-indicator-rea-evidence-2026-10-20.json"
+}

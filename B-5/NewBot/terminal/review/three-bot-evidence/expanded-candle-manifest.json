@@ -1,0 +1,5002 @@
+[
+  {
+    "botId": "div",
+    "id": "cmvfbzf0ok2phlykh913fgiaj",
+    "symbol": "RAMUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:09:43.369Z",
+    "file": "RAMUSDT-1h-1792418983369.json",
+    "count": 750,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfbzqkfk2pklykhs3juk6hk",
+    "symbol": "RKLBUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:09:58.335Z",
+    "file": "RKLBUSDT-1h-1792418998335.json",
+    "count": 750,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfbzrblk2pllykhnomg6epn",
+    "symbol": "RLCUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:09:59.313Z",
+    "file": "RLCUSDT-1h-1792418999313.json",
+    "count": 750,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfc058jk2pvlykhgj8nqwl4",
+    "symbol": "SECZUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:10:17.348Z",
+    "file": "SECZUSDT-1h-1792419017348.json",
+    "count": 486,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfc0d9ak2pylykh50x3nrmo",
+    "symbol": "SKDDUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:10:27.742Z",
+    "file": "SKDDUSDT-1h-1792419027742.json",
+    "count": 750,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfc0eshk2pzlykh4o5zi6cp",
+    "symbol": "SKHYUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:10:29.727Z",
+    "file": "SKHYUSDT-1h-1792419029727.json",
+    "count": 750,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfc0fjik2q0lykh8f026ucw",
+    "symbol": "SKLUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:10:30.702Z",
+    "file": "SKLUSDT-1h-1792419030702.json",
+    "count": 750,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfc0h9dk2q1lykhttat999t",
+    "symbol": "SKUUUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:10:32.928Z",
+    "file": "SKUUUSDT-1h-1792419032928.json",
+    "count": 750,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfc1b50k2qelykhdsb4jv5r",
+    "symbol": "STRCUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:11:11.653Z",
+    "file": "STRCUSDT-1h-1792419071653.json",
+    "count": 750,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfc2bndk2rclykhtqecb4x7",
+    "symbol": "TSLLUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:11:58.970Z",
+    "file": "TSLLUSDT-1h-1792419118970.json",
+    "count": 750,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfc2hx5k2rmlykh26haop3g",
+    "symbol": "TWSTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:12:07.097Z",
+    "file": "TWSTUSDT-1h-1792419127097.json",
+    "count": 510,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfc2xokk2rplykhbj6rhh1i",
+    "symbol": "UVXYUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:12:27.524Z",
+    "file": "UVXYUSDT-1h-1792419147524.json",
+    "count": 750,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfdubnek56slykhvcx3r9zn",
+    "symbol": "ATOMUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:01:44.954Z",
+    "file": "ATOMUSDT-1h-1792422104954.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfdudwjk56xlykhaa4ux2m4",
+    "symbol": "AUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:01:47.875Z",
+    "file": "AUSDT-1h-1792422107875.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfdw529k59elykh2x8wasv9",
+    "symbol": "CBRSUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:03:09.729Z",
+    "file": "CBRSUSDT-1h-1792422189729.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfdwtbvk5arlykhktd4d1sn",
+    "symbol": "CRVUSDC",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:03:41.179Z",
+    "file": "CRVUSDC-1h-1792422221179.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfdwu2kk5aslykhsc48j49r",
+    "symbol": "CRVUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:03:42.140Z",
+    "file": "CRVUSDT-1h-1792422222140.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfdx7e6k5bmlykhk19fv9wb",
+    "symbol": "CYPHUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:03:59.407Z",
+    "file": "CYPHUSDT-1h-1792422239407.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfdy7vzk5dklykh1oy0bd27",
+    "symbol": "EVAAUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:04:46.703Z",
+    "file": "EVAAUSDT-1h-1792422286703.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfe4ld2k5vqlykhbk0wt93d",
+    "symbol": "QQQUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:09:44.102Z",
+    "file": "QQQUSDT-1h-1792422584102.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfe6er7k5w7lykhkd9m9dju",
+    "symbol": "SQQQUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:11:08.851Z",
+    "file": "SQQQUSDT-1h-1792422668851.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfe6u2kk5wglykhqs3xbt6l",
+    "symbol": "SYRUPUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:11:28.701Z",
+    "file": "SYRUPUSDT-1h-1792422688701.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfe76y9k5wrlykhkx054roc",
+    "symbol": "TMFUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:11:45.393Z",
+    "file": "TMFUSDT-1h-1792422705393.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfe7a3vk5wulykh3diz35jm",
+    "symbol": "TQQQUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:11:49.483Z",
+    "file": "TQQQUSDT-1h-1792422709483.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfe7hrzk5x5lykhmep2ryy9",
+    "symbol": "TSLAUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:11:59.423Z",
+    "file": "TSLAUSDT-1h-1792422719423.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfe7u9tk5xilykhthmmr25b",
+    "symbol": "UBUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:12:15.618Z",
+    "file": "UBUSDT-1h-1792422735618.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvffxs1sk7lvlykh5pkrt1xe",
+    "symbol": "1000PEPEUSDC",
+    "interval": "1h",
+    "eventTime": "2026-10-19T16:00:25.408Z",
+    "file": "1000PEPEUSDC-1h-1792425625408.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvffxss9k7lwlykhqwmhwf56",
+    "symbol": "1000PEPEUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T16:00:26.362Z",
+    "file": "1000PEPEUSDT-1h-1792425626362.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfg23v5k7wtlykhbu9rj2ce",
+    "symbol": "CSOPSKHYNIX2LUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T16:03:47.345Z",
+    "file": "CSOPSKHYNIX2LUSDT-1h-1792425827345.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfgaie8k870lykhnqc4r48x",
+    "symbol": "SAMSUNGUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T16:10:19.424Z",
+    "file": "SAMSUNGUSDT-1h-1792426219424.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfgatuok879lykhzfsi056g",
+    "symbol": "SKHYNIXUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T16:10:34.272Z",
+    "file": "SKHYNIXUSDT-1h-1792426234272.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfgbkqyk89slykhixbv66el",
+    "symbol": "SPYUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T16:11:09.131Z",
+    "file": "SPYUSDT-1h-1792426269131.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfgcrprk8dilykhgz11wnpb",
+    "symbol": "TSMUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T16:12:04.816Z",
+    "file": "TSMUSDT-1h-1792426324816.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfi5x7bk9vrlykhubbohsr7",
+    "symbol": "BSPUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T17:02:44.567Z",
+    "file": "BSPUSDT-1h-1792429364567.json",
+    "count": 750,
+    "latestClosedAt": 1792429199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfi9ertka0rlykhllxlhfxe",
+    "symbol": "GRVTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T17:05:27.305Z",
+    "file": "GRVTUSDT-1h-1792429527305.json",
+    "count": 750,
+    "latestClosedAt": 1792429199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfiaotbka1nlykhv47s53lc",
+    "symbol": "JPMUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T17:06:26.976Z",
+    "file": "JPMUSDT-1h-1792429586976.json",
+    "count": 750,
+    "latestClosedAt": 1792429199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfibpgika1ulykhnmokqe61",
+    "symbol": "MAGMAUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T17:07:14.466Z",
+    "file": "MAGMAUSDT-1h-1792429634466.json",
+    "count": 750,
+    "latestClosedAt": 1792429199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfigqc3ka40lykhlesn9usl",
+    "symbol": "SUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T17:11:08.883Z",
+    "file": "SUSDT-1h-1792429868883.json",
+    "count": 750,
+    "latestClosedAt": 1792429199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfkduh9kb82lykh4kfog18c",
+    "symbol": "FLEXUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T18:04:53.518Z",
+    "file": "FLEXUSDT-1h-1792433093518.json",
+    "count": 750,
+    "latestClosedAt": 1792432799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfke4dbkb8nlykhv04xo0gh",
+    "symbol": "GDXUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T18:05:06.336Z",
+    "file": "GDXUSDT-1h-1792433106336.json",
+    "count": 750,
+    "latestClosedAt": 1792432799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfkm5gakbcclykh8wacbc1p",
+    "symbol": "THEUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T18:11:20.987Z",
+    "file": "THEUSDT-1h-1792433480987.json",
+    "count": 750,
+    "latestClosedAt": 1792432799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfknlglkbd4lykhs89o40s4",
+    "symbol": "WLFIUSDC",
+    "interval": "1h",
+    "eventTime": "2026-10-19T18:12:28.389Z",
+    "file": "WLFIUSDC-1h-1792433548389.json",
+    "count": 750,
+    "latestClosedAt": 1792432799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfknm72kbd5lykh83x3ol4b",
+    "symbol": "WLFIUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T18:12:29.343Z",
+    "file": "WLFIUSDT-1h-1792433549343.json",
+    "count": 750,
+    "latestClosedAt": 1792432799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfkojq4kbe1lykh5vhbq92n",
+    "symbol": "ZMUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T18:13:12.796Z",
+    "file": "ZMUSDT-1h-1792433592796.json",
+    "count": 750,
+    "latestClosedAt": 1792432799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfme7qukcgdlykhvfp5jtrl",
+    "symbol": "ALLOUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T19:01:09.943Z",
+    "file": "ALLOUSDT-1h-1792436469943.json",
+    "count": 750,
+    "latestClosedAt": 1792436399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfmh355kcgvlykhzagbfy71",
+    "symbol": "COINUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T19:03:23.946Z",
+    "file": "COINUSDT-1h-1792436603946.json",
+    "count": 750,
+    "latestClosedAt": 1792436399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfmhkjzkcgylykhuebtn672",
+    "symbol": "CTRUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T19:03:46.512Z",
+    "file": "CTRUSDT-1h-1792436626512.json",
+    "count": 750,
+    "latestClosedAt": 1792436399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfmsfl6kcnmlykhje7stgg5",
+    "symbol": "USARUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T19:12:13.290Z",
+    "file": "USARUSDT-1h-1792437133290.json",
+    "count": 750,
+    "latestClosedAt": 1792436399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfmtd9jkcnnlykh7yetzeui",
+    "symbol": "XNYUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T19:12:56.936Z",
+    "file": "XNYUSDT-1h-1792437176936.json",
+    "count": 750,
+    "latestClosedAt": 1792436399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfojghbkdy0lykhl1hjbwqg",
+    "symbol": "AMZNUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T20:01:13.775Z",
+    "file": "AMZNUSDT-1h-1792440073775.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfol8ugkdzqlykhxx9nvhmw",
+    "symbol": "BOTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T20:02:37.193Z",
+    "file": "BOTUSDT-1h-1792440157193.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfooeg9ke2xlykha60s47an",
+    "symbol": "FRAXUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T20:05:04.426Z",
+    "file": "FRAXUSDT-1h-1792440304426.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfory15ke8llykhkk4y74sr",
+    "symbol": "MRNAUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T20:07:49.769Z",
+    "file": "MRNAUSDT-1h-1792440469769.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfowgxwkehdlykheqmfx5nt",
+    "symbol": "TBTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T20:11:20.900Z",
+    "file": "TBTUSDT-1h-1792440680900.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfowovqkehmlykhrbj7jh6e",
+    "symbol": "TMFUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T20:11:31.190Z",
+    "file": "TMFUSDT-1h-1792440691190.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfr0pcekfb8lykhu0a0i08y",
+    "symbol": "SONYUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T21:10:37.646Z",
+    "file": "SONYUSDT-1h-1792444237646.json",
+    "count": 750,
+    "latestClosedAt": 1792443599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfr2l99kfbqlykh3bwhrhmp",
+    "symbol": "USDBRLUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T21:12:05.661Z",
+    "file": "USDBRLUSDT-1h-1792444325661.json",
+    "count": 680,
+    "latestClosedAt": 1792443599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfst2smkg4ylykh38ywhfxq",
+    "symbol": "ACNUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T22:00:41.062Z",
+    "file": "ACNUSDT-1h-1792447241062.json",
+    "count": 494,
+    "latestClosedAt": 1792447199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfv5w9jkgvolykhin4t3ofv",
+    "symbol": "KITEUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T23:06:38.360Z",
+    "file": "KITEUSDT-1h-1792451198360.json",
+    "count": 750,
+    "latestClosedAt": 1792450799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfv762akgvplykhj9ps7lpn",
+    "symbol": "MINIMAXUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T23:07:37.714Z",
+    "file": "MINIMAXUSDT-1h-1792451257714.json",
+    "count": 750,
+    "latestClosedAt": 1792450799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfvbqankgwdlykhi5p9w63p",
+    "symbol": "SUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T23:11:10.559Z",
+    "file": "SUSDT-1h-1792451470559.json",
+    "count": 750,
+    "latestClosedAt": 1792450799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfx5cffkhrwlykh6fhlss41",
+    "symbol": "BEAMXUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T00:02:11.883Z",
+    "file": "BEAMXUSDT-1h-1792454531883.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfzebzdkjudlykharciojgo",
+    "symbol": "GEVUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T01:05:10.441Z",
+    "file": "GEVUSDT-1h-1792458310441.json",
+    "count": 750,
+    "latestClosedAt": 1792457999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfzhoszkjvglykhrirpzg60",
+    "symbol": "MPUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T01:07:47.028Z",
+    "file": "MPUSDT-1h-1792458467028.json",
+    "count": 497,
+    "latestClosedAt": 1792457999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvfzkugbkjynlykhkgm9sood",
+    "symbol": "SIRENUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T01:10:14.316Z",
+    "file": "SIRENUSDT-1h-1792458614316.json",
+    "count": 750,
+    "latestClosedAt": 1792457999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvg1jfx3klvilykh41itjpnf",
+    "symbol": "GIGADEVUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T02:05:08.056Z",
+    "file": "GIGADEVUSDT-1h-1792461908056.json",
+    "count": 750,
+    "latestClosedAt": 1792461599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvg1jrs5klvulykh00wbhxdl",
+    "symbol": "GRVTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T02:05:23.429Z",
+    "file": "GRVTUSDT-1h-1792461923429.json",
+    "count": 750,
+    "latestClosedAt": 1792461599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvg1mfqfklzflykhev1o84ft",
+    "symbol": "METISUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T02:07:27.783Z",
+    "file": "METISUSDT-1h-1792462047783.json",
+    "count": 750,
+    "latestClosedAt": 1792461599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvg1smy2km30lykhw6270cmi",
+    "symbol": "VVVUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T02:12:17.066Z",
+    "file": "VVVUSDT-1h-1792462337066.json",
+    "count": 750,
+    "latestClosedAt": 1792461599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvg1swrnkm33lykh7y5iqdrt",
+    "symbol": "WMTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T02:12:29.795Z",
+    "file": "WMTUSDT-1h-1792462349795.json",
+    "count": 750,
+    "latestClosedAt": 1792461599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvg3w1x9kn2xlykh28tl59uk",
+    "symbol": "STRCUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T03:10:55.677Z",
+    "file": "STRCUSDT-1h-1792465855677.json",
+    "count": 750,
+    "latestClosedAt": 1792465199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvg3wibnkn36lykhpq4ey2e3",
+    "symbol": "TEAMUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T03:11:16.932Z",
+    "file": "TEAMUSDT-1h-1792465876932.json",
+    "count": 750,
+    "latestClosedAt": 1792465199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvg5onw7kodzlykhymqwnu67",
+    "symbol": "ALTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T04:01:10.136Z",
+    "file": "ALTUSDT-1h-1792468870136.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvg5u6t9koh4lykhz18es55p",
+    "symbol": "GRVTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T04:05:27.934Z",
+    "file": "GRVTUSDT-1h-1792469127934.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvg5z5dtkoozlykhbe9huuwx",
+    "symbol": "POPMARTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T04:09:19.361Z",
+    "file": "POPMARTUSDT-1h-1792469359361.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvg61bfckorklykhjiir3pm7",
+    "symbol": "STABLEUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T04:11:00.504Z",
+    "file": "STABLEUSDT-1h-1792469460504.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvg7usrdkq7tlykh885eew8v",
+    "symbol": "AWEUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T05:01:55.610Z",
+    "file": "AWEUSDT-1h-1792472515610.json",
+    "count": 750,
+    "latestClosedAt": 1792472399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvga02ygksk7lykhupgvragl",
+    "symbol": "B2USDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T06:02:01.336Z",
+    "file": "B2USDT-1h-1792476121336.json",
+    "count": 750,
+    "latestClosedAt": 1792475999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvga1aboksmalykhihsguxtr",
+    "symbol": "BTWUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T06:02:57.540Z",
+    "file": "BTWUSDT-1h-1792476177540.json",
+    "count": 750,
+    "latestClosedAt": 1792475999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvga6w3fksr3lykhja4s88dl",
+    "symbol": "LUMIAUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T06:07:19.035Z",
+    "file": "LUMIAUSDT-1h-1792476439035.json",
+    "count": 750,
+    "latestClosedAt": 1792475999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgcar7vkupzlykhn9pn296k",
+    "symbol": "IOUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T07:06:18.572Z",
+    "file": "IOUSDT-1h-1792479978572.json",
+    "count": 750,
+    "latestClosedAt": 1792479599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgcgsmskusalykhnr9u5i2b",
+    "symbol": "STARUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T07:11:00.340Z",
+    "file": "STARUSDT-1h-1792480260340.json",
+    "count": 750,
+    "latestClosedAt": 1792479599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgci8cakut4lykhr58di9z3",
+    "symbol": "UNHUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T07:12:07.354Z",
+    "file": "UNHUSDT-1h-1792480327354.json",
+    "count": 503,
+    "latestClosedAt": 1792479599999
+  },
+  {
+    "botId": "div",
+    "id": "cmvge9y0pkw7elykhzfgvo792",
+    "symbol": "ASMLUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T08:01:39.961Z",
+    "file": "ASMLUSDT-1h-1792483299961.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgecbhikwchlykhq10b6r02",
+    "symbol": "COLLECTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T08:03:30.726Z",
+    "file": "COLLECTUSDT-1h-1792483410726.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgeg91pkwi6lykhsjg6kdwk",
+    "symbol": "HK0992USDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:06:34.190Z",
+    "file": "HK0992USDT-4h-1792483594190.json",
+    "count": 261,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "div",
+    "id": "cmvggfr9cky29lykh7zl4rwx4",
+    "symbol": "BATUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T09:02:10.369Z",
+    "file": "BATUSDT-1h-1792486930369.json",
+    "count": 750,
+    "latestClosedAt": 1792486799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvggjx0uky62lykh4t1p14ze",
+    "symbol": "GMXUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T09:05:24.463Z",
+    "file": "GMXUSDT-1h-1792487124463.json",
+    "count": 750,
+    "latestClosedAt": 1792486799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvggol3okyb4lykhxz2uui6i",
+    "symbol": "PAXGUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T09:09:02.293Z",
+    "file": "PAXGUSDT-1h-1792487342293.json",
+    "count": 750,
+    "latestClosedAt": 1792486799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvggsarukyerlykh699xrse4",
+    "symbol": "TRUSTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T09:11:55.530Z",
+    "file": "TRUSTUSDT-1h-1792487515530.json",
+    "count": 750,
+    "latestClosedAt": 1792486799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvggsdr1kyeylykhy2vjhbqw",
+    "symbol": "TSLLUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T09:11:59.389Z",
+    "file": "TSLLUSDT-1h-1792487519389.json",
+    "count": 750,
+    "latestClosedAt": 1792486799999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgilbsal0w2lykhj9zhyau1",
+    "symbol": "BMTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T10:02:29.482Z",
+    "file": "BMTUSDT-1h-1792490549482.json",
+    "count": 750,
+    "latestClosedAt": 1792490399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgiphb6l13llykhm3zao2za",
+    "symbol": "HK0992USDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T10:05:43.266Z",
+    "file": "HK0992USDT-1h-1792490743266.json",
+    "count": 750,
+    "latestClosedAt": 1792490399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgiqw1cl16llykhkb8q39y8",
+    "symbol": "LGELECTRONICSUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T10:06:49.007Z",
+    "file": "LGELECTRONICSUSDT-1h-1792490809007.json",
+    "count": 750,
+    "latestClosedAt": 1792490399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgiygjal1l1lykh726j40rm",
+    "symbol": "XAUUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T10:12:42.166Z",
+    "file": "XAUUSDT-1h-1792491162166.json",
+    "count": 750,
+    "latestClosedAt": 1792490399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgiys5sl1lclykhae9k16tx",
+    "symbol": "YBUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T10:12:57.232Z",
+    "file": "YBUSDT-1h-1792491177232.json",
+    "count": 750,
+    "latestClosedAt": 1792490399999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgkoaiyl3nplykhzr31w7ff",
+    "symbol": "ADBEUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T11:00:47.050Z",
+    "file": "ADBEUSDT-1h-1792494047050.json",
+    "count": 750,
+    "latestClosedAt": 1792493999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgkorcel3p4lykhf23kjgr1",
+    "symbol": "ALTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T11:01:08.847Z",
+    "file": "ALTUSDT-1h-1792494068847.json",
+    "count": 750,
+    "latestClosedAt": 1792493999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgkr7ycl3tblykhrbzzg79r",
+    "symbol": "CATUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T11:03:03.684Z",
+    "file": "CATUSDT-1h-1792494183684.json",
+    "count": 750,
+    "latestClosedAt": 1792493999999
+  },
+  {
+    "botId": "div",
+    "id": "cmvgkrfial3tdlykh5vo18sfq",
+    "symbol": "CHIPUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T11:03:13.474Z",
+    "file": "CHIPUSDT-1h-1792494193474.json",
+    "count": 750,
+    "latestClosedAt": 1792493999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfge5h2k8fglykhjapbm6uk",
+    "symbol": "TSLAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T16:13:09.303Z",
+    "file": "TSLAUSDT-4h-1792426389303.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfge69dk8fhlykhrufbxxx2",
+    "symbol": "TSLLUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T16:13:10.321Z",
+    "file": "TSLLUSDT-4h-1792426390321.json",
+    "count": 285,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfgek2rk8fklykhca8gisij",
+    "symbol": "UNITREEUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T16:13:28.227Z",
+    "file": "UNITREEUSDT-4h-1792426408227.json",
+    "count": 371,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfget2ok8ftlykhxlm3nzid",
+    "symbol": "UVXYUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T16:13:39.888Z",
+    "file": "UVXYUSDT-4h-1792426419888.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfgfafik8g8lykhgq0idczy",
+    "symbol": "WLFIUSDC",
+    "interval": "4h",
+    "eventTime": "2026-10-19T16:14:02.382Z",
+    "file": "WLFIUSDC-4h-1792426442382.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfgfb6lk8g9lykh1u9h7gfn",
+    "symbol": "WLFIUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T16:14:03.358Z",
+    "file": "WLFIUSDT-4h-1792426443358.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfgfya5k8gqlykhd5l5oan5",
+    "symbol": "XNYUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T16:14:33.293Z",
+    "file": "XNYUSDT-4h-1792426473293.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfoj4spkdxrlykh0869lav8",
+    "symbol": "AGTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:00:58.633Z",
+    "file": "AGTUSDT-4h-1792440058633.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfojlbnkdy3lykhwdqeq4ey",
+    "symbol": "AMZNUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:01:20.051Z",
+    "file": "AMZNUSDT-4h-1792440080051.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfojx3ukdy7lykh8oo8ej8m",
+    "symbol": "ARIAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:01:35.321Z",
+    "file": "ARIAUSDT-4h-1792440095321.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfoka37kdyilykh8s1rjmab",
+    "symbol": "AUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:01:52.147Z",
+    "file": "AUSDT-4h-1792440112147.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfokblfkdyjlykhhyi5pupx",
+    "symbol": "AVAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:01:54.100Z",
+    "file": "AVAUSDT-4h-1792440114100.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfokfpvkdyllykh7wb9xa7t",
+    "symbol": "AWEUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:01:59.444Z",
+    "file": "AWEUSDT-4h-1792440119444.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfokx8dkdzdlykhxzxn2x0i",
+    "symbol": "BEAMXUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:02:22.141Z",
+    "file": "BEAMXUSDT-4h-1792440142141.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfollehke06lykh5ecbqhcc",
+    "symbol": "BRUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:02:53.465Z",
+    "file": "BRUSDT-4h-1792440173465.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfolrohke0klykhtxi78lik",
+    "symbol": "BTWUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:03:01.602Z",
+    "file": "BTWUSDT-4h-1792440181602.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfompfpke0zlykhtpe4z2sw",
+    "symbol": "CRMLUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:03:45.349Z",
+    "file": "CRMLUSDT-4h-1792440225349.json",
+    "count": 124,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfomxxbke12lykh3ldh9gi0",
+    "symbol": "CTRUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:03:56.348Z",
+    "file": "CTRUSDT-4h-1792440236348.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfon8kbke1glykhmbacff13",
+    "symbol": "DATAIPUSDC",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:04:10.140Z",
+    "file": "DATAIPUSDC-4h-1792440250140.json",
+    "count": 653,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfon9o5ke1ilykhrjux56ex",
+    "symbol": "DATAIPUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:04:11.573Z",
+    "file": "DATAIPUSDT-4h-1792440251573.json",
+    "count": 653,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfonfcgke1plykhdgebinsu",
+    "symbol": "DJTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:04:18.929Z",
+    "file": "DJTUSDT-4h-1792440258929.json",
+    "count": 334,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfonux7ke22lykhmzjjvdfl",
+    "symbol": "ELSAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:04:39.116Z",
+    "file": "ELSAUSDT-4h-1792440279116.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfonxy2ke28lykh69obxk16",
+    "symbol": "ENSOUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:04:43.035Z",
+    "file": "ENSOUSDT-4h-1792440283035.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfooqnnke30lykhh2o9oa9i",
+    "symbol": "FRAXUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:05:20.244Z",
+    "file": "FRAXUSDT-4h-1792440320244.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfooqnqke31lykh83jdyjqm",
+    "symbol": "FRAXUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:05:20.247Z",
+    "file": "FRAXUSDT-4h-1792440320247.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfoqlb9ke7elykhsuhhwbzv",
+    "symbol": "JPMUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:06:46.630Z",
+    "file": "JPMUSDT-4h-1792440406630.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfosl1ske9flykh9m31f41q",
+    "symbol": "MUBARAKUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:08:19.601Z",
+    "file": "MUBARAKUSDT-4h-1792440499601.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfota2qkea7lykhrob4r6vz",
+    "symbol": "NXPCUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:08:52.035Z",
+    "file": "NXPCUSDT-4h-1792440532035.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfou2gwkebulykhwnkdt360",
+    "symbol": "PHAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:09:28.833Z",
+    "file": "PHAUSDT-4h-1792440568833.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfou37qkebylykh2pq48d2w",
+    "symbol": "PIEVERSEUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:09:29.798Z",
+    "file": "PIEVERSEUSDT-4h-1792440569798.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfourk0keejlykhrq2ps8fy",
+    "symbol": "QUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:10:01.345Z",
+    "file": "QUSDT-4h-1792440601345.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfow4lykegxlykh97y7vu4k",
+    "symbol": "SIRENUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:11:04.918Z",
+    "file": "SIRENUSDT-4h-1792440664918.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfow5e8keh0lykhg72640u1",
+    "symbol": "SKDDUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:11:05.936Z",
+    "file": "SKDDUSDT-4h-1792440665936.json",
+    "count": 334,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfox6iakei4lykhqx6pze8i",
+    "symbol": "STRCUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:11:54.035Z",
+    "file": "STRCUSDT-4h-1792440714035.json",
+    "count": 658,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfoxcx5keiflykhous1quwq",
+    "symbol": "SUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:12:02.345Z",
+    "file": "SUSDT-4h-1792440722345.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfoy6z4keiolykhdmty960o",
+    "symbol": "TSLAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:12:41.296Z",
+    "file": "TSLAUSDT-4h-1792440761296.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfoylg1keirlykh3bgyfqut",
+    "symbol": "UNITREEUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:13:00.050Z",
+    "file": "UNITREEUSDT-4h-1792440780050.json",
+    "count": 372,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfozn58kej4lykhh7u68icq",
+    "symbol": "XNYUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:13:48.909Z",
+    "file": "XNYUSDT-4h-1792440828909.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfp0ftokejelykh7m3p3m2m",
+    "symbol": "我踏马来了USDT",
+    "interval": "4h",
+    "eventTime": "2026-10-19T20:14:26.077Z",
+    "file": "我踏马来了USDT-4h-1792440866077.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfx42ockhm4lykh09k2yzf3",
+    "symbol": "AGTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:01:12.588Z",
+    "file": "AGTUSDT-4h-1792454472588.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfx4h3bkhmylykhcyeuqkrv",
+    "symbol": "ALTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:01:31.271Z",
+    "file": "ALTUSDT-4h-1792454491271.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfx4kapkhn6lykhggo3tzv4",
+    "symbol": "AMZNUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:01:35.425Z",
+    "file": "AMZNUSDT-4h-1792454495425.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfx4wltkho9lykhsqy8y4e9",
+    "symbol": "ARIAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:01:51.378Z",
+    "file": "ARIAUSDT-4h-1792454511378.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfx5nx4khselykhbzl4184k",
+    "symbol": "AVAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:02:26.776Z",
+    "file": "AVAUSDT-4h-1792454546776.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfx65t0kht5lykhfna00d9i",
+    "symbol": "BATUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:02:49.956Z",
+    "file": "BATUSDT-4h-1792454569956.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfx6aaakhthlykhk6s3snf6",
+    "symbol": "BEAMXUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:02:55.762Z",
+    "file": "BEAMXUSDT-4h-1792454575762.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfx6z6tkhv3lykh5w0lzk32",
+    "symbol": "BRUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:03:28.037Z",
+    "file": "BRUSDT-4h-1792454608037.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfx841qkhxplykh2wj0aqld",
+    "symbol": "CRMLUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:04:20.991Z",
+    "file": "CRMLUSDT-4h-1792454660991.json",
+    "count": 125,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfx8estkhxylykhynon4dkg",
+    "symbol": "CTRUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:04:34.925Z",
+    "file": "CTRUSDT-4h-1792454674925.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfx8ueckhz9lykh9ik2pvts",
+    "symbol": "DJTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:04:55.141Z",
+    "file": "DJTUSDT-4h-1792454695141.json",
+    "count": 335,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfx9by7ki0plykhrroouc2y",
+    "symbol": "ELSAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:05:17.887Z",
+    "file": "ELSAUSDT-4h-1792454717887.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfxfyl1ki77lykh4kchb38g",
+    "symbol": "PHAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:10:27.157Z",
+    "file": "PHAUSDT-4h-1792455027157.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfxh0u1ki97lykhrgmsce0k",
+    "symbol": "QUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:11:16.729Z",
+    "file": "QUSDT-4h-1792455076729.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfxie04kiaolykhmvzu45ae",
+    "symbol": "SIRENUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:12:20.452Z",
+    "file": "SIRENUSDT-4h-1792455140452.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfxjlcskibhlykhm3upq61e",
+    "symbol": "SUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:13:16.637Z",
+    "file": "SUSDT-4h-1792455196637.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfxlm8lkic3lykh3kc8a9dy",
+    "symbol": "WLFIUSDC",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:14:51.093Z",
+    "file": "WLFIUSDC-4h-1792455291093.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfxlmzkkic4lykh04dzvuad",
+    "symbol": "WLFIUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:14:52.065Z",
+    "file": "WLFIUSDT-4h-1792455292065.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvfxlxkekicblykhhj6e804j",
+    "symbol": "XNYUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T00:15:05.774Z",
+    "file": "XNYUSDT-4h-1792455305774.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg5od9kkodjlykhxwj9ytse",
+    "symbol": "AGTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:00:56.360Z",
+    "file": "AGTUSDT-4h-1792468856360.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg5osuwkoe4lykhtehd9iod",
+    "symbol": "ALTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:01:16.569Z",
+    "file": "ALTUSDT-4h-1792468876569.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg5ow9kkoe5lykhfeyrl36h",
+    "symbol": "AMZNUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:01:20.985Z",
+    "file": "AMZNUSDT-4h-1792468880985.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg5p869koedlykhkzwflb4n",
+    "symbol": "ARIAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:01:36.417Z",
+    "file": "ARIAUSDT-4h-1792468896417.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg5q48akoevlykh8n02gefv",
+    "symbol": "BATUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:02:17.956Z",
+    "file": "BATUSDT-4h-1792468937956.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg5q8kykoeylykhfkdw9q2z",
+    "symbol": "BEAMXUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:02:23.603Z",
+    "file": "BEAMXUSDT-4h-1792468943603.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg5r3qjkofslykh68h2fsvb",
+    "symbol": "BTWUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:03:03.979Z",
+    "file": "BTWUSDT-4h-1792468983979.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg5sbumkogalykho7rnagvu",
+    "symbol": "CTRUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:04:01.151Z",
+    "file": "CTRUSDT-4h-1792469041151.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg5sl7gkogjlykhgwcaet30",
+    "symbol": "DATAIPUSDC",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:04:13.276Z",
+    "file": "DATAIPUSDC-4h-1792469053276.json",
+    "count": 655,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg5sm4hkogklykh2v0950oz",
+    "symbol": "DATAIPUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:04:14.465Z",
+    "file": "DATAIPUSDT-4h-1792469054465.json",
+    "count": 655,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg5srrnkogrlykh7ljkyhda",
+    "symbol": "DJTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:04:21.779Z",
+    "file": "DJTUSDT-4h-1792469061779.json",
+    "count": 336,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg5uxfxkohvlykhmrw2juba",
+    "symbol": "GRVTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:06:02.446Z",
+    "file": "GRVTUSDT-4h-1792469162446.json",
+    "count": 485,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg5xpkskooplykhql0fhu9g",
+    "symbol": "METISUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:08:12.220Z",
+    "file": "METISUSDT-4h-1792469292220.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg601qokoq7lykh29zjhjw6",
+    "symbol": "PHAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:10:01.297Z",
+    "file": "PHAUSDT-4h-1792469401297.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg61sr3kos6lykh71b88cnk",
+    "symbol": "SIRENUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:11:22.960Z",
+    "file": "SIRENUSDT-4h-1792469482960.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg64k83kovqlykhaggsd243",
+    "symbol": "UNITREEUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:13:31.875Z",
+    "file": "UNITREEUSDT-4h-1792469611875.json",
+    "count": 374,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg64k87kovrlykhzsr7g7hv",
+    "symbol": "UNITREEUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:13:31.879Z",
+    "file": "UNITREEUSDT-4h-1792469611879.json",
+    "count": 374,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg64oqykovslykho91z1d4m",
+    "symbol": "USDEXUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:13:37.738Z",
+    "file": "USDEXUSDT-4h-1792469617738.json",
+    "count": 84,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg6597wkowalykha3e7vw6y",
+    "symbol": "WLDUSDC",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:14:04.268Z",
+    "file": "WLDUSDC-4h-1792469644268.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg659zgkowblykhn2v6gmpo",
+    "symbol": "WLDUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:14:05.260Z",
+    "file": "WLDUSDT-4h-1792469645260.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg65arwkowclykhcidf4s88",
+    "symbol": "WLFIUSDC",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:14:06.284Z",
+    "file": "WLFIUSDC-4h-1792469646284.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvg65boykowdlykhshf0pdxj",
+    "symbol": "WLFIUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T04:14:07.474Z",
+    "file": "WLFIUSDT-4h-1792469647474.json",
+    "count": 750,
+    "latestClosedAt": 1792468799999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvge9h0jkw6tlykhws4y41ft",
+    "symbol": "ALTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:01:17.923Z",
+    "file": "ALTUSDT-4h-1792483277923.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvge9wzvkw7dlykhgx3xcb0n",
+    "symbol": "ARIAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:01:38.635Z",
+    "file": "ARIAUSDT-4h-1792483298635.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeav14kw8ilykh4w0ank22",
+    "symbol": "BATUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:02:22.744Z",
+    "file": "BATUSDT-4h-1792483342744.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeb1rhkw8mlykh9091ehsc",
+    "symbol": "BERAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:02:31.469Z",
+    "file": "BERAUSDT-4h-1792483351469.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgebna5kw8wlykhg1kiqjs9",
+    "symbol": "BRUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:02:59.358Z",
+    "file": "BRUSDT-4h-1792483379358.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgebtz2kwc3lykh98a5fbnk",
+    "symbol": "BTWUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:03:08.030Z",
+    "file": "BTWUSDT-4h-1792483388030.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvged2xxkwdqlykh0yar44y4",
+    "symbol": "CTRUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:04:06.310Z",
+    "file": "CTRUSDT-4h-1792483446310.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeddqgkwdslykhrdshzdtk",
+    "symbol": "DATAIPUSDC",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:04:20.296Z",
+    "file": "DATAIPUSDC-4h-1792483460296.json",
+    "count": 656,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgedeh6kwdtlykhjzhef6qp",
+    "symbol": "DATAIPUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:04:21.259Z",
+    "file": "DATAIPUSDT-4h-1792483461259.json",
+    "count": 656,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgedk2okwe0lykhooibmpbe",
+    "symbol": "DJTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:04:28.511Z",
+    "file": "DJTUSDT-4h-1792483468511.json",
+    "count": 337,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgefthdkwh9lykhhioqfugt",
+    "symbol": "GRVTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:06:14.017Z",
+    "file": "GRVTUSDT-4h-1792483574017.json",
+    "count": 486,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeg92gkwi7lykh7xpap2bd",
+    "symbol": "HK0992USDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:06:34.216Z",
+    "file": "HK0992USDT-4h-1792483594216.json",
+    "count": 261,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeglbukwjslykh6u9ukn8n",
+    "symbol": "ICNTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:06:50.106Z",
+    "file": "ICNTUSDT-4h-1792483610106.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgehfg4kwlflykhb1hgb9l8",
+    "symbol": "JCTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:07:29.140Z",
+    "file": "JCTUSDT-4h-1792483649140.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgelsjokwnslykhaba6gfux",
+    "symbol": "PHAUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:10:52.738Z",
+    "file": "PHAUSDT-4h-1792483852738.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgem2pakwo1lykhv0e2hxcw",
+    "symbol": "POPMARTUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:11:05.902Z",
+    "file": "POPMARTUSDT-4h-1792483865902.json",
+    "count": 537,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgenfs2kwoxlykhghab8xwk",
+    "symbol": "SIRENUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:12:09.506Z",
+    "file": "SIRENUSDT-4h-1792483929506.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeq7a5kwr1lykh25u2g3l2",
+    "symbol": "UNITREEUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:14:18.462Z",
+    "file": "UNITREEUSDT-4h-1792484058462.json",
+    "count": 375,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeqwyzkwrhlykhhylbba65",
+    "symbol": "WLFIUSDC",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:14:51.756Z",
+    "file": "WLFIUSDC-4h-1792484091756.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "4sniper",
+    "id": "cmvgeqxqbkwrilykhyob71ydj",
+    "symbol": "WLFIUSDT",
+    "interval": "4h",
+    "eventTime": "2026-10-20T08:14:52.739Z",
+    "file": "WLFIUSDT-4h-1792484092739.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsnwyh2ivlykhhhb76con",
+    "symbol": "SKDDUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:29:01.714Z",
+    "file": "SKDDUSDT-1m-1792272541714.json",
+    "count": 750,
+    "latestClosedAt": 1792272539999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsnwyh2ivlykhhhb76con",
+    "symbol": "SKDDUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:29:01.714Z",
+    "file": "SKDDUSDT-5m-1792272541714.json",
+    "count": 750,
+    "latestClosedAt": 1792272299999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsnwyh2ivlykhhhb76con",
+    "symbol": "SKDDUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:29:01.714Z",
+    "file": "SKDDUSDT-1h-1792272541714.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsnxxh2ixlykh7qtto2dt",
+    "symbol": "CSOPSAMSUNG2LUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:29:01.750Z",
+    "file": "CSOPSAMSUNG2LUSDT-1m-1792272541750.json",
+    "count": 750,
+    "latestClosedAt": 1792272539999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsnxxh2ixlykh7qtto2dt",
+    "symbol": "CSOPSAMSUNG2LUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:29:01.750Z",
+    "file": "CSOPSAMSUNG2LUSDT-5m-1792272541750.json",
+    "count": 750,
+    "latestClosedAt": 1792272299999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsnxxh2ixlykh7qtto2dt",
+    "symbol": "CSOPSAMSUNG2LUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:29:01.750Z",
+    "file": "CSOPSAMSUNG2LUSDT-1h-1792272541750.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsnzqh2iylykh2ln4jdsx",
+    "symbol": "MVLLUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:29:01.811Z",
+    "file": "MVLLUSDT-1m-1792272541811.json",
+    "count": 750,
+    "latestClosedAt": 1792272539999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsnzqh2iylykh2ln4jdsx",
+    "symbol": "MVLLUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:29:01.811Z",
+    "file": "MVLLUSDT-5m-1792272541811.json",
+    "count": 750,
+    "latestClosedAt": 1792272299999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsnzqh2iylykh2ln4jdsx",
+    "symbol": "MVLLUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:29:01.811Z",
+    "file": "MVLLUSDT-1h-1792272541811.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwso6gh2j1lykhyg0bk600",
+    "symbol": "MUUUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:29:02.057Z",
+    "file": "MUUUSDT-1m-1792272542057.json",
+    "count": 750,
+    "latestClosedAt": 1792272539999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwso6gh2j1lykhyg0bk600",
+    "symbol": "MUUUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:29:02.057Z",
+    "file": "MUUUSDT-5m-1792272542057.json",
+    "count": 750,
+    "latestClosedAt": 1792272299999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwso6gh2j1lykhyg0bk600",
+    "symbol": "MUUUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:29:02.057Z",
+    "file": "MUUUSDT-1h-1792272542057.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsoe2h2j4lykhebyosuo4",
+    "symbol": "RAMUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:29:02.330Z",
+    "file": "RAMUSDT-1m-1792272542330.json",
+    "count": 750,
+    "latestClosedAt": 1792272539999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsoe2h2j4lykhebyosuo4",
+    "symbol": "RAMUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:29:02.330Z",
+    "file": "RAMUSDT-5m-1792272542330.json",
+    "count": 750,
+    "latestClosedAt": 1792272299999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsoe2h2j4lykhebyosuo4",
+    "symbol": "RAMUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:29:02.330Z",
+    "file": "RAMUSDT-1h-1792272542330.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsp9ch2jjlykhpw2ymnyf",
+    "symbol": "MUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:29:03.456Z",
+    "file": "MUSDT-1m-1792272543456.json",
+    "count": 750,
+    "latestClosedAt": 1792272539999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsp9ch2jjlykhpw2ymnyf",
+    "symbol": "MUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:29:03.456Z",
+    "file": "MUSDT-5m-1792272543456.json",
+    "count": 750,
+    "latestClosedAt": 1792272299999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwsp9ch2jjlykhpw2ymnyf",
+    "symbol": "MUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:29:03.456Z",
+    "file": "MUSDT-1h-1792272543456.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwtyhfh33slykhhg6wcjkc",
+    "symbol": "LITEUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:30:02.068Z",
+    "file": "LITEUSDT-1m-1792272602068.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwtyhfh33slykhhg6wcjkc",
+    "symbol": "LITEUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:30:02.068Z",
+    "file": "LITEUSDT-5m-1792272602068.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwtyhfh33slykhhg6wcjkc",
+    "symbol": "LITEUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:30:02.068Z",
+    "file": "LITEUSDT-1h-1792272602068.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwtyl0h341lykho8tibk2h",
+    "symbol": "SKHYNIXUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:30:02.196Z",
+    "file": "SKHYNIXUSDT-1m-1792272602196.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwtyl0h341lykho8tibk2h",
+    "symbol": "SKHYNIXUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:30:02.196Z",
+    "file": "SKHYNIXUSDT-5m-1792272602196.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwtyl0h341lykho8tibk2h",
+    "symbol": "SKHYNIXUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:30:02.196Z",
+    "file": "SKHYNIXUSDT-1h-1792272602196.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwtyxhh34ilykhc4zxcder",
+    "symbol": "AAOIUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:30:02.644Z",
+    "file": "AAOIUSDT-1m-1792272602644.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwtyxhh34ilykhc4zxcder",
+    "symbol": "AAOIUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:30:02.644Z",
+    "file": "AAOIUSDT-5m-1792272602644.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwtyxhh34ilykhc4zxcder",
+    "symbol": "AAOIUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:30:02.644Z",
+    "file": "AAOIUSDT-1h-1792272602644.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwu61ph38nlykhn2o4y1pn",
+    "symbol": "XTZUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:30:11.869Z",
+    "file": "XTZUSDT-1m-1792272611869.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwu61ph38nlykhn2o4y1pn",
+    "symbol": "XTZUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:30:11.869Z",
+    "file": "XTZUSDT-5m-1792272611869.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwu61ph38nlykhn2o4y1pn",
+    "symbol": "XTZUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:30:11.869Z",
+    "file": "XTZUSDT-1h-1792272611869.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwv8mth3mqlykhdldwbakj",
+    "symbol": "CRWVUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:31:01.877Z",
+    "file": "CRWVUSDT-1m-1792272661877.json",
+    "count": 750,
+    "latestClosedAt": 1792272659999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwv8mth3mqlykhdldwbakj",
+    "symbol": "CRWVUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:31:01.877Z",
+    "file": "CRWVUSDT-5m-1792272661877.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwv8mth3mqlykhdldwbakj",
+    "symbol": "CRWVUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:31:01.877Z",
+    "file": "CRWVUSDT-1h-1792272661877.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwv8teh3mylykhmy6zcc5z",
+    "symbol": "STXXUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:31:02.114Z",
+    "file": "STXXUSDT-1m-1792272662114.json",
+    "count": 750,
+    "latestClosedAt": 1792272659999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwv8teh3mylykhmy6zcc5z",
+    "symbol": "STXXUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:31:02.114Z",
+    "file": "STXXUSDT-5m-1792272662114.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwv8teh3mylykhmy6zcc5z",
+    "symbol": "STXXUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:31:02.114Z",
+    "file": "STXXUSDT-1h-1792272662114.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwv8v3h3n0lykhxan23xie",
+    "symbol": "NBISUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:31:02.175Z",
+    "file": "NBISUSDT-1m-1792272662175.json",
+    "count": 750,
+    "latestClosedAt": 1792272659999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwv8v3h3n0lykhxan23xie",
+    "symbol": "NBISUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:31:02.175Z",
+    "file": "NBISUSDT-5m-1792272662175.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwv8v3h3n0lykhxan23xie",
+    "symbol": "NBISUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:31:02.175Z",
+    "file": "NBISUSDT-1h-1792272662175.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwvag0h3nmlykhyoup3frf",
+    "symbol": "MINIMAXUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:31:04.225Z",
+    "file": "MINIMAXUSDT-1m-1792272664225.json",
+    "count": 750,
+    "latestClosedAt": 1792272659999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwvag0h3nmlykhyoup3frf",
+    "symbol": "MINIMAXUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:31:04.225Z",
+    "file": "MINIMAXUSDT-5m-1792272664225.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwvag0h3nmlykhyoup3frf",
+    "symbol": "MINIMAXUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:31:04.225Z",
+    "file": "MINIMAXUSDT-1h-1792272664225.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwvahzh3nplykhlnbnatib",
+    "symbol": "ZHONGJIUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:31:04.295Z",
+    "file": "ZHONGJIUSDT-1m-1792272664295.json",
+    "count": 750,
+    "latestClosedAt": 1792272659999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwvahzh3nplykhlnbnatib",
+    "symbol": "ZHONGJIUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:31:04.295Z",
+    "file": "ZHONGJIUSDT-5m-1792272664295.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwvahzh3nplykhlnbnatib",
+    "symbol": "ZHONGJIUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:31:04.295Z",
+    "file": "ZHONGJIUSDT-1h-1792272664295.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwvz2fh3oxlykh447jrec8",
+    "symbol": "LABUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:31:36.135Z",
+    "file": "LABUSDT-1m-1792272696135.json",
+    "count": 750,
+    "latestClosedAt": 1792272659999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwvz2fh3oxlykh447jrec8",
+    "symbol": "LABUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:31:36.135Z",
+    "file": "LABUSDT-5m-1792272696135.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwvz2fh3oxlykh447jrec8",
+    "symbol": "LABUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:31:36.135Z",
+    "file": "LABUSDT-1h-1792272696135.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwwj0ah3tdlykhuihnau68",
+    "symbol": "IRENUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:32:01.979Z",
+    "file": "IRENUSDT-1m-1792272721979.json",
+    "count": 750,
+    "latestClosedAt": 1792272719999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwwj0ah3tdlykhuihnau68",
+    "symbol": "IRENUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:32:01.979Z",
+    "file": "IRENUSDT-5m-1792272721979.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwwj0ah3tdlykhuihnau68",
+    "symbol": "IRENUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:32:01.979Z",
+    "file": "IRENUSDT-1h-1792272721979.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwwjjlh3tqlykhadjhwnc5",
+    "symbol": "ARMUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:32:02.674Z",
+    "file": "ARMUSDT-1m-1792272722674.json",
+    "count": 750,
+    "latestClosedAt": 1792272719999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwwjjlh3tqlykhadjhwnc5",
+    "symbol": "ARMUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:32:02.674Z",
+    "file": "ARMUSDT-5m-1792272722674.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwwjjlh3tqlykhadjhwnc5",
+    "symbol": "ARMUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:32:02.674Z",
+    "file": "ARMUSDT-1h-1792272722674.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwxtg2h4bllykh7jahpwuc",
+    "symbol": "LABUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:33:02.162Z",
+    "file": "LABUSDT-1m-1792272782162.json",
+    "count": 750,
+    "latestClosedAt": 1792272779999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwxtg2h4bllykh7jahpwuc",
+    "symbol": "LABUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:33:02.162Z",
+    "file": "LABUSDT-5m-1792272782162.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwxtg2h4bllykh7jahpwuc",
+    "symbol": "LABUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:33:02.162Z",
+    "file": "LABUSDT-1h-1792272782162.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwxtg8h4bnlykhkxt2aemr",
+    "symbol": "XTZUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:33:02.168Z",
+    "file": "XTZUSDT-1m-1792272782168.json",
+    "count": 750,
+    "latestClosedAt": 1792272779999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwxtg8h4bnlykhkxt2aemr",
+    "symbol": "XTZUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:33:02.168Z",
+    "file": "XTZUSDT-5m-1792272782168.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwxtg8h4bnlykhkxt2aemr",
+    "symbol": "XTZUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:33:02.168Z",
+    "file": "XTZUSDT-1h-1792272782168.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwyh54h4dslykh22cwv5h5",
+    "symbol": "USUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:33:32.873Z",
+    "file": "USUSDT-1m-1792272812873.json",
+    "count": 750,
+    "latestClosedAt": 1792272779999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwyh54h4dslykh22cwv5h5",
+    "symbol": "USUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:33:32.873Z",
+    "file": "USUSDT-5m-1792272812873.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwyh54h4dslykh22cwv5h5",
+    "symbol": "USUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:33:32.873Z",
+    "file": "USUSDT-1h-1792272812873.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwz3weh4l3lykh90whr5f8",
+    "symbol": "WOOUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:34:02.366Z",
+    "file": "WOOUSDT-1m-1792272842366.json",
+    "count": 750,
+    "latestClosedAt": 1792272839999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwz3weh4l3lykh90whr5f8",
+    "symbol": "WOOUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:34:02.366Z",
+    "file": "WOOUSDT-5m-1792272842366.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwz3weh4l3lykh90whr5f8",
+    "symbol": "WOOUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:34:02.366Z",
+    "file": "WOOUSDT-1h-1792272842366.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwziu7h4mclykhcumjnykb",
+    "symbol": "SKUUUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:34:21.727Z",
+    "file": "SKUUUSDT-1m-1792272861727.json",
+    "count": 750,
+    "latestClosedAt": 1792272839999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwziu7h4mclykhcumjnykb",
+    "symbol": "SKUUUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:34:21.727Z",
+    "file": "SKUUUSDT-5m-1792272861727.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcwziu7h4mclykhcumjnykb",
+    "symbol": "SKUUUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:34:21.727Z",
+    "file": "SKUUUSDT-1h-1792272861727.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx00cph4pllykhnyfgeuqz",
+    "symbol": "EULUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:34:44.425Z",
+    "file": "EULUSDT-1m-1792272884425.json",
+    "count": 750,
+    "latestClosedAt": 1792272839999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx00cph4pllykhnyfgeuqz",
+    "symbol": "EULUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:34:44.425Z",
+    "file": "EULUSDT-5m-1792272884425.json",
+    "count": 750,
+    "latestClosedAt": 1792272599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx00cph4pllykhnyfgeuqz",
+    "symbol": "EULUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:34:44.425Z",
+    "file": "EULUSDT-1h-1792272884425.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx0dr1h4wwlykhfj47pvn7",
+    "symbol": "USUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:35:01.790Z",
+    "file": "USUSDT-1m-1792272901790.json",
+    "count": 750,
+    "latestClosedAt": 1792272899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx0dr1h4wwlykhfj47pvn7",
+    "symbol": "USUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:35:01.790Z",
+    "file": "USUSDT-5m-1792272901790.json",
+    "count": 750,
+    "latestClosedAt": 1792272899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx0dr1h4wwlykhfj47pvn7",
+    "symbol": "USUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:35:01.790Z",
+    "file": "USUSDT-1h-1792272901790.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx0ulzh509lykhc6a39ej0",
+    "symbol": "SOLVUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:35:23.639Z",
+    "file": "SOLVUSDT-1m-1792272923639.json",
+    "count": 750,
+    "latestClosedAt": 1792272899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx0ulzh509lykhc6a39ej0",
+    "symbol": "SOLVUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:35:23.639Z",
+    "file": "SOLVUSDT-5m-1792272923639.json",
+    "count": 750,
+    "latestClosedAt": 1792272899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx0ulzh509lykhc6a39ej0",
+    "symbol": "SOLVUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:35:23.639Z",
+    "file": "SOLVUSDT-1h-1792272923639.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx1o8oh553lykh5b818u60",
+    "symbol": "BMNRUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:36:02.041Z",
+    "file": "BMNRUSDT-1m-1792272962041.json",
+    "count": 750,
+    "latestClosedAt": 1792272959999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx1o8oh553lykh5b818u60",
+    "symbol": "BMNRUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:36:02.041Z",
+    "file": "BMNRUSDT-5m-1792272962041.json",
+    "count": 750,
+    "latestClosedAt": 1792272899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx1o8oh553lykh5b818u60",
+    "symbol": "BMNRUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:36:02.041Z",
+    "file": "BMNRUSDT-1h-1792272962041.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx20hmh56flykhwcqqjg44",
+    "symbol": "EULUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:36:17.915Z",
+    "file": "EULUSDT-1m-1792272977915.json",
+    "count": 750,
+    "latestClosedAt": 1792272959999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx20hmh56flykhwcqqjg44",
+    "symbol": "EULUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:36:17.915Z",
+    "file": "EULUSDT-5m-1792272977915.json",
+    "count": 750,
+    "latestClosedAt": 1792272899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx20hmh56flykhwcqqjg44",
+    "symbol": "EULUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:36:17.915Z",
+    "file": "EULUSDT-1h-1792272977915.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx5o0qh7vplykhs1tuc7qo",
+    "symbol": "GRIFFAINUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:39:08.378Z",
+    "file": "GRIFFAINUSDT-1m-1792273148378.json",
+    "count": 750,
+    "latestClosedAt": 1792273139999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx5o0qh7vplykhs1tuc7qo",
+    "symbol": "GRIFFAINUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:39:08.378Z",
+    "file": "GRIFFAINUSDT-5m-1792273148378.json",
+    "count": 750,
+    "latestClosedAt": 1792272899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx5o0qh7vplykhs1tuc7qo",
+    "symbol": "GRIFFAINUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:39:08.378Z",
+    "file": "GRIFFAINUSDT-1h-1792273148378.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx83i6h8oklykhlzn3dzxo",
+    "symbol": "SOPHUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:41:01.758Z",
+    "file": "SOPHUSDT-1m-1792273261758.json",
+    "count": 750,
+    "latestClosedAt": 1792273259999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx83i6h8oklykhlzn3dzxo",
+    "symbol": "SOPHUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:41:01.758Z",
+    "file": "SOPHUSDT-5m-1792273261758.json",
+    "count": 750,
+    "latestClosedAt": 1792273199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx83i6h8oklykhlzn3dzxo",
+    "symbol": "SOPHUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:41:01.758Z",
+    "file": "SOPHUSDT-1h-1792273261758.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx83tjh8p8lykh8f1lx6sg",
+    "symbol": "GUNUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:41:02.167Z",
+    "file": "GUNUSDT-1m-1792273262167.json",
+    "count": 750,
+    "latestClosedAt": 1792273259999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx83tjh8p8lykh8f1lx6sg",
+    "symbol": "GUNUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:41:02.167Z",
+    "file": "GUNUSDT-5m-1792273262167.json",
+    "count": 750,
+    "latestClosedAt": 1792273199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx83tjh8p8lykh8f1lx6sg",
+    "symbol": "GUNUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:41:02.167Z",
+    "file": "GUNUSDT-1h-1792273262167.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx83tzh8pblykhibsthd4z",
+    "symbol": "COLLECTUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:41:02.184Z",
+    "file": "COLLECTUSDT-1m-1792273262184.json",
+    "count": 750,
+    "latestClosedAt": 1792273259999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx83tzh8pblykhibsthd4z",
+    "symbol": "COLLECTUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:41:02.184Z",
+    "file": "COLLECTUSDT-5m-1792273262184.json",
+    "count": 750,
+    "latestClosedAt": 1792273199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx83tzh8pblykhibsthd4z",
+    "symbol": "COLLECTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:41:02.184Z",
+    "file": "COLLECTUSDT-1h-1792273262184.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx83zph8pxlykh3icenltk",
+    "symbol": "龙虾USDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:41:02.387Z",
+    "file": "龙虾USDT-1m-1792273262387.json",
+    "count": 750,
+    "latestClosedAt": 1792273259999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx83zph8pxlykh3icenltk",
+    "symbol": "龙虾USDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:41:02.387Z",
+    "file": "龙虾USDT-5m-1792273262387.json",
+    "count": 750,
+    "latestClosedAt": 1792273199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx83zph8pxlykh3icenltk",
+    "symbol": "龙虾USDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:41:02.387Z",
+    "file": "龙虾USDT-1h-1792273262387.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx9e22h92mlykh3lvdk039",
+    "symbol": "GRIFFAINUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:42:02.091Z",
+    "file": "GRIFFAINUSDT-1m-1792273322091.json",
+    "count": 750,
+    "latestClosedAt": 1792273319999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx9e22h92mlykh3lvdk039",
+    "symbol": "GRIFFAINUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:42:02.091Z",
+    "file": "GRIFFAINUSDT-5m-1792273322091.json",
+    "count": 750,
+    "latestClosedAt": 1792273199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx9e22h92mlykh3lvdk039",
+    "symbol": "GRIFFAINUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:42:02.091Z",
+    "file": "GRIFFAINUSDT-1h-1792273322091.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx9e2vh92qlykhlei9zfts",
+    "symbol": "TACUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:42:02.119Z",
+    "file": "TACUSDT-1m-1792273322119.json",
+    "count": 750,
+    "latestClosedAt": 1792273319999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx9e2vh92qlykhlei9zfts",
+    "symbol": "TACUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:42:02.119Z",
+    "file": "TACUSDT-5m-1792273322119.json",
+    "count": 750,
+    "latestClosedAt": 1792273199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx9e2vh92qlykhlei9zfts",
+    "symbol": "TACUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:42:02.119Z",
+    "file": "TACUSDT-1h-1792273322119.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx9e3qh92rlykh9hzoqgr1",
+    "symbol": "CFGUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:42:02.151Z",
+    "file": "CFGUSDT-1m-1792273322151.json",
+    "count": 750,
+    "latestClosedAt": 1792273319999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx9e3qh92rlykh9hzoqgr1",
+    "symbol": "CFGUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:42:02.151Z",
+    "file": "CFGUSDT-5m-1792273322151.json",
+    "count": 750,
+    "latestClosedAt": 1792273199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx9e3qh92rlykh9hzoqgr1",
+    "symbol": "CFGUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:42:02.151Z",
+    "file": "CFGUSDT-1h-1792273322151.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx9fxqh93blykhkb3y25nu",
+    "symbol": "2ZUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-17T21:42:04.527Z",
+    "file": "2ZUSDT-1m-1792273324527.json",
+    "count": 750,
+    "latestClosedAt": 1792273319999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx9fxqh93blykhkb3y25nu",
+    "symbol": "2ZUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-17T21:42:04.527Z",
+    "file": "2ZUSDT-5m-1792273324527.json",
+    "count": 750,
+    "latestClosedAt": 1792273199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvcx9fxqh93blykhkb3y25nu",
+    "symbol": "2ZUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-17T21:42:04.527Z",
+    "file": "2ZUSDT-1h-1792273324527.json",
+    "count": 750,
+    "latestClosedAt": 1792270799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvd5wmm6hfevlykhnzikvy4x",
+    "symbol": "BATUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T01:44:03.198Z",
+    "file": "BATUSDT-1m-1792287843198.json",
+    "count": 750,
+    "latestClosedAt": 1792287839999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvd5wmm6hfevlykhnzikvy4x",
+    "symbol": "BATUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T01:44:03.198Z",
+    "file": "BATUSDT-5m-1792287843198.json",
+    "count": 750,
+    "latestClosedAt": 1792287599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvd5wmm6hfevlykhnzikvy4x",
+    "symbol": "BATUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T01:44:03.198Z",
+    "file": "BATUSDT-1h-1792287843198.json",
+    "count": 750,
+    "latestClosedAt": 1792285199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvd9hj16hk9elykh85h1f9dp",
+    "symbol": "QUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T03:24:17.179Z",
+    "file": "QUSDT-1m-1792293857179.json",
+    "count": 750,
+    "latestClosedAt": 1792293839999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvd9hj16hk9elykh85h1f9dp",
+    "symbol": "QUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T03:24:17.179Z",
+    "file": "QUSDT-5m-1792293857179.json",
+    "count": 750,
+    "latestClosedAt": 1792293599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvd9hj16hk9elykh85h1f9dp",
+    "symbol": "QUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T03:24:17.179Z",
+    "file": "QUSDT-1h-1792293857179.json",
+    "count": 750,
+    "latestClosedAt": 1792292399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdbnngchmn3lykhut4xt7mo",
+    "symbol": "POPMARTUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T04:25:02.076Z",
+    "file": "POPMARTUSDT-1m-1792297502076.json",
+    "count": 750,
+    "latestClosedAt": 1792297499999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdbnngchmn3lykhut4xt7mo",
+    "symbol": "POPMARTUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T04:25:02.076Z",
+    "file": "POPMARTUSDT-5m-1792297502076.json",
+    "count": 750,
+    "latestClosedAt": 1792297499999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdbnngchmn3lykhut4xt7mo",
+    "symbol": "POPMARTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T04:25:02.076Z",
+    "file": "POPMARTUSDT-1h-1792297502076.json",
+    "count": 750,
+    "latestClosedAt": 1792295999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvddddp4ho4dlykhjvx0vj2d",
+    "symbol": "QUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T05:13:02.104Z",
+    "file": "QUSDT-1m-1792300382104.json",
+    "count": 750,
+    "latestClosedAt": 1792300379999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvddddp4ho4dlykhjvx0vj2d",
+    "symbol": "QUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T05:13:02.104Z",
+    "file": "QUSDT-5m-1792300382104.json",
+    "count": 750,
+    "latestClosedAt": 1792300199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvddddp4ho4dlykhjvx0vj2d",
+    "symbol": "QUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T05:13:02.104Z",
+    "file": "QUSDT-1h-1792300382104.json",
+    "count": 750,
+    "latestClosedAt": 1792299599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvddila2hoallykhjgdueb67",
+    "symbol": "QUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T05:17:05.210Z",
+    "file": "QUSDT-1m-1792300625210.json",
+    "count": 750,
+    "latestClosedAt": 1792300619999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvddila2hoallykhjgdueb67",
+    "symbol": "QUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T05:17:05.210Z",
+    "file": "QUSDT-5m-1792300625210.json",
+    "count": 750,
+    "latestClosedAt": 1792300499999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvddila2hoallykhjgdueb67",
+    "symbol": "QUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T05:17:05.210Z",
+    "file": "QUSDT-1h-1792300625210.json",
+    "count": 750,
+    "latestClosedAt": 1792299599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdhpq7yhru8lykhkp5n97dn",
+    "symbol": "DOSUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T07:14:36.669Z",
+    "file": "DOSUSDT-1m-1792307676669.json",
+    "count": 750,
+    "latestClosedAt": 1792307639999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdhpq7yhru8lykhkp5n97dn",
+    "symbol": "DOSUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T07:14:36.669Z",
+    "file": "DOSUSDT-5m-1792307676669.json",
+    "count": 750,
+    "latestClosedAt": 1792307399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdhpq7yhru8lykhkp5n97dn",
+    "symbol": "DOSUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T07:14:36.669Z",
+    "file": "DOSUSDT-1h-1792307676669.json",
+    "count": 750,
+    "latestClosedAt": 1792306799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdi4f69hsfdlykhnfnt4bqd",
+    "symbol": "BLUAIUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T07:26:02.193Z",
+    "file": "BLUAIUSDT-1m-1792308362193.json",
+    "count": 750,
+    "latestClosedAt": 1792308359999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdi4f69hsfdlykhnfnt4bqd",
+    "symbol": "BLUAIUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T07:26:02.193Z",
+    "file": "BLUAIUSDT-5m-1792308362193.json",
+    "count": 750,
+    "latestClosedAt": 1792308299999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdi4f69hsfdlykhnfnt4bqd",
+    "symbol": "BLUAIUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T07:26:02.193Z",
+    "file": "BLUAIUSDT-1h-1792308362193.json",
+    "count": 750,
+    "latestClosedAt": 1792306799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdlg1rnhuaclykh7x9cfps8",
+    "symbol": "PROMUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T08:59:03.540Z",
+    "file": "PROMUSDT-1m-1792313943540.json",
+    "count": 750,
+    "latestClosedAt": 1792313939999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdlg1rnhuaclykh7x9cfps8",
+    "symbol": "PROMUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T08:59:03.540Z",
+    "file": "PROMUSDT-5m-1792313943540.json",
+    "count": 750,
+    "latestClosedAt": 1792313699999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdlg1rnhuaclykh7x9cfps8",
+    "symbol": "PROMUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T08:59:03.540Z",
+    "file": "PROMUSDT-1h-1792313943540.json",
+    "count": 750,
+    "latestClosedAt": 1792310399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdm70tshv6llykh9dap8kts",
+    "symbol": "ARCUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T09:20:02.033Z",
+    "file": "ARCUSDT-1m-1792315202033.json",
+    "count": 750,
+    "latestClosedAt": 1792315199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdm70tshv6llykh9dap8kts",
+    "symbol": "ARCUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T09:20:02.033Z",
+    "file": "ARCUSDT-5m-1792315202033.json",
+    "count": 750,
+    "latestClosedAt": 1792315199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdm70tshv6llykh9dap8kts",
+    "symbol": "ARCUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T09:20:02.033Z",
+    "file": "ARCUSDT-1h-1792315202033.json",
+    "count": 750,
+    "latestClosedAt": 1792313999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdn4gqchw9llykh5a1ttz53",
+    "symbol": "APRUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T09:46:02.292Z",
+    "file": "APRUSDT-1m-1792316762292.json",
+    "count": 750,
+    "latestClosedAt": 1792316759999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdn4gqchw9llykh5a1ttz53",
+    "symbol": "APRUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T09:46:02.292Z",
+    "file": "APRUSDT-5m-1792316762292.json",
+    "count": 750,
+    "latestClosedAt": 1792316699999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdn4gqchw9llykh5a1ttz53",
+    "symbol": "APRUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T09:46:02.292Z",
+    "file": "APRUSDT-1h-1792316762292.json",
+    "count": 750,
+    "latestClosedAt": 1792313999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdndjqdhwm6lykhrur3ui1k",
+    "symbol": "APRUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T09:53:06.085Z",
+    "file": "APRUSDT-1m-1792317186085.json",
+    "count": 750,
+    "latestClosedAt": 1792317179999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdndjqdhwm6lykhrur3ui1k",
+    "symbol": "APRUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T09:53:06.085Z",
+    "file": "APRUSDT-5m-1792317186085.json",
+    "count": 750,
+    "latestClosedAt": 1792316999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdndjqdhwm6lykhrur3ui1k",
+    "symbol": "APRUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T09:53:06.085Z",
+    "file": "APRUSDT-1h-1792317186085.json",
+    "count": 750,
+    "latestClosedAt": 1792313999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdnl6iuhwyilykhd7wgd0fh",
+    "symbol": "AXLUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T09:59:02.214Z",
+    "file": "AXLUSDT-1m-1792317542214.json",
+    "count": 750,
+    "latestClosedAt": 1792317539999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdnl6iuhwyilykhd7wgd0fh",
+    "symbol": "AXLUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T09:59:02.214Z",
+    "file": "AXLUSDT-5m-1792317542214.json",
+    "count": 750,
+    "latestClosedAt": 1792317299999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdnl6iuhwyilykhd7wgd0fh",
+    "symbol": "AXLUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T09:59:02.214Z",
+    "file": "AXLUSDT-1h-1792317542214.json",
+    "count": 750,
+    "latestClosedAt": 1792313999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdojxschxuclykhftsya0uq",
+    "symbol": "ICNTUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T10:26:03.853Z",
+    "file": "ICNTUSDT-1m-1792319163853.json",
+    "count": 750,
+    "latestClosedAt": 1792319159999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdojxschxuclykhftsya0uq",
+    "symbol": "ICNTUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T10:26:03.853Z",
+    "file": "ICNTUSDT-5m-1792319163853.json",
+    "count": 750,
+    "latestClosedAt": 1792319099999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdojxschxuclykhftsya0uq",
+    "symbol": "ICNTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T10:26:03.853Z",
+    "file": "ICNTUSDT-1h-1792319163853.json",
+    "count": 750,
+    "latestClosedAt": 1792317599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdpc6yti071lykh5ss0gd4l",
+    "symbol": "AGTUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T10:48:02.118Z",
+    "file": "AGTUSDT-1m-1792320482118.json",
+    "count": 750,
+    "latestClosedAt": 1792320479999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdpc6yti071lykh5ss0gd4l",
+    "symbol": "AGTUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T10:48:02.118Z",
+    "file": "AGTUSDT-5m-1792320482118.json",
+    "count": 750,
+    "latestClosedAt": 1792320299999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdpc6yti071lykh5ss0gd4l",
+    "symbol": "AGTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T10:48:02.118Z",
+    "file": "AGTUSDT-1h-1792320482118.json",
+    "count": 750,
+    "latestClosedAt": 1792317599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdqplcai1ytlykhfk8owekt",
+    "symbol": "TRUTHUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T11:26:26.890Z",
+    "file": "TRUTHUSDT-1m-1792322786890.json",
+    "count": 750,
+    "latestClosedAt": 1792322759999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdqplcai1ytlykhfk8owekt",
+    "symbol": "TRUTHUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T11:26:26.890Z",
+    "file": "TRUTHUSDT-5m-1792322786890.json",
+    "count": 750,
+    "latestClosedAt": 1792322699999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdqplcai1ytlykhfk8owekt",
+    "symbol": "TRUTHUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T11:26:26.890Z",
+    "file": "TRUTHUSDT-1h-1792322786890.json",
+    "count": 750,
+    "latestClosedAt": 1792321199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdqqcpmi1zplykhead05651",
+    "symbol": "TRUTHUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T11:27:02.362Z",
+    "file": "TRUTHUSDT-1m-1792322822362.json",
+    "count": 750,
+    "latestClosedAt": 1792322819999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdqqcpmi1zplykhead05651",
+    "symbol": "TRUTHUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T11:27:02.362Z",
+    "file": "TRUTHUSDT-5m-1792322822362.json",
+    "count": 750,
+    "latestClosedAt": 1792322699999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdqqcpmi1zplykhead05651",
+    "symbol": "TRUTHUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T11:27:02.362Z",
+    "file": "TRUTHUSDT-1h-1792322822362.json",
+    "count": 750,
+    "latestClosedAt": 1792321199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdsmit0i3u6lykhhhcjn59u",
+    "symbol": "JASMYUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T12:20:02.869Z",
+    "file": "JASMYUSDT-1m-1792326002869.json",
+    "count": 750,
+    "latestClosedAt": 1792325999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdsmit0i3u6lykhhhcjn59u",
+    "symbol": "JASMYUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T12:20:02.869Z",
+    "file": "JASMYUSDT-5m-1792326002869.json",
+    "count": 750,
+    "latestClosedAt": 1792325999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdsmit0i3u6lykhhhcjn59u",
+    "symbol": "JASMYUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T12:20:02.869Z",
+    "file": "JASMYUSDT-1h-1792326002869.json",
+    "count": 750,
+    "latestClosedAt": 1792324799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdtxckui52xlykhzmwihxue",
+    "symbol": "GWEIUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T12:56:27.630Z",
+    "file": "GWEIUSDT-1m-1792328187630.json",
+    "count": 750,
+    "latestClosedAt": 1792328159999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdtxckui52xlykhzmwihxue",
+    "symbol": "GWEIUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T12:56:27.630Z",
+    "file": "GWEIUSDT-5m-1792328187630.json",
+    "count": 750,
+    "latestClosedAt": 1792328099999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdtxckui52xlykhzmwihxue",
+    "symbol": "GWEIUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T12:56:27.630Z",
+    "file": "GWEIUSDT-1h-1792328187630.json",
+    "count": 750,
+    "latestClosedAt": 1792324799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdx5u2vi74plykhbcf3zx45",
+    "symbol": "SANTOSUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T14:27:02.407Z",
+    "file": "SANTOSUSDT-1m-1792333622407.json",
+    "count": 750,
+    "latestClosedAt": 1792333619999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdx5u2vi74plykhbcf3zx45",
+    "symbol": "SANTOSUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T14:27:02.407Z",
+    "file": "SANTOSUSDT-5m-1792333622407.json",
+    "count": 750,
+    "latestClosedAt": 1792333499999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdx5u2vi74plykhbcf3zx45",
+    "symbol": "SANTOSUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T14:27:02.407Z",
+    "file": "SANTOSUSDT-1h-1792333622407.json",
+    "count": 750,
+    "latestClosedAt": 1792331999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdyp4tri95nlykh9frvkw07",
+    "symbol": "GPSUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T15:10:02.415Z",
+    "file": "GPSUSDT-1m-1792336202415.json",
+    "count": 750,
+    "latestClosedAt": 1792336199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdyp4tri95nlykh9frvkw07",
+    "symbol": "GPSUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T15:10:02.415Z",
+    "file": "GPSUSDT-5m-1792336202415.json",
+    "count": 750,
+    "latestClosedAt": 1792336199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdyp4tri95nlykh9frvkw07",
+    "symbol": "GPSUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T15:10:02.415Z",
+    "file": "GPSUSDT-1h-1792336202415.json",
+    "count": 750,
+    "latestClosedAt": 1792335599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdzf09jiab0lykhuww9hpwh",
+    "symbol": "AGTUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T15:30:09.559Z",
+    "file": "AGTUSDT-1m-1792337409559.json",
+    "count": 750,
+    "latestClosedAt": 1792337399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdzf09jiab0lykhuww9hpwh",
+    "symbol": "AGTUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T15:30:09.559Z",
+    "file": "AGTUSDT-5m-1792337409559.json",
+    "count": 750,
+    "latestClosedAt": 1792337399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvdzf09jiab0lykhuww9hpwh",
+    "symbol": "AGTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T15:30:09.559Z",
+    "file": "AGTUSDT-1h-1792337409559.json",
+    "count": 750,
+    "latestClosedAt": 1792335599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve14ky7icoilykhg3e9vob6",
+    "symbol": "SIRENUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T16:18:02.384Z",
+    "file": "SIRENUSDT-1m-1792340282384.json",
+    "count": 750,
+    "latestClosedAt": 1792340279999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve14ky7icoilykhg3e9vob6",
+    "symbol": "SIRENUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T16:18:02.384Z",
+    "file": "SIRENUSDT-5m-1792340282384.json",
+    "count": 750,
+    "latestClosedAt": 1792340099999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve14ky7icoilykhg3e9vob6",
+    "symbol": "SIRENUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T16:18:02.384Z",
+    "file": "SIRENUSDT-1h-1792340282384.json",
+    "count": 750,
+    "latestClosedAt": 1792339199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve2mmjyie8dlykhcrupqrxk",
+    "symbol": "SOLVUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T17:00:03.886Z",
+    "file": "SOLVUSDT-1m-1792342803886.json",
+    "count": 750,
+    "latestClosedAt": 1792342799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve2mmjyie8dlykhcrupqrxk",
+    "symbol": "SOLVUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T17:00:03.886Z",
+    "file": "SOLVUSDT-5m-1792342803886.json",
+    "count": 750,
+    "latestClosedAt": 1792342799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve2mmjyie8dlykhcrupqrxk",
+    "symbol": "SOLVUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T17:00:03.886Z",
+    "file": "SOLVUSDT-1h-1792342803886.json",
+    "count": 750,
+    "latestClosedAt": 1792342799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve2p5v4iec6lykhtov9eudj",
+    "symbol": "SOLVUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T17:02:02.225Z",
+    "file": "SOLVUSDT-1m-1792342922225.json",
+    "count": 750,
+    "latestClosedAt": 1792342919999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve2p5v4iec6lykhtov9eudj",
+    "symbol": "SOLVUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T17:02:02.225Z",
+    "file": "SOLVUSDT-5m-1792342922225.json",
+    "count": 750,
+    "latestClosedAt": 1792342799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve2p5v4iec6lykhtov9eudj",
+    "symbol": "SOLVUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T17:02:02.225Z",
+    "file": "SOLVUSDT-1h-1792342922225.json",
+    "count": 750,
+    "latestClosedAt": 1792342799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve88ibhijkclykh4pszwjr2",
+    "symbol": "TRUSTUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T19:37:02.909Z",
+    "file": "TRUSTUSDT-1m-1792352222909.json",
+    "count": 750,
+    "latestClosedAt": 1792352219999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve88ibhijkclykh4pszwjr2",
+    "symbol": "TRUSTUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T19:37:02.909Z",
+    "file": "TRUSTUSDT-5m-1792352222909.json",
+    "count": 750,
+    "latestClosedAt": 1792352099999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve88ibhijkclykh4pszwjr2",
+    "symbol": "TRUSTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T19:37:02.909Z",
+    "file": "TRUSTUSDT-1h-1792352222909.json",
+    "count": 750,
+    "latestClosedAt": 1792349999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve89m4uijknlykhaaqu3hgs",
+    "symbol": "IDOLUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T19:37:54.511Z",
+    "file": "IDOLUSDT-1m-1792352274511.json",
+    "count": 750,
+    "latestClosedAt": 1792352219999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve89m4uijknlykhaaqu3hgs",
+    "symbol": "IDOLUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T19:37:54.511Z",
+    "file": "IDOLUSDT-5m-1792352274511.json",
+    "count": 750,
+    "latestClosedAt": 1792352099999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve89m4uijknlykhaaqu3hgs",
+    "symbol": "IDOLUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T19:37:54.511Z",
+    "file": "IDOLUSDT-1h-1792352274511.json",
+    "count": 750,
+    "latestClosedAt": 1792349999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8b2naijmflykh27bvf3q0",
+    "symbol": "POPCATUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T19:39:02.566Z",
+    "file": "POPCATUSDT-1m-1792352342566.json",
+    "count": 750,
+    "latestClosedAt": 1792352339999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8b2naijmflykh27bvf3q0",
+    "symbol": "POPCATUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T19:39:02.566Z",
+    "file": "POPCATUSDT-5m-1792352342566.json",
+    "count": 750,
+    "latestClosedAt": 1792352099999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8b2naijmflykh27bvf3q0",
+    "symbol": "POPCATUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T19:39:02.566Z",
+    "file": "POPCATUSDT-1h-1792352342566.json",
+    "count": 750,
+    "latestClosedAt": 1792349999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8l981ikdglykhlr1ondxy",
+    "symbol": "龙虾USDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T19:46:57.650Z",
+    "file": "龙虾USDT-1m-1792352817650.json",
+    "count": 750,
+    "latestClosedAt": 1792352759999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8l981ikdglykhlr1ondxy",
+    "symbol": "龙虾USDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T19:46:57.650Z",
+    "file": "龙虾USDT-5m-1792352817650.json",
+    "count": 750,
+    "latestClosedAt": 1792352699999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8l981ikdglykhlr1ondxy",
+    "symbol": "龙虾USDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T19:46:57.650Z",
+    "file": "龙虾USDT-1h-1792352817650.json",
+    "count": 750,
+    "latestClosedAt": 1792349999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8mn9fikmolykh4ff0k8a6",
+    "symbol": "FARTCOINUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T19:48:02.499Z",
+    "file": "FARTCOINUSDT-1m-1792352882499.json",
+    "count": 750,
+    "latestClosedAt": 1792352879999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8mn9fikmolykh4ff0k8a6",
+    "symbol": "FARTCOINUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T19:48:02.499Z",
+    "file": "FARTCOINUSDT-5m-1792352882499.json",
+    "count": 750,
+    "latestClosedAt": 1792352699999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8mn9fikmolykh4ff0k8a6",
+    "symbol": "FARTCOINUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T19:48:02.499Z",
+    "file": "FARTCOINUSDT-1h-1792352882499.json",
+    "count": 750,
+    "latestClosedAt": 1792349999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8qjdoikvolykht3zwjj3m",
+    "symbol": "PUNDIXUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T19:51:04.092Z",
+    "file": "PUNDIXUSDT-1m-1792353064092.json",
+    "count": 750,
+    "latestClosedAt": 1792353059999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8qjdoikvolykht3zwjj3m",
+    "symbol": "PUNDIXUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T19:51:04.092Z",
+    "file": "PUNDIXUSDT-5m-1792353064092.json",
+    "count": 750,
+    "latestClosedAt": 1792352999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8qjdoikvolykht3zwjj3m",
+    "symbol": "PUNDIXUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T19:51:04.092Z",
+    "file": "PUNDIXUSDT-1h-1792353064092.json",
+    "count": 750,
+    "latestClosedAt": 1792349999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8qlk4ikvrlykhbqc776gr",
+    "symbol": "PUNDIXUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T19:51:06.917Z",
+    "file": "PUNDIXUSDT-1m-1792353066917.json",
+    "count": 750,
+    "latestClosedAt": 1792353059999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8qlk4ikvrlykhbqc776gr",
+    "symbol": "PUNDIXUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T19:51:06.917Z",
+    "file": "PUNDIXUSDT-5m-1792353066917.json",
+    "count": 750,
+    "latestClosedAt": 1792352999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8qlk4ikvrlykhbqc776gr",
+    "symbol": "PUNDIXUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T19:51:06.917Z",
+    "file": "PUNDIXUSDT-1h-1792353066917.json",
+    "count": 750,
+    "latestClosedAt": 1792349999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8rsdhikx1lykh7yxf5loh",
+    "symbol": "TAUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T19:52:02.406Z",
+    "file": "TAUSDT-1m-1792353122406.json",
+    "count": 750,
+    "latestClosedAt": 1792353119999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8rsdhikx1lykh7yxf5loh",
+    "symbol": "TAUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T19:52:02.406Z",
+    "file": "TAUSDT-5m-1792353122406.json",
+    "count": 750,
+    "latestClosedAt": 1792352999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve8rsdhikx1lykh7yxf5loh",
+    "symbol": "TAUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T19:52:02.406Z",
+    "file": "TAUSDT-1h-1792353122406.json",
+    "count": 750,
+    "latestClosedAt": 1792349999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve9qig7imfzlykhpglmtvda",
+    "symbol": "BRUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T20:19:02.503Z",
+    "file": "BRUSDT-1m-1792354742503.json",
+    "count": 750,
+    "latestClosedAt": 1792354739999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve9qig7imfzlykhpglmtvda",
+    "symbol": "BRUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T20:19:02.503Z",
+    "file": "BRUSDT-5m-1792354742503.json",
+    "count": 750,
+    "latestClosedAt": 1792354499999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmve9qig7imfzlykhpglmtvda",
+    "symbol": "BRUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T20:19:02.503Z",
+    "file": "BRUSDT-1h-1792354742503.json",
+    "count": 750,
+    "latestClosedAt": 1792353599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvecu9dcio8clykhhixqf3k8",
+    "symbol": "MANTRAUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T21:45:56.209Z",
+    "file": "MANTRAUSDT-1m-1792359956209.json",
+    "count": 750,
+    "latestClosedAt": 1792359899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvecu9dcio8clykhhixqf3k8",
+    "symbol": "MANTRAUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T21:45:56.209Z",
+    "file": "MANTRAUSDT-5m-1792359956209.json",
+    "count": 750,
+    "latestClosedAt": 1792359899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvecu9dcio8clykhhixqf3k8",
+    "symbol": "MANTRAUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T21:45:56.209Z",
+    "file": "MANTRAUSDT-1h-1792359956209.json",
+    "count": 750,
+    "latestClosedAt": 1792357199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvecx0i5ioawlykhokk63nn8",
+    "symbol": "ARIAUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T21:48:04.685Z",
+    "file": "ARIAUSDT-1m-1792360084685.json",
+    "count": 750,
+    "latestClosedAt": 1792360079999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvecx0i5ioawlykhokk63nn8",
+    "symbol": "ARIAUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T21:48:04.685Z",
+    "file": "ARIAUSDT-5m-1792360084685.json",
+    "count": 750,
+    "latestClosedAt": 1792359899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvecx0i5ioawlykhokk63nn8",
+    "symbol": "ARIAUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T21:48:04.685Z",
+    "file": "ARIAUSDT-1h-1792360084685.json",
+    "count": 750,
+    "latestClosedAt": 1792357199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvefvpcaitcwlykhz7pqhyp1",
+    "symbol": "SAMSUNGEMUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T23:11:02.411Z",
+    "file": "SAMSUNGEMUSDT-1m-1792365062411.json",
+    "count": 750,
+    "latestClosedAt": 1792365059999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvefvpcaitcwlykhz7pqhyp1",
+    "symbol": "SAMSUNGEMUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T23:11:02.411Z",
+    "file": "SAMSUNGEMUSDT-5m-1792365062411.json",
+    "count": 750,
+    "latestClosedAt": 1792364999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvefvpcaitcwlykhz7pqhyp1",
+    "symbol": "SAMSUNGEMUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T23:11:02.411Z",
+    "file": "SAMSUNGEMUSDT-1h-1792365062411.json",
+    "count": 750,
+    "latestClosedAt": 1792364399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvego52hitoxlykh93yxq880",
+    "symbol": "AGTUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-18T23:33:09.162Z",
+    "file": "AGTUSDT-1m-1792366389162.json",
+    "count": 750,
+    "latestClosedAt": 1792366379999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvego52hitoxlykh93yxq880",
+    "symbol": "AGTUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-18T23:33:09.162Z",
+    "file": "AGTUSDT-5m-1792366389162.json",
+    "count": 750,
+    "latestClosedAt": 1792366199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvego52hitoxlykh93yxq880",
+    "symbol": "AGTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-18T23:33:09.162Z",
+    "file": "AGTUSDT-1h-1792366389162.json",
+    "count": 750,
+    "latestClosedAt": 1792364399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvehqlepiza7lykhptpbma06",
+    "symbol": "TWSTUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T00:03:03.265Z",
+    "file": "TWSTUSDT-1m-1792368183265.json",
+    "count": 750,
+    "latestClosedAt": 1792368179999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvehqlepiza7lykhptpbma06",
+    "symbol": "TWSTUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T00:03:03.265Z",
+    "file": "TWSTUSDT-5m-1792368183265.json",
+    "count": 750,
+    "latestClosedAt": 1792367999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvehqlepiza7lykhptpbma06",
+    "symbol": "TWSTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T00:03:03.265Z",
+    "file": "TWSTUSDT-1h-1792368183265.json",
+    "count": 496,
+    "latestClosedAt": 1792367999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvehufxoizqplykhqkctf2zs",
+    "symbol": "CSOPSAMSUNG2LUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T00:06:02.796Z",
+    "file": "CSOPSAMSUNG2LUSDT-1m-1792368362796.json",
+    "count": 750,
+    "latestClosedAt": 1792368359999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvehufxoizqplykhqkctf2zs",
+    "symbol": "CSOPSAMSUNG2LUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T00:06:02.796Z",
+    "file": "CSOPSAMSUNG2LUSDT-5m-1792368362796.json",
+    "count": 750,
+    "latestClosedAt": 1792368299999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvehufxoizqplykhqkctf2zs",
+    "symbol": "CSOPSAMSUNG2LUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T00:06:02.796Z",
+    "file": "CSOPSAMSUNG2LUSDT-1h-1792368362796.json",
+    "count": 750,
+    "latestClosedAt": 1792367999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvelqm7xj3y0lykh5vd3z8m8",
+    "symbol": "龙虾USDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T01:55:02.782Z",
+    "file": "龙虾USDT-1m-1792374902782.json",
+    "count": 750,
+    "latestClosedAt": 1792374899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvelqm7xj3y0lykh5vd3z8m8",
+    "symbol": "龙虾USDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T01:55:02.782Z",
+    "file": "龙虾USDT-5m-1792374902782.json",
+    "count": 750,
+    "latestClosedAt": 1792374899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvelqm7xj3y0lykh5vd3z8m8",
+    "symbol": "龙虾USDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T01:55:02.782Z",
+    "file": "龙虾USDT-1h-1792374902782.json",
+    "count": 750,
+    "latestClosedAt": 1792371599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmveoog3bj6aflykhk58wmele",
+    "symbol": "CAPUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T03:17:20.376Z",
+    "file": "CAPUSDT-1m-1792379840376.json",
+    "count": 750,
+    "latestClosedAt": 1792379819999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmveoog3bj6aflykhk58wmele",
+    "symbol": "CAPUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T03:17:20.376Z",
+    "file": "CAPUSDT-5m-1792379840376.json",
+    "count": 750,
+    "latestClosedAt": 1792379699999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmveoog3bj6aflykhk58wmele",
+    "symbol": "CAPUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T03:17:20.376Z",
+    "file": "CAPUSDT-1h-1792379840376.json",
+    "count": 750,
+    "latestClosedAt": 1792378799999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvey8pe8jk19lykhl490uvvn",
+    "symbol": "CTUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T07:45:02.096Z",
+    "file": "CTUSDT-1m-1792395902096.json",
+    "count": 750,
+    "latestClosedAt": 1792395899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvey8pe8jk19lykhl490uvvn",
+    "symbol": "CTUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T07:45:02.096Z",
+    "file": "CTUSDT-5m-1792395902096.json",
+    "count": 750,
+    "latestClosedAt": 1792395899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvey8pe8jk19lykhl490uvvn",
+    "symbol": "CTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T07:45:02.096Z",
+    "file": "CTUSDT-1h-1792395902096.json",
+    "count": 433,
+    "latestClosedAt": 1792393199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmveyap44jk31lykh6ihge03z",
+    "symbol": "CTUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T07:46:35.044Z",
+    "file": "CTUSDT-1m-1792395995044.json",
+    "count": 750,
+    "latestClosedAt": 1792395959999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmveyap44jk31lykh6ihge03z",
+    "symbol": "CTUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T07:46:35.044Z",
+    "file": "CTUSDT-5m-1792395995044.json",
+    "count": 750,
+    "latestClosedAt": 1792395899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmveyap44jk31lykh6ihge03z",
+    "symbol": "CTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T07:46:35.044Z",
+    "file": "CTUSDT-1h-1792395995044.json",
+    "count": 433,
+    "latestClosedAt": 1792393199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmveyj09ujkcqlykhks4ely29",
+    "symbol": "BWETUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T07:53:02.754Z",
+    "file": "BWETUSDT-1m-1792396382754.json",
+    "count": 750,
+    "latestClosedAt": 1792396379999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmveyj09ujkcqlykhks4ely29",
+    "symbol": "BWETUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T07:53:02.754Z",
+    "file": "BWETUSDT-5m-1792396382754.json",
+    "count": 750,
+    "latestClosedAt": 1792396199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmveyj09ujkcqlykhks4ely29",
+    "symbol": "BWETUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T07:53:02.754Z",
+    "file": "BWETUSDT-1h-1792396382754.json",
+    "count": 479,
+    "latestClosedAt": 1792393199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmveykapmjkddlykhrw130kv1",
+    "symbol": "BWETUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T07:54:02.938Z",
+    "file": "BWETUSDT-1m-1792396442938.json",
+    "count": 750,
+    "latestClosedAt": 1792396439999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmveykapmjkddlykhrw130kv1",
+    "symbol": "BWETUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T07:54:02.938Z",
+    "file": "BWETUSDT-5m-1792396442938.json",
+    "count": 750,
+    "latestClosedAt": 1792396199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmveykapmjkddlykhrw130kv1",
+    "symbol": "BWETUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T07:54:02.938Z",
+    "file": "BWETUSDT-1h-1792396442938.json",
+    "count": 479,
+    "latestClosedAt": 1792393199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvf8kdfbjuuelykhxrnv0jm8",
+    "symbol": "RLCUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T12:34:02.616Z",
+    "file": "RLCUSDT-1m-1792413242616.json",
+    "count": 750,
+    "latestClosedAt": 1792413239999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvf8kdfbjuuelykhxrnv0jm8",
+    "symbol": "RLCUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T12:34:02.616Z",
+    "file": "RLCUSDT-5m-1792413242616.json",
+    "count": 750,
+    "latestClosedAt": 1792412999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvf8kdfbjuuelykhxrnv0jm8",
+    "symbol": "RLCUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T12:34:02.616Z",
+    "file": "RLCUSDT-1h-1792413242616.json",
+    "count": 750,
+    "latestClosedAt": 1792411199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfcn33jk344lykhgzq9gtxd",
+    "symbol": "CTRUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T14:28:07.664Z",
+    "file": "CTRUSDT-1m-1792420087664.json",
+    "count": 750,
+    "latestClosedAt": 1792420079999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfcn33jk344lykhgzq9gtxd",
+    "symbol": "CTRUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T14:28:07.664Z",
+    "file": "CTRUSDT-5m-1792420087664.json",
+    "count": 750,
+    "latestClosedAt": 1792419899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfcn33jk344lykhgzq9gtxd",
+    "symbol": "CTRUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:28:07.664Z",
+    "file": "CTRUSDT-1h-1792420087664.json",
+    "count": 750,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfco9sjk35hlykhpnkz664y",
+    "symbol": "CTRUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T14:29:02.995Z",
+    "file": "CTRUSDT-1m-1792420142995.json",
+    "count": 750,
+    "latestClosedAt": 1792420139999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfco9sjk35hlykhpnkz664y",
+    "symbol": "CTRUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T14:29:02.995Z",
+    "file": "CTRUSDT-5m-1792420142995.json",
+    "count": 750,
+    "latestClosedAt": 1792419899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfco9sjk35hlykhpnkz664y",
+    "symbol": "CTRUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:29:02.995Z",
+    "file": "CTRUSDT-1h-1792420142995.json",
+    "count": 750,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfde0k0k4kylykhfjbzve1o",
+    "symbol": "XNYUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T14:49:04.080Z",
+    "file": "XNYUSDT-1m-1792421344080.json",
+    "count": 750,
+    "latestClosedAt": 1792421339999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfde0k0k4kylykhfjbzve1o",
+    "symbol": "XNYUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T14:49:04.080Z",
+    "file": "XNYUSDT-5m-1792421344080.json",
+    "count": 750,
+    "latestClosedAt": 1792421099999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfde0k0k4kylykhfjbzve1o",
+    "symbol": "XNYUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T14:49:04.080Z",
+    "file": "XNYUSDT-1h-1792421344080.json",
+    "count": 750,
+    "latestClosedAt": 1792418399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfe2f7lk5pulykhtu8xirhl",
+    "symbol": "ZROUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T15:08:02.817Z",
+    "file": "ZROUSDT-1m-1792422482817.json",
+    "count": 750,
+    "latestClosedAt": 1792422479999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfe2f7lk5pulykhtu8xirhl",
+    "symbol": "ZROUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T15:08:02.817Z",
+    "file": "ZROUSDT-5m-1792422482817.json",
+    "count": 750,
+    "latestClosedAt": 1792422299999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfe2f7lk5pulykhtu8xirhl",
+    "symbol": "ZROUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:08:02.817Z",
+    "file": "ZROUSDT-1h-1792422482817.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfeu3zek6z5lykhffh3kx46",
+    "symbol": "NAORISUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T15:29:34.634Z",
+    "file": "NAORISUSDT-1m-1792423774634.json",
+    "count": 750,
+    "latestClosedAt": 1792423739999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfeu3zek6z5lykhffh3kx46",
+    "symbol": "NAORISUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T15:29:34.634Z",
+    "file": "NAORISUSDT-5m-1792423774634.json",
+    "count": 750,
+    "latestClosedAt": 1792423499999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfeu3zek6z5lykhffh3kx46",
+    "symbol": "NAORISUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T15:29:34.634Z",
+    "file": "NAORISUSDT-1h-1792423774634.json",
+    "count": 750,
+    "latestClosedAt": 1792421999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfhk5xck9jqlykhd7cakhsr",
+    "symbol": "MUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T16:45:49.440Z",
+    "file": "MUSDT-1m-1792428349440.json",
+    "count": 750,
+    "latestClosedAt": 1792428299999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfhk5xck9jqlykhd7cakhsr",
+    "symbol": "MUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T16:45:49.440Z",
+    "file": "MUSDT-5m-1792428349440.json",
+    "count": 750,
+    "latestClosedAt": 1792428299999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfhk5xck9jqlykhd7cakhsr",
+    "symbol": "MUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T16:45:49.440Z",
+    "file": "MUSDT-1h-1792428349440.json",
+    "count": 750,
+    "latestClosedAt": 1792425599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfivhhmkaaolykhg9e32kk5",
+    "symbol": "CTRUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T17:22:37.259Z",
+    "file": "CTRUSDT-1m-1792430557259.json",
+    "count": 750,
+    "latestClosedAt": 1792430519999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfivhhmkaaolykhg9e32kk5",
+    "symbol": "CTRUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T17:22:37.259Z",
+    "file": "CTRUSDT-5m-1792430557259.json",
+    "count": 750,
+    "latestClosedAt": 1792430399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfivhhmkaaolykhg9e32kk5",
+    "symbol": "CTRUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T17:22:37.259Z",
+    "file": "CTRUSDT-1h-1792430557259.json",
+    "count": 750,
+    "latestClosedAt": 1792429199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfnbn7nkddalykhnm06yl3m",
+    "symbol": "SHAZUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T19:27:09.635Z",
+    "file": "SHAZUSDT-1m-1792438029635.json",
+    "count": 750,
+    "latestClosedAt": 1792438019999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfnbn7nkddalykhnm06yl3m",
+    "symbol": "SHAZUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T19:27:09.635Z",
+    "file": "SHAZUSDT-5m-1792438029635.json",
+    "count": 750,
+    "latestClosedAt": 1792437899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfnbn7nkddalykhnm06yl3m",
+    "symbol": "SHAZUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T19:27:09.635Z",
+    "file": "SHAZUSDT-1h-1792438029635.json",
+    "count": 750,
+    "latestClosedAt": 1792436399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfp1btukejxlykhxv3vckkh",
+    "symbol": "BATUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T20:15:07.554Z",
+    "file": "BATUSDT-1m-1792440907554.json",
+    "count": 750,
+    "latestClosedAt": 1792440899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfp1btukejxlykhxv3vckkh",
+    "symbol": "BATUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T20:15:07.554Z",
+    "file": "BATUSDT-5m-1792440907554.json",
+    "count": 750,
+    "latestClosedAt": 1792440899999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfp1btukejxlykhxv3vckkh",
+    "symbol": "BATUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T20:15:07.554Z",
+    "file": "BATUSDT-1h-1792440907554.json",
+    "count": 750,
+    "latestClosedAt": 1792439999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfti7vokgj1lykhh8720i2u",
+    "symbol": "ENAUSDC",
+    "interval": "1m",
+    "eventTime": "2026-10-19T22:20:14.052Z",
+    "file": "ENAUSDC-1m-1792448414052.json",
+    "count": 750,
+    "latestClosedAt": 1792448399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfti7vokgj1lykhh8720i2u",
+    "symbol": "ENAUSDC",
+    "interval": "5m",
+    "eventTime": "2026-10-19T22:20:14.052Z",
+    "file": "ENAUSDC-5m-1792448414052.json",
+    "count": 750,
+    "latestClosedAt": 1792448399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfti7vokgj1lykhh8720i2u",
+    "symbol": "ENAUSDC",
+    "interval": "1h",
+    "eventTime": "2026-10-19T22:20:14.052Z",
+    "file": "ENAUSDC-1h-1792448414052.json",
+    "count": 750,
+    "latestClosedAt": 1792447199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfti8ahkgj4lykhcy5m7ddj",
+    "symbol": "ENAUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-19T22:20:14.585Z",
+    "file": "ENAUSDT-1m-1792448414585.json",
+    "count": 750,
+    "latestClosedAt": 1792448399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfti8ahkgj4lykhcy5m7ddj",
+    "symbol": "ENAUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-19T22:20:14.585Z",
+    "file": "ENAUSDT-5m-1792448414585.json",
+    "count": 750,
+    "latestClosedAt": 1792448399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfti8ahkgj4lykhcy5m7ddj",
+    "symbol": "ENAUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-19T22:20:14.585Z",
+    "file": "ENAUSDT-1h-1792448414585.json",
+    "count": 750,
+    "latestClosedAt": 1792447199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfx7mykkhwslykhgpha2m4a",
+    "symbol": "SAMSUNGEMUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-20T00:03:58.845Z",
+    "file": "SAMSUNGEMUSDT-1m-1792454638845.json",
+    "count": 750,
+    "latestClosedAt": 1792454579999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfx7mykkhwslykhgpha2m4a",
+    "symbol": "SAMSUNGEMUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-20T00:03:58.845Z",
+    "file": "SAMSUNGEMUSDT-5m-1792454638845.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvfx7mykkhwslykhgpha2m4a",
+    "symbol": "SAMSUNGEMUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T00:03:58.845Z",
+    "file": "SAMSUNGEMUSDT-1h-1792454638845.json",
+    "count": 750,
+    "latestClosedAt": 1792454399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvg0r9izkl9ilykh877t4g1w",
+    "symbol": "AUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-20T01:43:13.403Z",
+    "file": "AUSDT-1m-1792460593403.json",
+    "count": 750,
+    "latestClosedAt": 1792460579999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvg0r9izkl9ilykh877t4g1w",
+    "symbol": "AUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-20T01:43:13.403Z",
+    "file": "AUSDT-5m-1792460593403.json",
+    "count": 750,
+    "latestClosedAt": 1792460399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvg0r9izkl9ilykh877t4g1w",
+    "symbol": "AUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T01:43:13.403Z",
+    "file": "AUSDT-1h-1792460593403.json",
+    "count": 750,
+    "latestClosedAt": 1792457999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvg0slilklc1lykhhujwjkv3",
+    "symbol": "1000RATSUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-20T01:44:15.597Z",
+    "file": "1000RATSUSDT-1m-1792460655597.json",
+    "count": 750,
+    "latestClosedAt": 1792460639999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvg0slilklc1lykhhujwjkv3",
+    "symbol": "1000RATSUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-20T01:44:15.597Z",
+    "file": "1000RATSUSDT-5m-1792460655597.json",
+    "count": 750,
+    "latestClosedAt": 1792460399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvg0slilklc1lykhhujwjkv3",
+    "symbol": "1000RATSUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T01:44:15.597Z",
+    "file": "1000RATSUSDT-1h-1792460655597.json",
+    "count": 750,
+    "latestClosedAt": 1792457999999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvg52obnko24lykhcurlwqbn",
+    "symbol": "ALTUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-20T03:44:04.259Z",
+    "file": "ALTUSDT-1m-1792467844259.json",
+    "count": 750,
+    "latestClosedAt": 1792467839999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvg52obnko24lykhcurlwqbn",
+    "symbol": "ALTUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-20T03:44:04.259Z",
+    "file": "ALTUSDT-5m-1792467844259.json",
+    "count": 750,
+    "latestClosedAt": 1792467599999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvg52obnko24lykhcurlwqbn",
+    "symbol": "ALTUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T03:44:04.259Z",
+    "file": "ALTUSDT-1h-1792467844259.json",
+    "count": 750,
+    "latestClosedAt": 1792465199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvgg9n2xkxqglykhw8uqw2fq",
+    "symbol": "BUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-20T08:57:25.017Z",
+    "file": "BUSDT-1m-1792486645017.json",
+    "count": 750,
+    "latestClosedAt": 1792486619999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvgg9n2xkxqglykhw8uqw2fq",
+    "symbol": "BUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-20T08:57:25.017Z",
+    "file": "BUSDT-5m-1792486645017.json",
+    "count": 750,
+    "latestClosedAt": 1792486499999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvgg9n2xkxqglykhw8uqw2fq",
+    "symbol": "BUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T08:57:25.017Z",
+    "file": "BUSDT-1h-1792486645017.json",
+    "count": 750,
+    "latestClosedAt": 1792483199999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvgm6uodl5ehlykhlfrjdy4r",
+    "symbol": "PLAYUSDT",
+    "interval": "1m",
+    "eventTime": "2026-10-20T11:43:12.589Z",
+    "file": "PLAYUSDT-1m-1792496592589.json",
+    "count": 750,
+    "latestClosedAt": 1792496579999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvgm6uodl5ehlykhlfrjdy4r",
+    "symbol": "PLAYUSDT",
+    "interval": "5m",
+    "eventTime": "2026-10-20T11:43:12.589Z",
+    "file": "PLAYUSDT-5m-1792496592589.json",
+    "count": 750,
+    "latestClosedAt": 1792496399999
+  },
+  {
+    "botId": "hammer-pro-plus",
+    "id": "cmvgm6uodl5ehlykhlfrjdy4r",
+    "symbol": "PLAYUSDT",
+    "interval": "1h",
+    "eventTime": "2026-10-20T11:43:12.589Z",
+    "file": "PLAYUSDT-1h-1792496592589.json",
+    "count": 750,
+    "latestClosedAt": 1792493999999
+  }
+]

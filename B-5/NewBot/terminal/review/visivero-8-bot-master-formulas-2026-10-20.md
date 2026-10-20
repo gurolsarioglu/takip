@@ -37,12 +37,12 @@ REA ile incelenen `0ngs99aq~2c40.js` modülü, ön yüzün hiçbir sinyal hesapl
 * **`m1` ve `m1-premium` botlarında:** Doğrudan 1 dakikalık anlık sıçrama/düşüş yüzdesidir:
   $$\text{Change \%} = \frac{P_{\text{current}} - P_{\text{base}}}{P_{\text{base}}} \times 100$$
 * **Dönüş botlarında (`hammer`, `hammer-pro`, `hammer-pro-plus`, `4s`, `4sniper`, `div`):**
-  Dönüş sinyali gelmeden hemen önceki **impuls (sert hareket) yüzdesini** gösterir ve her zaman pozitif (`+X.XX%`) yazılır:
-  * **Long (`🟢`) dönüşlerinde:** Yakın tepe/açılış seviyesinden ($P_{\text{high/open}}$) dip/güncel fiyata ($P_{\text{low/cur}}$) yaşanan düşüşün büyüklüğü:
-    $$\text{Boost Value} = +\frac{P_{\text{high/open}} - P_{\text{low/cur}}}{P_{\text{low/cur}}} \times 100$$
-    *(Örn: `CSOPSAMSUNG2LUSDT` `21:25` 5m açılışı `5.539`, dip `5.422` $\rightarrow$ `(5.539 - 5.422)/5.422 = +2.16%`; `MVLLUSDT` `(25.13 - 24.55)/24.55 = +2.36%`; `RAMUSDT` `(7.60 - 7.43)/7.43 = +2.29%` — virgülden sonra 2 basamağına kadar birebir aynı!)*
-  * **Short (`🔴`) dönüşlerinde:** Yakın dip/açılış seviyesinden ($P_{\text{low/open}}$) tepe/güncel fiyata ($P_{\text{high/cur}}$) yaşanan yükselişin büyüklüğü:
-    $$\text{Boost Value} = +\frac{P_{\text{high/cur}} - P_{\text{low/open}}}{P_{\text{low/open}}} \times 100$$
+  Dönüş sinyali gelmeden hemen önceki **son 5 mumluk (`4 kapanmış + 1 canlı`, botun ana zaman diliminde: `Hammer*` $\rightarrow$ `1m`, `DIV/4S` $\rightarrow$ `1h`, `4S Sniper` $\rightarrow$ `4h`) darbe (impulse) mumlarının maksimum açılış-dip / açılış-tepe yüzdesini** gösterir ve her zaman pozitif (`+X.XX%`) yazılır (`Hammer Pro+` 99/100 = %99.0, `4S Sniper` 100/100 = %100.0, `DIV` 99/100 = %99.0 birebir doğrulandı):
+  * **Long (`🟢`) dönüşlerinde:**
+    $$\text{Boost Value} = +\max_{k \in \text{son 5 mum}}\left(\frac{\text{Open}_k - \text{Low}_k}{\text{Low}_k} \times 100\right)$$
+    *(Örn: `CSOPSAMSUNG2LUSDT` `21:25` 1m açılışı `5.539`, dip `5.422` $\rightarrow$ `(5.539 - 5.422)/5.422 = +2.16%`; `MVLLUSDT` `(25.13 - 24.55)/24.55 = +2.36%`; `MUUUSDT` `(23.11 - 22.61)/22.61 = +2.21%`; `RAMUSDT` `(7.60 - 7.43)/7.43 = +2.29%`; `MUSDT` `(0.7530 - 0.7332)/0.7332 = +2.70%` — virgülden sonra 2 basamağına kadar birebir aynı!)*
+  * **Short (`🔴`) dönüşlerinde:**
+    $$\text{Boost Value} = +\max_{k \in \text{son 5 mum}}\left(\frac{\text{High}_k - \text{Open}_k}{\text{Open}_k} \times 100\right)$$
     *(Örn: `SKDDUSDT` `(12.915 - 12.649)/12.649 = +2.10%`)*
 
 ### C. Yıldız (`⭐️`) Derecelendirme Kuralı (400/400 = %100 Eşleşme)

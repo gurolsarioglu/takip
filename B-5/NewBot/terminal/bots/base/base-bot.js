@@ -30,6 +30,16 @@ class BaseBot {
     } else {
       this.signals = [];
     }
+    const dedupSignals = signalStoreService.getRecentSignalsByBot(this.id, 5000) || [];
+    for (const signal of dedupSignals) {
+      const symbol = String(signal.symbol || signal.coin || '').toUpperCase().trim();
+      if (!symbol) continue;
+      const timestamp = Number(signal.timestamp) || 0;
+      this.lastEmitMap.set(symbol, Math.max(timestamp, this.lastEmitMap.get(symbol) || 0));
+      if (signal.candleOpenTime != null) {
+        this.seenCandles.add(`${this.id}_${symbol}_${signal.timeframe || ''}_${signal.candleOpenTime}`);
+      }
+    }
   }
 
   /**
@@ -95,18 +105,10 @@ class BaseBot {
       if (this.seenCandles.has(candleKey)) {
         return null; // Mükerrer sinyal reddedildi
       }
-      this.seenCandles.add(candleKey);
-
-      // Bellek koruması (Maksimum 5000 anahtar)
-      if (this.seenCandles.size > 5000) {
-        const first = this.seenCandles.values().next().value;
-        this.seenCandles.delete(first);
-      }
     }
 
     // Cooldown zamanını kaydet
     const now = Date.now();
-    this.lastEmitMap.set(sym, now);
 
     const dateObj = new Date(signal.timestamp || now);
     const dateStr = dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -119,21 +121,28 @@ class BaseBot {
       symbol: sym,
       dateLabel: signal.dateLabel || dateStr,
       time: signal.time || nowTime,
-      ...signal
+      ...signal,
+      symbol: sym
     };
 
     if (!formatted.dateStr) formatted.dateStr = dateStr;
     if (!formatted.time) formatted.time = nowTime;
     if (!formatted.timestamp) formatted.timestamp = now;
 
+    // Arşiv reddettiyse kart veya yayın üretme; tekilleştirme durumunu da tüketme.
+    const persisted = signalStoreService.recordSignal(this.id, formatted, this.name);
+    if (!persisted) return null;
+    this.lastEmitMap.set(sym, now);
+    if (candleTime) {
+      this.seenCandles.add(`${this.id}_${sym}_${tf}_${candleTime}`);
+      if (this.seenCandles.size > 5000) this.seenCandles.delete(this.seenCandles.values().next().value);
+    }
+
     // 1. Bellek havuzuna ekle
     this.signals.unshift(formatted);
     if (this.signals.length > this.maxSignals) {
       this.signals.pop();
     }
-
-    // 2. 60 Günlük kalıcı arşiv deposuna yaz
-    signalStoreService.recordSignal(this.id, formatted, this.name);
 
     // 3. Merkezi Sinyal Veriyoluna (SignalBus) yayınla (Telegram & Webhook Dispatcher)
     signalBus.emit('signal', {

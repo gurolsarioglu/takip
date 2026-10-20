@@ -6,6 +6,7 @@ const express = require('express');
 const https   = require('https');
 const path    = require('path');
 const fs      = require('fs');
+const botData = require('./services/bot-data.service');
 const { exec, spawn } = require('child_process');
 
 const app  = express();
@@ -106,7 +107,7 @@ app.get('/api/watchlist', async (req, res) => {
           chgPct,
           volUsd,
           fr: prem.fundingRate,
-          frInterval: '8h',
+          frInterval: null,
           nextFundingTime: prem.nextFundingTime,
           high: t.highPrice ? String(t.highPrice) : (t.highPrice || 0),
           low: t.lowPrice ? String(t.lowPrice) : (t.lowPrice || 0)
@@ -141,47 +142,7 @@ app.get('/api/sentiment', async (req, res) => {
       fetchJson(`https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=${symbol}&period=5m&limit=1`)
     ]);
 
-    // 1. Order book
-    let orderBook = { bidPct: 41.06, askPct: 58.94 };
-    if (depth.status === 'fulfilled' && depth.value && depth.value.bids && depth.value.asks) {
-      const bidVol = depth.value.bids.reduce((a, b) => a + parseFloat(b[1]), 0);
-      const askVol = depth.value.asks.reduce((a, b) => a + parseFloat(b[1]), 0);
-      const total = bidVol + askVol;
-      if (total > 0) {
-        const bPct = parseFloat((bidVol / total * 100).toFixed(2));
-        orderBook = { bidPct: bPct, askPct: parseFloat((100 - bPct).toFixed(2)) };
-      }
-    }
-
-    // 2. Top Position
-    let topPosition = { longPct: 67.25, shortPct: 32.75 };
-    if (posRatio.status === 'fulfilled' && Array.isArray(posRatio.value) && posRatio.value[0]) {
-      const lp = parseFloat(posRatio.value[0].longAccount) * 100;
-      topPosition = { longPct: parseFloat(lp.toFixed(2)), shortPct: parseFloat((100 - lp).toFixed(2)) };
-    }
-
-    // 3. Top Account
-    let topAccount = { longPct: 34.05, shortPct: 65.95 };
-    if (accRatio.status === 'fulfilled' && Array.isArray(accRatio.value) && accRatio.value[0]) {
-      const lp = parseFloat(accRatio.value[0].longAccount) * 100;
-      topAccount = { longPct: parseFloat(lp.toFixed(2)), shortPct: parseFloat((100 - lp).toFixed(2)) };
-    }
-
-    // 4. Global Market Exposure
-    let globalExposure = { longPct: 37.88, shortPct: 62.12 };
-    if (globRatio.status === 'fulfilled' && Array.isArray(globRatio.value) && globRatio.value[0]) {
-      const lp = parseFloat(globRatio.value[0].longAccount) * 100;
-      globalExposure = { longPct: parseFloat(lp.toFixed(2)), shortPct: parseFloat((100 - lp).toFixed(2)) };
-    }
-
-    const payload = {
-      symbol,
-      orderBook,
-      topPosition,
-      topAccount,
-      globalExposure,
-      updatedAt: now
-    };
+    const payload = botData.sentimentPayload(symbol, { depth, posRatio, accRatio, globRatio }, now);
 
     sentimentCache.set(symbol, { data: payload, ts: now });
     res.json(payload);
@@ -300,6 +261,8 @@ botManager.startBackgroundEngine();
 
 
 // /api/fapi/** -> https://fapi.binance.com/fapi/**
+app.get('/api/fapi/v1/klines', require('./services/bot-market-route.service').createKlineHandler(
+  require('./services/market-data-engine.service')));
 app.use('/api/fapi', (req, res) => {
   const parts = req.url.split('?');
   const ep    = parts[0];

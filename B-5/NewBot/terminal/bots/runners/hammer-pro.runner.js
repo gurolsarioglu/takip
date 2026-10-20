@@ -5,11 +5,15 @@
  */
 
 const {
+  createScanLoop,
+  isSignalAccepted,
+  strategyRules,
   getWatchlist,
   getKlines,
   postSignal,
   logger,
   quantIndicators,
+  botData,
   formatCryptoPrice,
   computePrevPrice
 } = require('./runner-helper');
@@ -39,64 +43,92 @@ async function scan() {
 
     try {
       const [klines5m, klines1h] = await Promise.all([
-        getKlines(sym, '5m', 100),
-        getKlines(sym, '1h', 100)
+        getKlines(sym, '5m', 250),
+        getKlines(sym, '1h', 250)
       ]);
 
-      if (klines5m.length < 50 || klines1h.length < 50) continue;
+      if (klines5m.length < 50 && klines1h.length < 50) continue;
 
       const lastBar5m = klines5m[klines5m.length - 1];
-      const m5 = quantIndicators.calculateAllMetrics(klines5m);
-      const m1h = quantIndicators.calculateAllMetrics(klines1h);
-      if (!m5 || !m1h) continue;
+      const m5 = klines5m.length >= 50 ? quantIndicators.calculateAllMetrics(klines5m) : null;
+      const m1h = klines1h.length >= 50 ? quantIndicators.calculateAllMetrics(klines1h) : null;
+      if (!m5 && !m1h) continue;
 
-      const isDip = m5.rsi <= 42;
-      const isWtCross = m5.wtCrossUp && m5.rsi <= 50;
+      const hasFullOhlc = klines5m.length > 0 && Number.isFinite(klines5m[0]?.open);
+      let klines1m = [];
+      let m1 = null;
+      if (hasFullOhlc) {
+        klines1m = await getKlines(sym, '1m', 250);
+        if (klines1m.length >= 50) {
+          m1 = quantIndicators.calculateAllMetrics(klines1m);
+        }
+      }
 
-      if (!isDip && !isWtCross) continue;
+      const fundingRate = item.fr ?? null;
+      if (!strategyRules.shouldEmit(BOT_ID, { m1, m5, m1h, klines1m, fundingRate })) continue;
 
-      seenMap.set(sym, now);
-      totalSignalsFound++;
+      let m4h = null, m1d = null;
+      const triggerBar = (m1 && klines1m.length > 0) ? klines1m[klines1m.length - 1] : lastBar5m;
+      const triggerTf = (m1 && klines1m.length > 0) ? '1m' : '5m';
+      if (m1 && triggerBar) {
+        const [klines4h, klines1d] = await Promise.all([
+          getKlines(sym, '4h', 250),
+          getKlines(sym, '1d', 30)
+        ]);
+        if (klines4h.length >= 50 && typeof quantIndicators.calculateAllMetrics === 'function') {
+          m4h = quantIndicators.calculateAllMetrics(klines4h);
+        }
+        if (klines1d.length >= 2 && typeof quantIndicators.calculatePivots === 'function') {
+          m1d = { pivots: quantIndicators.calculatePivots(klines1d[klines1d.length - 2], triggerBar.close) };
+        }
+      }
+
+      const evalHp = strategyRules.evaluateHammer(BOT_ID, { m1, m5, m1h, m4h, m1d, klines1m, fundingRate });
+      if (!evalHp) continue;
 
       const dateObj = new Date(now);
       const dateStr = dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
       const nowTime = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-      const curPrice = lastBar5m.close;
-      const boostVal = '+1.20%';
+      const observed = (m1 && klines1m.length >= 2) ? botData.priceChange(klines1m) : botData.priceChange(klines5m);
+      if (!observed || !triggerBar) continue;
 
       const signalPayload = {
         botId: BOT_ID,
+        source: 'binance-rest',
+        strategyVersion: evalHp.strategyVersion || 'local-hypothesis-v1',
+        observedAt: Date.now(),
         botType: BOT_ID,
         id: `hp_${sym}_${now}`,
-        candleOpenTime: lastBar5m.openTime,
-        timeframe: '5m',
+        candleOpenTime: triggerBar.openTime,
+        timeframe: triggerTf,
         symbol: sym,
         timestamp: now,
         isoDate: dateObj.toISOString(),
         dateStr,
-        stars: m5.rsi <= 35 ? '⭐⭐⭐' : '⭐⭐',
-        dot: '🟢',
-        strategy: '#W1 Dip Donus',
-        boostValue: boostVal,
-        currentPrice: formatCryptoPrice(curPrice, sym),
-        prevPrice: computePrevPrice(curPrice, 1.20, sym),
-        rsi: {
-          m1: `${Math.round(m5.rsi)}`,
-          m5: `${Math.round(m5.rsi)} ${m5.rsi <= 35 ? '❗' : ''}`,
-          h1: `${Math.round(m1h.rsi)}`
-        },
-        srsi: {
-          m1: '25',
-          m5: `${Math.round(m5.srsiK)}`,
-          h1: `${Math.round(m1h.srsiK)}`
-        },
-        wt: m5.wtCrossUp ? '5m 🟢 Cross' : 'Dip Reversal',
-        pivot: m5.pivots ? `%${m5.pivots.pivotDistancePct}` : '0.8%',
+        stars: evalHp.stars,
+        dot: evalHp.dot,
+        strategy: evalHp.strategy,
+        boostValue: evalHp.boostValue,
+        measuredChangePct: observed.changePct,
+        currentPrice: formatCryptoPrice(observed.current, sym),
+        prevPrice: formatCryptoPrice(observed.previous, sym),
+        rsi: evalHp.rsi,
+        srsi: evalHp.srsi,
+        wt: evalHp.wt,
+        divergence: evalHp.divergence,
+        pivot: evalHp.pivot,
+        ema200: evalHp.ema200,
+        fr: evalHp.fr,
+        btcStatus: evalHp.btcStatus,
         dateLabel: dateStr,
         time: nowTime
       };
 
       const hubResult = await postSignal(signalPayload);
+      if (isSignalAccepted(hubResult)) {
+        seenMap.set(sym, now);
+        totalSignalsFound++;
+      }
       logger.signal(BOT_NAME, signalPayload, hubResult);
 
     } catch (err) {
@@ -109,10 +141,9 @@ async function start() {
   logger.header(BOT_ID, BOT_NAME, BOT_DESC);
   logger.info(`${BOT_NAME} tarama motoru baslatildi (Her 15 saniyede bir tarar)...`);
 
-  await scan();
-  setInterval(() => {
-    scan().catch(e => logger.warn(`Tarama hatasi: ${e.message}`));
-  }, 15000);
+  const loop = createScanLoop(scan, 15000, { onError: e => logger.warn(`Tarama hatasi: ${e.message}`) });
+  await loop.run();
 }
 
-start();
+if (require.main === module) start();
+module.exports = { scan, start };

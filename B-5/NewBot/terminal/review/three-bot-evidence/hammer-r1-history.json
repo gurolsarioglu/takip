@@ -1,0 +1,838 @@
+{
+  "url": "https://terminal.visivero.com/api/bot-messages?bot_id=hammer-pro-plus&limit=100&exchange=binance&market_type=FUTURES&message=Strategy%3A+%23R1",
+  "observedAt": "2026-10-20T12:31:11.066Z",
+  "credentialsUsed": false,
+  "response": {
+    "messages": [
+      {
+        "id": "cmrdgxqrn9khbjpb1dm7hld2q",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #TAGUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +7.24% \nCurrent Price: 0.001074\nPrevious Price: 0.001084\nRSI: <b>1m.71❗️ | 5m.89❗️ | 1h.76❗️ </b>\nSRSI: <b>1m.57 | 5m.100❗️ | 1h.100❗️ </b>",
+        "exchange": "binance",
+        "symbol": "TAGUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-09T12:14:01.668Z"
+      },
+      {
+        "id": "cmrdgxqy02bc0ubnssnt45ur1",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #TAGUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +7.24% \nCurrent Price: 0.001074\nPrevious Price: 0.001084\nRSI: <b>1m.71❗️ | 5m.89❗️ | 1h.76❗️ </b>\nSRSI: <b>1m.57 | 5m.100❗️ | 1h.100❗️ </b>",
+        "exchange": "binance",
+        "symbol": "TAGUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-09T12:14:01.896Z"
+      },
+      {
+        "id": "cmrdgxqy82bc3ubnsna4e8rjl",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #TAGUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +7.24% \nCurrent Price: 0.001074\nPrevious Price: 0.001084\nRSI: <b>1m.71❗️ | 5m.89❗️ | 1h.76❗️ </b>\nSRSI: <b>1m.57 | 5m.100❗️ | 1h.100❗️ </b>",
+        "exchange": "binance",
+        "symbol": "TAGUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-09T12:14:01.904Z"
+      },
+      {
+        "id": "cmrglqyak22vq8na1mokjb0ej",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #UMAUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.82% \nCurrent Price: 0.4182\nPrevious Price: 0.4206\nRSI: <b>1m.77❗️ | 5m.80❗️ | 1h.91❗️ </b>\nSRSI: <b>1m.71 | 5m.90 | 1h.100❗️ </b>\nPivot: %0.85 ⚠️",
+        "exchange": "binance",
+        "symbol": "UMAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-11T16:52:01.436Z"
+      },
+      {
+        "id": "cmrhnwf7f3btk8na1kd2hl0ac",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #TLMUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.33% \nCurrent Price: 0.002138\nPrevious Price: 0.002169\nRSI: <b>1m.75❗️ | 5m.82❗️ | 1h.71❗️ </b>\nSRSI: <b>1m.74 | 5m.99❗️ | 1h.81 </b>",
+        "exchange": "binance",
+        "symbol": "TLMUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-12T10:40:02.044Z"
+      },
+      {
+        "id": "cmrkfkebm0q6cho017wupca0x",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #MUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +12.83% \nCurrent Price: 1.3276\nPrevious Price: 1.3341\nRSI: <b>1m.73❗️ | 5m.84❗️ | 1h.70 </b>\nSRSI: <b>1m.74 | 5m.94❗️ | 1h.76 </b>",
+        "exchange": "binance",
+        "symbol": "MUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-14T09:10:02.626Z"
+      },
+      {
+        "id": "cmrkj8u260xdvho01nxwfna6b",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #EVAAUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.31% \nCurrent Price: 1.0369\nPrevious Price: 1.0506\nRSI: <b>1m.72❗️ | 5m.89❗️ | 1h.63 </b>\nSRSI: <b>1m.9 | 5m.99❗️ | 1h.93❗️ </b>",
+        "exchange": "binance",
+        "symbol": "EVAAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-14T10:53:01.615Z"
+      },
+      {
+        "id": "cmrne398q4v8who01oxlj4fe5",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #ESPORTSUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.80% \nCurrent Price: 0.01629\nPrevious Price: 0.01646\nRSI: <b>1m.72❗️ | 5m.67 | 1h.61 </b>\nSRSI: <b>1m.79 | 5m.89 | 1h.14 </b>",
+        "exchange": "binance",
+        "symbol": "ESPORTSUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-16T10:52:01.803Z"
+      },
+      {
+        "id": "cmropx7oo0zvj9qbidjbdo8kb",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #STARUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.30% \nCurrent Price: 0.22976\nPrevious Price: 0.23142\nRSI: <b>1m.76❗️ | 5m.93❗️ | 1h.82❗️ </b>\nSRSI: <b>1m.66 | 5m.95❗️ | 1h.92❗️ </b>",
+        "exchange": "binance",
+        "symbol": "STARUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-17T09:11:01.417Z"
+      },
+      {
+        "id": "cmrs03bvh3p76wanulx44s9xi",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #TLMUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.88% \nCurrent Price: 0.002688\nPrevious Price: 0.002709\nRSI: <b>1m.74❗️ | 5m.69 | 1h.80❗️ </b>\nSRSI: <b>1m.85 | 5m.78 | 1h.85 </b>\nFR: -0.48 ⚠️",
+        "exchange": "binance",
+        "symbol": "TLMUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-19T16:19:01.469Z"
+      },
+      {
+        "id": "cmrsuo5mc51vowanu8erqxx7g",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #ACEUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.12% \nCurrent Price: 0.11369\nPrevious Price: 0.11506\nRSI: <b>1m.72❗️ | 5m.78❗️ | 1h.78❗️ </b>\nSRSI: <b>1m.13 | 5m.99❗️ | 1h.37 </b>\nFR: -0.48 ⚠️",
+        "exchange": "binance",
+        "symbol": "ACEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-20T06:35:01.621Z"
+      },
+      {
+        "id": "cmrtf16ck0s7mj7c1njhtdbua",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #ONUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.98% \nCurrent Price: 0.143\nPrevious Price: 0.14489\nRSI: <b>1m.74❗️ | 5m.83❗️ | 1h.69 </b>\nSRSI: <b>1m.76 | 5m.89 | 1h.96❗️ </b>",
+        "exchange": "binance",
+        "symbol": "ONUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-20T16:05:01.413Z"
+      },
+      {
+        "id": "cmrvwc7b9500cj7c10ml6bk4g",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #BROCCOLIF3BUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +13.59% \nCurrent Price: 0.007026\nPrevious Price: 0.007095\nRSI: <b>1m.75❗️ | 5m.91❗️ | 1h.89❗️ </b>\nSRSI: <b>1m.53 | 5m.79 | 1h.96❗️ </b>",
+        "exchange": "binance",
+        "symbol": "BROCCOLIF3BUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-22T09:45:01.701Z"
+      },
+      {
+        "id": "cmrx14tlo6e4kj7c172r3jyqd",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #BROCCOLIF3BUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.77% \nCurrent Price: 0.006076\nPrevious Price: 0.00617\nRSI: <b>1m.71❗️ | 5m.64 | 1h.44 </b>\nSRSI: <b>1m.79 | 5m.95❗️ | 1h.9 </b>\nWT: <b>1m🔴    </b>\nPivot: %0.01 ⚠️",
+        "exchange": "binance",
+        "symbol": "BROCCOLIF3BUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-23T04:47:01.597Z"
+      },
+      {
+        "id": "cms3hwg4aghlnj7c1fkt4j9ez",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #LAUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.28% \nCurrent Price: 0.09998\nPrevious Price: 0.10131\nRSI: <b>1m.74❗️ | 5m.91❗️ | 1h.82❗️ </b>\nSRSI: <b>1m.23 | 5m.99❗️ | 1h.87 </b>",
+        "exchange": "binance",
+        "symbol": "LAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-27T17:23:01.402Z"
+      },
+      {
+        "id": "cms7xjm83nxmqj7c175xtjwr9",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #ESPORTSUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +18.84% \nCurrent Price: 0.0211\nPrevious Price: 0.02134\nRSI: <b>1m.77❗️ | 5m.81❗️ | 1h.51 </b>\nSRSI: <b>1m.74 | 5m.95❗️ | 1h.48 </b>\nWT: <b>    1h🟢</b>",
+        "exchange": "binance",
+        "symbol": "ESPORTSUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-30T19:52:01.348Z"
+      },
+      {
+        "id": "cms81txxdo2rbj7c1y9c786o9",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #TAGUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +5.00% \nCurrent Price: 0.001113\nPrevious Price: 0.001118\nRSI: <b>1m.74❗️ | 5m.75❗️ | 1h.50 </b>\nSRSI: <b>1m.59 | 5m.91❗️ | 1h.34 </b>\nPivot: %0.69 ⚠️",
+        "exchange": "binance",
+        "symbol": "TAGUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-30T21:52:01.537Z"
+      },
+      {
+        "id": "cms8t35yip5yrj7c1juvmy2xj",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #MMTUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +22.98% \nCurrent Price: 0.4039\nPrevious Price: 0.4178\nRSI: <b>1m.74❗️ | 5m.94❗️ | 1h.94❗️ </b>\nSRSI: <b>1m.43 | 5m.100❗️ | 1h.78 </b>",
+        "exchange": "binance",
+        "symbol": "MMTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-07-31T10:35:01.482Z"
+      },
+      {
+        "id": "cmseodwjt6yfb9qe7vheno609",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #HOMEUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.79% \nCurrent Price: 0.011274\nPrevious Price: 0.011414\nRSI: <b>1m.72❗️ | 5m.85❗️ | 1h.76❗️ </b>\nSRSI: <b>1m.36 | 5m.95❗️ | 1h.95❗️ </b>\nPivot: %0.45 ⚠️\nFR: -1.90 ⚠️",
+        "exchange": "binance",
+        "symbol": "HOMEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-04T13:10:01.482Z"
+      },
+      {
+        "id": "cmsh1sqx8ct919qe73ayh9bxi",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #INXUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.75% \nCurrent Price: 0.007833\nPrevious Price: 0.007871\nRSI: <b>1m.73❗️ | 5m.77❗️ | 1h.46 </b>\nSRSI: <b>1m.62 | 5m.96❗️ | 1h.22 </b>\nWT: <b>1m🔴    </b>",
+        "exchange": "binance",
+        "symbol": "INXUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-06T05:01:01.385Z"
+      },
+      {
+        "id": "cmshhrlhkeren9qe7vll0uf5l",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #BEATUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.78% \nCurrent Price: 1.921\nPrevious Price: 1.933\nRSI: <b>1m.72❗️ | 5m.80❗️ | 1h.39 </b>\nSRSI: <b>1m.66 | 5m.100❗️ | 1h.57 </b>",
+        "exchange": "binance",
+        "symbol": "BEATUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-06T12:28:01.544Z"
+      },
+      {
+        "id": "cmshqay7fg7ve9qe74jemiko6",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #BICOUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.15% \nCurrent Price: 0.04386\nPrevious Price: 0.04436\nRSI: <b>1m.71❗️ | 5m.76❗️ | 1h.85❗️ </b>\nSRSI: <b>1m.55 | 5m.93❗️ | 1h.100❗️ </b>",
+        "exchange": "binance",
+        "symbol": "BICOUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-06T16:27:01.419Z"
+      },
+      {
+        "id": "cmshzk0x6h36w9qe74kldljmk",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #SKYAIUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.15% \nCurrent Price: 0.10295\nPrevious Price: 0.10375\nRSI: <b>1m.72❗️ | 5m.85❗️ | 1h.80❗️ </b>\nSRSI: <b>1m.47 | 5m.94❗️ | 1h.79 </b>\nWT: <b>1m🔴    </b>",
+        "exchange": "binance",
+        "symbol": "SKYAIUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-06T20:46:01.387Z"
+      },
+      {
+        "id": "cmskc2pypo2519qe7so3ogtpv",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #ACEUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.95% \nCurrent Price: 0.11992\nPrevious Price: 0.12144\nRSI: <b>1m.73❗️ | 5m.79❗️ | 1h.59 </b>\nSRSI: <b>1m.54 | 5m.92❗️ | 1h.74 </b>\nWT: <b>1m🔴    </b>",
+        "exchange": "binance",
+        "symbol": "ACEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-08T12:12:01.393Z"
+      },
+      {
+        "id": "cmsnlhtxy0x7n9qe7r3ec5yeh",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #BLUAIUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.69% \nCurrent Price: 0.023385\nPrevious Price: 0.023537\nRSI: <b>1m.76❗️ | 5m.93❗️ | 1h.71❗️ </b>\nSRSI: <b>1m.77 | 5m.100❗️ | 1h.67 </b>",
+        "exchange": "binance",
+        "symbol": "BLUAIUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-10T18:59:01.462Z"
+      },
+      {
+        "id": "cmso3548r1p2l9qe76akgdxtq",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #AGTUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.39% \nCurrent Price: 0.015609\nPrevious Price: 0.015826\nRSI: <b>1m.72❗️ | 5m.91❗️ | 1h.77❗️ </b>\nSRSI: <b>1m.66 | 5m.74 | 1h.100❗️ </b>",
+        "exchange": "binance",
+        "symbol": "AGTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-11T03:13:01.371Z"
+      },
+      {
+        "id": "cmso47p5h1t1r9qe7d86txcjs",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #BICOUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +6.71% \nCurrent Price: 0.04649\nPrevious Price: 0.0466\nRSI: <b>1m.75❗️ | 5m.69 | 1h.56 </b>\nSRSI: <b>1m.67 | 5m.95❗️ | 1h.62 </b>",
+        "exchange": "binance",
+        "symbol": "BICOUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-11T03:43:01.397Z"
+      },
+      {
+        "id": "cmson2pkn37389qe75q72osn3",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #LUNA2USDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +7.75% \nCurrent Price: 0.04847\nPrevious Price: 0.04954\nRSI: <b>1m.71❗️ | 5m.89❗️ | 1h.93❗️ </b>\nSRSI: <b>1m.45 | 5m.92❗️ | 1h.88 </b>",
+        "exchange": "binance",
+        "symbol": "LUNA2USDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-11T12:31:01.367Z"
+      },
+      {
+        "id": "cmspyij4g6pmy9qe79plqbkaq",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #RAREUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.59% \nCurrent Price: 0.01517\nPrevious Price: 0.01545\nRSI: <b>1m.72❗️ | 5m.86❗️ | 1h.85❗️ </b>\nSRSI: <b>1m.25 | 5m.93❗️ | 1h.88 </b>",
+        "exchange": "binance",
+        "symbol": "RAREUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-12T10:39:01.457Z"
+      },
+      {
+        "id": "cmsqdinm1808p9qe7dw2b4pya",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #AGTUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.29% \nCurrent Price: 0.016502\nPrevious Price: 0.016691\nRSI: <b>1m.71❗️ | 5m.76❗️ | 1h.80❗️ </b>\nSRSI: <b>1m.67 | 5m.62 | 1h.69 </b>",
+        "exchange": "binance",
+        "symbol": "AGTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-12T17:39:01.514Z"
+      },
+      {
+        "id": "cmsqf0nz681vm9qe7u139y69y",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #2ZUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.97% \nCurrent Price: 0.06241\nPrevious Price: 0.06382\nRSI: <b>1m.78❗️ | 5m.87❗️ | 1h.85❗️ </b>\nSRSI: <b>1m.56 | 5m.94❗️ | 1h.68 </b>\nWT: <b>1m🔴    </b>",
+        "exchange": "binance",
+        "symbol": "2ZUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-12T18:21:01.410Z"
+      },
+      {
+        "id": "cmsqu0soc8h7q9qe7ymccs95l",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #BMTUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.70% \nCurrent Price: 0.01867\nPrevious Price: 0.01879\nRSI: <b>1m.72❗️ | 5m.77❗️ | 1h.51 </b>\nSRSI: <b>1m.66 | 5m.97❗️ | 1h.56 </b>",
+        "exchange": "binance",
+        "symbol": "BMTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-13T01:21:01.740Z"
+      },
+      {
+        "id": "cmst32qvr2pr7yarzzki6kglk",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #EDENUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.64% \nCurrent Price: 0.05739\nPrevious Price: 0.05836\nRSI: <b>1m.72❗️ | 5m.74❗️ | 1h.47 </b>\nSRSI: <b>1m.77 | 5m.100❗️ | 1h.6 </b>",
+        "exchange": "binance",
+        "symbol": "EDENUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-14T15:10:01.623Z"
+      },
+      {
+        "id": "cmst8kscr395myarzt9d0q70n",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #DOLOUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.00% \nCurrent Price: 0.02953\nPrevious Price: 0.03003\nRSI: <b>1m.74❗️ | 5m.78❗️ | 1h.94❗️ </b>\nSRSI: <b>1m.69 | 5m.68 | 1h.98❗️ </b>\nWT: <b>1m🔴    </b>",
+        "exchange": "binance",
+        "symbol": "DOLOUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-14T17:44:01.419Z"
+      },
+      {
+        "id": "cmsueik746qz3yarztrpn389g",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #MOVRUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.96% \nCurrent Price: 0.998\nPrevious Price: 1.014\nRSI: <b>1m.76❗️ | 5m.81❗️ | 1h.78❗️ </b>\nSRSI: <b>1m.59 | 5m.90❗️ | 1h.54 </b>",
+        "exchange": "binance",
+        "symbol": "MOVRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-15T13:18:01.409Z"
+      },
+      {
+        "id": "cmsxli86ubvr1yarzeazamtmf",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #NILUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +7.47% \nCurrent Price: 0.04939\nPrevious Price: 0.04974\nRSI: <b>1m.75❗️ | 5m.72❗️ | 1h.56 </b>\nSRSI: <b>1m.76 | 5m.92❗️ | 1h.22 </b>",
+        "exchange": "binance",
+        "symbol": "NILUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-17T18:57:01.687Z"
+      },
+      {
+        "id": "cmsytc5o7d67dyarz3y7vjzap",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #ALPINEUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.75% \nCurrent Price: 0.373\nPrevious Price: 0.3783\nRSI: <b>1m.73❗️ | 5m.98❗️ | 1h.92❗️ </b>\nSRSI: <b>1m.23 | 5m.100❗️ | 1h.85 </b>",
+        "exchange": "binance",
+        "symbol": "ALPINEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-18T15:24:01.591Z"
+      },
+      {
+        "id": "cmt29twk92thq5p5wxrpyt0g3",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #ONGUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +8.94% \nCurrent Price: 0.14027\nPrevious Price: 0.14121\nRSI: <b>1m.73❗️ | 5m.80❗️ | 1h.75❗️ </b>\nSRSI: <b>1m.82 | 5m.85 | 1h.55 </b>\nDivergence:   1h✅\nFR: -2.00 ⚠️\nBTC Status: Volatilite ⚡️",
+        "exchange": "binance",
+        "symbol": "ONGUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-21T01:29:01.977Z"
+      },
+      {
+        "id": "cmt3cy32w0zzs13za3ccliuw8",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #SLPUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.98% \nCurrent Price: 0.00066\nPrevious Price: 0.0006732\nRSI: <b>1m.72❗️ | 5m.85❗️ | 1h.83❗️ </b>\nSRSI: <b>1m.60 | 5m.100❗️ | 1h.70 </b>\nWT: <b>    1h🔴</b>",
+        "exchange": "binance",
+        "symbol": "SLPUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-21T19:44:02.073Z"
+      },
+      {
+        "id": "cmt3o4ldn1elk13zabhpwtzkn",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #REUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.50% \nCurrent Price: 0.5845\nPrevious Price: 0.588\nRSI: <b>1m.72❗️ | 5m.72❗️ | 1h.72❗️ </b>\nSRSI: <b>1m.66 | 5m.81 | 1h.88 </b>",
+        "exchange": "binance",
+        "symbol": "REUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-22T00:57:01.500Z"
+      },
+      {
+        "id": "cmt64nc2q1s80g1ex6bzvcjz7",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #1000RATSUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.38% \nCurrent Price: 0.04453\nPrevious Price: 0.04483\nRSI: <b>1m.72❗️ | 5m.86❗️ | 1h.77❗️ </b>\nSRSI: <b>1m.48 | 5m.82 | 1h.95❗️ </b>",
+        "exchange": "binance",
+        "symbol": "1000RATSUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-23T18:15:02.115Z"
+      },
+      {
+        "id": "cmt6b2t3g1uueg1exu5gzkytw",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #TUTUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +15.17% \nCurrent Price: 0.06532\nPrevious Price: 0.066\nRSI: <b>1m.76❗️ | 5m.86❗️ | 1h.60 </b>\nSRSI: <b>1m.65 | 5m.93❗️ | 1h.27 </b>",
+        "exchange": "binance",
+        "symbol": "TUTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-23T21:15:01.708Z"
+      },
+      {
+        "id": "cmt8fk5i512db11pury7ldnhi",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #ZEREBROUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.44% \nCurrent Price: 0.040135\nPrevious Price: 0.040401\nRSI: <b>1m.71❗️ | 5m.79❗️ | 1h.68 </b>\nSRSI: <b>1m.39 | 5m.95❗️ | 1h.41 </b>\nPivot: %0.00 ⚠️",
+        "exchange": "binance",
+        "symbol": "ZEREBROUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-25T08:56:01.757Z"
+      },
+      {
+        "id": "cmt9zxgwt3fbc11pugutm8slr",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #NOMUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.43% \nCurrent Price: 0.001779\nPrevious Price: 0.001816\nRSI: <b>1m.72❗️ | 5m.93❗️ | 1h.83❗️ </b>\nSRSI: <b>1m.68 | 5m.100❗️ | 1h.64 </b>",
+        "exchange": "binance",
+        "symbol": "NOMUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-26T11:14:01.565Z"
+      },
+      {
+        "id": "cmtbcq6jq6vkn11puv302x93b",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #KERNELUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.96% \nCurrent Price: 0.0466\nPrevious Price: 0.04756\nRSI: <b>1m.73❗️ | 5m.96❗️ | 1h.87❗️ </b>\nSRSI: <b>1m.50 | 5m.97❗️ | 1h.97❗️ </b>\nDivergence:   1h✅",
+        "exchange": "binance",
+        "symbol": "KERNELUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-27T10:00:02.726Z"
+      },
+      {
+        "id": "cmte6d9y70002lxw76kpii0rn",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #BTRUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +10.55% \nCurrent Price: 0.18234\nPrevious Price: 0.18513\nRSI: <b>1m.74❗️ | 5m.89❗️ | 1h.67 </b>\nSRSI: <b>1m.52 | 5m.100❗️ | 1h.66 </b>",
+        "exchange": "binance",
+        "symbol": "BTRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-29T09:25:21.440Z"
+      },
+      {
+        "id": "cmte9klfj02obcynbmraqwgja",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #PROMPTUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.23% \nCurrent Price: 0.02725\nPrevious Price: 0.02749\nRSI: <b>1m.81❗️ | 5m.94❗️ | 1h.85❗️ </b>\nSRSI: <b>1m.14 | 5m.98❗️ | 1h.43 </b>",
+        "exchange": "binance",
+        "symbol": "PROMPTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-08-29T10:55:01.759Z"
+      },
+      {
+        "id": "cmti5n19w47n4nzn2lvcvgo29",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #AGTUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.03% \nCurrent Price: 0.018828\nPrevious Price: 0.019162\nRSI: <b>1m.77❗️ | 5m.81❗️ | 1h.78❗️ </b>\nSRSI: <b>1m.58 | 5m.90❗️ | 1h.50 </b>\nDivergence:   1h✅",
+        "exchange": "binance",
+        "symbol": "AGTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-01T04:16:01.844Z"
+      },
+      {
+        "id": "cmtks38k307fp106atzz92fly",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #ANKRUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.36% \nCurrent Price: 0.004612\nPrevious Price: 0.004664\nRSI: <b>1m.73❗️ | 5m.97❗️ | 1h.86❗️ </b>\nSRSI: <b>1m.22 | 5m.100❗️ | 1h.50 </b>",
+        "exchange": "binance",
+        "symbol": "ANKRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-03T00:20:01.683Z"
+      },
+      {
+        "id": "cmtn4psej2rbypucikv2y7s5c",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #BNCUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.38% \nCurrent Price: 3.461\nPrevious Price: 3.482\nRSI: <b>1m.71❗️ | 5m.68 | 1h.59 </b>\nSRSI: <b>1m.55 | 5m.94❗️ | 1h.13 </b>\nWT: <b>1m🔴    </b>",
+        "exchange": "binance",
+        "symbol": "BNCUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-04T15:49:01.579Z"
+      },
+      {
+        "id": "cmtnt7zph3lwspucinfufx5qh",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #BULLAUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.99% \nCurrent Price: 0.04931\nPrevious Price: 0.050834\nRSI: <b>1m.77❗️ | 5m.92❗️ | 1h.78❗️ </b>\nSRSI: <b>1m.2 | 5m.100❗️ | 1h.73 </b>\nFR: -0.27 ⚠️",
+        "exchange": "binance",
+        "symbol": "BULLAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-05T03:15:01.637Z"
+      },
+      {
+        "id": "cmtny2vsa3vl1puci3jde7mau",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #NOMUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.09% \nCurrent Price: 0.002042\nPrevious Price: 0.002065\nRSI: <b>1m.73❗️ | 5m.66 | 1h.74❗️ </b>\nSRSI: <b>1m.64 | 5m.91❗️ | 1h.60 </b>\nDivergence:   1h✅",
+        "exchange": "binance",
+        "symbol": "NOMUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-05T05:31:01.355Z"
+      },
+      {
+        "id": "cmtp3inq40r34q1rqzr3wffb7",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #TAKEUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +5.45% \nCurrent Price: 0.06293\nPrevious Price: 0.06347\nRSI: <b>1m.75❗️ | 5m.84❗️ | 1h.73❗️ </b>\nSRSI: <b>1m.58 | 5m.95❗️ | 1h.98❗️ </b>\nWT: <b>1m🔴    </b>",
+        "exchange": "binance",
+        "symbol": "TAKEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-06T00:51:01.660Z"
+      },
+      {
+        "id": "cmts9tvtp4364q1rq4nc35he7",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #牛来USDT ⭐️\nStrategy: #R1\nBoost Value: +2.95% \nCurrent Price: 0.09198\nPrevious Price: 0.09296\nRSI: <b>1m.76❗️ | 5m.79❗️ | 1h.59 </b>\nSRSI: <b>1m.66 | 5m.96❗️ | 1h.70 </b>\nWT: <b>1m🔴    </b>",
+        "exchange": "binance",
+        "symbol": "牛来USDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-08T06:11:01.597Z"
+      },
+      {
+        "id": "cmtsiftbr4igyq1rqypzhhe5f",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #GUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.26% \nCurrent Price: 0.004497\nPrevious Price: 0.004536\nRSI: <b>1m.71❗️ | 5m.72❗️ | 1h.89❗️ </b>\nSRSI: <b>1m.70 | 5m.83 | 1h.100❗️ </b>",
+        "exchange": "binance",
+        "symbol": "GUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-08T10:12:01.720Z"
+      },
+      {
+        "id": "cmttxdnv96ejmq1rqx71yajpv",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #BIRBUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.36% \nCurrent Price: 0.07372\nPrevious Price: 0.07446\nRSI: <b>1m.77❗️ | 5m.82❗️ | 1h.85❗️ </b>\nSRSI: <b>1m.81 | 5m.94❗️ | 1h.71 </b>",
+        "exchange": "binance",
+        "symbol": "BIRBUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-09T09:58:01.749Z"
+      },
+      {
+        "id": "cmtu0rtsb6iaeq1rqvcb5h81c",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #牛来USDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +49.73% \nCurrent Price: 0.1263\nPrevious Price: 0.13355\nRSI: <b>1m.76❗️ | 5m.83❗️ | 1h.68 </b>\nSRSI: <b>1m.77 | 5m.100❗️ | 1h.25 </b>\nDivergence:  5m✅ 1h✅",
+        "exchange": "binance",
+        "symbol": "牛来USDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-09T11:33:01.451Z"
+      },
+      {
+        "id": "cmtz23lq9fmiaq1rq3ss7dvoq",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #POWRUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.67% \nCurrent Price: 0.06522\nPrevious Price: 0.06687\nRSI: <b>1m.73❗️ | 5m.94❗️ | 1h.84❗️ </b>\nSRSI: <b>1m.59 | 5m.94❗️ | 1h.100❗️ </b>\nWT: <b>1m🔴    </b>",
+        "exchange": "binance",
+        "symbol": "POWRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-13T00:09:01.378Z"
+      },
+      {
+        "id": "cmu1x0lnd0wxbd2x0lyq02vo0",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #HIVEUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.30% \nCurrent Price: 0.05786\nPrevious Price: 0.05872\nRSI: <b>1m.74❗️ | 5m.90❗️ | 1h.69 </b>\nSRSI: <b>1m.75 | 5m.92❗️ | 1h.49 </b>",
+        "exchange": "binance",
+        "symbol": "HIVEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-15T00:10:01.754Z"
+      },
+      {
+        "id": "cmu201wts16dtd2x0isnw58wn",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #AINUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +5.64% \nCurrent Price: 0.14585\nPrevious Price: 0.14731\nRSI: <b>1m.71❗️ | 5m.71❗️ | 1h.84❗️ </b>\nSRSI: <b>1m.73 | 5m.87 | 1h.71 </b>\nDivergence:  5m✅ \nWT: <b>    1h🔴</b>",
+        "exchange": "binance",
+        "symbol": "AINUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-15T01:35:01.744Z"
+      },
+      {
+        "id": "cmu24y3bw1h3wd2x0u92fam8o",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #AKEUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +7.57% \nCurrent Price: 0.0168\nPrevious Price: 0.016927\nRSI: <b>1m.73❗️ | 5m.68 | 1h.64 </b>\nSRSI: <b>1m.80 | 5m.89 | 1h.66 </b>\nDivergence:   1h✅",
+        "exchange": "binance",
+        "symbol": "AKEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-15T03:52:01.629Z"
+      },
+      {
+        "id": "cmu2yixj434utd2x0l4vvfuc3",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #CHIPUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.54% \nCurrent Price: 0.03934\nPrevious Price: 0.03948\nRSI: <b>1m.73❗️ | 5m.76❗️ | 1h.41 </b>\nSRSI: <b>1m.63 | 5m.100❗️ | 1h.30 </b>\nBTC Status: Volatilite ⚡️",
+        "exchange": "binance",
+        "symbol": "CHIPUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-15T17:40:02.753Z"
+      },
+      {
+        "id": "cmu403sfm53xid2x0rr81a9qy",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #BRUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +7.18% \nCurrent Price: 0.47884\nPrevious Price: 0.49038\nRSI: <b>1m.72❗️ | 5m.93❗️ | 1h.79❗️ </b>\nSRSI: <b>1m.70 | 5m.43 | 1h.100❗️ </b>",
+        "exchange": "binance",
+        "symbol": "BRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-16T11:12:01.715Z"
+      },
+      {
+        "id": "cmu73zk7p2drpdyupvduqu6hg",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #FUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +5.70% \nCurrent Price: 0.00483\nPrevious Price: 0.00489\nRSI: <b>1m.72❗️ | 5m.94❗️ | 1h.97❗️ </b>\nSRSI: <b>1m.0 | 5m.96❗️ | 1h.75 </b>",
+        "exchange": "binance",
+        "symbol": "FUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-18T15:24:01.430Z"
+      },
+      {
+        "id": "cmu75yaln2m7ldyupug6jznu9",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #CUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +6.00% \nCurrent Price: 0.08508\nPrevious Price: 0.08704\nRSI: <b>1m.85❗️ | 5m.92❗️ | 1h.96❗️ </b>\nSRSI: <b>1m.83 | 5m.98❗️ | 1h.80 </b>",
+        "exchange": "binance",
+        "symbol": "CUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-18T16:19:01.548Z"
+      },
+      {
+        "id": "cmu7r66y73of2dyup51c8tke7",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #ONEUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.85% \nCurrent Price: 0.0027305\nPrevious Price: 0.002771\nRSI: <b>1m.71❗️ | 5m.78❗️ | 1h.79❗️ </b>\nSRSI: <b>1m.77 | 5m.94❗️ | 1h.95❗️ </b>",
+        "exchange": "binance",
+        "symbol": "ONEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-19T02:13:01.999Z"
+      },
+      {
+        "id": "cmu9okw6f1yz4gtm4abn3cllr",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #BTWUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +22.21% \nCurrent Price: 0.75187\nPrevious Price: 0.7574\nRSI: <b>1m.77❗️ | 5m.88❗️ | 1h.82❗️ </b>\nSRSI: <b>1m.56 | 5m.96❗️ | 1h.100❗️ </b>",
+        "exchange": "binance",
+        "symbol": "BTWUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-20T10:36:01.383Z"
+      },
+      {
+        "id": "cmubghkhd638dgtm4nz32aly4",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #FORMUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.32% \nCurrent Price: 0.3388\nPrevious Price: 0.3484\nRSI: <b>1m.72❗️ | 5m.88❗️ | 1h.91❗️ </b>\nSRSI: <b>1m.46 | 5m.93❗️ | 1h.89 </b>",
+        "exchange": "binance",
+        "symbol": "FORMUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-21T16:25:01.681Z"
+      },
+      {
+        "id": "cmuc7unbv77g1gtm4qnolzz6e",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #SKRUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +5.95% \nCurrent Price: 0.024829\nPrevious Price: 0.02573\nRSI: <b>1m.71❗️ | 5m.81❗️ | 1h.82❗️ </b>\nSRSI: <b>1m.70 | 5m.88 | 1h.66 </b>",
+        "exchange": "binance",
+        "symbol": "SKRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-22T05:11:01.532Z"
+      },
+      {
+        "id": "cmuckw2h07svhgtm4lyg4rz0f",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #HOTUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.32% \nCurrent Price: 0.0004741\nPrevious Price: 0.0004849\nRSI: <b>1m.72❗️ | 5m.81❗️ | 1h.81❗️ </b>\nSRSI: <b>1m.43 | 5m.91❗️ | 1h.33 </b>\nWT: <b>1m🔴    </b>",
+        "exchange": "binance",
+        "symbol": "HOTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-22T11:16:02.820Z"
+      },
+      {
+        "id": "cmucrctk489ixgtm4okjksmxp",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #TAKEUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.78% \nCurrent Price: 0.06317\nPrevious Price: 0.06359\nRSI: <b>1m.74❗️ | 5m.83❗️ | 1h.79❗️ </b>\nSRSI: <b>1m.66 | 5m.70 | 1h.100❗️ </b>\nPivot: %0.46 ⚠️",
+        "exchange": "binance",
+        "symbol": "TAKEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-22T14:17:02.116Z"
+      },
+      {
+        "id": "cmui0yy3hi7vwgtm44jnbjyge",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #SPELLUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.06% \nCurrent Price: 0.0001071\nPrevious Price: 0.0001086\nRSI: <b>1m.72❗️ | 5m.92❗️ | 1h.83❗️ </b>\nSRSI: <b>1m.53 | 5m.100❗️ | 1h.54 </b>",
+        "exchange": "binance",
+        "symbol": "SPELLUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-26T06:45:01.853Z"
+      },
+      {
+        "id": "cmujx4nllk097gtm426075y8f",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #STARUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.12% \nCurrent Price: 0.03977\nPrevious Price: 0.04011\nRSI: <b>1m.72❗️ | 5m.76❗️ | 1h.78❗️ </b>\nSRSI: <b>1m.82 | 5m.90 | 1h.85 </b>",
+        "exchange": "binance",
+        "symbol": "STARUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-27T14:33:02.074Z"
+      },
+      {
+        "id": "cmuk0mojgk5vcgtm4xygkenzw",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #YBUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +8.90% \nCurrent Price: 0.09308\nPrevious Price: 0.09389\nRSI: <b>1m.72❗️ | 5m.80❗️ | 1h.73❗️ </b>\nSRSI: <b>1m.54 | 5m.95❗️ | 1h.55 </b>",
+        "exchange": "binance",
+        "symbol": "YBUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-27T16:11:01.949Z"
+      },
+      {
+        "id": "cmunwazdmobyigtm4bnp075cm",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #AGTUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +13.35% \nCurrent Price: 0.019873\nPrevious Price: 0.020073\nRSI: <b>1m.74❗️ | 5m.87❗️ | 1h.80❗️ </b>\nSRSI: <b>1m.70 | 5m.81 | 1h.70 </b>",
+        "exchange": "binance",
+        "symbol": "AGTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-09-30T09:21:02.362Z"
+      },
+      {
+        "id": "cmupo53f6quxqgtm4ypw9ysvy",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #ALICEUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +5.70% \nCurrent Price: 0.2343\nPrevious Price: 0.2375\nRSI: <b>1m.83❗️ | 5m.88❗️ | 1h.92❗️ </b>\nSRSI: <b>1m.41 | 5m.94❗️ | 1h.77 </b>\nWT: <b>1m🔴    </b>",
+        "exchange": "binance",
+        "symbol": "ALICEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-01T15:08:03.090Z"
+      },
+      {
+        "id": "cmur325pfsybpgtm4f2624wj6",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #MAGMAUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +5.55% \nCurrent Price: 0.32853\nPrevious Price: 0.33257\nRSI: <b>1m.76❗️ | 5m.85❗️ | 1h.80❗️ </b>\nSRSI: <b>1m.69 | 5m.93❗️ | 1h.62 </b>",
+        "exchange": "binance",
+        "symbol": "MAGMAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-02T14:53:26.500Z"
+      },
+      {
+        "id": "cmurtvfd2uli7gtm4t1k0uwxa",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #SANDUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.62% \nCurrent Price: 0.07856\nPrevious Price: 0.07926\nRSI: <b>1m.72❗️ | 5m.79❗️ | 1h.77❗️ </b>\nSRSI: <b>1m.61 | 5m.97❗️ | 1h.40 </b>\nDivergence:   1h✅\nFR: -1.48 ⚠️",
+        "exchange": "binance",
+        "symbol": "SANDUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-03T03:24:02.054Z"
+      },
+      {
+        "id": "cmurv0lxiums9gtm4ez4fdbbb",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #TAKEUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.47% \nCurrent Price: 0.06562\nPrevious Price: 0.06607\nRSI: <b>1m.73❗️ | 5m.82❗️ | 1h.79❗️ </b>\nSRSI: <b>1m.59 | 5m.97❗️ | 1h.77 </b>",
+        "exchange": "binance",
+        "symbol": "TAKEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-03T03:56:03.463Z"
+      },
+      {
+        "id": "cmuvz5nwjxn19gtm4ga4rng16",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #BRUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +5.41% \nCurrent Price: 0.49172\nPrevious Price: 0.49531\nRSI: <b>1m.73❗️ | 5m.79❗️ | 1h.68 </b>\nSRSI: <b>1m.72 | 5m.82 | 1h.100❗️ </b>",
+        "exchange": "binance",
+        "symbol": "BRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-06T01:03:02.467Z"
+      },
+      {
+        "id": "cmuwmdjxyy8qrgtm49p9przuk",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #NMRUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.17% \nCurrent Price: 15.582\nPrevious Price: 15.777\nRSI: <b>1m.75❗️ | 5m.97❗️ | 1h.89❗️ </b>\nSRSI: <b>1m.14 | 5m.99❗️ | 1h.41 </b>\nFR: -0.65 ⚠️",
+        "exchange": "binance",
+        "symbol": "NMRUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-06T11:53:01.751Z"
+      },
+      {
+        "id": "cmuwyk3doyxjpgtm4juitkps7",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #GRIFFAINUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +7.57% \nCurrent Price: 0.027196\nPrevious Price: 0.027792\nRSI: <b>1m.77❗️ | 5m.89❗️ | 1h.91❗️ </b>\nSRSI: <b>1m.81 | 5m.97❗️ | 1h.100❗️ </b>\nDivergence:  5m✅",
+        "exchange": "binance",
+        "symbol": "GRIFFAINUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-06T17:34:02.268Z"
+      },
+      {
+        "id": "cmuyafcfe0yl6gtm4f2l5ku68",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #SANDUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +7.08% \nCurrent Price: 0.08169\nPrevious Price: 0.08275\nRSI: <b>1m.72❗️ | 5m.88❗️ | 1h.77❗️ </b>\nSRSI: <b>1m.62 | 5m.95❗️ | 1h.60 </b>",
+        "exchange": "binance",
+        "symbol": "SANDUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-07T15:54:02.282Z"
+      },
+      {
+        "id": "cmuzconml1rewgtm401cjhkvc",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #CKBUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +3.91% \nCurrent Price: 0.0013325\nPrevious Price: 0.0013399\nRSI: <b>1m.73❗️ | 5m.87❗️ | 1h.75❗️ </b>\nSRSI: <b>1m.64 | 5m.90❗️ | 1h.88 </b>\nPivot: %0.20 ⚠️",
+        "exchange": "binance",
+        "symbol": "CKBUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-08T09:45:02.110Z"
+      },
+      {
+        "id": "cmv22cl9l2cqmlykhcoeb3xl5",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #LUMIAUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +5.70% \nCurrent Price: 0.1105\nPrevious Price: 0.11352\nRSI: <b>1m.73❗️ | 5m.98❗️ | 1h.93❗️ </b>\nSRSI: <b>1m.54 | 5m.100❗️ | 1h.95❗️ </b>",
+        "exchange": "binance",
+        "symbol": "LUMIAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-10T07:19:01.546Z"
+      },
+      {
+        "id": "cmv4b499i4f3klykhjqrwg4z1",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #CKBUSDT ⭐️⭐️\nStrategy: #R1\nBoost Value: +4.24% \nCurrent Price: 0.0021101\nPrevious Price: 0.0021283\nRSI: <b>1m.75❗️ | 5m.90❗️ | 1h.82❗️ </b>\nSRSI: <b>1m.48 | 5m.100❗️ | 1h.71 </b>",
+        "exchange": "binance",
+        "symbol": "CKBUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-11T21:00:01.639Z"
+      },
+      {
+        "id": "cmv4nh7n64mwylykhbkc61cop",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #ZESTUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +16.69% \nCurrent Price: 0.21548\nPrevious Price: 0.22228\nRSI: <b>1m.72❗️ | 5m.83❗️ | 1h.81❗️ </b>\nSRSI: <b>1m.63 | 5m.80 | 1h.63 </b>\nDivergence:   1h✅\nPivot: %0.36 ⚠️",
+        "exchange": "binance",
+        "symbol": "ZESTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-12T02:46:01.459Z"
+      },
+      {
+        "id": "cmv6sgki47v3tlykhxax2pkov",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #AVAUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +6.04% \nCurrent Price: 0.2892\nPrevious Price: 0.2936\nRSI: <b>1m.71❗️ | 5m.81❗️ | 1h.80❗️ </b>\nSRSI: <b>1m.12 | 5m.81 | 1h.41 </b>\nDivergence:  5m✅ \nWT: <b>1m🔴    </b>",
+        "exchange": "binance",
+        "symbol": "AVAUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-13T14:41:01.900Z"
+      },
+      {
+        "id": "cmv9c4gu2ckealykh4bbrr3u8",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #BLURUSDT ⭐️\nStrategy: #R1\nBoost Value: +2.10% \nCurrent Price: 0.01234\nPrevious Price: 0.01242\nRSI: <b>1m.78❗️ | 5m.85❗️ | 1h.71❗️ </b>\nSRSI: <b>1m.18 | 5m.95❗️ | 1h.91❗️ </b>\nFR: -0.31 ⚠️",
+        "exchange": "binance",
+        "symbol": "BLURUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-15T09:27:01.946Z"
+      },
+      {
+        "id": "cmv9rp5vddqyzlykhyab8xd9a",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #ANIMEUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +5.21% \nCurrent Price: 0.003193\nPrevious Price: 0.00322\nRSI: <b>1m.72❗️ | 5m.77❗️ | 1h.76❗️ </b>\nSRSI: <b>1m.67 | 5m.81 | 1h.100❗️ </b>\nPivot: %0.23 ⚠️",
+        "exchange": "binance",
+        "symbol": "ANIMEUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-15T16:43:01.753Z"
+      },
+      {
+        "id": "cmva7hl1ke7amlykhn5b3tlkx",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #STBLUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +44.15% \nCurrent Price: 0.03773\nPrevious Price: 0.04059\nRSI: <b>1m.73❗️ | 5m.99❗️ | 1h.96❗️ </b>\nSRSI: <b>1m.62 | 5m.100❗️ | 1h.97❗️ </b>",
+        "exchange": "binance",
+        "symbol": "STBLUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-16T00:05:02.024Z"
+      },
+      {
+        "id": "cmvey8pe8jk19lykhl490uvvn",
+        "botId": "hammer-pro-plus",
+        "message": "🔴 #CTUSDT ⭐️⭐️⭐️\nStrategy: #R1\nBoost Value: +43.80% \nCurrent Price: 0.37836\nPrevious Price: 0.39\nRSI: <b>1m.78❗️ | 5m.94❗️ | 1h.78❗️ </b>\nSRSI: <b>1m.80 | 5m.87 | 1h.66 </b>\nPivot: %0.88 ⚠️",
+        "exchange": "binance",
+        "symbol": "CTUSDT",
+        "marketType": "futures",
+        "createdAt": "2026-10-19T07:45:02.096Z"
+      }
+    ],
+    "hasMore": false
+  }
+}
