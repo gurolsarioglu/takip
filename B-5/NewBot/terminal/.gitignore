@@ -1,0 +1,9 @@
+# Retain full local REA evidence without committing a 42 MB generated graph.
+/review/visivero-static-evidence-2026-10-20.json
+/.npm-cache/
+/review/visivero-indicator-rea-evidence-2026-10-20.json
+# Local reproducible market snapshots; keep manifests/results and original message samples.
+/review/three-bot-evidence/candles/
+/review/three-bot-evidence/holdout-candles/
+/review/three-bot-evidence/holdout-trades/
+/review/all-bots-evidence/

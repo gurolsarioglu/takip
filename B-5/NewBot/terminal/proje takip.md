@@ -69,6 +69,10 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
     * Yapılan derinlemesine tahlilde: `m1a-drop.runner.js` düzeltilmiş olmasına rağmen, `terminal-server.js` içerisinde gömülü çalışan `bots/index.js` dosyasındaki M1-A tespit algoritmasının hala eski usul 20 barlık SMA hacim ortalamasıyla `((curVol - avgVol) / avgVol * 100)` hesaplama yaptığı ve `+357.91%` gibi fahiş değerler bastığı tespit edildi.
     * Gömülü motor da bağımsız runner ile birebir aynı Visivero standardına getirildi: `((curBar.volume - prevBar.volume) / prevBar.volume) * 100`.
     * Geçmiş `signals_history.json` veri tabanındaki yapay `+` ön ekli ve eski SMA hesaplı hacim verileri normalize edildi. Sunucu yeniden başlatıldı.
+37. **REA ile Visivero Tüm Botlarının (8+1 Bot) Tam Tersine Mühendisliği ve Formüllerin Çıkarılması:**
+    * Kullanıcı: *"yok hemen başlama sistemde kurulu REA var bu aracı kullanarak terminal.visivero.com kullanıcı adı ve şifremde bir önce detaylıca incele analiz et sinyallerin formüllerini çıkarmaya çalışalım ben bu sistede ücret karşılığında BuySel indkatörü ve s/r indikatörünü kullanıyorum 5in1 herkese açık bir indaktör bunu da bilmeni isterim. 1. öncelik doğru forumlleri çıkarmak. her bot kendine özel zaman diliminde sinyaller üretiyor ve kuralları var 9 adet bot var biz duyur botu haric geri kalan 8 bot ile ilgileniyoruz..."* talimatını verdi.
+    * REA (`analyze_javascript_application`: `ev_ce3a6f41257793b8b53936720ec4ed8ef764dbf5e79ffeca2826d8f46e5c9d63`) ile `0ngs99aq~2c40.js` ve `0-qg45til74n9.js` paketleri, çıkarılan 10 Python indikatör şablonu (`TC Buy-Sell`, `TC S/R`, `5in1`, `WT Cross`, `RSI`, `SRSI`, `Pivot`) ve `/api/bot-messages` üzerinden çekilen **1.200 gerçek sinyal kaydı** (`m1`, `m1-premium`, `fr`, `v3`, `hammer`, `hammer-pro`, `1d-hammer-pro`, `hammer-pro-plus`, `4s`, `4sniper`, `1dws`, `div`) Binance Futures mumlarıyla çapraz analiz edildi.
+    * Tüm botların ortak sinyal motoru aileleri (165 adet milisaniyelik eşzamanlı sinyal kanıtıyla), `Previous Price` kuralı (30/30 = %100 ana zaman dilimi son kapanmış mum kapanışı), `Boost Value` formülü, Yıldız (`⭐️`, `⭐️⭐️`, `⭐️⭐️⭐️`) eşikleri (400/400 = %100 `2% / 3% / 5%` kuralı), `Trader Positioning` / `Market Exposure` (`🟢/🔴` baskın taraf `>=50%` kuralı), `V3-A` (`:00` sn cron ve `>= +8.00%` 24s base hacim artışı), `4S` (`4h` canlı WaveTrend kesişimi + `1d SRSI`), `4S Sniper` (`4h` 500-mum Nadaraya-Watson `h=8, mult=3` + `RSI SMA Cross` + `Divergence`), `Hammer / Pro / Pro+` (`1m` WaveTrend `#W1`, `1m` RSI/SMA `#S1`, `#R1`) ve `DIV` (`1h` Regular RSI Divergence 95/97 = %97.9 uyum) formülleri eksiksiz çıkarılarak [`review/visivero-8-bot-master-formulas-2026-10-20.md`](review/visivero-8-bot-master-formulas-2026-10-20.md) raporuna kaydedildi.
 
 ---
 
@@ -950,4 +954,43 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 2. **Quant Doğruluk Testi:** 5/5 test (%100 PASS).
 3. **Canlı Binance Denetimi:** 33/33 adım (%100 PASS - Fiyatlar, Tick hassasiyeti, Kline, Order Book, Sentiment).
 4. **Port Temizliği:** Canlı test sonrası port 3000 kullanıcının kullanımına temiz bırakıldı.
+
+# 20.10.2026 - Kod ve Bot Algoritmaları İncelemesi
+
+## Kullanıcı önceliği: DIV, 4S Sniper, Hammer Pro+
+
+- Kapsam bu üç bot olarak değiştirildi; diğer botların strateji kalibrasyonu ertelendi. Kullanıcının amacı Visivero ihtiyacını bitirmek; bu hedef henüz tamamlanmadı.
+- REA ile gösterge demeti inert incelendi: `ev_911f0212a68650ab7058f323bee0299f621ca609b4d37d68c9800ebb2fce89dc`. İstemcide 10 Python gösterge şablonu bulundu ve hash/byte aralıklarıyla saklandı. Grafik şablonu sunucu bot kaynak kodu değildir.
+- Her bottan100 mesaj, ayrıca Hammer R1 için92 ve Sniper daily/week alt kanalı için100 kayıt kaydedildi. Bu kümeler örtüşür; benzersiz toplam gibi toplanmaz. Bilinen salt okunur API, credentials olmadan okunabildi.
+- 500 ilgili mum isteği hatasız kaydedildi. NW h8/mult3/repaint500 adayı ilk91 NW örneğinin91'inde yön koşulunu; son kapanmış1m WT10/21/SMA4 kesişimi55 W1 örneğinin55'inde yönü açıkladı. S1 canlı RSI/SMA14 adayı37/44; DIV standart pivot adayları yetersiz.
+- Sabitlenen adaydan sonra yeni20 NW kimliği incelendi.19'unda Binance geçmiş işlemlerinden referans fiyatına bağımsız hesap yapılabildi;19/19 koşul uyumu. GME için işlem bulunamadı ve puanlanmadı. Bunlar pozitif koşul uyumudur; precision/recall, tam bot veya zaman eşleşmesi değildir.
+- `review/three-bot-findings-2026-10-20.md` matematik, sonuçlar ve açık işleri içerir. Çevrimdışı araçlar ve6 yeni test eklendi; önceki42 ile birlikte48/48 geçti. Bağımsız incelemede gelecek veri sızıntısı veya engelleyici hata bulunmadı.
+- Üretim stratejileri bu adaylarla değiştirilmedi; canlı bot/Telegram/emir/arşiv yazımı yok. Sıradaki açık işler: negatif/ileri dönem tüm evren karşılaştırması, DIV divergence, S1/R1, günlük/haftalık Sniper, tekrar/tarama/zamanlama ve Boost/yıldız kuralları.
+
+## Kullanıcı önceliği: DIV, 4S Sniper, Hammer Pro+
+
+- Kapsam bu üç bot olarak değiştirildi; diğer botların strateji kalibrasyonu ertelendi. Kullanıcının amacı Visivero ihtiyacını bitirmek; bu hedef henüz tamamlanmadı.
+- REA ile gösterge demeti inert incelendi: `ev_911f0212a68650ab7058f323bee0299f621ca609b4d37d68c9800ebb2fce89dc`. İstemcide 10 Python gösterge şablonu bulundu ve hash/byte aralıklarıyla saklandı. Grafik şablonu sunucu bot kaynak kodu değildir.
+- Her bottan100 mesaj, ayrıca Hammer R1 için92 ve Sniper daily/week alt kanalı için100 kayıt kaydedildi. Bu kümeler örtüşür; benzersiz toplam gibi toplanmaz. Bilinen salt okunur API, credentials olmadan okunabildi.
+- 500 ilgili mum isteği hatasız kaydedildi. NW h8/mult3/repaint500 adayı ilk91 NW örneğinin91'inde yön koşulunu; son kapanmış1m WT10/21/SMA4 kesişimi55 W1 örneğinin55'inde yönü açıkladı. S1 canlı RSI/SMA14 adayı37/44; DIV standart pivot adayları yetersiz.
+- Sabitlenen adaydan sonra yeni20 NW kimliği incelendi.19'unda Binance geçmiş işlemlerinden referans fiyatına bağımsız hesap yapılabildi;19/19 koşul uyumu. GME için işlem bulunamadı ve puanlanmadı. Bunlar pozitif koşul uyumudur; precision/recall, tam bot veya zaman eşleşmesi değildir.
+- `review/three-bot-findings-2026-10-20.md` matematik, sonuçlar ve açık işleri içerir. Çevrimdışı araçlar ve6 yeni test eklendi; önceki42 ile birlikte48/48 geçti. Bağımsız incelemede gelecek veri sızıntısı veya engelleyici hata bulunmadı.
+- Üretim stratejileri bu adaylarla değiştirilmedi; canlı bot/Telegram/emir/arşiv yazımı yok. Sıradaki açık işler: negatif/ileri dönem tüm evren karşılaştırması, DIV divergence, S1/R1, günlük/haftalık Sniper, tekrar/tarama/zamanlama ve Boost/yıldız kuralları.
+
+## İkinci aşama: veri doğruluğu ve referans kanıtı
+
+- Kullanıcının kabul ettiği sırayla veri doğruluğu, ortak karar fonksiyonları, tazelenen/paylaşılan mum verisi ve çakışmayan bağımsız bot taramaları uygulandı. Her bot scalp/swing için kendi strateji ve zaman dilimiyle karar verir.
+- Sentiment sözleşmesi/NaN filtresi, uydurma kart metrikleri, funding ölçeği ve geri sayımı, mikro fiyat hassasiyeti, gerçek Hub kabulü, arşiv metadata ve yeniden başlatma tekilleştirmesi düzeltildi. Eksik veriler bilinmiyor olarak gösterilir.
+- Yetkili Visivero tarayıcı oturumunda 9 bottan toplam 180 geçmiş mesaj incelendi. Şifre/token/cookie alınmadı veya kaydedilmedi. Üretim referans mesaj akışına bağlanmadı.
+- `review/bot-algorithms-2026-10-20.md`: mevcut yerel koşullar, gösterge formülleri, gözlenen referans farkları ve açık işler. `review/visivero-api-baseline-2026-10-20.json`: örnek olay kimlikleri/zamanları ve saat ölçümleri.
+- Kullanıcı bilgisayar saatini düzeltti. Yeni Binance ölçümü yaklaşık +419 ms fark ve 437 ms istek süresi; önceki yaklaşık +296 sn fark sadece tarihsel gözlemlere aittir.
+- Doğrulama: yeni çevrimdışı bot paketi 42/42, mevcut regresyon 8/8; 55 üretim JavaScript dosyasında sözdizimi ve git whitespace kontrolü temiz. Eski followup harness hatası sürüyor. Ağ/quant paketi canlı arşive yazabildiği için çalıştırılmadı; canlı botlar yeniden başlatılmadı.
+- Açık: ortak feed fallback/global istek bütçesi, legacy yolların eşdeğerliği, gerçek 4h/daily stratejiler, referans yaşam döngüsü ve eşzamanlı ölçüm. Aynı sinyali aynı anda üretme veya kârlılık doğrulanmadı. `local-hypothesis-v1` eşikleri referansın formülleri değildir.
+
+### İlk denetimin tarihsel kaydı
+
+- **Konuşmalarımız ve Onaylananlar:** Kullanıcı önce mevcut algoritmaları, matematiksel formülleri, hataları ve verimlilik fırsatlarını görmek; strateji değişikliklerini daha sonra tartışmak istedi. Üretim kodu değiştirilmedi.
+- **Yaptıklarımız:** Dokuz runner, alternatif merkezi motor, dış sinyal kabulü, göstergeler, arşiv, API ve kart gösterimi incelendi. Gerçek ağ, Telegram ve üretim dosyalarına yazma kullanmayan `review/bot-audit-2026-10-20.cjs` eklendi.
+- **Düşündüklerimiz:** Öncelik veri doğruluğu ve ortak strateji tanımı olmalı. Sabit Boost/RSI değerleri, sentiment alan uyuşmazlığı, güncellenmeyen merkezi mum önbelleği ve kapanmamış mumlarla karar üretimi çözülmeden eşik optimizasyonuna geçilmemeli. 4S ve Sniper runner'ları 4h mum okumuyor.
+- **Tamamlanan İşler ve Doğrulama:** Denetim betiği 8 sorunu tekrar üretti: Sniper balina filtresinin NaN ile aşılması, merkezi önbelleğin yenilenmemesi, funding farkının yanlış ölçeği, mikro fiyatlarda EMA/pivot sıfırlanması, reddedilen sinyale rağmen Hub kabul bildirimi, yeniden başlatmada tekilleştirme kaybı, 200 günlük EMA'nın yalnız SMA başlangıcını döndürmesi ve arşivde strateji metadata kaybı. 51 JavaScript dosyasının sözdizimi kontrolü temiz. Mevcut regresyon paketi 8/8 geçti; followup paketi `review.changeCoin` erişiminde TypeError ile durdu. Canlı Binance/TradingView karşılaştırması veya strateji kârlılığı testi yapılmadı.
 
