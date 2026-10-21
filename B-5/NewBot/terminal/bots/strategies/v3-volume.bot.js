@@ -17,21 +17,26 @@ class V3VolumeBot extends BaseBot {
 
   /**
    * Hacim değişim yüzdesini güvenli float'a çevirir
+   * Örn: "+22.13% (+$3.95M)" -> 22.13
    */
   parseVolumeChange(val) {
     if (typeof val === 'number') return isNaN(val) ? 0 : val;
     if (!val) return 0;
-    const clean = String(val).replace(/[%+,\s]/g, '').trim();
-    const parsed = parseFloat(clean);
+    const match = String(val).match(/[+-]?\d+(\.\d+)?/);
+    if (!match) return 0;
+    const parsed = parseFloat(match[0]);
     return isNaN(parsed) ? 0 : parsed;
   }
 
   /**
-   * 24 saatlik baz hacim değerini binlik basamaklarıyla ve coin birimiyle formatlar
-   * Örn: 40814, 'TSM' -> '40.814 TSM' | 1261919761, 'DOOD' -> '1.261.919.761 DOOD'
+   * 24 saatlik hacmi Hibrit ($ USD + Parantez içinde Base Asset Adedi) formatlar
+   * Örn: volUsd=25446594, val=40814, 'TSM' -> '$25.45M (40.814 TSM)'
    */
-  formatVolume24h(val, baseAsset) {
-    return botData.formatBaseVolume24h(val, baseAsset);
+  formatVolume24h(val, baseAsset, volUsd = null) {
+    if (typeof val === 'string' && val.includes('$') && val.includes('(')) {
+      return val.trim();
+    }
+    return botData.formatHybridVolume24h(volUsd, val, baseAsset);
   }
 
   /**
@@ -84,8 +89,16 @@ class V3VolumeBot extends BaseBot {
       return null;
     }
 
-    const volChangeFormatted = `+${volChangeNum.toFixed(2)}%`;
-    const vol24sFormatted = this.formatVolume24h(raw24h, baseAsset);
+    const inflow = botData.calculateV3InflowUsd({
+      vol1mUsd: s.inflowUsd ?? s.vol1mUsd,
+      volUsd: s.volUsd,
+      surgePct: volChangeNum
+    });
+    const inflowStr = botData.formatCompactUsd(inflow, true);
+    const volChangeFormatted = (typeof s.hacimChange === 'string' && s.hacimChange.includes('($'))
+      ? s.hacimChange
+      : (inflowStr ? `+${volChangeNum.toFixed(2)}% (${inflowStr})` : `+${volChangeNum.toFixed(2)}%`);
+    const vol24sFormatted = this.formatVolume24h(raw24h, baseAsset, s.volUsd);
 
     const card = {
       id: s.id || ('v3_' + now),

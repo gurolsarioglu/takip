@@ -593,7 +593,7 @@ const BotRenderer = (() => {
           lastDate = dateTag;
           html += `<div class="signal-date-divider"><span>${lastDate}</span></div>`;
         }
-        const isSuperSurge = parseFloat(String(s.hacimChange || '').replace(/[^0-9.]/g, '')) >= 80;
+        const isSuperSurge = parseFloat(String(s.hacimChange || '').match(/[+-]?\d+(\.\d+)?/)?.[0] || '0') >= 80;
 
         html += `
           <div class="signal-card" data-symbol="${s.symbol}">

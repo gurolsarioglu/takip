@@ -1073,6 +1073,12 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 1. **Durum Tespiti & Sıradaki Botların Seçimi:**
    * Kullanıcı: *"nerde kaldık ?"* sorusunun ardından mevcut ilerleme özeti sunuldu ve kullanıcı *"FR VE V3-A ile devam edelim"* talimatını verdi.
    * Otonom İcraat Kuralı doğrultusunda ara onay beklenmeksizin **Bot 3 (`FR` — Funding Rate)** ve **Bot 4 (`V3-A` — Volume)** botlarının birebir VisiVero formülleriyle uçtan uca entegrasyonu, kart şablonu düzeltmeleri ve birim testleri tamamlandı.
+2. **V3-A Hacim Kartında Hibrit Dolar + Coin Adedi Gösterimi (Seçenek B):**
+   * Kullanıcı: *"bu kısım olmadı bizde dolar ile olan versiyonu lazım. bizim amacımız gelen sinyalde coine ne kadar para girmiş onu anlamaya çalışıyoruz... hacimde ki oran değişmiyor ben 2. seçeneği daha çok beğendim."* geri bildirimini verdi.
+   * VisiVero'nun `24s Hacim: 509.336.169 1000CAT` gösteriminin sadece coin adedini (`baseVolume`) yazdığı ve gerçek dolar hacmini (`$812.0K`) gizlediği canlı Binance verisiyle kanıtlandı.
+   * Kullanıcının seçtiği **Seçenek B (Hibrit: Dolar + Parantez İçinde VisiVero Adedi)** formatı devreye alındı:
+     * `Hacim: +22.13% (+$3.95M)` *(Yüzde sıçrama + 1 dakikada coine giren net dolar)*
+     * `24s Hacim: $25.45M (40.814 TSM)` *(24 saatlik gerçek dolar hacmi + parantez içinde coin adedi)*
 
 ## 🧠 2. Düşündüklerimiz ve Mimari Kararlar
 1. **Bot 3 (`FR` — Funding Rate) 3-Modlu VisiVero Mimarisi (`visivero-fr-v2`):**

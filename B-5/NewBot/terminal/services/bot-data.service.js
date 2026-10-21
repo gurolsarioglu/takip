@@ -115,6 +115,50 @@ function formatBaseVolume24h(baseVolume, symbol) {
   const intStr = String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   return `${intStr} ${baseAsset}`;
 }
+function formatCompactUsd(usdValue, signed = false) {
+  const n = finite(usdValue);
+  if (n === null || n <= 0) return null;
+  const prefix = signed ? '+' : '';
+  if (n >= 1e9) return `${prefix}$${(n / 1e9).toFixed(2)}B`;
+  if (n >= 1e6) return `${prefix}$${(n / 1e6).toFixed(2)}M`;
+  if (n >= 1e3) return `${prefix}$${(n / 1e3).toFixed(1)}K`;
+  return `${prefix}$${Math.round(n)}`;
+}
+function formatHybridVolume24h(volUsd, baseVolume, symbol) {
+  const usdStr = formatCompactUsd(volUsd, false);
+  const baseStr = formatBaseVolume24h(baseVolume, symbol);
+  if (usdStr && baseStr) return `${usdStr} (${baseStr})`;
+  if (usdStr) {
+    const baseAsset = extractBaseAsset(symbol);
+    return baseAsset ? `${usdStr} (${baseAsset})` : usdStr;
+  }
+  return baseStr;
+}
+function calculateV3InflowUsd({ klines1m, vol1mUsd, volUsd, prevVolUsd24h, surgePct } = {}) {
+  const direct1m = finite(vol1mUsd);
+  if (direct1m !== null && direct1m > 0) return direct1m;
+
+  const vUsd = finite(volUsd);
+  const prevUsd = finite(prevVolUsd24h);
+  if (vUsd !== null && prevUsd !== null && prevUsd > 0 && vUsd > prevUsd) {
+    return vUsd - prevUsd;
+  }
+
+  if (Array.isArray(klines1m) && klines1m.length > 0) {
+    const bar = (klines1m.length >= 2 && klines1m[klines1m.length - 1]?.isClosed === false)
+      ? klines1m[klines1m.length - 2]
+      : klines1m[klines1m.length - 1];
+    const qv = finite(bar?.quoteVolume);
+    if (qv !== null && qv > 0) return qv;
+  }
+
+  const pct = finite(surgePct);
+  if (vUsd !== null && vUsd > 0 && pct !== null && pct > 0) {
+    return vUsd * (pct / (100 + pct));
+  }
+
+  return null;
+}
 function calculateV3VolumeSurge({ klines1m, vol1m, volBase24h, prevVolBase24h } = {}) {
   const v24 = finite(volBase24h);
   const prev24 = finite(prevVolBase24h);
@@ -189,6 +233,9 @@ module.exports = {
   formatHammerFundingAlert,
   extractBaseAsset,
   formatBaseVolume24h,
+  formatCompactUsd,
+  formatHybridVolume24h,
+  calculateV3InflowUsd,
   calculateV3VolumeSurge,
   countdown,
   fundingFields,

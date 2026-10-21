@@ -340,6 +340,7 @@ class BotManager {
 
       const ticker = typeof marketDataEngine.getTicker === 'function' ? marketDataEngine.getTicker(sym) : null;
       const volBase24h = alert.volBase24h ?? ticker?.volBase ?? null;
+      const volUsd = alert.volUsd ?? ticker?.volUsd ?? null;
       const klines1m = typeof marketDataEngine.getKlines === 'function'
         ? await marketDataEngine.getKlines(sym, '1m', 10)
         : [];
@@ -349,6 +350,8 @@ class BotManager {
         klines1m: Array.isArray(klines1m) && klines1m.length > 0 ? klines1m : null,
         volBase24h,
         prevVolBase24h: alert.prevVolBase24h ?? null,
+        volUsd,
+        vol1mUsd: alert.vol1mChange ?? null,
         volumeSurgePct: alert.volumeSurgePct ?? null
       });
 

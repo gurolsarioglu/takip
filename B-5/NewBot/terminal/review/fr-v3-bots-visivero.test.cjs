@@ -5,31 +5,36 @@ const { load } = require('./test-module-loader.cjs');
 const botData = require('../services/bot-data.service');
 const strategyRules = require('../bots/strategy-rules');
 
-test('VisiVero V3-A 24h Base Asset Volume formatter matches exact Turkish thousand-separator format', () => {
+test('VisiVero V3-A Hybrid ($ USD + Base Asset Quantity) formatter matches Option B format', () => {
   assert.equal(botData.formatBaseVolume24h(40814, 'TSMUSDT'), '40.814 TSM');
   assert.equal(botData.formatBaseVolume24h(1261919761, 'DOODUSDT'), '1.261.919.761 DOOD');
   assert.equal(botData.formatBaseVolume24h(509336169, '1000CATUSDT'), '509.336.169 1000CAT');
-  assert.equal(botData.formatBaseVolume24h('40.814 TSM', 'TSMUSDT'), '40.814 TSM');
+  assert.equal(botData.formatCompactUsd(25446594, false), '$25.45M');
+  assert.equal(botData.formatCompactUsd(3950000, true), '+$3.95M');
+  assert.equal(botData.formatCompactUsd(812021, false), '$812.0K');
+  assert.equal(botData.formatHybridVolume24h(25446594, 40814, 'TSMUSDT'), '$25.45M (40.814 TSM)');
+  assert.equal(botData.formatHybridVolume24h(812021, 509336169, '1000CATUSDT'), '$812.0K (509.336.169 1000CAT)');
   assert.equal(botData.formatBaseVolume24h(null, 'TSMUSDT'), null);
   assert.equal(botData.formatBaseVolume24h(0, 'TSMUSDT'), null);
 });
 
-test('VisiVero V3-A 1m-over-24h base volume surge formula and >= +8.00% threshold match historical signals', () => {
-  // 1. TSMUSDT: 24h base volume = 40,814 TSM, closed 1m volume = 7,395.5 TSM -> prior 24h = 33,418.5 -> +22.13%
+test('VisiVero V3-A 1m-over-24h base volume surge formula and >= +8.00% threshold match historical signals with Hybrid USD + Base display', () => {
+  // 1. TSMUSDT: 24h base volume = 40,814 TSM ($25.45M), closed 1m volume = 7,395.5 TSM ($3.95M) -> +22.13% (+$3.95M)
   const tsmKlines = [
-    { openTime: 60000, closeTime: 119999, open: 10, high: 11, low: 9.9, close: 10.5, volume: 7395.5, isClosed: true },
-    { openTime: 120000, closeTime: 179999, open: 10.5, high: 10.6, low: 10.4, close: 10.55, volume: 120, isClosed: false }
+    { openTime: 60000, closeTime: 119999, open: 10, high: 11, low: 9.9, close: 10.5, volume: 7395.5, quoteVolume: 3950000, isClosed: true },
+    { openTime: 120000, closeTime: 179999, open: 10.5, high: 10.6, low: 10.4, close: 10.55, volume: 120, quoteVolume: 50000, isClosed: false }
   ];
   const tsmEval = strategyRules.evaluateV3({
     symbol: 'TSMUSDT',
     klines1m: tsmKlines,
-    volBase24h: 40814
+    volBase24h: 40814,
+    volUsd: 25446594
   });
   assert.ok(tsmEval);
   assert.equal(tsmEval.strategyVersion, strategyRules.V3_VERSION);
   assert.equal(tsmEval.dot, '');
-  assert.equal(tsmEval.hacimChange, '+22.13%');
-  assert.equal(tsmEval.hacim24s, '40.814 TSM');
+  assert.equal(tsmEval.hacimChange, '+22.13% (+$3.95M)');
+  assert.equal(tsmEval.hacim24s, '$25.45M (40.814 TSM)');
   assert.equal(tsmEval.candleOpenTime, 60000);
 
   // 2. DOODUSDT: 24h base volume jumped from 1,126,311,818 to 1,261,919,761 -> +12.04%
@@ -123,14 +128,14 @@ test('Standalone runners and central engine emit exact VisiVero FR and V3-A payl
   // 1. Standalone v3-volume.runner.js
   const v3Out = [];
   const klines1m = [
-    { openTime: 100000, closeTime: 159999, open: 1, high: 1.1, low: 0.9, close: 1.05, volume: 7395.5, isClosed: true },
-    { openTime: 160000, closeTime: 219999, open: 1.05, high: 1.06, low: 1.04, close: 1.05, volume: 100, isClosed: false }
+    { openTime: 100000, closeTime: 159999, open: 1, high: 1.1, low: 0.9, close: 1.05, volume: 7395.5, quoteVolume: 3950000, isClosed: true },
+    { openTime: 160000, closeTime: 219999, open: 1.05, high: 1.06, low: 1.04, close: 1.05, volume: 100, quoteVolume: 40000, isClosed: false }
   ];
   const v3Helper = {
     createScanLoop: require('../services/scan-loop.service').createScanLoop,
     isSignalAccepted: botData.isSignalAccepted,
     strategyRules,
-    getWatchlist: async () => [{ symbol: 'TSMUSDT', volBase: 40814, volUsd: 420000 }],
+    getWatchlist: async () => [{ symbol: 'TSMUSDT', volBase: 40814, volUsd: 25446594 }],
     getKlines: async () => klines1m,
     postSignal: async s => { v3Out.push(s); return { status: 200, data: { accepted: true } }; },
     logger: { header() {}, info() {}, scan() {}, signal() {}, warn() {} },
@@ -141,8 +146,8 @@ test('Standalone runners and central engine emit exact VisiVero FR and V3-A payl
   assert.equal(v3Out.length, 1);
   assert.equal(v3Out[0].symbol, 'TSMUSDT');
   assert.equal(v3Out[0].dot, '');
-  assert.equal(v3Out[0].hacimChange, '+22.13%');
-  assert.equal(v3Out[0].hacim24s, '40.814 TSM');
+  assert.equal(v3Out[0].hacimChange, '+22.13% (+$3.95M)');
+  assert.equal(v3Out[0].hacim24s, '$25.45M (40.814 TSM)');
   assert.equal(v3Out[0].timeframe, '1m');
   assert.equal(v3Out[0].candleOpenTime, 100000);
 
@@ -236,14 +241,15 @@ test('SignalStore preserves iconless dot ("") and BotRenderer renders exact Visi
   assert.ok(htmlModeA.includes('Difference:'));
   assert.ok(htmlModeA.includes('-0.0009%'));
 
-  // Render V3-A (#DOODUSDT: Hacim: +12.04%, 24s Hacim: 1.261.919.761 DOOD)
+  // Render V3-A (#TSMUSDT: Hacim: +22.13% (+$3.95M), 24s Hacim: $25.45M (40.814 TSM))
   const htmlV3 = renderer.generateSignalsHtml('v3', [{
-    symbol: 'DOODUSDT',
+    symbol: 'TSMUSDT',
     dot: '',
-    hacimChange: '+12.04%',
-    hacim24s: '1.261.919.761 DOOD'
+    hacimChange: '+22.13% (+$3.95M)',
+    hacim24s: '$25.45M (40.814 TSM)'
   }]);
-  assert.ok(htmlV3.includes('#DOODUSDT'));
-  assert.ok(htmlV3.includes('+12.04%'));
-  assert.ok(htmlV3.includes('1.261.919.761 DOOD'));
+  assert.ok(htmlV3.includes('#TSMUSDT'));
+  assert.ok(htmlV3.includes('+22.13% (+$3.95M)'));
+  assert.ok(htmlV3.includes('$25.45M (40.814 TSM)'));
+  assert.ok(!htmlV3.includes('🔥')); // 22.13% < 80% should not trigger super-surge icon
 });

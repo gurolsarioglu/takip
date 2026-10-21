@@ -293,8 +293,25 @@ function evaluateV3(ctx = {}) {
       strategyVersion: V3_VERSION,
       dot: '',
       volumeSurgePct: parseFloat(surgePct.toFixed(2)),
-      hacimChange: `+${surgePct.toFixed(2)}%`,
-      hacim24s: botData.formatBaseVolume24h(effectiveBaseVol, ctx.symbol),
+      inflowUsd: botData.calculateV3InflowUsd({
+        klines1m: ctx.klines1m,
+        vol1mUsd: ctx.vol1mUsd,
+        volUsd: ctx.volUsd,
+        prevVolUsd24h: ctx.prevVolUsd24h,
+        surgePct
+      }),
+      hacimChange: (() => {
+        const inflow = botData.calculateV3InflowUsd({
+          klines1m: ctx.klines1m,
+          vol1mUsd: ctx.vol1mUsd,
+          volUsd: ctx.volUsd,
+          prevVolUsd24h: ctx.prevVolUsd24h,
+          surgePct
+        });
+        const inflowStr = botData.formatCompactUsd(inflow, true);
+        return inflowStr ? `+${surgePct.toFixed(2)}% (${inflowStr})` : `+${surgePct.toFixed(2)}%`;
+      })(),
+      hacim24s: botData.formatHybridVolume24h(ctx.volUsd, effectiveBaseVol, ctx.symbol),
       candleOpenTime: closedBar?.openTime ?? null,
       timeframe: '1m'
     };
@@ -302,13 +319,16 @@ function evaluateV3(ctx = {}) {
 
   // Fallback for legacy partial test contexts ({ volUsd, deltaVolPct })
   if (high(ctx.volUsd, 5000000) && high(ctx.deltaVolPct, 15)) {
+    const inflow = botData.calculateV3InflowUsd({ volUsd: ctx.volUsd, surgePct: ctx.deltaVolPct });
+    const inflowStr = botData.formatCompactUsd(inflow, true);
     return {
       matched: true,
       strategyVersion: VERSION,
       dot: '',
       volumeSurgePct: parseFloat(ctx.deltaVolPct.toFixed(2)),
-      hacimChange: `+${ctx.deltaVolPct.toFixed(2)}%`,
-      hacim24s: botData.formatBaseVolume24h(ctx.volBase24h, ctx.symbol),
+      inflowUsd: inflow,
+      hacimChange: inflowStr ? `+${ctx.deltaVolPct.toFixed(2)}% (${inflowStr})` : `+${ctx.deltaVolPct.toFixed(2)}%`,
+      hacim24s: botData.formatHybridVolume24h(ctx.volUsd, ctx.volBase24h, ctx.symbol),
       candleOpenTime: null,
       timeframe: '5m'
     };

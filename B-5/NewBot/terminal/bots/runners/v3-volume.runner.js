@@ -23,6 +23,7 @@ const BOT_DESC = '1m kapanış (:00 sn) 24s Base Asset hacim sıçraması (>= +8
 const seenMap = new Map();
 const seenCandleMap = new Map();
 const prevBaseVolMap = new Map();
+const prevUsdVolMap = new Map();
 let totalSignalsFound = 0;
 
 async function scan() {
@@ -30,10 +31,15 @@ async function scan() {
   if (!watchlist || watchlist.length === 0) return;
 
   const previousBaseVols = new Map(prevBaseVolMap);
+  const previousUsdVols = new Map(prevUsdVolMap);
   for (const item of watchlist) {
     const vb = Number(item.volBase ?? item.volume24h ?? item.volume);
     if (Number.isFinite(vb) && vb > 0) {
       prevBaseVolMap.set(item.symbol, vb);
+    }
+    const vu = Number(item.volUsd);
+    if (Number.isFinite(vu) && vu > 0) {
+      prevUsdVolMap.set(item.symbol, vu);
     }
   }
 
@@ -69,13 +75,17 @@ async function scan() {
     try {
       const volBase24h = Number(item.volBase ?? item.volume24h ?? item.volume);
       const prevVolBase24h = previousBaseVols.get(sym);
+      const volUsd = Number(item.volUsd);
+      const prevVolUsd24h = previousUsdVols.get(sym);
 
       const klines1m = await getKlines(sym, '1m', 10);
       let evalV3 = strategyRules.evaluateV3({
         symbol: sym,
         klines1m: Array.isArray(klines1m) && klines1m.length > 0 ? klines1m : null,
         volBase24h: Number.isFinite(volBase24h) && volBase24h > 0 ? volBase24h : null,
-        prevVolBase24h: Number.isFinite(prevVolBase24h) && prevVolBase24h > 0 ? prevVolBase24h : null
+        prevVolBase24h: Number.isFinite(prevVolBase24h) && prevVolBase24h > 0 ? prevVolBase24h : null,
+        volUsd: Number.isFinite(volUsd) && volUsd > 0 ? volUsd : null,
+        prevVolUsd24h: Number.isFinite(prevVolUsd24h) && prevVolUsd24h > 0 ? prevVolUsd24h : null
       });
 
       // Yalnızca 1m kline bulunmayan eski test ortamları için 5m geri dönüşü

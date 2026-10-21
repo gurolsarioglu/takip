@@ -135,6 +135,7 @@ async function getWatchlist() {
             symbol: t.symbol,
             price: t.lastPrice,
             priceNum: price,
+            volBase: parseFloat(t.volume || 0),
             volUsd: parseFloat(t.quoteVolume || 0),
             chgPct: parseFloat(t.priceChangePercent || 0),
             fr: premMap.get(t.symbol) ?? null
@@ -176,7 +177,8 @@ function parseKlines(raw) {
     low: parseFloat(k[3]),
     close: parseFloat(k[4]),
     volume: parseFloat(k[5]),
-    closeTime: k[6]
+    closeTime: k[6],
+    quoteVolume: parseFloat(k[7] || 0)
   }));
 }
 
