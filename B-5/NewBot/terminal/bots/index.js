@@ -528,7 +528,8 @@ class BotManager {
 
         const curPrice = lastBar5m?.close ?? lastBar1h?.close;
         const observed5 = botData.priceChange(klines5m), observed1h = botData.priceChange(klines1h);
-        const hasFullOhlc = klines5m.length > 0 && Number.isFinite(klines5m[0]?.open);
+        const hasFullOhlc = (klines5m.length > 0 && Number.isFinite(klines5m[0]?.open)) ||
+          (klines1h.length > 0 && Number.isFinite(klines1h[0]?.open));
 
         let klines1m = [];
         let m1 = null;
@@ -697,48 +698,104 @@ class BotManager {
           }
         }
 
-        // 4. 4S Sniper Botu: 1h RSI <= 40 ve Balina Long Oranı >= %55
-        if (enabled('4ssniper') && strategyRules.isSniperSetup(m1h) && fourSSniperBot.canEmitSignal(sym, '1h', lastBar1h.openTime, 600000)) {
-          let deriv = null;
-          try { deriv = await derivativesEnricher.enrich(sym); } catch (e) {}
-          if (strategyRules.shouldEmit('4ssniper', { m1h, whaleLong: botData.ratio(deriv?.topTraderAccountLongRatio) })) {
+        // 4. 4S Sniper Botu: VisiVero 4H (NW UP / NW DOWN / 4H RSI SMA CROSSED / 4H RSI DIVERGENCE)
+        if (enabled('4ssniper')) {
+          if (hasFullOhlc) {
+            const klines4h = await marketDataEngine.getKlines(sym, '4h', 250);
+            if (klines4h.length >= 30) {
+              const m4h = quantIndicators.calculateAllMetrics(klines4h);
+              const lastBar4h = klines4h[klines4h.length - 1];
+              if (
+                m4h &&
+                strategyRules.shouldEmit('4ssniper', { m1h, m4h, klines4h }) &&
+                fourSSniperBot.canEmitSignal(sym, '4h', lastBar4h.openTime, 600000)
+              ) {
+                const [klines1d, deriv] = await Promise.all([
+                  marketDataEngine.getKlines(sym, '1d', 250).catch(() => []),
+                  derivativesEnricher.enrich(sym).catch(() => null)
+                ]);
+                const m1d = Array.isArray(klines1d) && klines1d.length >= 15
+                  ? quantIndicators.calculateAllMetrics(klines1d)
+                  : null;
+                const whaleLong = botData.ratio(deriv?.topTraderAccountLongRatio);
+                const globalLong = botData.ratio(deriv?.globalLongRatio);
+                const evalSniper = strategyRules.evaluateFourSSniper({
+                  m1h,
+                  m4h,
+                  m1d,
+                  klines4h,
+                  whaleLong,
+                  globalLong
+                });
+                const observed4h = botData.priceChange(klines4h);
+                if (evalSniper && observed4h) {
+                  fourSSniperBot.addSignal({
+                    source: 'binance-central',
+                    strategyVersion: evalSniper.strategyVersion || strategyRules.SNIPER_VERSION,
+                    observedAt: Date.now(),
+                    id: `4ss_${sym}_${now}`,
+                    candleOpenTime: lastBar4h.openTime,
+                    timeframe: '4h',
+                    symbol: sym,
+                    timestamp: now,
+                    isoDate: dateObj.toISOString(),
+                    dateStr,
+                    direction: evalSniper.direction,
+                    dot: evalSniper.dot,
+                    strategy: evalSniper.strategy,
+                    boostValue: evalSniper.boostValue,
+                    measuredChangePct: observed4h.changePct,
+                    currentPrice: formatCryptoPrice(observed4h.current, sym),
+                    prevPrice: formatCryptoPrice(observed4h.previous, sym),
+                    rsi: evalSniper.rsi,
+                    srsi: evalSniper.srsi,
+                    traderPositioning: evalSniper.traderPositioning,
+                    traderDot: evalSniper.traderDot,
+                    marketExposure: evalSniper.marketExposure,
+                    exposureDot: evalSniper.exposureDot,
+                    dateLabel: dateStr,
+                    time: nowTime
+                  });
+                  console.log(`[QuantEngine Sinyal] 4S Sniper: ${sym} (${evalSniper.dot} ${evalSniper.strategy} | Boost: ${evalSniper.boostValue || '—'})`);
+                }
+              }
+            }
+          } else if (strategyRules.isSniperSetup(m1h) && fourSSniperBot.canEmitSignal(sym, '1h', lastBar1h.openTime, 600000)) {
+            let deriv = null;
+            try { deriv = await derivativesEnricher.enrich(sym); } catch (e) {}
             const whaleLong = botData.ratio(deriv?.topTraderAccountLongRatio);
             const globalLong = botData.ratio(deriv?.globalLongRatio);
-            fourSSniperBot.addSignal({
-            source: 'binance-central',
-            strategyVersion: strategyRules.VERSION,
-            observedAt: Date.now(),
-              id: `4ss_${sym}_${now}`,
-              candleOpenTime: lastBar1h.openTime,
-              timeframe: '1h',
-              symbol: sym,
-              timestamp: now,
-              isoDate: dateObj.toISOString(),
-              dateStr,
-              dot: '🟢',
-              strategy: 'NW UP',
-              boostValue: null,
-              measuredChangePct: observed1h.changePct,
-              currentPrice: formatCryptoPrice(observed1h.current, sym),
-              prevPrice: formatCryptoPrice(observed1h.previous, sym),
-              rsi: {
-                h1: `${botData.indicatorText(m1h?.rsi)} ❗`,
-                h4: '—',
-                d1: '—'
-              },
-              srsi: {
-                h1: `${botData.indicatorText(m1h?.srsiK)}`,
-                h4: '—',
-                d1: '—'
-              },
-              traderPositioning: botData.percent(whaleLong),
-              traderDot: whaleLong === null ? null : whaleLong >= 60 ? '🟢' : '🔴',
-              marketExposure: botData.percent(globalLong),
-              exposureDot: globalLong === null ? null : globalLong >= 50 ? '🟢' : '🔴',
-              dateLabel: dateStr,
-              time: nowTime
-            });
-            console.log(`[QuantEngine Sinyal] 4S Sniper: ${sym} (Whale Long: ${whaleLong}%)`);
+            const evalSniper = strategyRules.evaluateFourSSniper({ m1h, whaleLong, globalLong });
+            if (evalSniper && observed1h) {
+              fourSSniperBot.addSignal({
+                source: 'binance-central',
+                strategyVersion: evalSniper.strategyVersion || strategyRules.VERSION,
+                observedAt: Date.now(),
+                id: `4ss_${sym}_${now}`,
+                candleOpenTime: lastBar1h.openTime,
+                timeframe: '1h',
+                symbol: sym,
+                timestamp: now,
+                isoDate: dateObj.toISOString(),
+                dateStr,
+                direction: evalSniper.direction,
+                dot: evalSniper.dot,
+                strategy: evalSniper.strategy,
+                boostValue: evalSniper.boostValue,
+                measuredChangePct: observed1h.changePct,
+                currentPrice: formatCryptoPrice(observed1h.current, sym),
+                prevPrice: formatCryptoPrice(observed1h.previous, sym),
+                rsi: evalSniper.rsi,
+                srsi: evalSniper.srsi,
+                traderPositioning: evalSniper.traderPositioning,
+                traderDot: evalSniper.traderDot,
+                marketExposure: evalSniper.marketExposure,
+                exposureDot: evalSniper.exposureDot,
+                dateLabel: dateStr,
+                time: nowTime
+              });
+              console.log(`[QuantEngine Sinyal] 4S Sniper: ${sym} (Whale Long: ${whaleLong}%)`);
+            }
           }
         }
 

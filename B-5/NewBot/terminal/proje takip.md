@@ -1111,11 +1111,28 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
    * `BotRenderer`: FR Mod C kartlarında `Previous Funding: —` ve `Difference: —` satırlarının görünmesi engellenerek VisiVero ile birebir aynı görünüm sağlandı.
 7. **[`review/fr-v3-bots-visivero.test.cjs`](review/fr-v3-bots-visivero.test.cjs):**
    * Gerçek VisiVero geçmiş sinyalleri (`TSMUSDT`, `DOODUSDT`, `1000CATUSDT`, `PAYPUSDT`, `CTUSDT`) üzerinde `FR` (Mod A, B, C) ve `V3-A` hesaplamalarını, runner'ları, `SignalStore`'u ve `BotRenderer` HTML çıktısını doğrulayan test paketi yazıldı ve `npm run test:bots` içerisine eklendi.
+8. **Bot 8 (`4S Sniper` — `4ssniper`) Birebir VisiVero `4H` Strateji Motoru (`visivero-4ssniper-v2`):**
+   * Kullanıcı: *"4S sniper yapalım"* talimatıyla 8. bot olan **4S Sniper**'ın tersine mühendislikle çıkarılan VisiVero formüllerine yükseltilmesini istedi.
+   * **[`services/quant-indicators.service.js`](services/quant-indicators.service.js):**
+     * LuxAlgo **Nadaraya-Watson Envelope** (`calculateNadarayaWatson(closes, h = 8, mult = 3, repaint = true)`) Gaussian çekirdek regresyonu ($w(i,j)=\exp(-(i-j)^2/(2\cdot 8^2))$, $\text{MAE}=\frac{3}{N}\sum |C_i-\mu_i|$) ve alt/üst bant kırılım bayrakları (`isBelowLower`, `isAboveUpper`, `crossDownLower`, `crossUpUpper`) eklendi ve `calculateAllMetrics` çıktısına (`nw`) bağlandı.
+   * **[`services/bot-data.service.js`](services/bot-data.service.js):**
+     * VisiVero'da 200/200 doğrulanan **Baskın Taraf (`dominantPositioning`)** fonksiyonu eklendi: Oran hiçbir zaman `%50.00` altında gösterilmez; $\text{longPct} \ge 50 \implies \text{longPct}\% \text{ 🟢}$, $\text{longPct} < 50 \implies (100 - \text{longPct})\% \text{ 🔴}$ (`TSLAUSDT: 62.58% 🟢`, `BERAUSDT: 57.22% 🔴`, `BRUSDT: 63.36% 🔴`).
+   * **[`bots/strategy-rules.js`](bots/strategy-rules.js):**
+     * `evaluateFourSSniper(ctx)` (`SNIPER_VERSION = 'visivero-4ssniper-v2'`) ile `4H` mumları üzerinde çalışan 3 alt strateji kodlandı:
+       1. **`NW UP` (`🟢`) & `NW DOWN` (`🔴`):** `4h close < NW Lower && 4h RSI <= 50` $\implies$ `🟢 NW UP`; `4h close > NW Upper && 4h RSI >= 58` $\implies$ `🔴 NW DOWN`.
+       2. **`4H RSI SMA CROSSED` (`🟢` / `🔴`):** `m4h.rsiSmaCrossUp && 4h RSI <= 35` $\implies$ `🟢`; `m4h.rsiSmaCrossDown && 4h RSI >= 65` $\implies$ `🔴`.
+       3. **`4H RSI DIVERGENCE` (`🟢` / `🔴`):** `m4h.divergence.hasBullDiv && 4h RSI <= 40` $\implies$ `🟢`; `m4h.divergence.hasBearDiv && 4h RSI >= 65` $\implies$ `🔴`.
+     * `Boost Value` 5-bar `4h` impulse (`botData.impulseBoost(klines4h, direction, 5)`), `Previous Price` ise bir önceki kapanmış `4h` mumunun kapanışı (`klines4h.at(-2).close`) olarak bağlandı.
+   * **[`bots/strategies/four-s-sniper.bot.js`](bots/strategies/four-s-sniper.bot.js), [`bots/runners/four-s-sniper.runner.js`](bots/runners/four-s-sniper.runner.js), [`bots/index.js`](bots/index.js) & [`public/plugins/bot-hub/bot-renderer.js`](public/plugins/bot-hub/bot-renderer.js):**
+     * `FourSSniperBot.ingest(s)` içerisindeki sentetik varsayılan değerler (`rsi4h=45`, `tp=62%` vb.) temizlendi; hem `🟢` (`#38bdf8`) hem `🔴` (`#f87171`) `4S Sniper` kartları uçtan uca desteklendi.
+   * **[`review/sniper-bot-visivero.test.cjs`](review/sniper-bot-visivero.test.cjs):**
+     * Gerçek VisiVero sinyalleri (`TSLAUSDT` `🔴 NW DOWN`, `BRUSDT` `🔴 NW DOWN`, `BERAUSDT` `🟢 4H RSI DIVERGENCE`, `4H RSI SMA CROSSED`) üzerinde Nadaraya-Watson zarfı, baskın taraf oranları, runner/merkezi motor ve `BotRenderer` çıktısını doğrulayan 5 yeni test eklendi.
 
 ## ✅ 4. Tamamlanan İşler ve Doğrulama
-* **`npm run test:bots`:** **53/53 test %100 PASS** (`fr-v3-bots-visivero.test.cjs` dahil).
+* **`npm run test:bots`:** **58/58 test %100 PASS** (`fr-v3-bots-visivero.test.cjs` ve `sniper-bot-visivero.test.cjs` dahil).
 * **`npm run test:regression`:** **8/8 test %100 PASS**.
 * **Git Senkronizasyonu:** Tüm değişiklikler commit edilerek `origin/master` GitHub reposuna push edildi.
+
 
 
 

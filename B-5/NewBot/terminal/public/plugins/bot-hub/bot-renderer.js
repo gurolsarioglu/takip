@@ -452,7 +452,7 @@ const BotRenderer = (() => {
           html += `<div class="signal-date-divider"><span>${lastDate}</span></div>`;
         }
         const dot = s.dot || '🟢';
-        const titleColor = '#38bdf8';
+        const titleColor = dot === '🔴' ? '#f87171' : '#38bdf8';
 
         html += `
           <div class="signal-card" data-symbol="${s.symbol}">
@@ -463,11 +463,11 @@ const BotRenderer = (() => {
             </div>
             <div class="card-field-row" style="margin-top: 4px;">
               <span>Strategy:</span>
-              <span class="card-field-val" style="color: #fff; font-weight: 700;">${s.strategy || 'NW UP'}</span>
+              <span class="card-field-val" style="color: #fff; font-weight: 700;">${s.strategy || (dot === '🔴' ? 'NW DOWN' : 'NW UP')}</span>
             </div>
             <div class="card-field-row">
               <span>Boost Value:</span>
-              <span class="card-field-val" style="color: #0ecb81; font-weight: 700;">${s.boostValue}</span>
+              <span class="card-field-val" style="color: #0ecb81; font-weight: 700;">${s.boostValue || '—'}</span>
             </div>
             <div class="card-field-row">
               <span>Current Price:</span>
@@ -480,25 +480,25 @@ const BotRenderer = (() => {
             <div class="card-field-row">
               <span>RSI:</span>
               <span class="card-field-val" style="font-size: 11px;">
-                <strong>1h.${s.rsi.h1}</strong> | <strong>4h.${s.rsi.h4}</strong> | <strong>1d.${s.rsi.d1}</strong>
+                <strong>1h.${s.rsi?.h1 || '—'}</strong> | <strong>4h.${s.rsi?.h4 || '—'}</strong> | <strong>1d.${s.rsi?.d1 || '—'}</strong>
               </span>
             </div>
             <div class="card-field-row">
               <span>SRSI:</span>
               <span class="card-field-val" style="font-size: 11px;">
-                <strong>1h.${s.srsi.h1}</strong> | <strong>4h.${s.srsi.h4}</strong> | <strong>1d.${s.srsi.d1}</strong>
+                <strong>1h.${s.srsi?.h1 || '—'}</strong> | <strong>4h.${s.srsi?.h4 || '—'}</strong> | <strong>1d.${s.srsi?.d1 || '—'}</strong>
               </span>
             </div>
             <div class="card-field-row">
               <span>Trader Positioning:</span>
               <span class="card-field-val" style="font-weight: 600;">
-                ${s.traderPositioning} <span style="font-size: 10px;">${s.traderDot || '🟢'}</span>
+                ${s.traderPositioning || '—'} ${s.traderDot ? `<span style="font-size: 10px;">${s.traderDot}</span>` : ''}
               </span>
             </div>
             <div class="card-field-row">
               <span>Market Exposure:</span>
               <span class="card-field-val" style="font-weight: 600;">
-                ${s.marketExposure} <span style="font-size: 10px;">${s.exposureDot || '🟢'}</span>
+                ${s.marketExposure || '—'} ${s.exposureDot ? `<span style="font-size: 10px;">${s.exposureDot}</span>` : ''}
               </span>
             </div>
             <div class="card-footer">

@@ -5,6 +5,7 @@ const VERSION = 'local-hypothesis-v1';
 const HAMMER_VERSION = 'visivero-hammer-v2';
 const FR_VERSION = 'visivero-fr-v2';
 const V3_VERSION = 'visivero-v3-v2';
+const SNIPER_VERSION = 'visivero-4ssniper-v2';
 const finite = Number.isFinite;
 const low = (value, threshold) => finite(value) && value <= threshold;
 const high = (value, threshold) => finite(value) && value >= threshold;
@@ -337,6 +338,126 @@ function evaluateV3(ctx = {}) {
   return null;
 }
 
+/**
+ * Evaluates Bot 8 (4S Sniper — 4ssniper) using the recovered VisiVero 4H formulas:
+ * 1. NW UP (🟢): 4h close < Nadaraya-Watson Lower Envelope (h=8, mult=3, repaint=true) && 4h RSI <= 50
+ * 2. NW DOWN (🔴): 4h close > Nadaraya-Watson Upper Envelope (h=8, mult=3, repaint=true) && 4h RSI >= 58
+ * 3. 4H RSI SMA CROSSED: 4h RSI(14) crosses its SMA(14) in extreme zone (<= 35 for 🟢, >= 65 for 🔴)
+ * 4. 4H RSI DIVERGENCE: 4h Regular RSI(14) divergence in extreme zone (<= 40 for 🟢, >= 65 for 🔴)
+ * Plus 5-bar 4h impulse Boost Value, 1h|4h|1d RSI & SRSI with ❗️ alerts, and dominant-side Positioning (>= 50%).
+ * Falls back cleanly to m1h + whaleLong >= 55 when m4h is omitted in legacy unit test contexts.
+ */
+function evaluateFourSSniper(ctx = {}) {
+  const { m1h, m4h, m1d, klines4h, whaleLong, globalLong } = ctx;
+
+  // Full VisiVero 4H evaluation path
+  if (finite(m4h?.rsi)) {
+    const nw = m4h.nw || ctx.nw || null;
+    const curPrice = finite(ctx.currentPrice)
+      ? ctx.currentPrice
+      : (Array.isArray(klines4h) && klines4h.length > 0 ? finite(klines4h[klines4h.length - 1]?.close) : null);
+
+    const isBelowLower = nw?.isBelowLower === true ||
+      (finite(nw?.lower) && finite(curPrice) && curPrice < nw.lower);
+    const isAboveUpper = nw?.isAboveUpper === true ||
+      (finite(nw?.upper) && finite(curPrice) && curPrice > nw.upper);
+
+    let matched = null;
+
+    // 1. Sub-Strategy: NW UP / NW DOWN (Nadaraya-Watson Envelope h=8, mult=3, repaint=true)
+    if (isBelowLower && low(m4h.rsi, 50)) {
+      matched = { direction: 'up', dot: '🟢', strategy: 'NW UP' };
+    } else if (isAboveUpper && high(m4h.rsi, 58)) {
+      matched = { direction: 'down', dot: '🔴', strategy: 'NW DOWN' };
+    }
+
+    // 2. Sub-Strategy: 4H RSI SMA CROSSED
+    if (!matched) {
+      if (m4h.rsiSmaCrossUp === true && low(m4h.rsi, 35)) {
+        matched = { direction: 'up', dot: '🟢', strategy: '4H RSI SMA CROSSED' };
+      } else if (m4h.rsiSmaCrossDown === true && high(m4h.rsi, 65)) {
+        matched = { direction: 'down', dot: '🔴', strategy: '4H RSI SMA CROSSED' };
+      }
+    }
+
+    // 3. Sub-Strategy: 4H RSI DIVERGENCE
+    if (!matched) {
+      if (m4h.divergence?.hasBullDiv === true && low(m4h.rsi, 40)) {
+        matched = { direction: 'up', dot: '🟢', strategy: '4H RSI DIVERGENCE' };
+      } else if (m4h.divergence?.hasBearDiv === true && high(m4h.rsi, 65)) {
+        matched = { direction: 'down', dot: '🔴', strategy: '4H RSI DIVERGENCE' };
+      }
+    }
+
+    if (!matched) return null;
+
+    const boostPct = finite(ctx.boostPct)
+      ? ctx.boostPct
+      : botData.impulseBoost(klines4h, matched.direction, 5);
+    const boostValue = boostPct !== null ? `+${boostPct.toFixed(2)}%` : null;
+
+    const tp = botData.dominantPositioning(whaleLong);
+    const me = botData.dominantPositioning(globalLong);
+
+    return {
+      matched: true,
+      strategyVersion: SNIPER_VERSION,
+      timeframe: '4h',
+      direction: matched.direction,
+      dot: matched.dot,
+      strategy: matched.strategy,
+      boostPct,
+      boostValue,
+      rsi: {
+        h1: botData.rsiTextWithAlert(m1h?.rsi),
+        h4: botData.rsiTextWithAlert(m4h?.rsi),
+        d1: botData.rsiTextWithAlert(m1d?.rsi)
+      },
+      srsi: {
+        h1: botData.srsiTextWithAlert(m1h?.srsiK),
+        h4: botData.srsiTextWithAlert(m4h?.srsiK),
+        d1: botData.srsiTextWithAlert(m1d?.srsiK)
+      },
+      traderPositioning: tp ? tp.text : null,
+      traderDot: tp ? tp.dot : null,
+      marketExposure: me ? me.text : null,
+      exposureDot: me ? me.dot : null
+    };
+  }
+
+  // Fallback for legacy unit test contexts where m4h is not provided
+  if (isSniperSetup(m1h) && high(whaleLong, 55)) {
+    const wl = botData.ratio(whaleLong);
+    const gl = botData.ratio(globalLong);
+    return {
+      matched: true,
+      strategyVersion: VERSION,
+      timeframe: '1h',
+      direction: 'up',
+      dot: '🟢',
+      strategy: 'NW UP',
+      boostPct: null,
+      boostValue: null,
+      rsi: {
+        h1: `${botData.indicatorText(m1h?.rsi)} ❗`,
+        h4: '—',
+        d1: '—'
+      },
+      srsi: {
+        h1: `${botData.indicatorText(m1h?.srsiK)}${low(m1h?.srsiK, 20) ? ' ❗' : ''}`,
+        h4: '—',
+        d1: '—'
+      },
+      traderPositioning: botData.percent(wl),
+      traderDot: wl === null ? null : wl >= 60 ? '🟢' : '🔴',
+      marketExposure: botData.percent(gl),
+      exposureDot: gl === null ? null : gl >= 50 ? '🟢' : '🔴'
+    };
+  }
+
+  return null;
+}
+
 function shouldEmit(id, ctx = {}) {
   const { m5, m1h } = ctx;
   switch (id) {
@@ -347,7 +468,7 @@ function shouldEmit(id, ctx = {}) {
     case 'hammerproplus':
       return Boolean(evaluateHammer(id, ctx));
     case '4s': return high(m1h?.rsi, 58) || high(m1h?.srsiK, 70);
-    case '4ssniper': return isSniperSetup(m1h) && high(ctx.whaleLong, 55);
+    case '4ssniper': return Boolean(evaluateFourSSniper(ctx));
     case 'div': return hasDivergence(m1h) || hasDivergence(m5);
     case 'v3': return Boolean(evaluateV3(ctx));
     case 'fr': return Boolean(evaluateFunding(ctx));
@@ -360,10 +481,12 @@ module.exports = {
   HAMMER_VERSION,
   FR_VERSION,
   V3_VERSION,
+  SNIPER_VERSION,
   shouldEmit,
   evaluateHammer,
   evaluateFunding,
   evaluateV3,
+  evaluateFourSSniper,
   isSniperSetup,
   hasDivergence
 };

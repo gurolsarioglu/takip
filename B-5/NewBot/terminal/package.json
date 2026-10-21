@@ -31,7 +31,7 @@
     "test:regression": "node review/terminal-regression-tests.cjs",
     "test:quant": "node review/quant-accuracy-verification.cjs",
     "test:followup": "node review/terminal-followup-tests.cjs",
-    "test:bots": "node --test review/bot-data-correctness.test.cjs review/runner-correctness.test.cjs review/central-bot-correctness.test.cjs review/market-cache.test.cjs review/shared-kline-route.test.cjs review/scan-loop.test.cjs review/strategy-rules.test.cjs review/derivatives-data.test.cjs review/signal-parity.test.cjs review/hammer-bots-visivero.test.cjs review/fr-v3-bots-visivero.test.cjs",
+    "test:bots": "node --test review/bot-data-correctness.test.cjs review/runner-correctness.test.cjs review/central-bot-correctness.test.cjs review/market-cache.test.cjs review/shared-kline-route.test.cjs review/scan-loop.test.cjs review/strategy-rules.test.cjs review/derivatives-data.test.cjs review/signal-parity.test.cjs review/hammer-bots-visivero.test.cjs review/fr-v3-bots-visivero.test.cjs review/sniper-bot-visivero.test.cjs",
     "test": "node review/terminal-regression-tests.cjs && node review/quant-accuracy-verification.cjs"
   },
   "dependencies": {

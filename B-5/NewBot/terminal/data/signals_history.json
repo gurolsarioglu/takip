@@ -1,9 +1,51 @@
 {
   "version": "1.0",
-  "updatedAt": "2026-10-20T10:01:36.582Z",
-  "totalSignals": 9493,
+  "updatedAt": "2026-10-21T06:27:18.947Z",
+  "totalSignals": 9494,
   "retentionDays": 60,
   "signals": [
+    {
+      "id": "4ss_1792564037937",
+      "botId": "4ssniper",
+      "botName": "4S Sniper",
+      "symbol": "BRUSDT",
+      "timestamp": 1792564037937,
+      "isoDate": "2026-10-21T06:27:17.937Z",
+      "dateStr": "21.10.2026",
+      "time": "09:27",
+      "dot": "🔴",
+      "strategy": "NW DOWN",
+      "stars": "",
+      "boostValue": "+26.31%",
+      "currentPrice": "0.6936",
+      "prevPrice": "0.7007",
+      "rsi": {
+        "h1": "95❗️",
+        "h4": "85❗️",
+        "d1": "72❗️"
+      },
+      "srsi": {
+        "h1": "100❗️",
+        "h4": "95❗️",
+        "d1": "96❗️"
+      },
+      "wt": null,
+      "pivot": null,
+      "ema200": null,
+      "traderPositioning": "54.02%",
+      "marketExposure": "63.36%",
+      "stochastic": null,
+      "fundingRate": null,
+      "difference": null,
+      "timeRemaining": null,
+      "hacimChange": null,
+      "hacim24s": null,
+      "btcStatus": null,
+      "dropValue": null,
+      "volume": null,
+      "traderDot": "🟢",
+      "exposureDot": "🔴"
+    },
     {
       "id": "m1a_QUSDT_1792489311155",
       "botId": "m1a",

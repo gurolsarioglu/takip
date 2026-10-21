@@ -403,6 +403,117 @@ class QuantIndicatorsService {
   }
 
   /**
+   * LuxAlgo Nadaraya-Watson Envelope (Gaussian Kernel Regression)
+   * VisiVero 4S Sniper Bot 8 (NW UP / NW DOWN) 100% doğrulanmış formülü:
+   * - h = 8, mult = 3, repaint = true (varsayılan, son 500 bar)
+   * - w(i, j) = exp(-(i - j)^2 / (2 * h^2))
+   * - MAE = (1 / N) * sum(|C_i - mu_i|) * mult
+   * - Upper = mu + MAE, Lower = mu - MAE
+   */
+  calculateNadarayaWatson(closes, hOrOpts = 8, mult = 3, repaint = true) {
+    if (!Array.isArray(closes) || closes.length < 15) return null;
+    let h = 8;
+    if (hOrOpts && typeof hOrOpts === 'object') {
+      h = Number.isFinite(hOrOpts.h) ? hOrOpts.h : 8;
+      mult = Number.isFinite(hOrOpts.mult) ? hOrOpts.mult : 3;
+      repaint = hOrOpts.repaint !== undefined ? Boolean(hOrOpts.repaint) : true;
+    } else if (Number.isFinite(hOrOpts)) {
+      h = hOrOpts;
+    }
+
+    const n = Math.min(closes.length, 500);
+    const src = closes.slice(-n);
+    const denom = h * h * 2;
+    const weights = new Float64Array(n);
+    for (let d = 0; d < n; d++) {
+      weights[d] = Math.exp(-(d * d) / denom);
+    }
+
+    if (repaint) {
+      const out = new Float64Array(n);
+      for (let i = 0; i < n; i++) {
+        let sum = 0;
+        let sumw = 0;
+        for (let j = 0; j < n; j++) {
+          const w = weights[Math.abs(i - j)];
+          sum += src[j] * w;
+          sumw += w;
+        }
+        out[i] = sumw === 0 ? src[i] : sum / sumw;
+      }
+
+      let sae = 0;
+      for (let i = 0; i < n; i++) {
+        sae += Math.abs(src[i] - out[i]);
+      }
+      const mae = (sae / n) * mult;
+      const lastCenter = out[n - 1];
+      const prevCenter = out[n - 2];
+      const upper = lastCenter + mae;
+      const lower = lastCenter - mae;
+      const prevUpper = prevCenter + mae;
+      const prevLower = prevCenter - mae;
+      const lastClose = src[n - 1];
+      const prevClose = src[n - 2];
+
+      return {
+        center: lastCenter,
+        upper,
+        lower,
+        mae,
+        isBelowLower: lastClose < lower,
+        isAboveUpper: lastClose > upper,
+        prevBelowLower: prevClose < prevLower,
+        prevAboveUpper: prevClose > prevUpper,
+        crossDownLower: prevClose >= prevLower && lastClose < lower,
+        crossUpUpper: prevClose <= prevUpper && lastClose > upper
+      };
+    }
+
+    // Causal (Non-Repainting) endpoint mode
+    const y = new Float64Array(n);
+    for (let i = 0; i < n; i++) {
+      let sum = 0;
+      let sumw = 0;
+      const maxK = Math.min(499, i);
+      for (let k = 0; k <= maxK; k++) {
+        const w = weights[k];
+        sum += src[i - k] * w;
+        sumw += w;
+      }
+      y[i] = sumw === 0 ? src[i] : sum / sumw;
+    }
+
+    const maeLen = Math.min(499, n);
+    let sae = 0;
+    for (let i = n - maeLen; i < n; i++) {
+      sae += Math.abs(src[i] - y[i]);
+    }
+    const mae = (sae / maeLen) * mult;
+    const lastCenter = y[n - 1];
+    const prevCenter = y[n - 2];
+    const upper = lastCenter + mae;
+    const lower = lastCenter - mae;
+    const prevUpper = prevCenter + mae;
+    const prevLower = prevCenter - mae;
+    const lastClose = src[n - 1];
+    const prevClose = src[n - 2];
+
+    return {
+      center: lastCenter,
+      upper,
+      lower,
+      mae,
+      isBelowLower: lastClose < lower,
+      isAboveUpper: lastClose > upper,
+      prevBelowLower: prevClose < prevLower,
+      prevAboveUpper: prevClose > prevUpper,
+      crossDownLower: prevClose >= prevLower && lastClose < lower,
+      crossUpUpper: prevClose <= prevUpper && lastClose > upper
+    };
+  }
+
+  /**
    * 250 Mumluk Kayan Pencereden tüm temel metrikleri tek seferde çıkarır
    */
   calculateAllMetrics(candles) {
@@ -424,6 +535,7 @@ class QuantIndicatorsService {
     const pivots = this.calculatePivots(prevCandle, latestCandle.close);
     const deltaVolPct = this.calculateDeltaVolume(volumes, 20);
     const divergence = this.detectPivotDivergence(candles, rsiData.rsiSeries);
+    const nw = this.calculateNadarayaWatson(closes, 8, 3, true);
 
     const ema200DistPct = ema200 > 0
       ? parseFloat((Math.abs(latestCandle.close - ema200) / ema200 * 100).toFixed(2))
@@ -452,7 +564,8 @@ class QuantIndicatorsService {
       ema200DistPct,
       pivots,
       deltaVolPct,
-      divergence
+      divergence,
+      nw
     };
   }
 }

@@ -44,61 +44,84 @@ async function scan() {
 
     try {
       const klines1h = await getKlines(sym, '1h', 250);
-      if (klines1h.length < 30) continue;
+      if (!klines1h || klines1h.length < 30) continue;
 
       const m1h = quantIndicators.calculateAllMetrics(klines1h);
       if (!m1h) continue;
 
-      const isDip = strategyRules.isSniperSetup(m1h);
-      if (!isDip) continue;
+      const hasFullOhlc = Number.isFinite(klines1h[0]?.open);
+      let klines4h = [];
+      let m4h = null;
+      let m1d = null;
 
-      // Balina Sentiment Kontrolü
+      if (hasFullOhlc) {
+        const [raw4h, raw1d] = await Promise.all([
+          getKlines(sym, '4h', 250),
+          getKlines(sym, '1d', 250)
+        ]);
+        klines4h = Array.isArray(raw4h) ? raw4h : [];
+        if (klines4h.length >= 30) {
+          m4h = quantIndicators.calculateAllMetrics(klines4h);
+        }
+        if (Array.isArray(raw1d) && raw1d.length >= 15) {
+          m1d = quantIndicators.calculateAllMetrics(raw1d);
+        }
+      }
+
+      if (m4h) {
+        if (!strategyRules.shouldEmit(BOT_ID, { m1h, m4h, m1d, klines4h })) continue;
+      } else {
+        if (!strategyRules.isSniperSetup(m1h)) continue;
+      }
+
+      // Balina & Market Exposure Sentiment Kontrolü
       const sentiment = await getSentiment(sym);
       const { whaleLong, globalLong } = botData.sentimentMetrics(sentiment);
 
-      if (!strategyRules.shouldEmit(BOT_ID, { m1h, whaleLong })) continue;
+      const evalSniper = strategyRules.evaluateFourSSniper({
+        m1h,
+        m4h,
+        m1d,
+        klines4h,
+        whaleLong,
+        globalLong
+      });
+      if (!evalSniper) continue;
 
       const dateObj = new Date(now);
       const dateStr = dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
       const nowTime = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-      const lastBar = klines1h[klines1h.length - 1];
-      const curPrice = lastBar.close;
-      const observed = botData.priceChange(klines1h);
+      const activeKlines = (m4h && klines4h.length >= 2) ? klines4h : klines1h;
+      const lastBar = activeKlines[activeKlines.length - 1];
+      const observed = botData.priceChange(activeKlines);
       if (!observed) continue;
 
       const signalPayload = {
         botId: BOT_ID,
         source: 'binance-rest',
-        strategyVersion: 'local-hypothesis-v1',
+        strategyVersion: evalSniper.strategyVersion || strategyRules.SNIPER_VERSION,
         observedAt: Date.now(),
         botType: BOT_ID,
         id: `4ss_${sym}_${now}`,
         candleOpenTime: lastBar.openTime,
-        timeframe: '1h',
+        timeframe: evalSniper.timeframe || (m4h ? '4h' : '1h'),
         symbol: sym,
         timestamp: now,
         isoDate: dateObj.toISOString(),
         dateStr,
-        dot: '🟢',
-        strategy: 'NW UP',
-        boostValue: null,
+        direction: evalSniper.direction,
+        dot: evalSniper.dot,
+        strategy: evalSniper.strategy,
+        boostValue: evalSniper.boostValue,
         measuredChangePct: observed.changePct,
-        currentPrice: formatCryptoPrice(curPrice, sym),
+        currentPrice: formatCryptoPrice(observed.current, sym),
         prevPrice: formatCryptoPrice(observed.previous, sym),
-        rsi: {
-          h1: `${Math.round(m1h.rsi)} ❗`,
-          h4: '—',
-          d1: '—'
-        },
-        srsi: {
-          h1: `${Math.round(m1h.srsiK)}`,
-          h4: '—',
-          d1: '—'
-        },
-        traderPositioning: botData.percent(whaleLong),
-        traderDot: '🟢',
-        marketExposure: botData.percent(globalLong),
-        exposureDot: globalLong === null ? null : globalLong >= 50 ? '🟢' : '🔴',
+        rsi: evalSniper.rsi,
+        srsi: evalSniper.srsi,
+        traderPositioning: evalSniper.traderPositioning,
+        traderDot: evalSniper.traderDot,
+        marketExposure: evalSniper.marketExposure,
+        exposureDot: evalSniper.exposureDot,
         dateLabel: dateStr,
         time: nowTime
       };

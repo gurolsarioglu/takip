@@ -15,6 +15,15 @@ function sentimentMetrics(sentiment) {
     globalLong: ratio(sentiment?.globalExposure?.longPct)
   };
 }
+function dominantPositioning(longPct) {
+  const r = ratio(longPct);
+  if (r === null) return null;
+  if (r >= 50) {
+    return { pct: parseFloat(r.toFixed(2)), text: percent(r, 2), dot: '🟢', side: 'long' };
+  }
+  const shortPct = 100 - r;
+  return { pct: parseFloat(shortPct.toFixed(2)), text: percent(shortPct, 2), dot: '🔴', side: 'short' };
+}
 function sentimentPayload(symbol, responses, now = Date.now()) {
   const readRatio = response => {
     const row = response?.status === 'fulfilled' && Array.isArray(response.value) ? response.value.at(-1) : null;
@@ -222,6 +231,7 @@ module.exports = {
   finite,
   ratio,
   sentimentMetrics,
+  dominantPositioning,
   sentimentPayload,
   percent,
   indicatorText,
