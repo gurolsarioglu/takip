@@ -3,6 +3,8 @@ const botData = require('../services/bot-data.service');
 
 const VERSION = 'local-hypothesis-v1';
 const HAMMER_VERSION = 'visivero-hammer-v2';
+const FR_VERSION = 'visivero-fr-v2';
+const V3_VERSION = 'visivero-v3-v2';
 const finite = Number.isFinite;
 const low = (value, threshold) => finite(value) && value <= threshold;
 const high = (value, threshold) => finite(value) && value >= threshold;
@@ -202,6 +204,119 @@ function evaluateHammer(id, ctx = {}) {
   return null;
 }
 
+/**
+ * Evaluates Bot 3 (FR — Funding Rate) across VisiVero's 3 exact modes:
+ * - Mode A (🟢): Funding changed from + to - (prevRate >= 0 && rate < 0)
+ * - Mode B (🔴): Deep negative funding change (prevRate < 0 && rate < 0 && rate !== prevRate)
+ * - Mode C (''): Periodic negative funding scan (prevRate unknown or unchanged)
+ */
+function evaluateFunding(ctx = {}) {
+  const currRaw = botData.finite(ctx.rate ?? ctx.fundingRate);
+  if (currRaw === null || currRaw >= 0) return null;
+
+  const currDec = Math.abs(currRaw) <= 0.05 ? currRaw : currRaw / 100;
+  const currPct = currDec * 100;
+
+  const prevRaw = botData.finite(ctx.prevRate ?? ctx.prevFundingRate);
+  const prevDec = prevRaw === null ? null : (Math.abs(prevRaw) <= 0.05 ? prevRaw : prevRaw / 100);
+  const now = finite(ctx.now) ? ctx.now : Date.now();
+
+  // Mode A: Positive (or 0.0000) to Negative Flip -> 🟢 ⚠️ Funding changed from + to -
+  if (prevDec !== null && prevDec >= 0 && currDec < 0) {
+    return {
+      matched: true,
+      mode: 'A',
+      strategyVersion: FR_VERSION,
+      dot: '🟢',
+      alertText: 'Funding changed from + to -',
+      strategy: 'Funding changed from + to -',
+      ...botData.fundingFields(currDec, prevDec, ctx.nextFundingTime, now)
+    };
+  }
+
+  // Mode B: Deep negative funding change -> 🔴
+  if (prevDec !== null && prevDec < 0 && Math.abs(currDec - prevDec) > 1e-12) {
+    const label = currPct <= -0.25 ? 'High Negative Funding Alert' : 'Negative Funding Deepening';
+    return {
+      matched: true,
+      mode: 'B',
+      strategyVersion: FR_VERSION,
+      dot: '🔴',
+      alertText: label,
+      strategy: label,
+      ...botData.fundingFields(currDec, prevDec, ctx.nextFundingTime, now)
+    };
+  }
+
+  // Mode C: Periodic negative funding scan -> iconless #SYMBOL, no Previous Funding / Difference
+  return {
+    matched: true,
+    mode: 'C',
+    strategyVersion: FR_VERSION,
+    dot: '',
+    alertText: null,
+    strategy: 'Negative Funding Scan',
+    ...botData.fundingFields(currDec, null, ctx.nextFundingTime, now)
+  };
+}
+
+/**
+ * Evaluates Bot 4 (V3-A — Volume) using VisiVero's 1m-over-24h base volume surge formula (>= +8.00%)
+ * and Turkish-formatted Base Asset 24h Volume (e.g. "40.814 TSM", "1.261.919.761 DOOD").
+ */
+function evaluateV3(ctx = {}) {
+  const hasV3Inputs = finite(ctx.volumeSurgePct) || finite(ctx.volBase24h) ||
+    finite(ctx.vol1m) || Array.isArray(ctx.klines1m);
+
+  if (hasV3Inputs) {
+    const surgePct = finite(ctx.volumeSurgePct)
+      ? ctx.volumeSurgePct
+      : botData.calculateV3VolumeSurge(ctx);
+
+    if (!finite(surgePct) || surgePct < 8.0) return null;
+
+    const klines = Array.isArray(ctx.klines1m) ? ctx.klines1m : [];
+    const closedBar = (klines.length >= 2 && klines[klines.length - 1]?.isClosed === false)
+      ? klines[klines.length - 2]
+      : klines[klines.length - 1];
+
+    const effectiveBaseVol = finite(ctx.volBase24h)
+      ? ctx.volBase24h
+      : (klines.length > 0 ? klines.reduce((s, k) => s + (finite(k?.volume) || 0), 0) : null);
+
+    if (effectiveBaseVol !== null && effectiveBaseVol > 0 && effectiveBaseVol < 500) {
+      return null;
+    }
+
+    return {
+      matched: true,
+      strategyVersion: V3_VERSION,
+      dot: '',
+      volumeSurgePct: parseFloat(surgePct.toFixed(2)),
+      hacimChange: `+${surgePct.toFixed(2)}%`,
+      hacim24s: botData.formatBaseVolume24h(effectiveBaseVol, ctx.symbol),
+      candleOpenTime: closedBar?.openTime ?? null,
+      timeframe: '1m'
+    };
+  }
+
+  // Fallback for legacy partial test contexts ({ volUsd, deltaVolPct })
+  if (high(ctx.volUsd, 5000000) && high(ctx.deltaVolPct, 15)) {
+    return {
+      matched: true,
+      strategyVersion: VERSION,
+      dot: '',
+      volumeSurgePct: parseFloat(ctx.deltaVolPct.toFixed(2)),
+      hacimChange: `+${ctx.deltaVolPct.toFixed(2)}%`,
+      hacim24s: botData.formatBaseVolume24h(ctx.volBase24h, ctx.symbol),
+      candleOpenTime: null,
+      timeframe: '5m'
+    };
+  }
+
+  return null;
+}
+
 function shouldEmit(id, ctx = {}) {
   const { m5, m1h } = ctx;
   switch (id) {
@@ -214,10 +329,21 @@ function shouldEmit(id, ctx = {}) {
     case '4s': return high(m1h?.rsi, 58) || high(m1h?.srsiK, 70);
     case '4ssniper': return isSniperSetup(m1h) && high(ctx.whaleLong, 55);
     case 'div': return hasDivergence(m1h) || hasDivergence(m5);
-    case 'v3': return high(ctx.volUsd, 5000000) && high(ctx.deltaVolPct, 15);
-    case 'fr': return finite(ctx.rate) && ctx.rate < 0;
+    case 'v3': return Boolean(evaluateV3(ctx));
+    case 'fr': return Boolean(evaluateFunding(ctx));
     default: return false;
   }
 }
 
-module.exports = { VERSION, HAMMER_VERSION, shouldEmit, evaluateHammer, isSniperSetup, hasDivergence };
+module.exports = {
+  VERSION,
+  HAMMER_VERSION,
+  FR_VERSION,
+  V3_VERSION,
+  shouldEmit,
+  evaluateHammer,
+  evaluateFunding,
+  evaluateV3,
+  isSniperSetup,
+  hasDivergence
+};

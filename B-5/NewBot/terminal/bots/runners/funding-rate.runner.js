@@ -26,21 +26,26 @@ async function scan() {
   const watchlist = await getWatchlist();
   if (!watchlist || watchlist.length === 0) return;
 
-  // Negatif fonlama oranına göre sırala
+  // Negatif fonlama oranına göre sırala (Mod A: +/0'dan -'ye geçiş yapanlara öncelik ver)
   const previousRates = new Map(prevRateMap);
   for (const item of watchlist) {
     if (Number.isFinite(item.fr)) prevRateMap.set(item.symbol, item.fr);
   }
   const negativeList = watchlist
     .filter(w => Number.isFinite(w.fr) && w.fr < 0)
-    .sort((a, b) => a.fr - b.fr);
+    .sort((a, b) => {
+      const aFlip = previousRates.has(a.symbol) && previousRates.get(a.symbol) >= 0 ? 1 : 0;
+      const bFlip = previousRates.has(b.symbol) && previousRates.get(b.symbol) >= 0 ? 1 : 0;
+      if (aFlip !== bFlip) return bFlip - aFlip;
+      return a.fr - b.fr;
+    });
 
   const now = Date.now();
   const dateObj = new Date(now);
   const dateStr = dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
   const nowTime = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
 
-  // En negatif ilk 15 pariteyi tara
+  // En öncelikli ilk 15 negatif / geçiş yapan pariteyi tara
   const topNeg = negativeList.slice(0, 15);
   let scanned = 0;
 
@@ -50,30 +55,37 @@ async function scan() {
     logger.scan(BOT_NAME, scanned, totalSignalsFound);
 
     const prevFr = previousRates.get(sym);
-
-    // Sadece negatif olanları veya belirgin düşenleri ele al
-    if (!strategyRules.shouldEmit(BOT_ID, { rate: item.fr })) continue;
+    const evalFr = strategyRules.evaluateFunding({
+      rate: item.fr,
+      prevRate: prevFr,
+      nextFundingTime: item.nextFundingTime,
+      now
+    });
+    if (!evalFr) continue;
 
     const lastSeen = seenMap.get(sym) || 0;
     if (now - lastSeen < 600000) continue; // 10 dk cooldown
 
-    const isFlip = prevFr !== undefined && prevFr > 0 && item.fr < 0;
-
     const signalPayload = {
       botId: BOT_ID,
-        source: 'binance-rest',
-        strategyVersion: 'local-hypothesis-v1',
-        observedAt: Date.now(),
+      source: 'binance-rest',
+      strategyVersion: evalFr.strategyVersion || strategyRules.FR_VERSION,
+      observedAt: Date.now(),
       botType: BOT_ID,
       id: `fr_${sym}_${now}`,
       symbol: sym,
       timestamp: now,
       isoDate: dateObj.toISOString(),
       dateStr,
-      dot: isFlip ? '🟢' : '🔴',
-      alertText: isFlip ? 'Funding changed from + to - (Short Squeeze)' : 'Negative Funding (Short Squeeze Candidate)',
-      ...botData.fundingFields(item.fr, prevFr, item.nextFundingTime, now),
-      strategy: isFlip ? 'Funding Flip (+ -> -)' : 'Aşırı Negatif Fonlama',
+      mode: evalFr.mode,
+      dot: evalFr.dot,
+      alertText: evalFr.alertText,
+      fundingRate: evalFr.fundingRate,
+      previousFunding: evalFr.previousFunding,
+      difference: evalFr.difference,
+      timeRemaining: evalFr.timeRemaining,
+      nextFundingTime: evalFr.nextFundingTime,
+      strategy: evalFr.strategy,
       dateLabel: dateStr,
       time: nowTime
     };

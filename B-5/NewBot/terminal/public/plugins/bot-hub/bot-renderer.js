@@ -343,7 +343,7 @@ const BotRenderer = (() => {
         } else if (botId !== 'm1a' || signal[key] == null) clean[key] = { ...missing };
       }
       for (const key of ['boostValue', 'fundingRate', 'previousFunding', 'difference',
-        'timeRemaining', 'traderPositioning', 'marketExposure', 'stochastic', 'volume']) {
+        'timeRemaining', 'traderPositioning', 'marketExposure', 'stochastic', 'volume', 'hacimChange', 'hacim24s']) {
         if (clean[key] == null) clean[key] = '—';
       }
       return clean;
@@ -711,13 +711,13 @@ const BotRenderer = (() => {
                 ${s.fundingRate}
               </span>
             </div>
-            ${s.previousFunding !== undefined ? `
+            ${s.previousFunding && s.previousFunding !== '—' ? `
               <div class="card-field-row">
                 <span>Previous Funding:</span>
                 <span class="card-field-val">${s.previousFunding}</span>
               </div>
             ` : ''}
-            ${s.difference !== undefined ? `
+            ${s.difference && s.difference !== '—' ? `
               <div class="card-field-row">
                 <span>Difference:</span>
                 <span class="card-field-val" style="color: ${String(s.difference).startsWith('-') ? 'var(--red)' : 'var(--text-main)'}; font-weight:600;">

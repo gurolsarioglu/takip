@@ -96,6 +96,7 @@ app.get('/api/watchlist', async (req, res) => {
         const chg = parseFloat(t.priceChange || 0);
         const chgPct = parseFloat(t.priceChangePercent || 0);
         const volUsd = parseFloat(t.quoteVolume || 0);
+        const volBase = parseFloat(t.volume || 0);
 
         result.push({
           symbol: t.symbol,
@@ -106,6 +107,7 @@ app.get('/api/watchlist', async (req, res) => {
           chg,
           chgPct,
           volUsd,
+          volBase,
           fr: prem.fundingRate,
           frInterval: null,
           nextFundingTime: prem.nextFundingTime,

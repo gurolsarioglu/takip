@@ -197,6 +197,7 @@ class MarketDataEngine extends EventEmitter {
           o: d.openPrice,
           h: d.highPrice,
           l: d.lowPrice,
+          v: d.volume,
           q: d.quoteVolume,
           E: d.closeTime
         }));
@@ -295,6 +296,7 @@ class MarketDataEngine extends EventEmitter {
       const openPrice = parseFloat(t.o);
       const highPrice = parseFloat(t.h);
       const lowPrice = parseFloat(t.l);
+      const baseVol = parseFloat(t.v || 0); // Base Asset 24h Hacmi
       const quoteVol = parseFloat(t.q); // USDT Hacmi
 
       this.tickerMap.set(sym, {
@@ -304,6 +306,7 @@ class MarketDataEngine extends EventEmitter {
         open24h: openPrice,
         high24h: highPrice,
         low24h: lowPrice,
+        volBase: baseVol,
         volUsd: quoteVol,
         eventTime: t.E || now
       });
@@ -315,7 +318,7 @@ class MarketDataEngine extends EventEmitter {
         this.slidingWindows.set(sym, sw);
       }
 
-      sw.push({ ts: now, price: curPrice, vol: quoteVol });
+      sw.push({ ts: now, price: curPrice, vol: quoteVol, baseVol });
 
       // 60 saniyeden eski noktalari temizle
       const cutoff = now - 60000;
@@ -328,6 +331,9 @@ class MarketDataEngine extends EventEmitter {
         const oldest = sw[0];
         const price1mChangePct = ((curPrice - oldest.price) / oldest.price) * 100;
         const vol1mChange = quoteVol - oldest.vol;
+        const baseVolSurgePct = (oldest.baseVol > 0 && baseVol > oldest.baseVol)
+          ? ((baseVol - oldest.baseVol) / oldest.baseVol) * 100
+          : 0;
 
         // Anlık M1-A ve M1-Premium Radar Olayları (Kalibre edilmiş gerçekçi eşikler)
         if (Math.abs(price1mChangePct) >= 0.95) {
@@ -353,14 +359,17 @@ class MarketDataEngine extends EventEmitter {
           });
         }
 
-        // V3 Hacim Radarı (Son 24 saatlik hacim > $5M ve anlık hacim sıçraması)
-        if (quoteVol > 5000000 && vol1mChange > 100000) {
+        // V3-A Hacim Radarı (VisiVero Standardı: 24s Base Asset hacmi >= +8.00% artışı veya yüksek USDT akışı)
+        if ((baseVolSurgePct >= 8.0 && baseVol >= 500) || (quoteVol > 5000000 && vol1mChange > 100000)) {
           this.emit('radarAlert', {
             type: 'v3',
             symbol: sym,
             price: curPrice,
             priceStr: t.c,
             volUsd: quoteVol,
+            volBase24h: baseVol,
+            prevVolBase24h: oldest.baseVol,
+            volumeSurgePct: baseVolSurgePct > 0 ? baseVolSurgePct : null,
             vol1mChange,
             timestamp: now
           });

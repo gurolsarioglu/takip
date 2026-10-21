@@ -208,7 +208,7 @@ class SignalStoreService {
       isoDate: dateObj.toISOString(),
       dateStr: dateStr,
       time: timeStr,
-      dot: signalData.dot || '🟢',
+      dot: (signalData.dot !== undefined && signalData.dot !== null) ? signalData.dot : '🟢',
       strategy: signalData.strategy || '',
       stars: signalData.stars || '',
       boostValue: signalData.boostValue || signalData.boost || '',
@@ -232,7 +232,7 @@ class SignalStoreService {
       volume: signalData.volume || null
     };
 
-    for (const key of ['timeframe', 'candleOpenTime', 'candleCloseTime', 'isClosed', 'type',
+    for (const key of ['timeframe', 'candleOpenTime', 'candleCloseTime', 'isClosed', 'type', 'mode',
       'divergence', 'fr', 'isFavorite', 'previousFunding', 'nextFundingTime', 'alertText', 'traderDot',
       'exposureDot', 'displaySymbol', 'observedAt', 'marketEventTime', 'source',
       'strategyVersion', 'measuredChangePct', 'lifecycleId', 'lifecycleState']) {

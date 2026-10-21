@@ -4,6 +4,7 @@
  */
 
 const BaseBot = require('../base/base-bot');
+const botData = require('../../services/bot-data.service');
 
 class V3VolumeBot extends BaseBot {
   constructor() {
@@ -27,41 +28,25 @@ class V3VolumeBot extends BaseBot {
 
   /**
    * 24 saatlik baz hacim değerini binlik basamaklarıyla ve coin birimiyle formatlar
-   * Örn: 42158400, 'PEPE' -> '42.158.400 PEPE'
+   * Örn: 40814, 'TSM' -> '40.814 TSM' | 1261919761, 'DOOD' -> '1.261.919.761 DOOD'
    */
   formatVolume24h(val, baseAsset) {
-    if (!val) return `1.000.000 ${baseAsset}`;
-    
-    // Eğer string zaten coin birimi içeriyorsa doğrudan temizle ve dön
-    if (typeof val === 'string' && val.includes(baseAsset)) {
-      return val.trim();
-    }
-
-    // Sayısal değeri çıkar
-    const cleanNum = typeof val === 'number' ? val : parseFloat(String(val).replace(/[^0-9.]/g, ''));
-    if (isNaN(cleanNum) || cleanNum <= 0) {
-      return `1.000.000 ${baseAsset}`;
-    }
-
-    // Binlik basamak formatı (noktalı)
-    const formattedNum = Math.round(cleanNum).toLocaleString('tr-TR');
-    return `${formattedNum} ${baseAsset}`;
+    return botData.formatBaseVolume24h(val, baseAsset);
   }
 
   /**
-   * V3-A Hacim Patlama Doğrulama Filtresi (Trader Mantığı)
-   * 1. Hacim artışı en az +8.00% olmalıdır (doküman aralığı: +9.48% ~ +173.44%)
-   * 2. Negatif hacim veya hacim daralması bu bota giremez
-   * 3. İllikit çöp coin filtresi: 24 saatlik baz hacim en az 500 birim olmalıdır
+   * V3-A Hacim Patlama Doğrulama Filtresi (VisiVero Standardı)
+   * 1. Son kapanan 1m mumunun 24s base hacmi artışı en az +8.00% olmalıdır.
+   * 2. Negatif hacim veya hacim daralması bu bota giremez.
+   * 3. İllikit çöp coin filtresi: 24 saatlik baz hacim en az 500 birim olmalıdır.
    */
   validateVolumeSurge({ volumeChangeNum, volume24hRaw }) {
-    if (volumeChangeNum < 8.00) {
-      return { valid: false, reason: `Hacim artışı (%${volumeChangeNum.toFixed(2)}) yetersiz (Min +%8.00 olmalı).` };
+    if (!Number.isFinite(volumeChangeNum) || volumeChangeNum < 8.00) {
+      return { valid: false, reason: `Hacim artışı (%${Number(volumeChangeNum || 0).toFixed(2)}) yetersiz (Min +%8.00 olmalı).` };
     }
 
     if (volume24hRaw !== undefined && volume24hRaw !== null) {
       let rawStr = String(volume24hRaw).trim();
-      // '25.000.000' veya '42.158.400' gibi binlik noktalarını temizle
       if ((rawStr.match(/\./g) || []).length > 1) {
         rawStr = rawStr.replace(/\./g, '');
       } else if (rawStr.includes('.') && rawStr.includes(',')) {
@@ -78,16 +63,20 @@ class V3VolumeBot extends BaseBot {
 
   ingest(s) {
     const symbol = (s.coin || s.symbol).toUpperCase();
-    const baseAsset = symbol.replace('USDT', '');
-    const nowTime = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    const baseAsset = botData.extractBaseAsset(symbol);
+    const now = s.timestamp || Date.now();
+    const dateObj = new Date(now);
+    const dateStr = s.dateStr || dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const nowTime = s.time || dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
 
-    // Hacim artışını parse et
-    const volChangeNum = this.parseVolumeChange(s.hacimChange || s.volumeChange || s.volumeSurge || s.boost);
-    
-    // Doğrulama Filtresi
+    const volChangeNum = this.parseVolumeChange(
+      s.hacimChange ?? s.volumeChange ?? s.volumeSurge ?? s.volumeSurgePct ?? s.boost
+    );
+    const raw24h = s.hacim24s ?? s.volume24h ?? s.volBase24h ?? s.volBase ?? s.volume;
+
     const validation = this.validateVolumeSurge({
       volumeChangeNum: volChangeNum,
-      volume24hRaw: s.hacim24s || s.volume24h || s.volume
+      volume24hRaw: raw24h
     });
 
     if (!validation.valid) {
@@ -96,14 +85,20 @@ class V3VolumeBot extends BaseBot {
     }
 
     const volChangeFormatted = `+${volChangeNum.toFixed(2)}%`;
-    const vol24sFormatted = this.formatVolume24h(s.hacim24s || s.volume24h || s.volume, baseAsset);
+    const vol24sFormatted = this.formatVolume24h(raw24h, baseAsset);
 
     const card = {
-      id: 'v3_' + Date.now(),
+      id: s.id || ('v3_' + now),
       symbol: symbol,
+      timeframe: s.timeframe || '1m',
+      candleOpenTime: s.candleOpenTime ?? null,
+      timestamp: now,
+      isoDate: s.isoDate || dateObj.toISOString(),
+      dateStr,
+      dot: s.dot !== undefined ? s.dot : '',
       hacimChange: volChangeFormatted,
       hacim24s: vol24sFormatted,
-      dateLabel: 'Today',
+      dateLabel: s.dateLabel || dateStr,
       time: nowTime
     };
 

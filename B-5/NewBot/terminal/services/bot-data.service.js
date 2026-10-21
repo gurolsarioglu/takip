@@ -93,6 +93,59 @@ function formatHammerFundingAlert(fr) {
   if (pct > -0.20) return null;
   return `${pct.toFixed(2)} ⚠️`;
 }
+function extractBaseAsset(symbol) {
+  return String(symbol || '').toUpperCase().trim().replace(/(USDT|USDC|BUSD)$/i, '');
+}
+function formatBaseVolume24h(baseVolume, symbol) {
+  const baseAsset = extractBaseAsset(symbol);
+  if (typeof baseVolume === 'string' && baseAsset && baseVolume.toUpperCase().includes(baseAsset)) {
+    return baseVolume.trim();
+  }
+  let n = finite(baseVolume);
+  if (n === null && typeof baseVolume === 'string') {
+    let raw = baseVolume.trim();
+    if ((raw.match(/\./g) || []).length > 1) {
+      raw = raw.replace(/\./g, '');
+    } else if (raw.includes('.') && raw.includes(',')) {
+      raw = raw.replace(/\./g, '').replace(',', '.');
+    }
+    n = finite(raw.replace(/[^0-9.-]/g, ''));
+  }
+  if (n === null || n <= 0 || !baseAsset) return null;
+  const intStr = String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return `${intStr} ${baseAsset}`;
+}
+function calculateV3VolumeSurge({ klines1m, vol1m, volBase24h, prevVolBase24h } = {}) {
+  const v24 = finite(volBase24h);
+  const prev24 = finite(prevVolBase24h);
+  if (v24 !== null && prev24 !== null && prev24 > 0 && v24 > prev24) {
+    return ((v24 - prev24) / prev24) * 100;
+  }
+
+  let closed1mVol = finite(vol1m);
+  let targetIdx = -1;
+  if (closed1mVol === null && Array.isArray(klines1m) && klines1m.length > 0) {
+    targetIdx = (klines1m.length >= 2 && klines1m[klines1m.length - 1]?.isClosed === false)
+      ? klines1m.length - 2
+      : klines1m.length - 1;
+    closed1mVol = finite(klines1m[targetIdx]?.volume);
+  }
+
+  if (v24 !== null && closed1mVol !== null && closed1mVol > 0 && v24 > closed1mVol) {
+    const prior24 = v24 - closed1mVol;
+    if (prior24 > 0) return (closed1mVol / prior24) * 100;
+  }
+
+  if (closed1mVol !== null && closed1mVol > 0 && Array.isArray(klines1m) && klines1m.length >= 2) {
+    const idx = targetIdx >= 0 ? targetIdx : klines1m.length - 1;
+    if (idx >= 1) {
+      const priorSum = klines1m.slice(0, idx).reduce((acc, k) => acc + (finite(k?.volume) || 0), 0);
+      if (priorSum > 0) return (closed1mVol / priorSum) * 100;
+    }
+  }
+
+  return null;
+}
 function countdown(nextTime, now = Date.now()) {
   const end = finite(nextTime);
   if (end === null || end <= 0) return null;
@@ -134,6 +187,9 @@ module.exports = {
   impulseBoost,
   formatHammerDistanceAlert,
   formatHammerFundingAlert,
+  extractBaseAsset,
+  formatBaseVolume24h,
+  calculateV3VolumeSurge,
   countdown,
   fundingFields,
   priceChange,

@@ -1065,4 +1065,51 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 - **`npm run test:bots`:** **48/48 test %100 PASS**.
 - **`npm run test:regression`:** **8/8 test %100 PASS**.
 
+---
+
+# 📅 21.10.2026 — Bot 3 (FR) 3-Modlu Motor ve Bot 4 (V3-A) 1m/24s Base Asset Hacim Sıçraması Birebir VisiVero Entegrasyonu
+
+## 💬 1. Konuşmalarımız ve Onaylananlar
+1. **Durum Tespiti & Sıradaki Botların Seçimi:**
+   * Kullanıcı: *"nerde kaldık ?"* sorusunun ardından mevcut ilerleme özeti sunuldu ve kullanıcı *"FR VE V3-A ile devam edelim"* talimatını verdi.
+   * Otonom İcraat Kuralı doğrultusunda ara onay beklenmeksizin **Bot 3 (`FR` — Funding Rate)** ve **Bot 4 (`V3-A` — Volume)** botlarının birebir VisiVero formülleriyle uçtan uca entegrasyonu, kart şablonu düzeltmeleri ve birim testleri tamamlandı.
+
+## 🧠 2. Düşündüklerimiz ve Mimari Kararlar
+1. **Bot 3 (`FR` — Funding Rate) 3-Modlu VisiVero Mimarisi (`visivero-fr-v2`):**
+   * VisiVero'dan çekilen 100 gerçek FR mesajının çapraz analiziyle tespit edilen 3 ayrı çalışma modu `evaluateFunding(ctx)` altında birleştirildi:
+     * **Mod A (`🟢` — Pozitiften/Sıfırdan Negatife Geçiş):** $\text{prevFundingRate} \ge 0 \land \text{currentFundingRate} < 0$ olduğunda `🟢 #SYMBOL`, `⚠️ Funding changed from + to -`, `Funding Rate`, `Previous Funding`, `Difference` ve `Time Remaining` basılır.
+     * **Mod B (`🔴` — Derin Negatif Fonlama Değişimi):** $\text{prevFundingRate} < 0 \land \text{currentFundingRate} < 0$ ve fonlama oranında değişim/derinleşme olduğunda (`\le -0.25%` için `High Negative Funding Alert`, diğer negatif değişimler için `Negative Funding Deepening`) `🔴 #SYMBOL` ile birlikte `Previous Funding` ve `Difference` basılır.
+     * **Mod C (`''` — Periyodik Negatif Fonlama Taraması):** Önceki fonlama referansı olmayan veya değişmeyen periyodik negatif taramalarda (`#CTUSDT`, `#BTWUSDT`, `#ERAUSDT`) VisiVero standardına birebir uygun olarak **ikonsuz `#SYMBOL`** (`dot: ''`, uyarı satırı yok) ve yalnızca `Funding Rate` ile `Time Remaining` satırları gösterilir (`Previous Funding: —` ve `Difference: —` basılması engellendi).
+   * `funding-rate.bot.js` içerisindeki sentetik `currNum ± 0.05` önceki fonlama uydurma kodu tamamen kaldırıldı.
+2. **Bot 4 (`V3-A` — Volume) `:00` Saniye `1m` / `24s Base Asset` Hacim Formülü (`visivero-v3-v2`):**
+   * Eski `5m` 20-bar `DeltaVolume >= +15%` ve `$5.0M (BTC)` USDT gösterimi kaldırılarak VisiVero'nun gerçek formülü devreye alındı:
+     $$\text{Hacim \%} = \frac{V_{24\text{h, now}} - V_{24\text{h, prev1m}}}{V_{24\text{h, prev1m}}} \times 100 \approx \frac{V_{1\text{m}}}{V_{24\text{h, now}} - V_{1\text{m}}} \times 100 \ge 8.00\%$$
+   * `24s Hacim` satırı USDT cinsinden değil, ilgili coinin kendi **Base Asset** adedi cinsinden ve Türkçe binlik nokta ayracıyla (`40.814 TSM`, `1.261.919.761 DOOD`, `509.336.169 1000CAT`) deterministik olarak formatlandı (`formatBaseVolume24h`).
+
+## 🛠️ 3. Yaptıklarımız (Teknik ve Mimari Değişiklikler)
+1. **[`services/bot-data.service.js`](services/bot-data.service.js):**
+   * `extractBaseAsset(symbol)`, `formatBaseVolume24h(baseVolume, symbol)` ve `calculateV3VolumeSurge({ klines1m, vol1m, volBase24h, prevVolBase24h })` fonksiyonları eklendi.
+2. **[`bots/strategy-rules.js`](bots/strategy-rules.js):**
+   * `evaluateFunding(ctx)` (`FR_VERSION = 'visivero-fr-v2'`) ve `evaluateV3(ctx)` (`V3_VERSION = 'visivero-v3-v2'`) karar fonksiyonları kodlandı ve `shouldEmit` ile entegre edildi.
+3. **[`bots/strategies/funding-rate.bot.js`](bots/strategies/funding-rate.bot.js) & [`bots/strategies/v3-volume.bot.js`](bots/strategies/v3-volume.bot.js):**
+   * `FundingRateBot`: Sentetik `previousFunding` üretimi kaldırıldı; 3-modlu VisiVero karar motoru entegre edildi.
+   * `V3VolumeBot`: Sentetik `1.000.000 COIN` geri dönüşü kaldırıldı; `botData.formatBaseVolume24h` ve `dot: ''` standardı bağlandı.
+4. **[`bots/runners/funding-rate.runner.js`](bots/runners/funding-rate.runner.js) & [`bots/runners/v3-volume.runner.js`](bots/runners/v3-volume.runner.js):**
+   * `funding-rate.runner.js`: Mod A (`+/0 -> -` flip) önceliklendirmesi ve `evaluateFunding` çıktısı bağlandı.
+   * `v3-volume.runner.js`: `1m` mumları ve `24s Base Asset` hacmi (`volBase`) üzerinden `>= +8.00%` sıçrama tespiti ve `candleOpenTime` tekilleştirmesi entegre edildi.
+5. **[`terminal-server.js`](terminal-server.js), [`services/market-data-engine.service.js`](services/market-data-engine.service.js) & [`bots/index.js`](bots/index.js):**
+   * `/api/watchlist` ve `MarketDataEngine` içerisine 24 saatlik Base Asset hacmi (`volBase` / `t.v`) ve 60s kayan pencere `baseVolSurgePct >= 8.0%` radarı eklendi.
+   * Merkezi motor (`bots/index.js`) `v3` ve `fr` sinyallerini `evaluateV3` ve `evaluateFunding` üzerinden üretecek şekilde güncellendi.
+6. **[`services/signal-store.service.js`](services/signal-store.service.js) & [`public/plugins/bot-hub/bot-renderer.js`](public/plugins/bot-hub/bot-renderer.js):**
+   * `SignalStore`: İkonsuz sinyallerin (`dot: ''`) `'🟢'` ile ezilmesi engellendi ve `mode` alanı izin listesine eklendi.
+   * `BotRenderer`: FR Mod C kartlarında `Previous Funding: —` ve `Difference: —` satırlarının görünmesi engellenerek VisiVero ile birebir aynı görünüm sağlandı.
+7. **[`review/fr-v3-bots-visivero.test.cjs`](review/fr-v3-bots-visivero.test.cjs):**
+   * Gerçek VisiVero geçmiş sinyalleri (`TSMUSDT`, `DOODUSDT`, `1000CATUSDT`, `PAYPUSDT`, `CTUSDT`) üzerinde `FR` (Mod A, B, C) ve `V3-A` hesaplamalarını, runner'ları, `SignalStore`'u ve `BotRenderer` HTML çıktısını doğrulayan test paketi yazıldı ve `npm run test:bots` içerisine eklendi.
+
+## ✅ 4. Tamamlanan İşler ve Doğrulama
+* **`npm run test:bots`:** **53/53 test %100 PASS** (`fr-v3-bots-visivero.test.cjs` dahil).
+* **`npm run test:regression`:** **8/8 test %100 PASS**.
+* **Git Senkronizasyonu:** Tüm değişiklikler commit edilerek `origin/master` GitHub reposuna push edildi.
+
+
 

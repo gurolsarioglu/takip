@@ -15,14 +15,15 @@ class FundingRateBot extends BaseBot {
   }
 
   /**
-   * Fonlama oranını güvenli float yüzdesine çevirir
+   * Fonlama oranını güvenli float yüzdesine çevirir (yoksa null döner)
    */
   parseFundingRate(val) {
-    if (typeof val === 'number') return isNaN(val) ? 0 : val;
-    if (!val) return 0;
+    if (val === null || val === undefined || val === '') return null;
+    if (typeof val === 'number') return Number.isFinite(val) ? val : null;
     const clean = String(val).replace(/[%,\s]/g, '').trim();
+    if (!clean) return null;
     const parsed = parseFloat(clean);
-    return isNaN(parsed) ? 0 : parsed;
+    return Number.isFinite(parsed) ? parsed : null;
   }
 
   /**
@@ -49,76 +50,75 @@ class FundingRateBot extends BaseBot {
   }
 
   /**
-   * Fonlama Değişimi & Squeeze Karar Motoru (Trader Mantığı)
-   * 1. + 'dan - 'ye geçiş -> 'Funding changed from + to -' (🟢 Short Squeeze Fırsatı)
-   * 2. - 'den + 'ya geçiş -> 'Funding changed from - to +' (🟢 Normale Dönüş)
-   * 3. Ekstrem Negatif (<= -0.25%) -> 'High Negative Funding Alert' (🔴 Yüksek Risk / Squeeze Alarmı)
-   * 4. Negatif Derinleşme -> 'Negative Funding Deepening' (🔴)
+   * VisiVero FR 3-Modlu Karar Motoru:
+   * - Mod A (🟢): Pozitiften (veya 0.0000'dan) negatife geçiş -> 'Funding changed from + to -'
+   * - Mod B (🔴): Derin negatif fonlama değişimi (<= -0.25% veya negatif derinleşme)
+   * - Mod C (''): Periyodik negatif fonlama taraması (Previous Funding & Difference olmadan ikonsuz #SYMBOL)
    */
   evaluateFundingRate({ currNum, prevNum, explicitAlert, explicitDot }) {
-    // Açıkça belirtilmiş bir durum varsa önceliklendir
-    if (explicitAlert && explicitDot) {
-      return { valid: true, alertText: explicitAlert, dot: explicitDot };
+    if (currNum === null) {
+      return { valid: false, reason: 'Geçerli bir fonlama oranı bulunamadı.' };
     }
 
-    const isFlipPlusToMinus = prevNum >= 0 && currNum < 0;
-    const isFlipMinusToPlus = prevNum <= 0 && currNum > 0;
-    const isExtremeNegative = currNum <= -0.25;
-    const isDeepeningNegative = currNum < prevNum && currNum < -0.10;
+    if (explicitAlert && explicitDot !== undefined) {
+      return { valid: true, mode: 'explicit', alertText: explicitAlert, dot: explicitDot };
+    }
 
-    if (isFlipPlusToMinus) {
+    const hasPrev = prevNum !== null && prevNum !== undefined;
+
+    // Mod A: + veya 0'dan -'ye geçiş (🟢 ⚠️ Funding changed from + to -)
+    if (hasPrev && prevNum >= 0 && currNum < 0) {
       return {
         valid: true,
+        mode: 'A',
         alertText: 'Funding changed from + to -',
-        dot: '🟢' // Short squeeze alım fırsatı
-      };
-    }
-
-    if (isFlipMinusToPlus) {
-      return {
-        valid: true,
-        alertText: 'Funding changed from - to +',
         dot: '🟢'
       };
     }
 
-    if (isExtremeNegative) {
+    // Mod B: Negatif bölgede değişim / derinleşme (🔴)
+    if (hasPrev && prevNum < 0 && currNum < 0 && Math.abs(currNum - prevNum) > 1e-9) {
       return {
         valid: true,
-        alertText: explicitAlert || 'High Negative Funding Alert',
+        mode: 'B',
+        alertText: explicitAlert || (currNum <= -0.25 ? 'High Negative Funding Alert' : 'Negative Funding Deepening'),
         dot: '🔴'
       };
     }
 
-    if (isDeepeningNegative) {
+    // Mod C: Periyodik negatif tarama (İkonsuz #SYMBOL, Previous Funding ve Difference yok)
+    if (!hasPrev && currNum < 0) {
       return {
         valid: true,
-        alertText: explicitAlert || 'Negative Funding Deepening',
-        dot: '🔴'
+        mode: 'C',
+        alertText: explicitAlert || null,
+        dot: explicitDot !== undefined ? explicitDot : ''
       };
     }
 
-    // Mikro dalgalanmaları filtrele
-    const diff = Math.abs(currNum - prevNum);
-    if (diff < 0.02 && Math.abs(currNum) < 0.15 && !explicitAlert) {
-      return { valid: false, reason: `Fonlama değişimi (%${diff.toFixed(4)}) çok küçük; kayda değer bir arbitraj veya squeeze yok.` };
+    // -'den +'ya geçiş
+    if (hasPrev && prevNum < 0 && currNum > 0) {
+      return {
+        valid: true,
+        mode: 'flip_to_plus',
+        alertText: explicitAlert || 'Funding changed from - to +',
+        dot: '🟢'
+      };
     }
 
-    return {
-      valid: true,
-      alertText: explicitAlert || 'Funding Rate Alert',
-      dot: currNum < 0 ? '🔴' : '🟢'
-    };
+    return { valid: false, reason: `Fonlama oranı (${currNum}) negatif veya geçiş koşulunu sağlamıyor.` };
   }
 
   ingest(s) {
     const symbol = (s.coin || s.symbol).toUpperCase();
-    const nowTime = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    const now = s.timestamp || Date.now();
+    const dateObj = new Date(now);
+    const dateStr = s.dateStr || dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const nowTime = s.time || dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
 
-    const currNum = this.parseFundingRate(s.fundingRate || s.funding);
-    const prevNum = this.parseFundingRate(s.previousFunding || (currNum >= 0 ? currNum - 0.05 : currNum + 0.05));
+    const currNum = this.parseFundingRate(s.fundingRate ?? s.funding ?? s.rate);
+    const prevNum = this.parseFundingRate(s.previousFunding ?? s.prevRate);
 
-    // Fonlama Değişimi & Squeeze Karar Motoru
     const explicitAlert = s.alertText ? String(s.alertText).replace(/^[⚠️\s]+/, '').trim() : null;
     const analysis = this.evaluateFundingRate({
       currNum,
@@ -132,25 +132,29 @@ class FundingRateBot extends BaseBot {
       return null;
     }
 
-    // Fark hesaplama: Current - Previous
-    const diffNum = currNum - prevNum;
-    const diffFormatted = diffNum >= 0 ? `+${diffNum.toFixed(4)}%` : `${diffNum.toFixed(4)}%`;
+    const hasPrev = prevNum !== null && prevNum !== undefined && analysis.mode !== 'C';
+    const diffNum = hasPrev ? (currNum - prevNum) : null;
+    const diffFormatted = diffNum === null ? null : `${diffNum.toFixed(4)}%`;
 
-    const currFormatted = currNum >= 0 ? `+${currNum.toFixed(4)}%` : `${currNum.toFixed(4)}%`;
-    const prevFormatted = prevNum >= 0 ? `+${prevNum.toFixed(4)}%` : `${prevNum.toFixed(4)}%`;
+    const currFormatted = `${currNum.toFixed(4)}%`;
+    const prevFormatted = hasPrev ? `${prevNum.toFixed(4)}%` : null;
 
     const timeRemaining = s.timeRemaining || this.calculateFundingCountdown();
 
     const card = {
-      id: 'fr_' + Date.now(),
+      id: s.id || ('fr_' + now),
       symbol: symbol,
+      timestamp: now,
+      isoDate: s.isoDate || dateObj.toISOString(),
+      dateStr,
       dot: analysis.dot,
       alertText: analysis.alertText,
+      strategy: s.strategy || analysis.alertText || 'Negative Funding Scan',
       fundingRate: currFormatted,
       previousFunding: prevFormatted,
       difference: diffFormatted,
       timeRemaining: timeRemaining,
-      dateLabel: 'Today',
+      dateLabel: s.dateLabel || dateStr,
       time: nowTime
     };
 

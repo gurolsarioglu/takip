@@ -333,63 +333,102 @@ class BotManager {
     }
 
     // ─────────────────────────────────────────────────────────────
-    // C. V3-A Hacim Botu: DeltaVol% >= +15% ve 24s USDT Hacmi > $5M
+    // C. V3-A Hacim Botu (VisiVero Standardı: 1m kapanış >= +8.00% 24s Base Asset hacim artışı)
     // ─────────────────────────────────────────────────────────────
     if (alert.type === 'v3') {
-      if (!v3VolumeBot.canEmitSignal(sym, '5m', null, 300000)) return;
+      if (!v3VolumeBot.canEmitSignal(sym, '1m', null, 300000)) return;
 
-      const klines5m = await marketDataEngine.getKlines(sym, '5m', 250);
-      if (klines5m.length < 20) return;
+      const ticker = typeof marketDataEngine.getTicker === 'function' ? marketDataEngine.getTicker(sym) : null;
+      const volBase24h = alert.volBase24h ?? ticker?.volBase ?? null;
+      const klines1m = typeof marketDataEngine.getKlines === 'function'
+        ? await marketDataEngine.getKlines(sym, '1m', 10)
+        : [];
 
-      const vols = klines5m.map(k => k.volume);
-      const deltaVolPct = quantIndicators.calculateDeltaVolume(vols, 20);
-      if (!strategyRules.shouldEmit('v3', { deltaVolPct, volUsd: alert.volUsd })) return;
+      let evalV3 = strategyRules.evaluateV3({
+        symbol: sym,
+        klines1m: Array.isArray(klines1m) && klines1m.length > 0 ? klines1m : null,
+        volBase24h,
+        prevVolBase24h: alert.prevVolBase24h ?? null,
+        volumeSurgePct: alert.volumeSurgePct ?? null
+      });
 
-      const baseAsset = sym.replace('USDT', '');
-      const approxVolM = (alert.volUsd / 1000000).toFixed(1);
+      if (!evalV3 && typeof quantIndicators.calculateDeltaVolume === 'function') {
+        const klines5m = await marketDataEngine.getKlines(sym, '5m', 250);
+        if (klines5m.length >= 20) {
+          const vols = klines5m.map(k => k.volume);
+          const deltaVolPct = quantIndicators.calculateDeltaVolume(vols, 20);
+          evalV3 = strategyRules.evaluateV3({
+            symbol: sym,
+            volBase24h,
+            volUsd: alert.volUsd,
+            deltaVolPct
+          });
+        }
+      }
+
+      if (!evalV3) return;
+      if (evalV3.candleOpenTime !== null && !v3VolumeBot.canEmitSignal(sym, evalV3.timeframe || '1m', evalV3.candleOpenTime, 300000)) {
+        return;
+      }
 
       v3VolumeBot.addSignal({
-            source: 'binance-central',
-            strategyVersion: strategyRules.VERSION,
-            observedAt: Date.now(),
+        source: 'binance-central',
+        strategyVersion: evalV3.strategyVersion || strategyRules.V3_VERSION,
+        observedAt: Date.now(),
         id: `v3_${sym}_${now}`,
         symbol: sym,
+        timeframe: evalV3.timeframe || '1m',
+        candleOpenTime: evalV3.candleOpenTime ?? null,
         timestamp: now,
         isoDate: dateObj.toISOString(),
         dateStr,
-        hacimChange: `+${deltaVolPct.toFixed(2)}%`,
-        hacim24s: `$${approxVolM}M (${baseAsset})`,
+        dot: evalV3.dot ?? '',
+        hacimChange: evalV3.hacimChange,
+        hacim24s: evalV3.hacim24s,
+        strategy: 'V3-A Volume Surge',
         dateLabel: dateStr,
         time: nowTime
       });
-      console.log(`[QuantEngine Sinyal] V3-A Hacim: ${sym} (+${deltaVolPct.toFixed(2)}%)`);
+      console.log(`[QuantEngine Sinyal] V3-A Hacim: ${sym} (${evalV3.hacimChange} | 24s: ${evalV3.hacim24s || '—'})`);
       return;
     }
 
     // ─────────────────────────────────────────────────────────────
-    // D. Funding Rate (FR) Botu: Negatif fonlama veya pozitiften negatife geçiş
+    // D. Funding Rate (FR) Botu: VisiVero 3-Modlu Fonlama Motoru (Mod A 🟢 Flip, Mod B 🔴 Derin, Mod C '' Tarama)
     // ─────────────────────────────────────────────────────────────
     if (alert.type === 'fr') {
-      if (!strategyRules.shouldEmit('fr', { rate: alert.fundingRate })) return;
+      const evalFr = strategyRules.evaluateFunding({
+        rate: alert.fundingRate,
+        prevRate: alert.prevFundingRate,
+        nextFundingTime: alert.nextFundingTime,
+        now
+      });
+      if (!evalFr) return;
       if (!fundingRateBot.canEmitSignal(sym, 'fr', null, 600000)) return;
 
-      const frPct = (alert.fundingRate * 100).toFixed(4);
-      const isFlip = alert.prevFundingRate > 0 && alert.fundingRate < 0;
-
       fundingRateBot.addSignal({
-            source: 'binance-central',
-            strategyVersion: strategyRules.VERSION,
-            observedAt: Date.now(),
+        source: 'binance-central',
+        strategyVersion: evalFr.strategyVersion || strategyRules.FR_VERSION,
+        observedAt: Date.now(),
         id: `fr_${sym}_${now}`,
         symbol: sym,
-        dot: isFlip ? '🟢' : '🔴',
-        alertText: isFlip ? 'Funding changed from + to - (Short Squeeze)' : 'Negative Funding (Short Squeeze Candidate)',
-        ...botData.fundingFields(alert.fundingRate, alert.prevFundingRate, alert.nextFundingTime, now),
+        timestamp: now,
+        isoDate: dateObj.toISOString(),
+        dateStr,
+        mode: evalFr.mode,
+        dot: evalFr.dot,
+        alertText: evalFr.alertText,
+        strategy: evalFr.strategy,
+        fundingRate: evalFr.fundingRate,
+        previousFunding: evalFr.previousFunding,
+        difference: evalFr.difference,
+        timeRemaining: evalFr.timeRemaining,
+        nextFundingTime: evalFr.nextFundingTime,
         dateLabel: dateStr,
         time: nowTime
       });
       this.fundingHistory.set(sym, alert.fundingRate);
-      console.log(`[QuantEngine Sinyal] FR: ${sym} (${frPct}%)`);
+      console.log(`[QuantEngine Sinyal] FR (${evalFr.mode}): ${sym} (${evalFr.fundingRate})`);
     }
   }
 
@@ -397,9 +436,8 @@ class BotManager {
    * Fonlama Oranı (Funding Rate) Taraması: En negatif fonlama oranına sahip pariteler
    */
   async _scanFundingRates() {
-    const botData = require('../services/bot-data.service');
     const strategyRules = require('./strategy-rules');
-    const topNeg = marketDataEngine.getTopNegativeFunding(10);
+    const topNeg = marketDataEngine.getTopNegativeFunding(15);
     if (!topNeg || topNeg.length === 0) return;
 
     const now = Date.now();
@@ -409,23 +447,39 @@ class BotManager {
 
     for (const item of topNeg) {
       const sym = item.symbol;
+      const prevFr = this.fundingHistory.get(sym);
+      const evalFr = strategyRules.evaluateFunding({
+        rate: item.fundingRate,
+        prevRate: prevFr,
+        nextFundingTime: item.nextFundingTime,
+        now
+      });
+      if (!evalFr) continue;
       if (!fundingRateBot.canEmitSignal(sym, 'fr', null, 600000)) continue;
 
-      const frPct = (item.fundingRate * 100).toFixed(4);
       fundingRateBot.addSignal({
-            source: 'binance-central',
-            strategyVersion: strategyRules.VERSION,
-            observedAt: Date.now(),
+        source: 'binance-central',
+        strategyVersion: evalFr.strategyVersion || strategyRules.FR_VERSION,
+        observedAt: Date.now(),
         id: `fr_${sym}_${now}`,
         symbol: sym,
-        dot: '🔴',
-        alertText: 'Negative Funding (Short Squeeze Candidate)',
-        ...botData.fundingFields(item.fundingRate, this.fundingHistory.get(sym), item.nextFundingTime, now),
+        timestamp: now,
+        isoDate: dateObj.toISOString(),
+        dateStr,
+        mode: evalFr.mode,
+        dot: evalFr.dot,
+        alertText: evalFr.alertText,
+        strategy: evalFr.strategy,
+        fundingRate: evalFr.fundingRate,
+        previousFunding: evalFr.previousFunding,
+        difference: evalFr.difference,
+        timeRemaining: evalFr.timeRemaining,
+        nextFundingTime: evalFr.nextFundingTime,
         dateLabel: dateStr,
         time: nowTime
       });
       this.fundingHistory.set(sym, item.fundingRate);
-      console.log(`[QuantEngine Sinyal] FR: ${sym} (${frPct}%)`);
+      console.log(`[QuantEngine Sinyal] FR (${evalFr.mode}): ${sym} (${evalFr.fundingRate})`);
     }
   }
 
