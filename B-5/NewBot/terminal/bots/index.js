@@ -651,50 +651,97 @@ class BotManager {
           }
         }
 
-        // 3. Divergence Botu: 1H veya 5m RSI Pivot Lookback Uyuşmazlığı
-        const has1hDiv = strategyRules.hasDivergence(m1h);
-        const has5mDiv = strategyRules.hasDivergence(m5);
-        if (enabled('div') && strategyRules.shouldEmit('div', { m5, m1h })) {
-          const is1h = has1hDiv;
-          const divInfo = is1h ? m1h.divergence : m5.divergence;
-          const tf = is1h ? '1h' : '5m';
-          const candleTime = is1h ? lastBar1h.openTime : lastBar5m.openTime;
+        // 3. Divergence Botu: VisiVero 1H/4H (1H RSI DIVERGENCE / 1H RSI SMA CROSSED / 4H RSI DIVERGENCE)
+        if (enabled('div')) {
+          if (hasFullOhlc && m1h) {
+            let klines4h = [];
+            let m4h = null;
+            let m1d = null;
+            const trigger1h = strategyRules.shouldEmit('div', { m1h, klines1h });
+            if (trigger1h) {
+              const [raw4h, raw1d] = await Promise.all([
+                marketDataEngine.getKlines(sym, '4h', 250).catch(() => []),
+                marketDataEngine.getKlines(sym, '1d', 250).catch(() => [])
+              ]);
+              klines4h = Array.isArray(raw4h) ? raw4h : [];
+              if (klines4h.length >= 15) m4h = quantIndicators.calculateAllMetrics(klines4h);
+              if (Array.isArray(raw1d) && raw1d.length >= 15) m1d = quantIndicators.calculateAllMetrics(raw1d);
+            } else {
+              const raw4h = await marketDataEngine.getKlines(sym, '4h', 250).catch(() => []);
+              klines4h = Array.isArray(raw4h) ? raw4h : [];
+              if (klines4h.length >= 30) m4h = quantIndicators.calculateAllMetrics(klines4h);
+              if (m4h && strategyRules.shouldEmit('div', { m1h, m4h, klines1h, klines4h })) {
+                const raw1d = await marketDataEngine.getKlines(sym, '1d', 250).catch(() => []);
+                if (Array.isArray(raw1d) && raw1d.length >= 15) m1d = quantIndicators.calculateAllMetrics(raw1d);
+              }
+            }
 
-          if (divergenceBot.canEmitSignal(sym, tf, candleTime, 900000)) {
-            const isBull = divInfo.hasBullDiv;
-
-            divergenceBot.addSignal({
-            source: 'binance-central',
-            strategyVersion: strategyRules.VERSION,
-            observedAt: Date.now(),
-              id: `div_${sym}_${now}`,
-              candleOpenTime: candleTime,
-              timeframe: tf,
-              symbol: sym,
-              timestamp: now,
-              isoDate: dateObj.toISOString(),
-              dateStr,
-              dot: isBull ? '🟢' : '🔴',
-              strategy: `${tf.toUpperCase()} RSI DIVERGENCE`,
-              boostValue: null,
-              measuredChangePct: (is1h ? observed1h : observed5).changePct,
-              currentPrice: formatCryptoPrice((is1h ? observed1h : observed5).current, sym),
-              prevPrice: formatCryptoPrice((is1h ? observed1h : observed5).previous, sym),
-              rsi: {
-                h1: `${botData.indicatorText(m1h?.rsi)} ❗`,
-                h4: '—',
-                d1: '—'
-              },
-              srsi: {
-                h1: `${botData.indicatorText(m1h?.srsiK)} ❗`,
-                h4: '—',
-                d1: '—'
-              },
-              pivot: `%${(is1h ? m1h : m5).pivots.pivotDistancePct} ⚠️`,
-              dateLabel: dateStr,
-              time: nowTime
-            });
-            console.log(`[QuantEngine Sinyal] Divergence: ${sym} (${divInfo.type})`);
+            const evalDiv = strategyRules.evaluateDivergence({ m1h, m4h, m1d, klines1h, klines4h });
+            if (evalDiv) {
+              const activeKlines = evalDiv.timeframe === '4h' && klines4h.length >= 2 ? klines4h : klines1h;
+              const triggerBar = activeKlines[activeKlines.length - 1];
+              const obs = botData.priceChange(activeKlines);
+              if (triggerBar && obs && divergenceBot.canEmitSignal(sym, evalDiv.timeframe, triggerBar.openTime, 900000)) {
+                divergenceBot.addSignal({
+                  source: 'binance-central',
+                  strategyVersion: evalDiv.strategyVersion || strategyRules.DIV_VERSION,
+                  observedAt: Date.now(),
+                  id: `div_${sym}_${now}`,
+                  candleOpenTime: triggerBar.openTime,
+                  timeframe: evalDiv.timeframe,
+                  symbol: sym,
+                  timestamp: now,
+                  isoDate: dateObj.toISOString(),
+                  dateStr,
+                  direction: evalDiv.direction,
+                  dot: evalDiv.dot,
+                  strategy: evalDiv.strategy,
+                  boostValue: evalDiv.boostValue,
+                  measuredChangePct: obs.changePct,
+                  currentPrice: formatCryptoPrice(obs.current, sym),
+                  prevPrice: formatCryptoPrice(obs.previous, sym),
+                  rsi: evalDiv.rsi,
+                  srsi: evalDiv.srsi,
+                  pivot: evalDiv.pivot,
+                  dateLabel: dateStr,
+                  time: nowTime
+                });
+                console.log(`[QuantEngine Sinyal] Divergence: ${sym} (${evalDiv.dot} ${evalDiv.strategy} | Boost: ${evalDiv.boostValue || '—'})`);
+              }
+            }
+          } else if (strategyRules.shouldEmit('div', { m5, m1h })) {
+            const evalDiv = strategyRules.evaluateDivergence({ m5, m1h });
+            if (evalDiv) {
+              const is1h = evalDiv.timeframe === '1h';
+              const candleTime = is1h ? lastBar1h.openTime : lastBar5m.openTime;
+              const obs = is1h ? observed1h : observed5;
+              if (obs && divergenceBot.canEmitSignal(sym, evalDiv.timeframe, candleTime, 900000)) {
+                divergenceBot.addSignal({
+                  source: 'binance-central',
+                  strategyVersion: evalDiv.strategyVersion || strategyRules.VERSION,
+                  observedAt: Date.now(),
+                  id: `div_${sym}_${now}`,
+                  candleOpenTime: candleTime,
+                  timeframe: evalDiv.timeframe,
+                  symbol: sym,
+                  timestamp: now,
+                  isoDate: dateObj.toISOString(),
+                  dateStr,
+                  dot: evalDiv.dot,
+                  strategy: evalDiv.strategy,
+                  boostValue: evalDiv.boostValue,
+                  measuredChangePct: obs.changePct,
+                  currentPrice: formatCryptoPrice(obs.current, sym),
+                  prevPrice: formatCryptoPrice(obs.previous, sym),
+                  rsi: evalDiv.rsi,
+                  srsi: evalDiv.srsi,
+                  pivot: evalDiv.pivot,
+                  dateLabel: dateStr,
+                  time: nowTime
+                });
+                console.log(`[QuantEngine Sinyal] Divergence: ${sym} (${evalDiv.strategy})`);
+              }
+            }
           }
         }
 

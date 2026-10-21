@@ -1127,9 +1127,23 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
      * `FourSSniperBot.ingest(s)` içerisindeki sentetik varsayılan değerler (`rsi4h=45`, `tp=62%` vb.) temizlendi; hem `🟢` (`#38bdf8`) hem `🔴` (`#f87171`) `4S Sniper` kartları uçtan uca desteklendi.
    * **[`review/sniper-bot-visivero.test.cjs`](review/sniper-bot-visivero.test.cjs):**
      * Gerçek VisiVero sinyalleri (`TSLAUSDT` `🔴 NW DOWN`, `BRUSDT` `🔴 NW DOWN`, `BERAUSDT` `🟢 4H RSI DIVERGENCE`, `4H RSI SMA CROSSED`) üzerinde Nadaraya-Watson zarfı, baskın taraf oranları, runner/merkezi motor ve `BotRenderer` çıktısını doğrulayan 5 yeni test eklendi.
+9. **Bot 7 (`DIV` — Divergence) Birebir VisiVero `1H` / `4H` Strateji Motoru (`visivero-div-v2`):**
+   * Kullanıcı: *"DIV — (Divergence) buna başalayım 1 saatlık mumlara baktığını biliyoruz değilmi ?"* diyerek `DIV` botunun `1H` mum yapısıyla kurulmasını istedi.
+   * **[`services/quant-indicators.service.js`](services/quant-indicators.service.js):**
+     * `detectPivotDivergence(candles, rsiSeries)` fonksiyonu VisiVero'da 95/97 (%97.9) doğrulanan **son 60 bar 2-komşulu `RSI(14)` / Fiyat pivotu ile canlı (`now`) veya son kapanmış (`prev`) mumun karşılaştırılması** kuralıyla güçlendirildi ($\text{RSI}_{1\text{h}} \le 40$ için Boğa, $\text{RSI}_{1\text{h}} \ge 57$ için Ayı Regular Divergence).
+   * **[`bots/strategy-rules.js`](bots/strategy-rules.js):**
+     * `evaluateDivergence(ctx)` (`DIV_VERSION = 'visivero-div-v2'`) ile VisiVero `DIV` kanalının 3 alt stratejisi kodlandı:
+       1. **`1H RSI DIVERGENCE` (%97):** `1H` Regular RSI(14) uyumsuzluğu (`🟢` $\text{RSI}_{1\text{h}} \le 40$, `🔴` $\text{RSI}_{1\text{h}} \ge 57$).
+       2. **`1H RSI SMA CROSSED` (%2):** Canlı `1H` mumunda `RSI(14)` / `SMA(14)` kesişimi (`🟢` $\text{RSI}_{1\text{h}} \le 37$, `🔴` $\text{RSI}_{1\text{h}} \ge 70$).
+       3. **`4H RSI DIVERGENCE` (%1):** `4H` mumlarında ekstrem Regular RSI uyumsuzluğu (`🟢` $\text{RSI}_{4\text{h}} \le 30$, `🔴` $\text{RSI}_{4\text{h}} \ge 70$).
+     * `Boost Value` 5-bar `1h` (veya `4h`) impulse (`botData.impulseBoost`), `Previous Price` bir önceki kapanmış `1h` mumunun kapanışı (`klines1h.at(-2).close`), `RSI` ve `SRSI` `1h | 4h | 1d` (`❗️` uyarılarıyla) ve `Pivot` yalnızca mesafe $< 1.00\%$ iken (`%0.77 ⚠️`) gösterilecek şekilde bağlandı.
+   * **[`bots/strategies/divergence.bot.js`](bots/strategies/divergence.bot.js), [`bots/runners/divergence.runner.js`](bots/runners/divergence.runner.js), [`bots/index.js`](bots/index.js) & [`public/plugins/bot-hub/bot-renderer.js`](public/plugins/bot-hub/bot-renderer.js):**
+     * Eski `5m` varsayılan taraması ve `divergence.bot.js` içerisindeki sentetik `rsi4h=35`, `rsi1d=45`, `pivot='%0.32 ⚠️'` uydurma değerleri tamamen kaldırıldı; `1h + 4h + 1d` gerçek mum verisiyle çalışan `DIV` hattı devreye alındı.
+   * **[`review/div-bot-visivero.test.cjs`](review/div-bot-visivero.test.cjs):**
+     * Gerçek VisiVero sinyali (`AUSDT` `🟢 1H RSI DIVERGENCE`, `1H RSI SMA CROSSED`, `4H RSI DIVERGENCE`) üzerinde 60-bar pivot uyumsuzluğu, `evaluateDivergence`, runner, `ingest()` ve `BotRenderer` çıktısını doğrulayan 4 yeni test eklendi.
 
 ## ✅ 4. Tamamlanan İşler ve Doğrulama
-* **`npm run test:bots`:** **58/58 test %100 PASS** (`fr-v3-bots-visivero.test.cjs` ve `sniper-bot-visivero.test.cjs` dahil).
+* **`npm run test:bots`:** **62/62 test %100 PASS** (`fr-v3-bots-visivero.test.cjs`, `sniper-bot-visivero.test.cjs` ve `div-bot-visivero.test.cjs` dahil).
 * **`npm run test:regression`:** **8/8 test %100 PASS**.
 * **Git Senkronizasyonu:** Tüm değişiklikler commit edilerek `origin/master` GitHub reposuna push edildi.
 

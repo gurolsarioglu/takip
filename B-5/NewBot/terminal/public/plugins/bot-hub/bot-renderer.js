@@ -643,11 +643,11 @@ const BotRenderer = (() => {
             </div>
             <div class="card-field-row">
               <span>Strategy:</span>
-              <span style="color: #38bdf8; font-weight: 700;">${s.strategy}</span>
+              <span style="color: #38bdf8; font-weight: 700;">${s.strategy || '1H RSI DIVERGENCE'}</span>
             </div>
             <div class="card-field-row">
               <span>Boost Value:</span>
-              <span class="card-boost-val">${s.boostValue}</span>
+              <span class="card-boost-val">${s.boostValue || '—'}</span>
             </div>
             <div class="card-field-row">
               <span>Current Price:</span>
@@ -658,10 +658,10 @@ const BotRenderer = (() => {
               <span class="card-field-val">${formatCardPrice(s.prevPrice, s.symbol)}</span>
             </div>
             <div class="card-multi-indicator">
-              RSI: <strong>1h.${s.rsi.h1}</strong> | <strong>4h.${s.rsi.h4}</strong> | <strong>1d.${s.rsi.d1}</strong>
+              RSI: <strong>1h.${s.rsi?.h1 || '—'}</strong> | <strong>4h.${s.rsi?.h4 || '—'}</strong> | <strong>1d.${s.rsi?.d1 || '—'}</strong>
             </div>
             <div class="card-multi-indicator">
-              SRSI: <strong>1h.${s.srsi.h1}</strong> | <strong>4h.${s.srsi.h4}</strong> | <strong>1d.${s.srsi.d1}</strong>
+              SRSI: <strong>1h.${s.srsi?.h1 || '—'}</strong> | <strong>4h.${s.srsi?.h4 || '—'}</strong> | <strong>1d.${s.srsi?.d1 || '—'}</strong>
             </div>
             ${s.pivot ? `
               <div class="card-alert-line">

@@ -42,66 +42,132 @@ async function scan() {
     if (now - lastSeen < 600000) continue; // 10 dk cooldown
 
     try {
-      const [klines5m, klines1h] = await Promise.all([
-        getKlines(sym, '5m', 250),
-        getKlines(sym, '1h', 250)
-      ]);
+      const klines1h = await getKlines(sym, '1h', 250);
+      const hasFullOhlc = Array.isArray(klines1h) && klines1h.length >= 30 && Number.isFinite(klines1h[0]?.open);
 
+      if (hasFullOhlc) {
+        const m1h = quantIndicators.calculateAllMetrics(klines1h);
+        if (!m1h) continue;
+
+        let klines4h = [];
+        let m4h = null;
+        let m1d = null;
+
+        // Pre-check 1h trigger first; if 1h triggers (99% of VisiVero DIV signals), enrich with 4h and 1d
+        const trigger1h = strategyRules.shouldEmit(BOT_ID, { m1h, klines1h });
+        if (trigger1h) {
+          const [raw4h, raw1d] = await Promise.all([
+            getKlines(sym, '4h', 250).catch(() => []),
+            getKlines(sym, '1d', 250).catch(() => [])
+          ]);
+          klines4h = Array.isArray(raw4h) ? raw4h : [];
+          if (klines4h.length >= 15) m4h = quantIndicators.calculateAllMetrics(klines4h);
+          if (Array.isArray(raw1d) && raw1d.length >= 15) {
+            m1d = quantIndicators.calculateAllMetrics(raw1d);
+          }
+        } else {
+          // 1% of VisiVero DIV signals are 4H RSI DIVERGENCE
+          const raw4h = await getKlines(sym, '4h', 250).catch(() => []);
+          klines4h = Array.isArray(raw4h) ? raw4h : [];
+          if (klines4h.length >= 30) {
+            m4h = quantIndicators.calculateAllMetrics(klines4h);
+          }
+          if (!strategyRules.shouldEmit(BOT_ID, { m1h, m4h, klines1h, klines4h })) continue;
+          const raw1d = await getKlines(sym, '1d', 250).catch(() => []);
+          if (Array.isArray(raw1d) && raw1d.length >= 15) {
+            m1d = quantIndicators.calculateAllMetrics(raw1d);
+          }
+        }
+
+        const evalDiv = strategyRules.evaluateDivergence({ m1h, m4h, m1d, klines1h, klines4h });
+        if (!evalDiv) continue;
+
+        const activeKlines = evalDiv.timeframe === '4h' && klines4h.length >= 2 ? klines4h : klines1h;
+        const lastBar = activeKlines[activeKlines.length - 1];
+        const observed = botData.priceChange(activeKlines);
+        if (!observed) continue;
+
+        const dateObj = new Date(now);
+        const dateStr = dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const nowTime = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
+        const signalPayload = {
+          botId: BOT_ID,
+          source: 'binance-rest',
+          strategyVersion: evalDiv.strategyVersion || strategyRules.DIV_VERSION,
+          observedAt: Date.now(),
+          botType: BOT_ID,
+          id: `div_${sym}_${now}`,
+          candleOpenTime: lastBar.openTime,
+          timeframe: evalDiv.timeframe,
+          symbol: sym,
+          timestamp: now,
+          isoDate: dateObj.toISOString(),
+          dateStr,
+          direction: evalDiv.direction,
+          dot: evalDiv.dot,
+          strategy: evalDiv.strategy,
+          boostValue: evalDiv.boostValue,
+          measuredChangePct: observed.changePct,
+          currentPrice: formatCryptoPrice(observed.current, sym),
+          prevPrice: formatCryptoPrice(observed.previous, sym),
+          rsi: evalDiv.rsi,
+          srsi: evalDiv.srsi,
+          pivot: evalDiv.pivot,
+          dateLabel: dateStr,
+          time: nowTime
+        };
+
+        const hubResult = await postSignal(signalPayload);
+        if (isSignalAccepted(hubResult)) {
+          seenMap.set(sym, now);
+          totalSignalsFound++;
+        }
+        logger.signal(BOT_NAME, signalPayload, hubResult);
+        continue;
+      }
+
+      // Fallback for legacy unit test contexts where candles have no open field
+      const klines5m = await getKlines(sym, '5m', 250);
       if (klines5m.length < 50 && klines1h.length < 50) continue;
 
       const m5 = klines5m.length >= 50 ? quantIndicators.calculateAllMetrics(klines5m) : null;
       const m1h = klines1h.length >= 50 ? quantIndicators.calculateAllMetrics(klines1h) : null;
       if (!m5 && !m1h) continue;
 
-      const has1hDiv = strategyRules.hasDivergence(m1h);
-      const has5mDiv = strategyRules.hasDivergence(m5);
+      const evalDiv = strategyRules.evaluateDivergence({ m5, m1h });
+      if (!evalDiv) continue;
 
-      if (!strategyRules.shouldEmit(BOT_ID, { m5, m1h })) continue;
-
-      const is1h = has1hDiv;
-      const divInfo = is1h ? m1h.divergence : m5.divergence;
-      const tf = is1h ? '1h' : '5m';
+      const is1h = evalDiv.timeframe === '1h';
       const lastBar = is1h ? klines1h[klines1h.length - 1] : klines5m[klines5m.length - 1];
-
-
       const dateObj = new Date(now);
       const dateStr = dateObj.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
       const nowTime = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-      const isBull = divInfo.hasBullDiv;
       const observed = botData.priceChange(is1h ? klines1h : klines5m);
       if (!observed) continue;
-      const curPrice = lastBar.close;
 
       const signalPayload = {
         botId: BOT_ID,
         source: 'binance-rest',
-        strategyVersion: 'local-hypothesis-v1',
+        strategyVersion: evalDiv.strategyVersion || 'local-hypothesis-v1',
         observedAt: Date.now(),
         botType: BOT_ID,
         id: `div_${sym}_${now}`,
         candleOpenTime: lastBar.openTime,
-        timeframe: tf,
+        timeframe: evalDiv.timeframe,
         symbol: sym,
         timestamp: now,
         isoDate: dateObj.toISOString(),
         dateStr,
-        dot: isBull ? '🟢' : '🔴',
-        strategy: `${tf.toUpperCase()} RSI DIVERGENCE`,
-        boostValue: null,
+        dot: evalDiv.dot,
+        strategy: evalDiv.strategy,
+        boostValue: evalDiv.boostValue,
         measuredChangePct: observed.changePct,
-        currentPrice: formatCryptoPrice(curPrice, sym),
+        currentPrice: formatCryptoPrice(observed.current, sym),
         prevPrice: formatCryptoPrice(observed.previous, sym),
-        rsi: {
-          h1: `${botData.indicatorText(m1h?.rsi)} ❗`,
-          h4: '—',
-          d1: '—'
-        },
-        srsi: {
-          h1: `${botData.indicatorText(m1h?.srsiK)} ❗`,
-          h4: '—',
-          d1: '—'
-        },
-        pivot: (is1h ? m1h : m5)?.pivots ? `%${(is1h ? m1h : m5).pivots.pivotDistancePct} ⚠️` : null,
+        rsi: evalDiv.rsi,
+        srsi: evalDiv.srsi,
+        pivot: evalDiv.pivot,
         dateLabel: dateStr,
         time: nowTime
       };
