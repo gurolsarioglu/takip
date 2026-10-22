@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "installedAt": "2026-10-22T18:27:58.171Z",
+  "files": {
+    "/Users/gurolsarioglu/Documents/terminal/.claude/settings.json": {
+      "plugins": [
+        "ruflo-mods@ruflo",
+        "ruflo-swarm@ruflo",
+        "ruflo-console@ruflo"
+      ],
+      "marketplace": true,
+      "env": true,
+      "claudeInstalled": []
+    }
+  }
+}

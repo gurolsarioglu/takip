@@ -1,0 +1,10 @@
+{
+  "id": "swarm-1792693878793-glihfh",
+  "topology": "hierarchical-mesh",
+  "maxAgents": 15,
+  "strategy": "development",
+  "v3Mode": true,
+  "permissions": null,
+  "initializedAt": "2026-10-22T18:31:18.793Z",
+  "status": "ready"
+}

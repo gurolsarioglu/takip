@@ -1,0 +1,62 @@
+{
+  "initialCapital": 10,
+  "updatedAt": "2026-10-16T20:01:27.166Z",
+  "trades": [
+    {
+      "id": "t_00",
+      "coin": "BTC/USDT",
+      "symbol": "BTCUSDT",
+      "date": "Başlangıç",
+      "time": "—",
+      "side": "—",
+      "profitUsd": 0,
+      "runningBalance": 10,
+      "returnPct": 0,
+      "notes": "Başlangıç Sermayesi",
+      "source": "excel",
+      "timestamp": 1729830000000
+    },
+    {
+      "id": "t_02",
+      "coin": "LIGHT",
+      "symbol": "LIGHTUSDT",
+      "date": "25.10.2025",
+      "time": "10:16",
+      "side": "L",
+      "profitUsd": 1.28,
+      "runningBalance": 11.28,
+      "returnPct": 12.8,
+      "notes": "admin",
+      "source": "excel",
+      "timestamp": 1729840560000
+    },
+    {
+      "id": "t_25",
+      "coin": "ENSO",
+      "symbol": "ENSOUSDT",
+      "date": "28.10.2025",
+      "time": "14:11",
+      "side": "L",
+      "profitUsd": 0.72,
+      "runningBalance": 12,
+      "returnPct": 6.38,
+      "notes": "M1 +HAMMER 2 YILDIZ",
+      "source": "excel",
+      "timestamp": 1730113860000
+    },
+    {
+      "id": "t_26",
+      "coin": "KERNEL",
+      "symbol": "KERNELUSDT",
+      "date": "28.10.2025",
+      "time": "14:19",
+      "side": "S",
+      "profitUsd": 0.22,
+      "runningBalance": 12.22,
+      "returnPct": 1.83,
+      "notes": "OLABİLDİĞİNCE LİMİTLE SATIŞ YAP",
+      "source": "excel",
+      "timestamp": 1730114340000
+    }
+  ]
+}

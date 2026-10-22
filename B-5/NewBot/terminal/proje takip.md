@@ -5,13 +5,73 @@ Bu belge, Alpha Terminal üzerinde gerçekleştirilen tüm mimari kararları, ko
 ---
 
 ## 📑 Kronolojik İçindekiler
-1. [📅 20.10.2026 — Repodan Güncelleme, Sayısal Mikro Fiyat Hassasiyeti Düzeltmesi ve Canlı Terminal Aktivasyonu](#-20102026)
-2. [📅 14.10.2026 — Quant Mimari Dönüşüm, SymbolRegistry, İki Aşamalı Veri Hunisi, 250 Mumluk RingBuffer ve Sıfır Sahte Sinyal](#-14102026)
-3. [📅 13.10.2026 — Gerçekçi Tam Test Süiti (36 Test), Kökten Fiyat Hassasiyeti (0.004890 / 0.00001850 / 0.17890) ve Test Metodolojisi](#-13102026)
-4. [📅 07.10.2026 — 7/24 Kesintisiz Arka Plan, 60 Günlük Kalıcı Sinyal Arşivi, Hassas Fiyat Formatı (0.004890) ve #coin Geçmişi](#-07102026)
-5. [📅 05.10.2026 — MVC Katmanlı Mikro-Bot Mimarisi, 9 Bot Modülerliği ve Hata Düzeltmeleri](#-05102026)
-6. [📅 28.09.2026 — Multi-Bot İstasyonu, Canlı Kripto Senkronizasyonu, /api/signals/emit Entegrasyonu ve Watchlist WebSocket](#-28092026)
-7. [📅 25.09.2026 — Akıllı Türev Terminali Temeli, TradingView Lightweight Charts, Akıllı Para Kokpiti ve 15 Regresyon Testi](#-25092026)
+1. [📅 22.10.2026 — Ruflo Swarm Entegrasyonu, Repodan f6bab59 Senkronizasyonu, Derin Semantik Öğrenme ve Canlı Token Dashboard](#-22102026)
+2. [📅 20.10.2026 — Repodan Güncelleme, Sayısal Mikro Fiyat Hassasiyeti Düzeltmesi ve Canlı Terminal Aktivasyonu](#-20102026)
+3. [📅 14.10.2026 — Quant Mimari Dönüşüm, SymbolRegistry, İki Aşamalı Veri Hunisi, 250 Mumluk RingBuffer ve Sıfır Sahte Sinyal](#-14102026)
+4. [📅 13.10.2026 — Gerçekçi Tam Test Süiti (36 Test), Kökten Fiyat Hassasiyeti (0.004890 / 0.00001850 / 0.17890) ve Test Metodolojisi](#-13102026)
+5. [📅 07.10.2026 — 7/24 Kesintisiz Arka Plan, 60 Günlük Kalıcı Sinyal Arşivi, Hassas Fiyat Formatı (0.004890) ve #coin Geçmişi](#-07102026)
+6. [📅 05.10.2026 — MVC Katmanlı Mikro-Bot Mimarisi, 9 Bot Modülerliği ve Hata Düzeltmeleri](#-05102026)
+7. [📅 28.09.2026 — Multi-Bot İstasyonu, Canlı Kripto Senkronizasyonu, /api/signals/emit Entegrasyonu ve Watchlist WebSocket](#-28092026)
+8. [📅 25.09.2026 — Akıllı Türev Terminali Temeli, TradingView Lightweight Charts, Akıllı Para Kokpiti ve 15 Regresyon Testi](#-25092026)
+
+---
+
+# 📅 22.10.2026
+
+## 💬 1. Konuşmalarımız ve Onaylananlar (Kullanıcı Talepleri & Kararlar)
+1. **Ruflo ve Antigravity Entegrasyonu:**
+   * Kullanıcı: *"https://github.com/ruvnet/ruflo.git. bunu kullanmak için CLI ekranı mı olması gerekiyor ?"* sorusunu sordu.
+   * Antigravity ortamında ayrı bir CLI ekranına mecbur olunmadığı, MCP sunucusu veya arka plan görevleriyle doğrudan sohbet üzerinden kullanılabileceği açıklandı.
+   * Kullanıcının *"biz antivratiy ile kullanıyoruz"*, *"evet yapılandır"* onayı üzerine global Antigravity MCP yapılandırmasına (`mcp_config.json`) Ruflo kaydedildi.
+2. **Terminal Projesinin Son Halinin ve `f6bab59` Güncellemesinin İndirilmesi:**
+   * Kullanıcı: *"önce bu projenin son halini github dan indir yerelde son hali olsun"* ve *"terminal projesini indir"* talimatlarını verdi.
+   * Ardından kullanıcı: *"f6bab59eb18e83c862d7afed7063b9eb72e632cb. böyle bir güncelleme var bunu aldın mı review klasörü bana göre eksik B-5/NewBot/terminal/review bu klasör altın çok fazla döküman var"* uyarısını yaptı.
+   * Yapılan araştırma sonucu `f6bab59eb18e83c862d7afed7063b9eb72e632cb` commit'inin `takip` reposu altındaki `B-5/NewBot/terminal` yolunda olduğu doğrulandı.
+   * `review` klasöründeki 80 adet test, formül, kanıt ve tersine mühendislik dosyası ile birlikte tüm proje yerel dizine eksiksiz çekildi.
+3. **Ruflo'nun Projeyi Öğrenmesi ve Token/Ajan Canlı Takip Dashboard'u:**
+   * Kullanıcı: *"şimdi bu projemizde ruflo çalıştıralım bütüm her şeyi öğrensi birde bana kim ne kadar token tüketiyor hangi agentlar çalıyor gibi bir dash bord varmış onu da aç ben izleyim."* talimatını verdi.
+   * Otonom icraat kuralı doğrultusunda Ruflo V3 başlatıldı, 256 dosya semantik ONNX 384d vektör hafızasına derin analizle (`ruflo hooks pretrain --depth deep`) öğretildi.
+   * 15-ajanlı `hierarchical-mesh` sürüsü başlatılarak temel ajanlar devrede tutuldu.
+   * Token tüketimini, model dağılımını (Sonnet, Haiku, Opus), CPU/RAM yükünü ve ajan durumlarını canlı izleyen Web Dashboard (`ruflo-dashboard.mjs`) ayağa kaldırılıp kullanıcının tarayıcısında açıldı.
+
+---
+
+## 🧠 2. Düşündüklerimiz ve Mimari Kararlar
+1. **Veri Güvenliği ve Yerel Yedekleme:**
+   * Uzak repodan yeni dosyalar çekilmeden önce kullanıcının mevcut yerel dizini iki farklı zaman damgasıyla (`terminal_backup_20261015` ve `terminal_backup_pre_f6bab59`) güvene alındı.
+2. **Ruflo Derin Öğrenme (Pretrain & Vector RAG) Yaklaşımı:**
+   * Projedeki 9 bot stratejisi, VisiVero tersine mühendislik formülleri ve servis kodlarının hafızaya alınması için HuggingFace `Xenova/all-MiniLM-L6-v2` ONNX modeliyle 384 boyutlu vektör uzayına çıkarıldı; 41 adet pattern ve 5 temel ajan konfigürasyonu (`coder`, `architect`, `tester`, `security-architect`, `reviewer`) üretildi.
+3. **Canlı Telemetri ve Token Dashboard Mimarisi:**
+   * Token tüketiminin kontrolden çıkmasını önlemek için Ruflo'nun Q-learning ve bandit algoritması model-routing katmanında izlenmeye alındı.
+   * Kullanıcıya hem terminal içi `ruflo tui` imkanı sunuldu hem de modern bir arayüzle `http://localhost:4000` portunda gerçek zamanlı JSON telemetri sunan bir kokpit oluşturuldu.
+
+---
+
+## 🛠️ 3. Yaptıklarımız (Teknik ve Mimari Değişiklikler)
+1. **Ruflo Kurulumu & Global MCP:**
+   * `ruflo` v3.59.17 global olarak yüklendi (`/Users/gurolsarioglu/.local/bin/ruflo`).
+   * `/Users/gurolsarioglu/.gemini/config/mcp_config.json` dosyasına `ruflo` stdio sunucu konfigürasyonu eklendi.
+2. **GitHub Senkronizasyonu & İnceleme Dosyaları:**
+   * `takip` reposundaki `B-5/NewBot/terminal` ağacı `rsync` ile yerel `/Users/gurolsarioglu/Documents/terminal` dizinine eşitlendi.
+   * `review/` klasörüne `div-bot-visivero.test.cjs`, `visivero-8-bot-master-formulas-2026-10-20.md`, `three-bot-evidence/`, `extracted_indicators/` ve tersine mühendislik araçları eksiksiz aktarıldı.
+3. **RuFlo Proje Başlatma & Eğitimi:**
+   * `ruflo init --minimal --skip-claude` ile V3 çalışma zamanı oluşturuldu.
+   * `ruflo hooks pretrain --depth deep` çalıştırılarak 256 dosya ve 41 pattern indekslendi.
+   * `ruflo hooks build-agents` ile 5 ajan tipi konfigüre edildi.
+   * `ruflo swarm init --v3-mode` ile `swarm-1792693878793-glihfh` başlatıldı.
+   * `coder-01`, `reviewer-01`, `tester-01`, `architect-01` ajanları sürüye eklendi.
+4. **Canlı Web Dashboard (`ruflo-dashboard.mjs`):**
+   * Express tabanlı, `http://localhost:4000` portunda çalışan gerçek zamanlı kokpit yazıldı.
+   * Ajan durumları, model/token dağılımı, arka plan işçileri ve sistem kaynakları canlı görselleştirildi.
+   * Kolay başlatma için `start_ruflo_dashboard.sh` hazırlandı.
+
+---
+
+## 🎯 4. Tamamlanan İşler ve Doğrulama
+* **Regresyon Testleri:** `npm run test:regression` çalıştırıldı, **8/8 test BAŞARILI**.
+* **Quant Doğrulama:** `npm run test:quant` çalıştırıldı, **5/5 test BAŞARILI**.
+* **Tüm Bot Testleri:** `npm run test:bots` çalıştırıldı, **62/62 VisiVero bot testi BAŞARILI (0 Hata)**.
+* **Dashboard Doğrulaması:** `http://localhost:4000/api/status` uç noktası test edildi; aktif 4 ajan ve sistem telemetrisi 200 OK ile doğrulandı.
 
 ---
 
