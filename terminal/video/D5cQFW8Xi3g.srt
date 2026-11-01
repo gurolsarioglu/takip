@@ -1,0 +1,592 @@
+1
+00:00:00,000 --> 00:00:22,000
+ ♫♫♫
+
+2
+00:00:22,000 --> 00:00:29,800
+ Neyleyim köşkü, neyleyim sarayı, içinde salınan, yar olmayınca demiş şair.
+
+3
+00:00:29,800 --> 00:00:35,800
+ Bugünkü konumuz swing trade yani salının ticareti arkadaşlar.
+
+4
+00:00:35,800 --> 00:00:42,800
+ Bir çok ticaret şekli var aslında yani benim üzerinde durduğum üç tane ticaret şekli var.
+
+5
+00:00:42,800 --> 00:00:47,800
+ Bir tanesi spot işlemlerde sekiz asker ve karargâh stratejisi.
+
+6
+00:00:47,800 --> 00:00:50,800
+ Uyguladığım bir yöntemdir, başarılı bir yöntemdir.
+
+7
+00:00:50,800 --> 00:00:57,800
+ Onu mutlaka kendi üzerinizde deneyin arkadaşlar, başarılı olduğunu göreceksiniz.
+
+8
+00:00:57,800 --> 00:01:01,800
+ İkinci ticaret şekli ise swing ticarettir.
+
+9
+00:01:01,800 --> 00:01:05,800
+ Yani Future Sports'larda vadeli tarafta yapılır.
+
+10
+00:01:05,800 --> 00:01:14,800
+ Günlük grafikler baz alınarak dört saatlik grafiklere göre girilen işlemlere swing trade deniliyor.
+
+11
+00:01:14,800 --> 00:01:18,800
+ Bu swing trade'ler böyle çok uzun süreli olmaz.
+
+12
+00:01:18,800 --> 00:01:23,800
+ Yani böyle ben onu bırakayım da iki sene, üç sene böyle beklesin gibi bir şey söz konusu değil.
+
+13
+00:01:23,800 --> 00:01:29,800
+ Bir saati geçen ticaretler swing trade'e nispeten girer.
+
+14
+00:01:29,800 --> 00:01:37,800
+ Şimdi şu anki işlemlerimi görüyorsunuz bir tane run var bir tane de banağına var.
+
+15
+00:01:37,800 --> 00:01:44,800
+ Bu bölümü izledikten sonra arkadaşlar kafanızda bazı şeyler şekillenecek
+
+16
+00:01:44,800 --> 00:01:52,800
+ ve ben telegram kanalından bazı swing trade'leri sizlerle paylaşacağım bundan sonra.
+
+17
+00:01:52,800 --> 00:02:02,800
+ Fakat yani hoca paylaştı diye sermayen yönetimi yapmadan amana işleme girmeyin.
+
+18
+00:02:02,800 --> 00:02:04,800
+ Bu bölüm o yüzdendir.
+
+19
+00:02:04,800 --> 00:02:12,800
+ Sizinle dediğim gibi ilerki zamanlarda denk getirdikçe beraberce swing trade'ler yapacağız.
+
+20
+00:02:12,800 --> 00:02:17,800
+ Şimdi arkadaşlar dediğim gibi yüzlerce trade şekli var.
+
+21
+00:02:17,800 --> 00:02:25,800
+ Ben bunların üç tanesini kullanıyorum. Spotlarda sekiz asker karargah, ikincisi swing trade, üçüncüsü de scalping.
+
+22
+00:02:25,800 --> 00:02:33,800
+ Yani bunlar bile kendi içinde zaten uzmanlık gerektiren trade şekilleridir.
+
+23
+00:02:33,800 --> 00:02:40,800
+ Ve işin aslı şurası arkadaşlar bakın trade diyorum yani bu bir ticaret.
+
+24
+00:02:40,800 --> 00:02:44,800
+ Şimdi ticaretle kumarı karıştıranlar var.
+
+25
+00:02:44,800 --> 00:02:52,800
+ Öncelikle ben hiçbir zaman on x'i futures kısımda geçmiyorum sermayen yönetimi yapıyorum
+
+26
+00:02:52,800 --> 00:02:57,800
+ ve on x kaldıraştan daha fazla bir kaldıraş kullanmıyorum.
+
+27
+00:02:57,800 --> 00:03:01,800
+ Ve hal böyle olunca da açıkçası kafam çok rahat.
+
+28
+00:03:01,800 --> 00:03:06,800
+ Yani teflon tava kıvamında ben bu işlemlerimi rahatlıkla bırakıyorum
+
+29
+00:03:06,800 --> 00:03:10,800
+ ve asla ve asla stop loss kullanmıyorum.
+
+30
+00:03:10,800 --> 00:03:15,800
+ Stop lossu ben kendime koyuyorum. Yani kendimi frenlemeyi biliyorum.
+
+31
+00:03:15,800 --> 00:03:23,800
+ Bakın burası çok önemli. Şimdi şöyle bir yanlış bilinen şeyler konular var.
+
+32
+00:03:23,800 --> 00:03:27,800
+ Yani stop loss kullanmadan asla ticaret yapılmaz.
+
+33
+00:03:27,800 --> 00:03:30,800
+ Bence stop loss kullanılarak ticaret yapılmaz.
+
+34
+00:03:30,800 --> 00:03:36,800
+ Ben ticaret yapıyorum. Niye ben kendi paramı belli bir yere indiğinde niye stoplayayım?
+
+35
+00:03:36,800 --> 00:03:41,800
+ Yani böyle bir ticaret söz konusu değil arkadaşlar.
+
+36
+00:03:41,800 --> 00:03:48,800
+ Şimdi bir banana işleminden başlayayım run işlemiyle devam edeceğim.
+
+37
+00:03:48,800 --> 00:03:54,800
+ Ondan sonra da başka bir konudan daha bahsediyor olacağım.
+
+38
+00:03:54,800 --> 00:04:05,800
+ Bakın arkadaşlar ben bazı zamanlarda dediğim gibi sizlerle swing trade yerlerini paylaşıyor olacağım telegram kanalında.
+
+39
+00:04:05,800 --> 00:04:09,800
+ Buralarda bakmamız gereken bazı hususlar var.
+
+40
+00:04:09,800 --> 00:04:14,800
+ Çünkü spot ticaretiyle swing ticaretlerin temeli aynıdır.
+
+41
+00:04:14,800 --> 00:04:24,800
+ Yani burada biz yine swing'e bırakırken bu coin'in biraz daha kalitesine, biraz daha pozisyonuna, günlük durumuna, Btc'nin durumuna.
+
+42
+00:04:24,800 --> 00:04:29,800
+ Yani hepsine birden bakıyor olmamız gerekecek.
+
+43
+00:04:29,800 --> 00:04:36,800
+ Ben bir sizinle bir şey paylaşırken bunları da görün lütfen. Bunlara da dikkat edin.
+
+44
+00:04:36,800 --> 00:04:44,800
+ Şimdi burada bana anlayıp ben şöyle listemi tararken dün de bu arada runu görmüştüm ona da geleceğiz.
+
+45
+00:04:44,800 --> 00:04:50,800
+ Bana anlayıp şöyle bir listemde tarama yaparken böyle bir gezinirken.
+
+46
+00:04:50,800 --> 00:04:59,800
+ Bakın sadece ve sadece indikator temelli bir swing trade'e giriş yaptım.
+
+47
+00:04:59,800 --> 00:05:02,800
+ Şu anda da yaklaşık yüzde on beşte.
+
+48
+00:05:02,800 --> 00:05:08,800
+ Aslında bir de benim minus tarafında da bıraktım şimdi onu da göstereceğim size.
+
+49
+00:05:08,800 --> 00:05:12,800
+ Şimdi burada ben bir tane işaret görmüşüm.
+
+50
+00:05:12,800 --> 00:05:17,800
+ Arkadaşlar şimdi indikator polemiklerine dediğim gibi ben girmeyeceğim.
+
+51
+00:05:17,800 --> 00:05:22,800
+ Bunlar benim kullandığım indikatorlardır. Herkes istediği indikatoru kullanabilir.
+
+52
+00:05:22,800 --> 00:05:28,800
+ Bazen soruluyor yani bu daha yok mu indikator biraz daha ekleseydin gibi.
+
+53
+00:05:28,800 --> 00:05:33,800
+ Ben bunları kullanıyorum. Yani bu konuda polemiye girmeyeceğim hiç kimseyle.
+
+54
+00:05:33,800 --> 00:05:38,800
+ Şimdi burada bir tane ve tekrar osparım benim yeşil yakmış.
+
+55
+00:05:38,800 --> 00:05:49,800
+ Bakarken günlük değil. Günlükte iken bakın yeşilin içerisinde. Şimdi size uyumsuzluk konusunda bir püf noktası veriyorum.
+
+56
+00:05:49,800 --> 00:05:56,800
+ Uyumsuzluk sadece moon grafiklerle are say arasında değildir.
+
+57
+00:05:56,800 --> 00:06:05,800
+ Tabi o bir bakılması gereken ilk uyumsuzluk moon barlarla are say arasında uyumsuzluk var mı yok mu buna bakarız.
+
+58
+00:06:05,800 --> 00:06:12,800
+ İndikatorlar arasında da bir uyumsuzluk söz konusu olabilir.
+
+59
+00:06:12,800 --> 00:06:17,800
+ Şimdi şöyle bir bakın gelin bakalım beraber.
+
+60
+00:06:17,800 --> 00:06:27,800
+ Şimdi are say ve vt crossbar arasında bir uyumsuzluk söz konusu.
+
+61
+00:06:27,800 --> 00:06:34,800
+ Ne yapmış burası kırmızı verip dibe geldiğinde bakın 36 seviyelerinde are say.
+
+62
+00:06:34,800 --> 00:06:44,800
+ Ve vt crossbar yukarıdan kırmızısını verdiğinde eksi 37'lerdeymiş are sayın değeri.
+
+63
+00:06:44,800 --> 00:06:52,800
+ Sonrasında gün bugüne geliyor. Bakın bugün 17 ocak cuma öncelikle zaten hafta sonu.
+
+64
+00:06:52,800 --> 00:06:57,800
+ Yani yarın cumartesine giriyoruz ve cuma öyleden sonralarında.
+
+65
+00:06:57,800 --> 00:07:03,800
+ Eğer btc'de bir volatilite yoksa biliyorsunuz. Hani hafta sonları çok böyle keyifli geçmiyor.
+
+66
+00:07:03,800 --> 00:07:10,800
+ Ama swing tray ile ben örnek örüm bir haftaya kadar bu işlemleri açık bile bırakabilir.
+
+67
+00:07:10,800 --> 00:07:20,800
+ Bakın şimdi bu geldikten sonra hemen are saylarıma baktığım yukarı yönlü ve vt crossbar'a bakıyorum aşağı yönlü.
+
+68
+00:07:20,800 --> 00:07:28,800
+ Yeşil gelmiş buradan da kendisini bir yukarı atma çabasındaydı ve ben işleme girdim.
+
+69
+00:07:28,800 --> 00:07:33,800
+ Zaten hani yeni girdim. Belli oluyor buradan da. Yüzde 15'lik bir şey.
+
+70
+00:07:33,800 --> 00:07:40,800
+ Bunları dediğim gibi yakaladıkça ben kanaldan da paylaşacağım, takip edin ve bu kafayla işlemlere girin.
+
+71
+00:07:40,800 --> 00:07:47,800
+ Peki gündük grafikte böyle bir swing tray'de gireceğim ve bu biraz daha uzun süreli olacak diye giriyorum.
+
+72
+00:07:47,800 --> 00:07:59,800
+ Hafta sonu bugün. Yarım cumartesi btc belki hafta sonu tatile çıkar büyük para babaları ve hafta sonları borsaların botları bunlarla oynar.
+
+73
+00:07:59,800 --> 00:08:04,800
+ Yani doğru düzgün her hafta bir hacim gelmez hafta sonlarında.
+
+74
+00:08:04,800 --> 00:08:11,800
+ Peki şimdi ben stop da kullanmıyorum. Ne olacak bu bana ananın hali?
+
+75
+00:08:11,800 --> 00:08:17,800
+ Eğer bu buradan dönerse arkadaşlar size sekiz askerle karargâhta da anlattım.
+
+76
+00:08:17,800 --> 00:08:26,800
+ Yani benim işleme giriş yerim burasıdır. Bakın alttan da içim oku sinyalim var benim.
+
+77
+00:08:26,800 --> 00:08:37,800
+ Hani yavaş yavaş kafasını çıkartıyor. Biraz sonra artık yeşile doğru gelirse ve çıkarsa bugün içerisinde bu koyun biraz daha yürür.
+
+78
+00:08:37,800 --> 00:08:43,800
+ Nereye kadar yürür peki? Şöyle bakalım. 4 saatlik grafikte.
+
+79
+00:08:43,800 --> 00:09:00,800
+ Evet bakın mavilimin üzerinde ayrıca linrek pozitif bölgede ve p-max kadar bu bana bir swing verebilir arkadaşlar.
+
+80
+00:09:00,800 --> 00:09:10,800
+ Yüzde 70 şuandan itibaren ve zaten yüzde 10 da bu var. Yüzde 90. Girdiğim sermaye yönetimiyle ben rahat bir şekilde.
+
+81
+00:09:10,800 --> 00:09:20,800
+ Bakın burası çok önemli arkadaşlar. Rahat olacaksınız. Rahat olmazsanız her gördüğünüz işlem terse döner ve sürekli kaybedersiniz.
+
+82
+00:09:20,800 --> 00:09:26,800
+ Siz korkup işlemden çıktığınızda işte ben ve benim gibiler o işlemleri bekliyorlar.
+
+83
+00:09:26,800 --> 00:09:35,800
+ Sen korkar, çıkar, kaybedersin. Kaybettikten sonra dönüp baktığında ay arkadaş bu benim dediğim yere gelmiş tüh dersin.
+
+84
+00:09:35,800 --> 00:09:47,800
+ Ben oradan zaten işlemden çıkarım. Önemli olan korkmamak. Korkmamak için de bol pratik yaparak şu tür swing tradelerde zaman kavramınızı geliştirmeniz lazım.
+
+85
+00:09:47,800 --> 00:09:54,800
+ Bugün cuma kardeşim ben cumartesi de bırakırım pazarda bırakırım niye sermayemi bölmüşüm çünkü.
+
+86
+00:09:54,800 --> 00:09:59,800
+ Sekiz askerle karargâhtan hatırlayın nasıl da ol. Sermayemizi bölüyoruz.
+
+87
+00:09:59,800 --> 00:10:07,800
+ Hani eksi yüzde 25 geldiğinde spot işlemlerde diyorum. Eksi geldiğinde ben ikinci askerimi gönderiyorum.
+
+88
+00:10:07,800 --> 00:10:10,800
+ Ben hiçbir zaman üçüncü askerimi de göndermedim arkadaşlar.
+
+89
+00:10:10,800 --> 00:10:19,800
+ Maksimum iki tane askerle de artık siz bir süre sonra spot işlemlerde iki askerle bile bu işlemi çözebilir hale geleceksiniz.
+
+90
+00:10:19,800 --> 00:10:31,800
+ Biraz sabır eğitimi tekrar izleyin yüdemi kursunu ve oradaki işlemleri kendi kendinize yaparak şu zaman kavramınızı lütfen oturtun.
+
+91
+00:10:31,800 --> 00:10:39,800
+ Şimdi ben burada barana da swing tradeimi bıraktım. Peki hocam seni stop'un da yok.
+
+92
+00:10:39,800 --> 00:10:45,800
+ Hani ben stopsuz deli deli ben bunlara giriyorum deli değil ki arkadaşlar.
+
+93
+00:10:45,800 --> 00:10:55,800
+ Yani ben sermayemi yönetiyorum sermayemi yönetikten sonra bu bana ne yapabilir ki şimdi peki bu bana ne yapabilir ki derken.
+
+94
+00:10:55,800 --> 00:11:02,800
+ Öncelikle koyunum bir kere şöyle bir kaliteli bir şey mi ya bu neyin nesiymiş bir bakalım değil mi?
+
+95
+00:11:02,800 --> 00:11:12,800
+ Değeri şu an itibariyle 40 dolar bu güzel bir şey. Hani hem spot işlemler için hem de swing trade için bu güzel bir şey.
+
+96
+00:11:12,800 --> 00:11:24,800
+ İkincisi ise hep söylüyorum yani koyun market capten bunun şöyle bir en azından bakın en azından market değerlerine bir bakmamız lazım.
+
+97
+00:11:24,800 --> 00:11:33,800
+ Benim burada dikkat ettiğim iki tane konu şu maksimum arzı 10 milyon tane bu da çok güzel.
+
+98
+00:11:33,800 --> 00:11:43,800
+ Yani 10 milyon adet bir koyun güzel yani bitcoin bile 21 milyon tane bak bu 10 milyon tane bak bu da güzel.
+
+99
+00:11:43,800 --> 00:11:55,800
+ E şimdi dolaşımına bakıyorum dolaşım 34'lerde yani biraz daha güzel bu arada 34 çok güzel yani ve bir çok borsa da bu listeleniyor.
+
+100
+00:11:55,800 --> 00:12:05,800
+ Bakalım bakalım yani baynaz da var bitket de var meksci de var gto da var bay bit de var.
+
+101
+00:12:05,800 --> 00:12:10,800
+ Ondan sonra uniswap da zaten işlemler görüyor.
+
+102
+00:12:10,800 --> 00:12:21,800
+ Evet bu da güzel bu da güzel diyorum ve ben bu verilerle beraber günlükte böyle bir uyumsuzluk görmüşüm yeşili görmüşüm.
+
+103
+00:12:21,800 --> 00:12:33,800
+ Tamam bu benim için bir swing traiter hep şunu söylüyorum yani traiteri traiteri ticaret arkadaşlar yani ticaretle kumarı karıştırmamak lazım.
+
+104
+00:12:33,800 --> 00:12:47,800
+ Yani x'leri yükselterek bir yere varamazsınız sermayenizi yöneterek bu tür durumlarda rahat böyle teflon tava kıvamında çok rahat işlemler alınıyor.
+
+105
+00:12:47,800 --> 00:12:57,800
+ Şimdi ikincisi ise ikinci işlemine de bir geçeyim run işlemi run da da aynı şekilde.
+
+106
+00:12:57,800 --> 00:13:25,800
+ Bakın onda da ben geç kalmışım dün işleme girdim üzerine de yattım uydum çünkü bu bir swing traiter yani rahatlıkla ben geçebilir bakın ares ay ağzını kesmiş yeşilim gelmiş efendime söyleyeyim kanaldan tepkisini almış zaten bak burada Nadara'ya dokunup tekrar yukarı çıkmış peki bu istediğim yeri de bu arada geldi.
+
+107
+00:13:25,800 --> 00:13:37,800
+ Ben çizmiştim ve buraya da alarm kurmuştum alarmımda çaldı ama şu an itibariyle iş tamamen kişiye kalıyor.
+
+108
+00:13:37,800 --> 00:13:57,800
+ Bakın grafikler indikatörler ne dedi dünden beri kardeşim dedi bak bir saatlikte tepeye geldiğinde bu şimdi birazdan kırmızı yakar şuradan hafif hafif düşer ama günlük yukarı bekleyip beklememe kararı ise tamamen kullanıcının kendisindedir.
+
+109
+00:13:57,800 --> 00:14:14,800
+ Şöyle meyveler çok geliyor ben çıkış yerimi bilemiyorum şimdi öyle bir iki kere iki eşittir dört gibi bir kural yok arkadaşlar yani run dediğimiz koyine birden bir hacım girer birden bir haber çıkar bir şey olur.
+
+110
+00:14:14,800 --> 00:14:26,800
+ Bakın bitcoin bu arada ne aşama da tepkisini aldı şimdi buradan bir daha yeşil yakarsa zaten bu yönü yukarı doğru gidecek şimdi eğer bu yukarı doğru giderken.
+
+111
+00:14:26,800 --> 00:14:34,800
+ Buna da hacım gelirse şimdi bunda yukarı doğru çekecek yani ama nereye kadar olduğunu hocam tam kestiremiyorum.
+
+112
+00:14:34,800 --> 00:14:41,800
+ Şimdi onu arkadaşlar ben de kestiremiyorum bu ticaret böyle yapılacak bir şey değil ticaretin içinde zaten rızık var.
+
+113
+00:14:41,800 --> 00:14:50,800
+ Değil mi yani rızık olmadan rızkımızı arıyoruz biz burada şimdi ben bunun tam kestiremiyorum tam iğnesinden.
+
+114
+00:14:50,800 --> 00:14:59,800
+ Böyle bir bekleme bekleyişi içerisinde arayış içerisinde olmayan arkadaşlar bu buradan iğnesini atar fitilini atar sen emrini vermişsindir.
+
+115
+00:14:59,800 --> 00:15:07,800
+ O da oradan emrini ondan sonra tekrar yukarı yürüdü poş ver giden gitsin bakın bu fırsatlar bitmeyecek.
+
+116
+00:15:07,800 --> 00:15:22,800
+ Şimdi şöyle mesela Swing Trade'de size rahat rahat bıraktığım için anlatıyorum bunu arkadaşlar mesela bu arada bir konu daha var.
+
+117
+00:15:22,800 --> 00:15:28,800
+ Benim Binance benim hesabımı bir haftalığına kapatmıştı.
+
+118
+00:15:28,800 --> 00:15:30,800
+ Ben bunu YouTube'da sizinle paylaşmıştım.
+
+119
+00:15:30,800 --> 00:15:36,800
+ Bir hafta kapattı kapatıp geri açtıktan sonra açıkçası ben Binance'dan soğudum.
+
+120
+00:15:36,800 --> 00:15:41,800
+ Buradan sonra ikinci büyük borsa fücür salonunda baybite geçti mi?
+
+121
+00:15:41,800 --> 00:15:45,800
+ Yani siz de o ilk 10 borsadan istediğinizi kullanabilirsiniz.
+
+122
+00:15:45,800 --> 00:15:58,800
+ Fakat Binance ne kadar küserse küselim ne kadar bizi üzerse üstün Binance'dan vaz geçemiyoruz ve bizim bot ayarlarımız da hep Binance'a göredir.
+
+123
+00:15:58,800 --> 00:16:01,800
+ Çünkü locomotif borsa Binance'dır.
+
+124
+00:16:01,800 --> 00:16:06,800
+ O yüzden ben burada fazla bir rakam bırakmıyorum.
+
+125
+00:16:06,800 --> 00:16:16,800
+ Bırakmadığım için de hem Binance'ı takip ediyorum Binance'ın funding ratelerini takip ediyorum hem bulunduğum borsanın funding ratelerini takip ediyorum.
+
+126
+00:16:16,800 --> 00:16:19,800
+ O yüzden Binance'dan vaz geçemiyorum.
+
+127
+00:16:19,800 --> 00:16:26,800
+ Şu an ben Swing'e burada da bıraktım ama bakın burada çok düşük bir sermayem var benim bu borsa da.
+
+128
+00:16:26,800 --> 00:16:32,800
+ Şu an bu sermayeye göre açılmaması gereken bir işlemi açtım lütfen kafanız karışmasın.
+
+129
+00:16:32,800 --> 00:16:38,800
+ Yani 5-6 bin dolar bir paranız varsa 500 dolar 10X işlem açamazsınız.
+
+130
+00:16:38,800 --> 00:16:39,800
+ Öyle bir şey yok yani.
+
+131
+00:16:39,800 --> 00:16:44,800
+ Ben olaki ters bile dönse ben bir müdahale ederim başka yerden gönderirim.
+
+132
+00:16:44,800 --> 00:16:48,800
+ Ben yine buranın şu an likette seviyem bile yok bu halde bile.
+
+133
+00:16:48,800 --> 00:16:55,800
+ Bu terse bile gitse -250 bile olsa yine bu sistem benim paramı alamaz.
+
+134
+00:16:55,800 --> 00:17:06,800
+ Çünkü benim sermaye yönetimim ona göre siz de bunu söylediğiniz anda başarılı olabilir duruma geleceksiniz arkadaşlar.
+
+135
+00:17:06,800 --> 00:17:13,800
+ Şimdi Swing trade'imizi tekrar tekrarlayalım.
+
+136
+00:17:13,800 --> 00:17:20,800
+ Öncelikle 1 saatten uzun süre kalanlara Swing direk diyebiliriz.
+
+137
+00:17:20,800 --> 00:17:31,800
+ Diplerden almışız bu şekilde kesin mi geldiğinde Bitcoin'in yön durumuna göre ben Swing trade'lerimi bırakıyorum.
+
+138
+00:17:31,800 --> 00:17:36,800
+ Burada da rahat olabilmem için de sermaye yönetimi mi yapıyorum.
+
+139
+00:17:36,800 --> 00:17:42,800
+ Yaptıktan sonra da zaten geriye açıkçası hiçbir şey kalmıyor arkadaşlar.
+
+140
+00:17:42,800 --> 00:17:47,800
+ Çıkış yerinizi de artık bir yere kadar gözünüze hoş görünen.
+
+141
+00:17:47,800 --> 00:17:53,800
+ Bu işin içerisinde gibi nasip var hoş görünen bir yere de artık emrimizi veririz.
+
+142
+00:17:53,800 --> 00:17:57,800
+ İşlem gerçekleştiğinde de teşekkür ederiz.
+
+143
+00:17:57,800 --> 00:18:00,800
+ Konhü kapatırız arkadaşlar.
+
+144
+00:18:00,800 --> 00:18:03,800
+ Telegram kanalını takip edin.
+
+145
+00:18:03,800 --> 00:18:10,800
+ Ben bu tür yerler geldiğinde bu gözle bakacağınızı düşünerek tabi ki sermaye yöneteceksiniz.
+
+146
+00:18:10,800 --> 00:18:15,800
+ Gözüyle bakarak ben bazı paylaşımlarda bundan sonra bulunacağım.
+
+147
+00:18:15,800 --> 00:18:22,800
+ Sürecin devamında da beraberce ilerleyeceğiz değerli arkadaşlar.
+
+148
+00:18:22,800 --> 00:18:26,800
+ Görüşmek üzere mutlu günler.
+

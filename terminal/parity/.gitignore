@@ -1,0 +1,4 @@
+data/
+jobs/
+node_modules/
+*.log

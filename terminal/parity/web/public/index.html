@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sinyal Masası</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080a0c;--panel:#0d1117;--card:#12161f;--card-h:#171d28;--subtle:rgba(255,255,255,.03);
+  --border:rgba(255,255,255,.07);--border-b:rgba(255,255,255,.14);
+  --green:#0ecb81;--green-d:rgba(14,203,129,.14);--red:#f6465d;--red-d:rgba(246,70,93,.14);
+  --gold:#f0b90b;--gold-d:rgba(240,185,11,.14);--cyan:#00e5ff;--cyan-d:rgba(0,229,255,.12);--purple:#a855f7;--purple-d:rgba(168,85,247,.14);
+  --text:#f8fafc;--dim:#94a3b8;--muted:#64748b;
+  --sans:'Inter',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;--mono:'JetBrains Mono',Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font:12.5px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,textarea,select{font:inherit;color:var(--text);background:var(--card);border:1px solid var(--border);border-radius:6px;outline:none}
+input:focus,textarea:focus{border-color:var(--border-b)}
+.mono{font-family:var(--mono)}
+.up{color:var(--green)}.down{color:var(--red)}
+#app{display:grid;grid-template-rows:auto 1fr;height:100vh}
+/* header */
+header{display:flex;align-items:center;gap:14px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--panel)}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;letter-spacing:.6px;font-size:13px}
+.brand .mark{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(14,203,129,.25),rgba(0,229,255,.25));border:1px solid rgba(0,229,255,.35)}
+.chips{display:flex;gap:8px;margin-left:auto;align-items:center;flex-wrap:wrap}
+.chip{display:flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;border:1px solid var(--border);background:var(--subtle);color:var(--dim);font-size:11px;white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+.dot.ok{background:var(--green);box-shadow:0 0 8px var(--green)}.dot.warn{background:var(--gold)}.dot.bad{background:var(--red)}
+.chip a{color:var(--cyan);text-decoration:none}
+.clock{font-family:var(--mono);color:var(--dim)}
+/* layout */
+main{display:grid;grid-template-columns:330px minmax(0,1fr) 330px;min-height:0}
+.col{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--border)}
+.col:last-child{border-right:0}
+.col-h{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border);font-weight:700;font-size:11px;letter-spacing:.8px;color:var(--dim);text-transform:uppercase}
+.col-h .sp{margin-left:auto}
+.scroll{overflow:auto;min-height:0;flex:1}
+.scroll::-webkit-scrollbar{width:8px}.scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:4px}
+/* watchlist */
+.wl-tools{padding:8px 10px;display:flex;flex-direction:column;gap:7px;border-bottom:1px solid var(--border)}
+.wl-tools input{padding:6px 9px;width:100%}
+.pills{display:flex;gap:5px;flex-wrap:wrap}
+.pill{padding:3px 9px;border-radius:999px;border:1px solid var(--border);color:var(--dim);font-size:11px;font-weight:600;white-space:nowrap}
+.pill:hover{border-color:var(--border-b);color:var(--text)}
+.pill.on{background:var(--cyan-d);border-color:rgba(0,229,255,.4);color:var(--cyan)}
+.pill .n{font-family:var(--mono);font-weight:500;opacity:.8;margin-left:4px}
+table{width:100%;border-collapse:collapse}
+.wl th{position:sticky;top:0;background:var(--panel);font-size:10px;color:var(--muted);font-weight:600;text-align:right;padding:6px 8px;cursor:pointer;border-bottom:1px solid var(--border);white-space:nowrap}
+.wl th:first-child,.wl td:first-child{text-align:left}
+.wl th.on{color:var(--cyan)}
+.wl td{padding:5px 8px;text-align:right;font-family:var(--mono);font-size:11.5px;border-bottom:1px solid rgba(255,255,255,.03);white-space:nowrap}
+.wl tr{cursor:pointer}.wl tr:hover td{background:var(--card-h)}
+.wl tr.sel td{background:var(--cyan-d)}
+.wl .sym{font-family:var(--sans);font-weight:600}
+.wl .sym small{color:var(--muted);font-weight:500}
+.sigdots{display:inline-flex;gap:2px;margin-left:5px;vertical-align:middle}
+.sigdots i{width:5px;height:5px;border-radius:50%;display:block}
+.flash-up td{animation:fu .6s}.flash-dn td{animation:fd .6s}
+@keyframes fu{from{background:rgba(14,203,129,.18)}}@keyframes fd{from{background:rgba(246,70,93,.18)}}
+/* feed */
+.toolbar{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border)}
+.row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:7px;overflow:hidden}
+.seg button{padding:4px 10px;color:var(--dim);font-size:11px;font-weight:600;border-right:1px solid var(--border)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:rgba(255,255,255,.07);color:var(--text)}
+.coinflt{display:none;align-items:center;gap:6px;padding:3px 6px 3px 10px;border-radius:999px;background:var(--gold-d);color:var(--gold);border:1px solid rgba(240,185,11,.35);font-weight:700;font-size:11px}
+.coinflt.on{display:inline-flex}
+.coinflt button{padding:0 4px;color:var(--gold)}
+.feed{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:9px;display:grid;grid-template-columns:3px 1fr;overflow:hidden}
+.card:hover{border-color:var(--border-b)}
+.card .bar{background:var(--muted)}.card.up .bar{background:var(--green)}.card.down .bar{background:var(--red)}
+.card.new{animation:nw 2.4s}
+@keyframes nw{from{box-shadow:0 0 0 1px var(--cyan),0 0 22px rgba(0,229,255,.25)}}
+.cb{padding:9px 12px;min-width:0}
+.ch{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tag{font-size:10px;font-weight:800;letter-spacing:.4px;padding:2px 7px;border-radius:5px;background:rgba(255,255,255,.06);color:var(--dim)}
+.csym{font-weight:800;font-size:13px;cursor:pointer}.csym:hover{color:var(--cyan)}
+.strat{font-family:var(--mono);font-size:11px;color:var(--gold)}
+.stars{font-size:10px}
+.ctime{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.st{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.st.match{background:var(--green-d);color:var(--green)}
+.st.missed{background:var(--red-d);color:var(--red)}
+.st.extra{background:var(--purple-d);color:#c084fc}
+.st.pending{background:rgba(255,255,255,.06);color:var(--dim)}
+.msg{margin-top:7px;font-family:var(--mono);font-size:11.5px;color:#cbd5e1;white-space:pre-wrap;word-break:break-word;background:rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.04);border-radius:6px;padding:8px 10px}
+.msg b{color:var(--text)}
+.cf{display:flex;align-items:center;gap:6px;margin-top:7px;color:var(--muted);font-size:11px;flex-wrap:wrap}
+.tabs2{display:inline-flex;gap:2px}
+.tabs2 button{padding:2px 8px;border-radius:5px;font-size:10.5px;color:var(--muted);font-weight:600}
+.tabs2 button.on{background:rgba(255,255,255,.07);color:var(--text)}
+.fb{margin-left:auto;display:flex;gap:2px}
+.fb button{padding:2px 7px;border-radius:5px;font-size:12px;opacity:.55}
+.fb button:hover,.fb button.on{opacity:1;background:rgba(255,255,255,.06)}
+.fbn{margin-top:6px;font-size:11px;color:var(--gold);background:var(--gold-d);border-radius:5px;padding:4px 8px}
+.empty{color:var(--muted);text-align:center;padding:40px 10px}
+.more{margin:4px auto 14px;padding:6px 14px;border:1px solid var(--border);border-radius:7px;color:var(--dim)}
+/* score */
+.sc{padding:8px 12px 12px}
+.sc table td,.sc table th{padding:6px 4px;font-size:11.5px;border-bottom:1px solid rgba(255,255,255,.04);text-align:right;white-space:nowrap}
+.sc table th{font-size:10px;color:var(--muted);font-weight:600}
+.sc td:first-child,.sc th:first-child{text-align:left}
+.sc td.b{font-weight:700;cursor:pointer}.sc td.b:hover{color:var(--cyan)}
+.meter{display:flex;align-items:center;gap:6px;justify-content:flex-end}
+.meter .tr{width:46px;height:5px;border-radius:3px;background:rgba(255,255,255,.07);overflow:hidden}
+.meter .tr i{display:block;height:100%}
+.legend{font-size:11px;color:var(--muted);padding:2px 12px 10px;line-height:1.6}
+.notes{padding:10px 12px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--border)}
+.notes textarea{width:100%;min-height:70px;padding:8px;resize:vertical}
+.btn{padding:6px 12px;border-radius:7px;background:var(--cyan-d);color:var(--cyan);border:1px solid rgba(0,229,255,.35);font-weight:700;font-size:11.5px}
+.nl{display:flex;flex-direction:column;gap:6px}
+.ni{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:7px 9px;font-size:11.5px}
+.ni .m{color:var(--muted);font-size:10.5px;margin-bottom:3px}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border-b);padding:8px 14px;border-radius:8px;opacity:0;transition:.25s;pointer-events:none}
+.toast.on{opacity:1}
+/* mobile */
+.mtabs{display:none}
+@media (max-width:1100px){main{grid-template-columns:280px minmax(0,1fr)}.col.right{display:none}main.show-right .col.right{display:flex;position:fixed;right:0;top:52px;bottom:0;width:330px;background:var(--panel);z-index:5;border-left:1px solid var(--border)}#btnScore{display:inline-flex!important}}
+@media (max-width:760px){
+  header{flex-wrap:wrap;padding:8px 12px}.chips .chip.hide-m{display:none}
+  #app{grid-template-rows:auto auto 1fr}
+  .mtabs{display:flex;border-bottom:1px solid var(--border)}
+  .mtabs button{flex:1;padding:9px;color:var(--dim);font-weight:700;font-size:12px}
+  .mtabs button.on{color:var(--cyan);box-shadow:inset 0 -2px var(--cyan)}
+  main{grid-template-columns:1fr}
+  main .col{display:none!important;border:0}
+  main[data-m="wl"] .col.left,main[data-m="feed"] .col.mid,main[data-m="score"] .col.right{display:flex!important;position:static;width:auto}
+  #btnScore{display:none!important}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand"><span class="mark">📡</span>SİNYAL MASASI</div>
+    <div class="chips">
+      <span class="chip" title="Bizim motorun son çalışma zamanı"><span class="dot" id="dEng"></span>Motor <span class="mono" id="tEng">—</span></span>
+      <span class="chip" title="Visivero mesajlarının son geliş zamanı"><span class="dot" id="dVV"></span>Visivero <span class="mono" id="tVV">—</span></span>
+      <span class="chip hide-m"><span class="dot" id="dWS"></span>Fiyat akışı</span>
+      <button class="chip" id="btnScore" style="display:none">📊 Skor</button>
+      <span class="chip"><a href="http://localhost:3101" target="_blank" rel="noopener">V Visivero botları</a></span>
+      <span class="chip"><a href="http://localhost:3102" target="_blank" rel="noopener">B Bizim botlar</a></span>
+      <span class="chip hide-m"><a href="http://localhost:3000" target="_blank" rel="noopener">↗ Terminal</a></span>
+      <span class="chip clock" id="clock">--:--:--</span>
+    </div>
+  </header>
+  <nav class="mtabs" id="mtabs"><button data-m="wl">İzleme</button><button data-m="feed" class="on">Sinyaller</button><button data-m="score">Skor & Notlar</button></nav>
+  <main id="main" data-m="feed">
+    <!-- watchlist -->
+    <section class="col left">
+      <div class="col-h">İzleme listesi <span class="sp mono" id="wlCount">—</span></div>
+      <div class="wl-tools">
+        <input id="wlSearch" placeholder="Coin ara (örn. BTC)" autocomplete="off" spellcheck="false">
+        <div class="pills" id="wlPills">
+          <button class="pill on" data-f="all">Tümü</button>
+          <button class="pill" data-f="sig">Sinyalli</button>
+          <button class="pill" data-f="USDT">USDT</button>
+          <button class="pill" data-f="USDC">USDC</button>
+          <button class="pill" data-f="tradfi">TradFi</button>
+        </div>
+      </div>
+      <div class="scroll">
+        <table class="wl"><thead><tr>
+          <th data-k="s">Coin</th><th data-k="p">Fiyat</th><th data-k="ch" class="on">%24s ▼</th><th data-k="v">Hacim</th><th data-k="fr">FR%</th>
+        </tr></thead><tbody id="wlBody"></tbody></table>
+      </div>
+    </section>
+    <!-- feed -->
+    <section class="col mid">
+      <div class="toolbar">
+        <div class="row pills" id="botPills"></div>
+        <div class="row">
+          <div class="seg" id="stSeg">
+            <button data-v="all" class="on">Tümü</button><button data-v="match">✓ Eşleşen</button><button data-v="missed">✗ Kaçan</button><button data-v="extra">＋ Fazla</button><button data-v="pending">⏳ Bekleyen</button>
+          </div>
+          <div class="seg" id="dirSeg"><button data-v="all" class="on">Her yön</button><button data-v="up">Long</button><button data-v="down">Short</button></div>
+          <div class="seg" id="hrSeg"><button data-v="1">1 sa</button><button data-v="6" class="on">6 sa</button><button data-v="24">24 sa</button></div>
+          <span class="coinflt" id="coinFlt"><span id="coinFltName"></span><button id="coinFltX" title="Filtreyi kaldır">✕</button></span>
+          <button class="pill" id="sound" title="Yeni sinyalde ses çal (seçili botlar)">🔕 Ses</button>
+        </div>
+      </div>
+      <div class="scroll" id="feedScroll"><div class="feed" id="feed"><div class="empty">Yükleniyor…</div></div></div>
+    </section>
+    <!-- score + notes -->
+    <section class="col right">
+      <div class="col-h">Visivero ile uyum <span class="sp mono" id="scWin">son 6 sa</span></div>
+      <div class="scroll">
+        <div class="sc"><table><thead><tr><th>Bot</th><th title="Visivero sinyal sayısı (bölüm)">VV</th><th title="Bizim sinyal sayısı">Biz</th><th title="Visivero sinyallerinin kaçını yakaladık">Yakalama</th><th title="Bizim sinyallerin kaçı Visivero'da da var">İsabet</th></tr></thead><tbody id="scBody"></tbody></table></div>
+        <div class="legend"><b>Yakalama:</b> Visivero'nun verdiği sinyallerden bizim de verdiklerimiz.<br><b>İsabet:</b> Bizim verdiklerimizden Visivero'da da olanlar. Tekrarlayan mesajlar tek sinyal sayılır.</div>
+        <div class="notes">
+          <div class="col-h" style="padding:0;border:0">Claude'a not</div>
+          <textarea id="noteText" placeholder="Gözleminizi yazın — örn. &quot;BTC'de 14:05 sinyali erken geldi&quot;. Notlarınızı ben de okuyorum."></textarea>
+          <div class="row"><button class="btn" id="noteSend">Notu gönder</button><span style="color:var(--muted);font-size:11px">Kartlardaki 👍 👎 💬 da buraya düşer.</span></div>
+          <div class="nl" id="noteList"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const LS = { get(k, d) { try { const v = localStorage.getItem('sm.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('sm.' + k, JSON.stringify(v)); } catch { } } };
+const S = {
+  eps: new Map(), rev: 0, bots: {}, status: null, wl: new Map(), fb: [],
+  bot: LS.get('bot', 'all'), st: LS.get('st', 'all'), dir: 'all', hours: LS.get('hours', 6), coin: null,
+  wlFilter: 'all', wlSort: LS.get('wlSort', ['ch', -1]), wlQ: '', sound: LS.get('sound', false), shown: 150, firstLoad: true, view: {}
+};
+const BOT_COLOR = { 'm1': '#f0b90b', 'm1-premium': '#fbbf24', 'hammer': '#94a3b8', 'hammer-pro': '#e2e8f0', 'hammer-pro-plus': '#fdba74', '1d-hammer-pro': '#cbd5e1', '4s': '#f6465d', '4sniper': '#d97706', '1dws': '#a855f7', 'div': '#22d3ee', 'fr': '#00e5ff', 'v3': '#0ecb81' };
+const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const msgHtml = s => esc(s).replace(/&lt;(\/?)b&gt;/g, '<$1b>').trim();
+const pad = n => String(n).padStart(2, '0');
+const hms = t => { const d = new Date(t); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; };
+const ago = ms => ms < 0 ? '—' : ms < 60e3 ? Math.round(ms / 1e3) + ' sn' : ms < 3600e3 ? Math.round(ms / 60e3) + ' dk' : (ms / 3600e3).toFixed(1) + ' sa';
+const fmtP = p => !Number.isFinite(p) ? '—' : p >= 1000 ? p.toLocaleString('en-US', { maximumFractionDigits: 1 }) : p >= 1 ? p.toFixed(p >= 100 ? 2 : 4) : String(+p.toPrecision(4));
+const fmtV = v => v >= 1e9 ? (v / 1e9).toFixed(2) + 'B' : v >= 1e6 ? (v / 1e6).toFixed(1) + 'M' : v >= 1e3 ? (v / 1e3).toFixed(0) + 'K' : String(Math.round(v || 0));
+const toast = m => { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('on'), 1800); };
+const api = (p, o) => fetch(p, o).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+
+// ---------- data ----------
+async function loadEpisodes() {
+  const r = await api(`/api/episodes?since=${S.rev}&hours=26`);
+  const fresh = [];
+  for (const e of r.episodes) { if (!S.eps.has(e.id) && !S.firstLoad && e.src === 'ours') fresh.push(e); S.eps.set(e.id, e); }
+  S.rev = r.rev;
+  const cut = Date.now() - 26 * 3600e3; for (const [id, e] of S.eps) if (e.end < cut) S.eps.delete(id);
+  if (fresh.length) onFresh(fresh);
+  S.firstLoad = false;
+  renderPills(); renderFeed(); renderWlDots();
+}
+async function loadStatus() {
+  const s = await api('/api/status'); S.status = s; S.bots = s.bots;
+  const engAge = s.engine.at ? s.now - Date.parse(s.engine.at) : -1;
+  $('#dEng').className = 'dot ' + (engAge >= 0 && engAge < 30e3 ? 'ok' : engAge < 600e3 ? 'warn' : 'bad');
+  $('#tEng').textContent = engAge >= 0 ? (engAge < 30e3 ? 'çalışıyor' : ago(engAge) + ' önce') : 'yok';
+  const vvAge = s.lastVV ? s.now - s.lastVV : -1;
+  $('#dVV').className = 'dot ' + (vvAge >= 0 && vvAge < 300e3 ? 'ok' : vvAge >= 0 && vvAge < 3600e3 ? 'warn' : 'bad');
+  $('#tVV').textContent = vvAge >= 0 ? ago(vvAge) + ' önce' : 'yok';
+}
+async function loadScore() {
+  const r = await api(`/api/score?hours=${S.hours}`);
+  $('#scWin').textContent = `son ${S.hours} sa`;
+  const row = (b, o) => {
+    const m = v => v == null ? '<span style="color:var(--muted)">—</span>' : `<span class="meter"><span class="mono">${Math.round(v * 100)}%</span><span class="tr"><i style="width:${v * 100}%;background:${v >= .85 ? 'var(--green)' : v >= .6 ? 'var(--gold)' : 'var(--red)'}"></i></span></span>`;
+    return `<tr><td class="b" data-bot="${b}" style="color:${BOT_COLOR[b] || ''}">${esc(S.bots[b] || b)}</td><td class="mono">${o.vv}</td><td class="mono">${o.ours}</td><td>${m(o.recall)}</td><td>${m(o.precision)}</td></tr>`;
+  };
+  const ent = Object.entries(r.bots).filter(([, o]) => o.vv || o.ours);
+  $('#scBody').innerHTML = ent.map(([b, o]) => row(b, o)).join('') || '<tr><td colspan="5" style="color:var(--muted)">Bu aralıkta sinyal yok</td></tr>';
+}
+async function loadFb() { S.fb = await api('/api/feedback'); renderNotes(); }
+
+// ---------- feed ----------
+function pairs() {
+  const out = [];
+  for (const e of S.eps.values()) {
+    if (e.src === 'vv') out.push({ vv: e, ours: e.match ? S.eps.get(e.match) : null });
+    else if (!e.match || !S.eps.has(e.match)) out.push({ vv: null, ours: e });
+  }
+  for (const p of out) { const a = p.vv || p.ours; p.a = a; p.t = Math.min(p.vv ? p.vv.start : Infinity, p.ours ? p.ours.start : Infinity); p.status = p.vv ? (p.ours ? 'match' : p.vv.status === 'pending' ? 'pending' : 'missed') : (p.ours.status === 'pending' ? 'pending' : 'extra'); p.id = (p.vv ? 'v' + p.vv.id : 'o' + p.ours.id); }
+  return out.sort((x, y) => y.t - x.t);
+}
+const botOk = b => S.bot === 'all' || (S.bot === 'nom1' ? !/^m1/.test(b) : b === S.bot);
+function filtered(all) {
+  const cut = Date.now() - S.hours * 3600e3;
+  return all.filter(p => p.t >= cut && botOk(p.a.bot) && (S.st === 'all' || p.status === S.st) && (S.dir === 'all' || p.a.dir === S.dir) && (!S.coin || p.a.symbol === S.coin));
+}
+function renderPills() {
+  const cut = Date.now() - S.hours * 3600e3, cnt = {};
+  for (const e of S.eps.values()) if (e.start >= cut && (!S.coin || e.symbol === S.coin)) { cnt[e.bot] = cnt[e.bot] || 0; if (e.src === 'vv' || !e.match) cnt[e.bot]++; }
+  const tot = Object.values(cnt).reduce((a, b) => a + b, 0);
+  const bots = Object.keys(S.bots);
+  $('#botPills').innerHTML = `<button class="pill ${S.bot === 'all' ? 'on' : ''}" data-b="all">Tüm botlar<span class="n">${tot}</span></button><button class="pill ${S.bot === 'nom1' ? 'on' : ''}" data-b="nom1" title="Çok sık gelen M1-A ve M1 Premium hariç">M1 hariç<span class="n">${tot - (cnt['m1'] || 0) - (cnt['m1-premium'] || 0)}</span></button>` +
+    bots.filter(b => cnt[b] || S.bot === b).map(b => `<button class="pill ${S.bot === b ? 'on' : ''}" data-b="${b}"><span style="color:${BOT_COLOR[b]}">●</span> ${esc(S.bots[b])}<span class="n">${cnt[b] || 0}</span></button>`).join('');
+}
+const ST_TXT = { match: '✓ Eşleşti', missed: '✗ Kaçırdık', extra: '＋ Fazla', pending: '⏳ Bekleniyor' };
+const ST_TIP = { match: 'Bu sinyali hem biz hem Visivero verdi', missed: 'Visivero verdi, biz vermedik', extra: 'Biz verdik, Visivero vermedi', pending: 'Diğer tarafın sinyali bekleniyor' };
+function card(p) {
+  const a = p.a, dir = a.dir === 'up' ? 'up' : a.dir === 'down' ? 'down' : '';
+  const view = S.view[p.id] || (p.vv ? 'vv' : 'ours');
+  const e = view === 'vv' ? p.vv : p.ours;
+  const off = p.vv && p.ours ? Math.round((p.ours.start - p.vv.start) / 1000) : null;
+  const myFb = S.fb.filter(f => f.epId === p.id);
+  const vote = myFb.filter(f => f.vote).at(-1)?.vote;
+  const stars = Math.max(p.vv?.stars || 0, p.ours?.stars || 0);
+  return `<article class="card ${dir} ${p.isNew ? 'new' : ''}" data-id="${p.id}"><div class="bar"></div><div class="cb">
+    <div class="ch"><span class="tag" style="color:${BOT_COLOR[a.bot] || ''}">${esc(S.bots[a.bot] || a.bot)}</span>
+      <span class="csym ${dir}" data-coin="${a.symbol}">${dir === 'up' ? '▲' : dir === 'down' ? '▼' : ''} ${esc(a.symbol)}</span>
+      ${a.strategy ? `<span class="strat">${esc(a.strategy)}</span>` : ''}${stars ? `<span class="stars">${'⭐'.repeat(stars)}</span>` : ''}
+      <span class="st ${p.status}" title="${ST_TIP[p.status]}">${ST_TXT[p.status]}</span>
+      <span class="ctime">${hms(p.t)}</span></div>
+    <div class="msg">${msgHtml(e.text)}</div>
+    <div class="cf">
+      ${p.vv && p.ours ? `<span class="tabs2"><button data-view="vv" class="${view === 'vv' ? 'on' : ''}">Visivero</button><button data-view="ours" class="${view === 'ours' ? 'on' : ''}">Bizim</button></span>` : `<span>${p.vv ? 'Visivero mesajı' : 'Bizim mesaj'}</span>`}
+      ${off != null ? `<span class="mono" title="Bizim sinyalin Visivero'ya göre zaman farkı">${off >= 0 ? '+' : ''}${off} sn</span>` : ''}
+      ${e.n > 1 ? `<span class="mono" title="Bu sinyal art arda kaç kez tekrarlandı">×${e.n}</span>` : ''}
+      <span class="fb"><button data-vote="up" class="${vote === 'up' ? 'on' : ''}" title="Doğru / işe yarar">👍</button><button data-vote="down" class="${vote === 'down' ? 'on' : ''}" title="Yanlış / gereksiz">👎</button><button data-note title="Bu sinyale not yaz">💬</button></span>
+    </div>
+    ${myFb.filter(f => f.note).map(f => `<div class="fbn">💬 ${esc(f.note)}</div>`).join('')}
+  </div></article>`;
+}
+let feedSig = '';
+function renderFeed(force) {
+  const all = filtered(pairs());
+  const list = all.slice(0, S.shown);
+  const sig = list.map(p => p.id + p.status + (p.vv?.rev || 0) + (p.ours?.rev || 0) + (S.view[p.id] || '')).join(',') + S.fb.length + all.length;
+  if (!force && sig === feedSig) return; feedSig = sig;
+  const nw = new Set(S.newIds || []);
+  for (const p of list) p.isNew = nw.has(p.id);
+  $('#feed').innerHTML = list.length ? list.map(card).join('') + (all.length > list.length ? `<button class="more" id="more">Daha fazla göster (${all.length - list.length})</button>` : '') : '<div class="empty">Bu filtrede sinyal yok.</div>';
+  S.newIds = [];
+}
+function onFresh(fresh) {
+  const ids = [];
+  for (const e of fresh) { const v = e.match && S.eps.get(e.match); ids.push(v ? 'v' + v.id : 'o' + e.id); }
+  S.newIds = ids;
+  const rel = fresh.filter(e => botOk(e.bot) && (!S.coin || e.symbol === S.coin));
+  if (S.sound && rel.length) beep(rel[0].dir);
+}
+let actx;
+function beep(dir) { try { actx = actx || new AudioContext(); const o = actx.createOscillator(), g = actx.createGain(); o.frequency.value = dir === 'down' ? 520 : 880; g.gain.setValueAtTime(.08, actx.currentTime); g.gain.exponentialRampToValueAtTime(.0001, actx.currentTime + .25); o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime + .26); } catch { } }
+
+// ---------- watchlist ----------
+async function loadWl() {
+  const r = await api('/api/watchlist');
+  for (const x of r.rows) { const o = S.wl.get(x.s); S.wl.set(x.s, o ? Object.assign(o, x, { p: o.live ? o.p : x.p }) : x); }
+  renderWl();
+}
+function sigCount() {
+  const cut = Date.now() - S.hours * 3600e3, m = new Map();
+  for (const e of S.eps.values()) if (e.start >= cut && (e.src === 'ours' || !e.match)) { const a = m.get(e.symbol) || []; a.push(e); m.set(e.symbol, a); }
+  return m;
+}
+let wlRows = [];
+function renderWl() {
+  const sc = sigCount(), q = S.wlQ.toUpperCase();
+  let rows = [...S.wl.values()].filter(x => (!q || x.s.includes(q)) && (S.wlFilter === 'all' || (S.wlFilter === 'sig' ? sc.has(x.s) : S.wlFilter === 'tradfi' ? x.tradfi : x.q === S.wlFilter && !x.tradfi)));
+  const [k, d] = S.wlSort;
+  rows.sort((a, b) => k === 's' ? d * a.s.localeCompare(b.s) : d * ((a[k] ?? -1e9) - (b[k] ?? -1e9)));
+  wlRows = rows;
+  $('#wlCount').textContent = rows.length;
+  $$('.wl th').forEach(th => { const on = th.dataset.k === k; th.classList.toggle('on', on); th.textContent = th.textContent.replace(/ [▲▼]$/, '') + (on ? (d > 0 ? ' ▲' : ' ▼') : ''); });
+  $('#wlBody').innerHTML = rows.slice(0, 400).map(x => {
+    const ss = sc.get(x.s) || [];
+    const dots = ss.slice(0, 4).map(e => `<i style="background:${e.dir === 'down' ? 'var(--red)' : e.dir === 'up' ? 'var(--green)' : 'var(--cyan)'}"></i>`).join('');
+    return `<tr data-s="${x.s}" class="${S.coin === x.s ? 'sel' : ''}"><td><span class="sym">${esc(x.s.replace(/(USDT|USDC)$/, ''))}<small>${x.s.endsWith('USDC') ? '/USDC' : ''}</small></span>${dots ? `<span class="sigdots" title="${ss.length} sinyal">${dots}</span>` : ''}</td>
+      <td data-c="p">${fmtP(x.p)}</td><td data-c="ch" class="${x.ch >= 0 ? 'up' : 'down'}">${x.ch >= 0 ? '+' : ''}${x.ch.toFixed(2)}%</td><td>${fmtV(x.v)}</td>
+      <td class="${x.fr < 0 ? 'down' : ''}" title="${x.fh} saatte bir">${x.fr == null ? '—' : x.fr.toFixed(4)}</td></tr>`;
+  }).join('');
+}
+let dotsT; function renderWlDots() { clearTimeout(dotsT); dotsT = setTimeout(renderWl, 300); }
+function connectWs() {
+  let ws;
+  try { ws = new WebSocket('wss://fstream.binance.com/market/ws/!miniTicker@arr'); } catch { return setTimeout(connectWs, 5000); }
+  let last = Date.now();
+  ws.onopen = () => $('#dWS').className = 'dot ok';
+  ws.onmessage = ev => {
+    last = Date.now();
+    let arr; try { arr = JSON.parse(ev.data); } catch { return; }
+    for (const t of arr) {
+      const x = S.wl.get(t.s); if (!x) continue;
+      const p = +t.c, o = +t.o; const prev = x.p;
+      x.p = p; x.live = true; if (o) x.ch = (p / o - 1) * 100; x.v = +t.q;
+      const tr = document.querySelector(`#wlBody tr[data-s="${t.s}"]`);
+      if (tr && prev !== p) { tr.children[1].textContent = fmtP(p); const c = tr.children[2]; c.textContent = `${x.ch >= 0 ? '+' : ''}${x.ch.toFixed(2)}%`; c.className = x.ch >= 0 ? 'up' : 'down'; tr.classList.remove('flash-up', 'flash-dn'); void tr.offsetWidth; tr.classList.add(p > prev ? 'flash-up' : 'flash-dn'); }
+    }
+  };
+  ws.onclose = () => { $('#dWS').className = 'dot bad'; setTimeout(connectWs, 3000); };
+  ws.onerror = () => { };
+  const w = setInterval(() => { if (Date.now() - last > 60e3) { clearInterval(w); try { ws.close(); } catch { } } }, 15e3);
+}
+setInterval(() => { if (S.wlSort[0] !== 's') renderWl(); }, 10e3);
+
+// ---------- notes ----------
+function renderNotes() {
+  const list = S.fb.slice(-40).reverse();
+  $('#noteList').innerHTML = list.map(f => `<div class="ni"><div class="m">${new Date(f.at).toLocaleString('tr-TR')}${f.symbol ? ` · ${esc(f.bot || '')} ${esc(f.symbol)}` : ''}${f.vote ? ` · ${f.vote === 'up' ? '👍' : '👎'}` : ''}</div>${esc(f.note || (f.vote ? '(oy)' : ''))}</div>`).join('') || '<div style="color:var(--muted);font-size:11px">Henüz not yok.</div>';
+}
+async function postFb(rec) { const r = await api('/api/feedback', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(rec) }); S.fb.push(r.rec); renderNotes(); renderFeed(true); toast('Kaydedildi — Claude okuyacak'); }
+function fbFor(id) { const p = pairs().find(p => p.id === id); if (!p) return {}; const a = p.a; return { epId: id, src: p.vv ? 'vv' : 'ours', bot: a.bot, symbol: a.symbol, dir: a.dir, strategy: a.strategy, t: new Date(p.t).toISOString(), status: p.status }; }
+
+// ---------- events ----------
+function setCoin(c) { S.coin = S.coin === c ? null : c; $('#coinFlt').classList.toggle('on', !!S.coin); $('#coinFltName').textContent = S.coin ? '🔎 ' + S.coin : ''; S.shown = 150; renderPills(); renderFeed(true); renderWl(); if (S.coin && innerWidth <= 760) setM('feed'); }
+function seg(id, key, after) { $(id).addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; $$(id + ' button').forEach(x => x.classList.toggle('on', x === b)); S[key] = key === 'hours' ? +b.dataset.v : b.dataset.v; LS.set(key, S[key]); S.shown = 150; after && after(); renderPills(); renderFeed(true); }); $$(id + ' button').forEach(x => x.classList.toggle('on', String(S[key]) === x.dataset.v)); }
+seg('#stSeg', 'st'); seg('#dirSeg', 'dir'); seg('#hrSeg', 'hours', () => { loadScore(); renderWl(); });
+$('#botPills').addEventListener('click', e => { const b = e.target.closest('[data-b]'); if (!b) return; S.bot = b.dataset.b; LS.set('bot', S.bot); S.shown = 150; renderPills(); renderFeed(true); });
+$('#scBody').addEventListener('click', e => { const b = e.target.closest('[data-bot]'); if (!b) return; S.bot = b.dataset.bot; LS.set('bot', S.bot); renderPills(); renderFeed(true); if (innerWidth <= 760) setM('feed'); });
+$('#coinFltX').onclick = () => setCoin(S.coin);
+$('#feed').addEventListener('click', async e => {
+  if (e.target.id === 'more') { S.shown += 150; return renderFeed(true); }
+  const c = e.target.closest('[data-coin]'); if (c) return setCoin(c.dataset.coin);
+  const cardEl = e.target.closest('.card'); if (!cardEl) return; const id = cardEl.dataset.id;
+  const v = e.target.closest('[data-view]'); if (v) { S.view[id] = v.dataset.view; return renderFeed(true); }
+  const vo = e.target.closest('[data-vote]'); if (vo) return postFb({ ...fbFor(id), kind: 'vote', vote: vo.dataset.vote });
+  if (e.target.closest('[data-note]')) { const n = prompt('Bu sinyal için notunuz:'); if (n && n.trim()) postFb({ ...fbFor(id), kind: 'note', note: n.trim() }); }
+});
+$('#wlBody').addEventListener('click', e => { const tr = e.target.closest('tr[data-s]'); if (tr) setCoin(tr.dataset.s); });
+$('#wlBody').addEventListener('dblclick', e => { const tr = e.target.closest('tr[data-s]'); if (tr) open(`https://www.tradingview.com/chart/?symbol=BINANCE:${tr.dataset.s}.P`, '_blank', 'noopener'); });
+$$('.wl th').forEach(th => th.onclick = () => { const k = th.dataset.k; S.wlSort = S.wlSort[0] === k ? [k, -S.wlSort[1]] : [k, k === 's' ? 1 : -1]; LS.set('wlSort', S.wlSort); renderWl(); });
+$('#wlSearch').oninput = e => { S.wlQ = e.target.value.trim(); renderWl(); };
+$('#wlPills').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (!b) return; S.wlFilter = b.dataset.f; $$('#wlPills .pill').forEach(x => x.classList.toggle('on', x === b)); renderWl(); });
+const snd = () => { $('#sound').textContent = S.sound ? '🔔 Ses açık' : '🔕 Ses'; $('#sound').classList.toggle('on', S.sound); };
+$('#sound').onclick = () => { S.sound = !S.sound; LS.set('sound', S.sound); snd(); if (S.sound) beep('up'); }; snd();
+$('#noteSend').onclick = () => { const t = $('#noteText').value.trim(); if (!t) return; postFb({ kind: 'note', note: t, symbol: S.coin, bot: S.bot === 'all' ? null : S.bot }); $('#noteText').value = ''; };
+function setM(m) { $('#main').dataset.m = m; $$('#mtabs button').forEach(b => b.classList.toggle('on', b.dataset.m === m)); }
+$('#mtabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setM(b.dataset.m); });
+$('#btnScore').onclick = () => $('#main').classList.toggle('show-right');
+setInterval(() => { const d = new Date(); $('#clock').textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; }, 1000);
+
+// ---------- loops ----------
+const loop = (fn, ms) => { const run = async () => { try { await fn(); } catch (e) { console.warn(e); } setTimeout(run, ms); }; run(); };
+loop(loadStatus, 5000);
+loadFb().catch(() => { }).finally(() => { loop(loadEpisodes, 3000); });
+loop(loadScore, 15000);
+loop(loadWl, 60000);
+connectWs();
+})();
+
+// otomatik yenileme: site dosyaları değişince (veya sunucu yeniden başlayınca) sayfa kendini yeniler
+(() => { let base = null; const chk = async () => { try { const r = await fetch('/api/version', { cache: 'no-store' }).then(x => x.json()); const k = r.v + ':' + r.boot; if (base === null) base = k; else if (k !== base) { setTimeout(() => location.reload(), 600); return; } } catch { } setTimeout(chk, 8000); }; setTimeout(chk, 3000); })();
+</script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Botlar V1</title>
+<style>
+:root{--bg:#0b0f17;--panel:#121826;--panel2:#171f30;--line:#232c40;--tx:#e6ebf5;--mut:#8a94a8;--up:#1fc77e;--dn:#f6465d;--acc:#3b82f6;--warn:#f0b90b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+.logo{font-weight:700;font-size:16px;letter-spacing:.2px}
+.ver{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:10px;padding:1px 8px}
+.st{display:flex;align-items:center;gap:6px;color:var(--mut);font-size:12px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--mut)}
+.dot.ok{background:var(--up);box-shadow:0 0 6px var(--up)}.dot.bad{background:var(--dn)}
+.sp{flex:1}
+input,button,select{font:inherit;color:var(--tx);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+input{width:170px}button{cursor:pointer}button.on{border-color:var(--acc);color:#fff;background:#1d2b4d}
+.wrap{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 53px)}
+aside{border-right:1px solid var(--line);background:var(--panel);padding:10px}
+.bot{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+.bot:hover{background:var(--panel2)}.bot.sel{background:#1a2440;border-color:#2b3c66}
+.bot .nm{font-weight:600}.bot .ds{font-size:11px;color:var(--mut)}
+.bot .ct{margin-left:auto;text-align:right;font-size:12px;color:var(--mut);white-space:nowrap}
+.bot .ct b{color:var(--tx)}
+.new{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:var(--acc);color:#fff;font-size:11px;text-align:center;margin-left:4px}
+main{padding:12px 16px}
+.bar{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;color:var(--mut);font-size:12px}
+.feed{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.card{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--mut);border-radius:10px;padding:10px 12px;animation:in .4s}
+.card.up{border-left-color:var(--up)}.card.down{border-left-color:var(--dn)}
+.card.fresh{box-shadow:0 0 0 1px var(--acc)}
+@keyframes in{from{opacity:0;transform:translateY(-4px)}to{opacity:1}}
+.top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.badge{font-size:11px;padding:1px 7px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--mut)}
+.sym{font-weight:700;color:var(--tx);text-decoration:none}.sym:hover{text-decoration:underline}
+.tm{margin-left:auto;font-size:12px;color:var(--mut);white-space:nowrap}
+pre{margin:0;white-space:pre-wrap;word-break:break-word;font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;color:#cfd6e4}
+pre b{color:#fff}
+.empty{color:var(--mut);padding:40px;text-align:center}
+@media (max-width:760px){.wrap{grid-template-columns:1fr}aside{display:flex;overflow-x:auto;gap:6px;border-right:0;border-bottom:1px solid var(--line)}.bot{flex:0 0 auto}.bot .ds{display:none}input{width:120px}}
+
+.kasa-btn{font-weight:600}.kasa-btn.up{border-color:#1f6b46;background:#0f2a1d}.kasa-btn.dn{border-color:#6b1f2b;background:#2a0f14}
+.kasa-btn small{margin-left:6px;font-weight:600}.kasa-btn.up small{color:var(--up)}.kasa-btn.dn small{color:var(--dn)}
+#kov{position:fixed;inset:53px 0 0 0;background:rgba(6,9,15,.55);backdrop-filter:blur(3px);display:none;justify-content:center;align-items:flex-start;padding:22px 12px;z-index:20;overflow:auto}
+#kov.open{display:flex}
+.km{width:min(1240px,100%);background:rgba(18,24,38,.88);border:1px solid #2b3c66;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.5);padding:16px 18px}
+.kh{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}.kh h2{margin:0 6px 0 0;font-size:18px}
+.kmeta{display:flex;gap:16px;color:var(--mut);font-size:13px;flex-wrap:wrap}.kmeta b{color:var(--tx)}.kmeta .neg{color:var(--dn)}
+.ktabs button.on{border-color:var(--acc);background:#1d2b4d}
+.kg{display:grid;grid-template-columns:1fr 460px;gap:18px}
+.km table{width:100%;border-collapse:collapse;font-size:13px}.km th{font-size:12px;color:var(--mut);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.km td{padding:6px 8px;border-bottom:1px solid #1b2335}.km td.n,.km th.n{text-align:right;font-variant-numeric:tabular-nums}
+.pos{color:var(--up)}.neg{color:var(--dn)}.km tbody tr.row{cursor:pointer}.km tbody tr.row:hover td{background:#18223a}.km tr.edit td{background:#1a2440}
+.km tr.add td{background:#141d31}.km tr.add input{width:100%;padding:4px 6px;font-size:12px}
+.kk{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.kb{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.kb .l{font-size:11px;color:var(--mut)}.kb .v{font-size:20px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.kb.g{border-color:#1f6b46}.kb.g .v{color:var(--up)}.kb.r{border-color:#6b1f2b}.kb.r .v{color:var(--dn)}.kb.y{border-color:#6b5a1f}.kb.y .v{color:var(--warn)}
+.kbar{height:10px;background:#1b2335;border-radius:6px;overflow:hidden;margin-top:6px}.kbar i{display:block;height:100%;background:linear-gradient(90deg,#1fc77e,#3b82f6)}
+.khint{font-size:11px;color:var(--mut);margin-top:10px}.kerr{color:var(--dn);font-size:12px;margin-top:6px}
+.kset{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:10px;font-size:13px}
+.kset input{width:140px}
+.rep h3{font-size:14px;margin:14px 0 6px}
+@media (max-width:1000px){.kg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <span class="logo">Botlar</span><span class="ver" id="ver">V1</span>
+  <span class="st"><span class="dot" id="dot"></span><span id="stx">motor kontrol ediliyor…</span></span>
+  <span class="sp"></span>
+  <input id="q" placeholder="Coin ara (ör. BTC)" autocomplete="off">
+  <button data-dir="" class="on">Tümü</button><button data-dir="up">🟢 Yukarı</button><button data-dir="down">🔴 Aşağı</button>
+  <button id="snd" title="Yeni sinyalde ses">🔕 Ses</button>
+  <button id="kbtn" class="kasa-btn" title="Kasa ve %30 hedef">💼 Kasa</button>
+</header>
+<div class="wrap">
+  <aside id="bots"></aside>
+  <main>
+    <div class="bar"><span id="info"></span><span class="sp"></span><span>Tekrarlayan sinyal tek kartta toplanır (×n) · sayfa kendiliğinden yenilenir · saatler Türkiye saati</span></div>
+    <div class="feed" id="feed"></div>
+  </main>
+</div>
+<div id="kov"><div class="km" id="km"></div></div>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js" defer></script>
+<script>
+const $ = s => document.querySelector(s);
+const S = { bot: 'all', dir: '', q: '', items: [], maxSeq: 0, seen: {}, sound: false, stamp: null, bots: [] };
+try { S.sound = localStorage.getItem('v1.sound') === '1'; S.bot = localStorage.getItem('v1.bot') || 'all'; } catch (e) {}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fmtText = t => esc(t).replace(/&lt;(\/?)b&gt;/g, '<$1b>');
+const hhmm = t => new Date(t).toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul', hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit' });
+const ago = t => { if (!t) return '—'; const s = (Date.now() - t) / 1000; return s < 60 ? Math.round(s) + ' sn' : s < 3600 ? Math.round(s / 60) + ' dk' : Math.round(s / 3600) + ' sa'; };
+const nameOf = id => (S.bots.find(b => b.id === id) || {}).name || id;
+function beep() { try { const a = new AudioContext(), o = a.createOscillator(), g = a.createGain(); o.frequency.value = 880; g.gain.value = .05; o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime + .12); } catch (e) {} }
+async function j(u) { const r = await fetch(u, { cache: 'no-store' }); return r.json(); }
+async function loadBots() {
+  S.bots = await j('/api/bots');
+  const all = { id: 'all', name: 'Hepsi', desc: 'Bütün botların akışı', n24: S.bots.reduce((s, b) => s + b.n24, 0), n1: S.bots.reduce((s, b) => s + b.n1, 0), last: Math.max(0, ...S.bots.map(b => b.last || 0)) };
+  $('#bots').innerHTML = [all, ...S.bots].map(b => `<div class="bot ${S.bot === b.id ? 'sel' : ''}" data-id="${b.id}"><div><div class="nm">${esc(b.name)}</div><div class="ds">${esc(b.desc)}</div></div><div class="ct"><b>${b.n1}</b>/saat<br>${b.n24}/24s · ${ago(b.last)}</div></div>`).join('');
+  document.querySelectorAll('.bot').forEach(el => el.onclick = () => { S.bot = el.dataset.id; try { localStorage.setItem('v1.bot', S.bot); } catch (e) {} loadBots(); reload(); });
+}
+function card(m, fresh) {
+  const tv = `https://www.tradingview.com/chart/?symbol=BINANCE:${encodeURIComponent(m.symbol)}.P`;
+  return `<div class="card ${m.dir || ''} ${fresh ? 'fresh' : ''}"><div class="top"><span class="badge">${esc(nameOf(m.bot))}</span><a class="sym" href="${tv}" target="_blank" rel="noopener">${esc(m.symbol)}</a>${m.strategy ? `<span class="badge">${esc(m.strategy)}</span>` : ''}${m.n > 1 ? `<span class="badge" title="Aynı sinyal ${m.n} kez tekrarlandı; ilk: ${hhmm(m.first)}">×${m.n}</span>` : ''}<span class="tm">${hhmm(m.t)}</span></div><pre>${fmtText(m.text)}</pre></div>`;
+}
+function render(freshSeqs = new Set()) {
+  $('#feed').innerHTML = S.items.length ? S.items.map(m => card(m, freshSeqs.has(m.seq))).join('') : '<div class="empty">Bu filtrede henüz sinyal yok.</div>';
+  $('#info').textContent = `${S.bot === 'all' ? 'Hepsi' : nameOf(S.bot)} · ${S.items.length} mesaj gösteriliyor`;
+}
+function qs(extra = '') { return `/api/messages?bot=${S.bot}&dir=${S.dir}&q=${encodeURIComponent(S.q)}&limit=300${extra}`; }
+async function reload() { const r = await j(qs()); S.items = r.items; S.maxSeq = r.maxSeq; render(); }
+async function tick() {
+  try {
+    const r = await j(qs(`&after=${S.maxSeq}`));
+    if (r.items.length) {
+      const upd = new Map(r.items.map(m => [m.id, m])), isNew = r.items.some(m => m.n === 1);
+      S.items = [...r.items, ...S.items.filter(m => !upd.has(m.id))].sort((x, y) => y.t - x.t).slice(0, 300);
+      render(new Set(r.items.map(m => m.seq))); if (S.sound && isNew) beep();
+    }
+    S.maxSeq = Math.max(S.maxSeq, r.maxSeq);
+  } catch (e) {}
+}
+async function status() {
+  try {
+    const s = await j('/api/status'); $('#ver').textContent = 'V' + s.version;
+    const ok = s.engine && s.engine.ok; $('#dot').className = 'dot ' + (ok ? 'ok' : 'bad');
+    $('#stx').textContent = ok ? `motor çalışıyor · ${s.engine.symbols} coin` : 'motor çalışmıyor — start-v1.bat';
+    const v = await j('/api/version'); if (S.stamp && S.stamp !== v.stamp) location.reload(); S.stamp = v.stamp;
+  } catch (e) { $('#dot').className = 'dot bad'; $('#stx').textContent = 'web sunucusuna ulaşılamıyor'; }
+}
+document.querySelectorAll('[data-dir]').forEach(b => b.onclick = () => { S.dir = b.dataset.dir; document.querySelectorAll('[data-dir]').forEach(x => x.classList.toggle('on', x === b)); reload(); });
+let qt; $('#q').oninput = e => { clearTimeout(qt); qt = setTimeout(() => { S.q = e.target.value.trim(); reload(); }, 250); };
+const sb = () => { $('#snd').textContent = S.sound ? '🔔 Ses' : '🔕 Ses'; $('#snd').classList.toggle('on', S.sound); };
+$('#snd').onclick = () => { S.sound = !S.sound; try { localStorage.setItem('v1.sound', S.sound ? '1' : '0'); } catch (e) {} sb(); }; sb();
+
+// ---------- Kasa ----------
+const K = { d: null, tab: 'kasa', edit: null, set: false, view: null, err: '' };
+const usd = v => (v < 0 ? '−' : '') + '$' + Math.abs(v).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const sgn = v => (v > 0 ? '+' : '') + usd(v).replace('−', '−');
+const pct = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v * 100).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
+const trD = s => s ? s.split('-').reverse().join('.') : '';
+const today = () => new Date(Date.now() + 3 * 3600e3).toISOString().slice(0, 10);
+const nowHM = () => new Date(Date.now() + 3 * 3600e3).toISOString().slice(11, 16);
+async function kLoad(pid) { K.d = await j('/api/kasa' + (pid ? '?period=' + pid : '')); kBtn(); if ($('#kov').classList.contains('open')) kRender(); }
+async function kPost(body) {
+  K.err = '';
+  const r = await fetch('/api/kasa', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+  const x = await r.json(); if (!r.ok) { K.err = x.error || 'hata'; kRender(); return false; }
+  K.d = x; K.view = null; kBtn(); kRender(); return true;
+}
+function kBtn() {
+  if (!K.d) return; const s = K.d.sum, b = $('#kbtn'); if (K.d.period.id !== K.d.active) return;
+  b.innerHTML = `💼 Kasa ${usd(s.current)}<small>${s.total >= 0 ? '▲' : '▼'} ${pct(s.pct)}</small>`;
+  b.className = 'kasa-btn ' + (s.total > 0 ? 'up' : s.total < 0 ? 'dn' : '');
+}
+const val = id => (document.getElementById(id) || {}).value || '';
+function kRow(r, i) {
+  if (K.edit === r.id) return `<tr class="add edit"><td>✎</td><td><input id="e_coin" value="${esc(r.coin)}"></td><td><input id="e_date" type="date" value="${r.date}"></td><td><input id="e_time" value="${r.time || ''}"></td>
+    <td><input id="e_pnl" placeholder="kazanç/zarar" value="${r.pnl != null ? r.pnl : ''}"></td><td><input id="e_kasa" placeholder="kasa" value="${r.kasa != null ? r.kasa : ''}"></td><td></td><td><input id="e_note" value="${esc(r.note || '')}"></td></tr>
+    <tr class="edit"><td></td><td colspan="7"><button id="e_save">Güncelle</button> <button id="e_del">Sil</button> <button id="e_cancel">Vazgeç</button> <span style="color:var(--mut);font-size:12px">Kasa ya da kazanç/zarar alanından birini doldurun.</span></td></tr>`;
+  return `<tr class="row" data-id="${r.id}"><td>${i + 1}</td><td>${esc(r.coin)}</td><td>${trD(r.date)}</td><td>${r.time || ''}</td><td class="n ${r.pnlCalc > 0 ? 'pos' : r.pnlCalc < 0 ? 'neg' : ''}">${sgn(r.pnlCalc)}</td><td class="n">${usd(r.kasaCalc)}</td><td class="n ${r.pct > 0 ? 'pos' : r.pct < 0 ? 'neg' : ''}">${pct(r.pct)}</td><td>${esc(r.note || '')}</td></tr>`;
+}
+function kRender() {
+  const d = K.d; if (!d) return; const s = d.sum, p = d.period, ro = p.id !== d.active;
+  const opts = d.periods.map(x => `<option value="${x.id}" ${x.id === p.id ? 'selected' : ''}>${trD(x.start)} – ${x.closedAt ? trD(x.closedAt) : 'aktif'} · ${x.n} işlem</option>`).join('');
+  let h = `<div class="kh"><h2>💼 Kasa — %30 Hedef</h2>
+    <div class="kmeta"><span>Başlangıç: <b>${trD(p.start)}</b></span><span>Sermaye: <b>${usd(p.capital)}</b></span><span>Kalan gün: <b class="${s.kalanGun < 0 ? 'neg' : ''}">${s.kalanGun}</b></span></div>
+    <span class="ktabs"><button data-t="kasa" class="${K.tab === 'kasa' ? 'on' : ''}">Kasa</button> <button data-t="rap" class="${K.tab === 'rap' ? 'on' : ''}">Raporlar</button></span>
+    <select id="k_per" title="Dönem">${opts}</select>
+    ${ro ? '' : `<button id="k_set">⚙ Ayarlar</button><button id="k_new">↻ Yeni dönem</button>`}<button id="k_xls">⬇ Excel'e aktar</button><button id="k_close" style="margin-left:auto">✕ Kapat</button></div>`;
+  if (K.set && !ro) h += `<div class="kset">Başlangıç tarihi <input id="s_start" type="date" value="${p.start}"> Sermaye $ <input id="s_cap" value="${p.capital}"> <button id="s_save">Kaydet</button> <button id="s_cancel">Vazgeç</button><span style="color:var(--mut)">Kalan gün = 30 − (bugün − başlangıç), Excel'deki gibi.</span></div>`;
+  if (K.tab === 'kasa') {
+    h += `<div class="kg"><div><table><thead><tr><th>#</th><th>COIN</th><th>TARİH</th><th>SAAT</th><th class="n">KAZANÇ</th><th class="n">KASA</th><th class="n">YÜZDE</th><th>NOT</th></tr></thead><tbody>
+      <tr><td>–</td><td colspan="3" style="color:var(--mut)">Dönem başı sermaye</td><td class="n">0,00</td><td class="n">${usd(p.capital)}</td><td class="n">0,00%</td><td></td></tr>
+      ${d.rows.map(kRow).join('')}
+      ${ro ? '' : `<tr class="add"><td>+</td><td><input id="a_coin" placeholder="COIN"></td><td><input id="a_date" type="date" value="${today()}"></td><td><input id="a_time" value="${nowHM()}"></td>
+      <td><input id="a_pnl" placeholder="kazanç/zarar $"></td><td><input id="a_kasa" placeholder="işlem sonrası kasa $"></td><td><button id="a_add">Ekle</button></td><td><input id="a_note" placeholder="not (isteğe bağlı)"></td></tr>`}
+      </tbody></table>${K.err ? `<div class="kerr">${esc(K.err)}</div>` : ''}
+      <div class="khint">${ro ? 'Kapanmış dönem — sadece görüntüleme.' : 'İşlemden sonraki <b>kasa</b>yı ya da <b>kazanç/zarar</b> tutarını yazın (eksi için −5 ya da -5); diğeri kendiliğinden hesaplanır. Düzeltmek ya da silmek için satıra tıklayın.'} Kayıtlar <code>botlar-v1\\data\\kasa.json</code> dosyasında.</div></div>
+      <div><div class="kk">
+        <div class="kb ${s.total >= 0 ? 'g' : 'r'}"><div class="l">TOPLAM KAZANÇ</div><div class="v">${sgn(s.total)}</div></div>
+        <div class="kb g"><div class="l">GÜNCEL KASA</div><div class="v">${usd(s.current)}</div></div>
+        <div class="kb ${s.pct >= 0 ? 'g' : 'r'}"><div class="l">KAZANÇ YÜZDESİ</div><div class="v">${pct(s.pct)}</div></div>
+        <div class="kb g"><div class="l">HEDEF (+%30)</div><div class="v">${usd(s.hedef)}</div></div>
+        <div class="kb r"><div class="l">KALAN</div><div class="v">${usd(s.kalan)}</div></div>
+        <div class="kb y"><div class="l">HEDEFE KALAN %</div><div class="v">${pct(s.hedefKalanPct).replace('+', '')}</div></div>
+        <div class="kb g"><div class="l">GÜNLÜK ALINACAK</div><div class="v">${s.gunluk == null ? '—' : usd(s.gunluk)}</div></div>
+        <div class="kb y"><div class="l">MAKS. POZİSYON (kasa ×%10)</div><div class="v">${usd(s.maxPoz)}</div></div>
+        <div class="kb"><div class="l">İŞLEM / KAZANAN</div><div class="v">${s.n} / ${s.wins}</div></div>
+      </div><div style="margin-top:12px;font-size:12px;color:var(--mut)">Hedefe ilerleme: %${Math.round(Math.max(0, s.ilerleme) * 100)}</div><div class="kbar"><i style="width:${Math.min(100, Math.max(0, s.ilerleme * 100))}%"></i></div></div></div>`;
+  } else {
+    const tbl = (title, a, lab) => `<h3>${title}</h3><table><thead><tr><th>${lab}</th><th class="n">İŞLEM</th><th class="n">KAZANAN</th><th class="n">İSABET</th><th class="n">BAŞ KASA</th><th class="n">SON KASA</th><th class="n">KAZANÇ</th><th class="n">BÜYÜME</th></tr></thead><tbody>${a.length ? a.map(x => `<tr><td>${esc(x.key)}</td><td class="n">${x.n}</td><td class="n">${x.wins}</td><td class="n">%${Math.round(100 * x.wins / x.n)}</td><td class="n">${usd(x.startKasa)}</td><td class="n">${usd(x.endKasa)}</td><td class="n ${x.pnl >= 0 ? 'pos' : 'neg'}">${sgn(x.pnl)}</td><td class="n ${x.pct >= 0 ? 'pos' : 'neg'}">${pct(x.pct)}</td></tr>`).join('') : '<tr><td colspan="8" style="color:var(--mut)">Henüz işlem yok.</td></tr>'}</tbody></table>`;
+    const r = d.reports, mon = r.months.map(x => ({ ...x, key: new Date(x.key + '-01T12:00:00Z').toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' }) }));
+    h += `<div class="rep">${tbl('Yıllık', r.years, 'YIL')}${tbl('Çeyreklik (Ç1 = Ocak–Mart, Ç2 = Nisan–Haziran, Ç3 = Temmuz–Eylül, Ç4 = Ekim–Aralık)', r.quarters, 'ÇEYREK')}${tbl('Aylık', mon, 'AY')}
+      <div class="khint">Bütün dönemlerin işlemleri tarih sırasıyla birleştirilir. Büyüme = kazanç ÷ o dönemin ilk işleminden önceki kasa.</div></div>`;
+  }
+  $('#km').innerHTML = h;
+  document.querySelectorAll('.ktabs button').forEach(b => b.onclick = () => { K.tab = b.dataset.t; kRender(); });
+  $('#k_close').onclick = () => $('#kov').classList.remove('open');
+  $('#k_per').onchange = e => kLoad(Number(e.target.value));
+  $('#k_xls').onclick = kExcel;
+  if ($('#k_set')) $('#k_set').onclick = () => { K.set = !K.set; kRender(); };
+  if ($('#k_new')) $('#k_new').onclick = () => { if (confirm(`Bu dönem kapatılsın ve güncel kasa (${usd(s.current)}) ile bugün yeni 30 günlük dönem başlasın mı?`)) kPost({ action: 'newPeriod' }); };
+  if ($('#s_save')) { $('#s_save').onclick = async () => { if (await kPost({ action: 'settings', start: val('s_start'), capital: val('s_cap') })) { K.set = false; kRender(); } }; $('#s_cancel').onclick = () => { K.set = false; kRender(); }; }
+  if ($('#a_add')) $('#a_add').onclick = () => kPost({ action: 'add', coin: val('a_coin'), date: val('a_date'), time: val('a_time'), pnl: val('a_pnl'), kasa: val('a_kasa'), note: val('a_note') });
+  document.querySelectorAll('tr.row').forEach(tr => tr.onclick = () => { if (ro) return; K.edit = Number(tr.dataset.id); kRender(); });
+  if ($('#e_save')) {
+    $('#e_save').onclick = async () => { const kasa = val('e_kasa'), pnl = val('e_pnl'); if (await kPost({ action: 'update', id: K.edit, coin: val('e_coin'), date: val('e_date'), time: val('e_time'), kasa, pnl: kasa ? '' : pnl, note: val('e_note') })) { K.edit = null; kRender(); } };
+    $('#e_del').onclick = async () => { if (confirm('Bu işlem silinsin mi?')) { await kPost({ action: 'delete', id: K.edit }); K.edit = null; kRender(); } };
+    $('#e_cancel').onclick = () => { K.edit = null; kRender(); };
+  }
+}
+async function kExcel() {
+  if (!window.ExcelJS) { alert('Excel kütüphanesi yüklenemedi (internet bağlantısı gerekir).'); return; }
+  const d = K.d, p = d.period, wb = new ExcelJS.Workbook(), ws = wb.addWorksheet('KASA');
+  const money = '[$$-409]#,##0.00', green = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFC6EFCE' } }, red = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFC7CE' } }, yel = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFEB9C' } }, blue = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDCE6F1' } };
+  ws.columns = [{ width: 14 }, { width: 14 }, { width: 9 }, { width: 12 }, { width: 13 }, { width: 10 }, { width: 3 }, { width: 18 }, { width: 3 }, { width: 3 }, { width: 16 }, { width: 3 }, { width: 3 }, { width: 16 }, { width: 3 }, { width: 3 }, { width: 16 }, { width: 3 }, { width: 3 }, { width: 18 }, { width: 3 }, { width: 3 }, { width: 8 }, { width: 30 }];
+  ws.getCell('A1').value = 'Tarih:'; ws.getCell('B1').value = new Date(p.start + 'T00:00:00'); ws.getCell('B1').numFmt = 'dd.mm.yyyy';
+  ws.getCell('A2').value = 'Kalan Gün:'; ws.getCell('B2').value = { formula: '30-(TODAY()-B1)' }; ws.getCell('C2').value = 'SERMAYE'; ws.getCell('E2').value = p.capital; ws.getCell('E2').numFmt = money;
+  ['COIN', 'TARİH', 'SAAT', 'KAZANÇ', 'KASA', 'YÜZDE'].forEach((t, i) => { const c = ws.getCell(4, i + 1); c.value = t; c.font = { bold: true }; c.alignment = { horizontal: 'center' }; });
+  ws.getCell('X4').value = 'NOT'; ws.getCell('X4').font = { bold: true };
+  const N = Math.max(100, d.rows.length + 20);
+  ws.getCell('D5').value = { formula: 'IFERROR(E5-E2,"-")' }; ws.getCell('E5').value = p.capital; ws.getCell('F5').value = { formula: 'IFERROR((E5-E2)/E2,"-")' };
+  for (let r = 6; r <= 5 + N; r++) { const x = d.rows[r - 6]; if (x) { ws.getCell(r, 1).value = x.coin; ws.getCell(r, 2).value = new Date(x.date + 'T00:00:00'); ws.getCell(r, 2).numFmt = 'dd.mm.yyyy'; ws.getCell(r, 3).value = x.time; ws.getCell(r, 5).value = Math.round(x.kasaCalc * 100) / 100; ws.getCell(r, 24).value = x.note || null; } else ws.getCell(r, 5).value = '-';
+    ws.getCell(r, 4).value = { formula: `IFERROR(E${r}-E${r - 1},"-")` }; ws.getCell(r, 6).value = { formula: `IFERROR((E${r}-E${r - 1})/E${r - 1},"-")` }; }
+  for (let r = 5; r <= 5 + N; r++) { ws.getCell(r, 4).numFmt = money; ws.getCell(r, 5).numFmt = money; ws.getCell(r, 5).fill = blue; ws.getCell(r, 6).numFmt = '0.00%'; }
+  const put = (a, label, f, fill, fmt) => { ws.getCell(a.replace(/\d+/, '4')).value = label; ws.getCell(a.replace(/\d+/, '4')).font = { bold: true }; const c = ws.getCell(a); c.value = { formula: f }; c.fill = fill; c.numFmt = fmt; c.font = { bold: true, size: 13 }; };
+  put('H5', 'TOPLAM KAZANÇ', `SUM(D5:D${5 + N})`, green, money); put('K5', 'GÜNCEL KASA', 'E2+H5', green, money); put('N5', 'KAZANÇ YÜZDESİ', 'IFERROR((H5)/E2,"-")', green, '0.00%');
+  put('Q5', 'HEDEF', 'E2*1.3', green, money); put('T5', 'KALAN', '(Q5-E2)-H5', red, money);
+  ws.getCell('Q7').value = 'Günlük Alınacak'; ws.getCell('Q8').value = { formula: 'T5/B2' }; ws.getCell('Q8').fill = green; ws.getCell('Q8').numFmt = money;
+  ws.getCell('T7').value = 'Hedef aylık %30 kar.'; ws.getCell('T8').value = { formula: '30%-N5' }; ws.getCell('T8').fill = yel; ws.getCell('T8').numFmt = '0.00%'; ws.getCell('V8').value = 'Kaldı.';
+  ws.getCell('H8').value = 'Maks. Pozisyon Miktarı'; ws.getCell('H9').value = { formula: 'K5*0.1' }; ws.getCell('H9').fill = yel; ws.getCell('H9').numFmt = money;
+  const rs = wb.addWorksheet('RAPORLAR'); rs.columns = [{ width: 18 }, { width: 9 }, { width: 10 }, { width: 13 }, { width: 13 }, { width: 13 }, { width: 10 }];
+  const sec = (title, a) => { rs.addRow([title]).font = { bold: true, size: 12 }; rs.addRow(['', 'İşlem', 'Kazanan', 'Baş kasa', 'Son kasa', 'Kazanç', 'Büyüme']).font = { bold: true }; for (const x of a) { const row = rs.addRow([x.key, x.n, x.wins, x.startKasa, x.endKasa, x.pnl, x.pct]); [4, 5, 6].forEach(i => row.getCell(i).numFmt = money); row.getCell(7).numFmt = '0.00%'; } rs.addRow([]); };
+  sec('Yıllık', d.reports.years); sec('Çeyreklik', d.reports.quarters); sec('Aylık', d.reports.months);
+  const buf = await wb.xlsx.writeBuffer(), a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })); a.download = `Kasa_${p.start}.xlsx`; a.click();
+}
+$('#kbtn').onclick = () => { $('#kov').classList.add('open'); kRender(); };
+$('#kov').onclick = e => { if (e.target.id === 'kov') $('#kov').classList.remove('open'); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('#kov').classList.remove('open'); });
+kLoad(); setInterval(() => { if (!$('#kov').classList.contains('open')) kLoad(); }, 30000);
+
+(async () => { await status(); await loadBots(); await reload(); setInterval(tick, 3000); setInterval(loadBots, 30000); setInterval(status, 8000); })();
+</script>
+</body>
+</html>

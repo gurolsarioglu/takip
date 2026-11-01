@@ -1,0 +1,87 @@
+//@version=5
+// TC S/R v1 — Trader Club S/R göstergesinin yeniden yazımı (taslak, 28.10.2026). Bkz. Takip.md.
+// Bilinen: seviyeler pivot tepe/dipleri (sol/sağ N mum); bölge kalınlığı = seviye ± (son 300 mumun en yüksek−en düşük farkı × %Genişlik).
+// Tahmini (kesin değil): hangi 6 seviyenin seçildiği. Kural: aynı bölgede daha çok pivot olan, eşitse daha yeni olan seçilir;
+// birbirine 2 bölge genişliğinden yakın seviyeler tek sayılır. BULLA 5m 28.10 21:51 ekranında 6 seviyenin 5'i tuttu.
+indicator("TC S/R v1", shorttitle = "TC S/R", overlay = true, max_boxes_count = 50, max_lines_count = 50)
+
+prd     = input.int(10, "Pivot (sol/sağ mum)", minval = 2)
+wPct    = input.float(2.0, "Bölge genişliği % (300 mum aralığının)", step = 0.1)
+lookbk  = input.int(300, "Geriye bakış (mum)", minval = 50, maxval = 1000)
+minPiv  = input.int(1, "En az pivot sayısı", minval = 1)
+maxSR   = input.int(6, "En fazla seviye", minval = 1, maxval = 20)
+hideIn  = input.bool(true, "Fiyatın içinde olduğu bölgeyi gizle")
+showZn  = input.bool(true, "Bölgeleri göster")
+expand  = input.bool(true, "Sağa/sola uzat (Expand SR)")
+lnStyle = input.string("Noktalı", "Çizgi stili", options = ["Noktalı", "Kesikli", "Düz"])
+lnWidth = input.int(2, "Çizgi kalınlığı", minval = 1, maxval = 4)
+colRes  = input.color(color.new(#f6465d, 0), "Direnç rengi")
+colSup  = input.color(color.new(#00bcd4, 0), "Destek rengi")
+
+ph = ta.pivothigh(high, prd, prd)
+pl = ta.pivotlow(low, prd, prd)
+var float[] pv = array.new_float()
+var int[]   pb = array.new_int()
+if not na(ph)
+    array.unshift(pv, ph)
+    array.unshift(pb, bar_index - prd)
+if not na(pl)
+    array.unshift(pv, pl)
+    array.unshift(pb, bar_index - prd)
+// eski pivotları at
+while array.size(pb) > 0 and bar_index - array.get(pb, array.size(pb) - 1) > lookbk
+    array.pop(pv)
+    array.pop(pb)
+
+cw = (ta.highest(high, 300) - ta.lowest(low, 300)) * wPct / 100
+
+var box[]  bxs = array.new_box()
+var line[] lns = array.new_line()
+if barstate.islast
+    for b in bxs
+        box.delete(b)
+    for l in lns
+        line.delete(l)
+    array.clear(bxs)
+    array.clear(lns)
+    n = array.size(pv)
+    if n > 0
+        // her pivot için: aynı bölgedeki pivot sayısı
+        cnt = array.new_int(n, 0)
+        for i = 0 to n - 1
+            c = 0
+            for j = 0 to n - 1
+                if math.abs(array.get(pv, j) - array.get(pv, i)) <= cw
+                    c += 1
+            array.set(cnt, i, c)
+        chosen = array.new_float()
+        used = array.new_bool(n, false)
+        for k = 1 to maxSR
+            best = -1
+            for i = 0 to n - 1
+                if array.get(used, i) or array.get(cnt, i) < minPiv
+                    continue
+                v = array.get(pv, i)
+                if hideIn and close >= v - cw and close <= v + cw
+                    continue
+                tooClose = false
+                if array.size(chosen) > 0
+                    for c in chosen
+                        if math.abs(c - v) < 2 * cw
+                            tooClose := true
+                if tooClose
+                    continue
+                // daha çok pivot > daha yeni (dizi en yeniden eskiye sıralı)
+                if best < 0 or array.get(cnt, i) > array.get(cnt, best)
+                    best := i
+            if best < 0
+                break
+            array.set(used, best, true)
+            array.push(chosen, array.get(pv, best))
+        st = lnStyle == "Noktalı" ? line.style_dotted : lnStyle == "Kesikli" ? line.style_dashed : line.style_solid
+        ext = expand ? extend.both : extend.right
+        for v in chosen
+            col = v > close ? colRes : colSup
+            if showZn
+                array.push(bxs, box.new(bar_index - lookbk, v + cw, bar_index, v - cw, border_color = color.new(col, 100), bgcolor = color.new(col, 80), extend = ext))
+            array.push(lns, line.new(bar_index - lookbk, v, bar_index, v, color = col, style = st, width = lnWidth, extend = ext))

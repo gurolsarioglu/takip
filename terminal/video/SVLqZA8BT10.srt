@@ -1,0 +1,448 @@
+1
+00:00:00,000 --> 00:00:05,480
+ SwingTrait nasıl yapılır bölüm 2'den herkese selamlar arkadaşlar.
+
+2
+00:00:05,480 --> 00:00:10,360
+ Birinci bölümü izlemeyenler için yukarı köşeye bir yere link bıraktım.
+
+3
+00:00:10,360 --> 00:00:13,360
+ Birinci bölümü mutlaka izleyin.
+
+4
+00:00:13,360 --> 00:00:20,860
+ O bölümde ben söz verdiğim gibi SwingTrait'lerden bir tanesini ekranda gördüğünüz gibi
+
+5
+00:00:20,860 --> 00:00:26,180
+ 20 Ocak tarihinde saat 11.22'de bizim kanaldan paylaştım.
+
+6
+00:00:26,180 --> 00:00:30,120
+ Fakat bu paylaşımlarım benim sadece eğitim amaçlıdır.
+
+7
+00:00:30,120 --> 00:00:33,920
+ Yatırım ya da işlem tavsiyesi değildir arkadaşlar.
+
+8
+00:00:33,920 --> 00:00:37,160
+ Bu paylaşımlardan sonra koyimleri analiz edip
+
+9
+00:00:37,160 --> 00:00:44,340
+ şu 4 saatlik grafiklerde SwingTrait deneyimini mutlaka kendiniz edinmek zorundasınız.
+
+10
+00:00:44,340 --> 00:00:48,340
+ Bu işlemlere birer dolar işlem sermayesiyle girip
+
+11
+00:00:48,340 --> 00:00:58,280
+ acaba 4 saat sonra 8 saat sonra ne olabilir gibi kendinizin zaman kavramını mutlaka kafanızda oturtmanız gerekiyor.
+
+12
+00:00:58,280 --> 00:01:07,340
+ Şimdi arkadaşlar izlediğiniz işlemde ben bu tarihten sonra sizlerle beraber ben de bu işleme girdim.
+
+13
+00:01:07,340 --> 00:01:13,080
+ Girdikten sonra bakın 4 saatlik grafikleri borsanız da açabilirsiniz
+
+14
+00:01:13,080 --> 00:01:22,080
+ ve ekranda gördüğünüz otopivot indikatörlerini açarak 4 saatlik grafiklerde nerelere gelebileceğini
+
+15
+00:01:22,080 --> 00:01:25,580
+ en azından size yol gösterecektir.
+
+16
+00:01:25,580 --> 00:01:29,540
+ Şu işlemi izleyelim, devam edeceğiz.
+
+17
+00:01:43,080 --> 00:01:53,040
+ İçimde saran, kar, yar ol, ayınca
+
+18
+00:01:53,040 --> 00:02:06,040
+ Neyleyim kaştı, neyleyim sarayın
+
+19
+00:02:06,040 --> 00:02:17,040
+ İçimde saran, kar, yar ol, ayınca
+
+20
+00:02:17,040 --> 00:02:24,040
+ Arkadaşlar işlemi izlediniz. Şimdi bir de grafik üzerinden şu işlemi inceleyelim.
+
+21
+00:02:24,040 --> 00:02:33,040
+ Burada bizim ben o alarmı yani o paylaşımı yapmadan önce bir uyumsuzluk burada görmüştüm.
+
+22
+00:02:33,040 --> 00:02:39,040
+ Şimdi biz uyumsuzluklarda ne arıyoruz arkadaşlar. Öncelikle aresal uyumsuzluğundan bahsediyorum.
+
+23
+00:02:39,040 --> 00:02:45,040
+ Şu seviye 30 seviyesidir. Şu seviye ise 70 seviyesidir.
+
+24
+00:02:45,040 --> 00:02:54,040
+ En azından uyumsuzluk ararken bir tarafın 30 seviyenin altında ya da 70'in üzerinde ararız.
+
+25
+00:02:54,040 --> 00:03:03,040
+ Yani biz burada boğa uyumsuzluğu ararken en azından bir tarafın böyle 30 seviyesinin altında olmasını bekleriz.
+
+26
+00:03:03,040 --> 00:03:08,040
+ Burada da öyle bir durum söz konusuydu.
+
+27
+00:03:08,040 --> 00:03:13,040
+ Sonrasında coin tekrar düşerken aresal uyumsuzluğunu verdi.
+
+28
+00:03:13,040 --> 00:03:18,040
+ Zaten biz de şu seviyeden işleme girmiştik.
+
+29
+00:03:18,040 --> 00:03:30,040
+ Dedikten sonra bunun çıkış yerini otopivota göre size gösterdim ama bu grafiklerden de en azından bakın P-Mex'in bir alt seviyesine kadar bile emir veren birisi
+
+30
+00:03:30,040 --> 00:03:38,040
+ zaten bu işlemi çok güzel bir şekilde güzel bir karla kapatmış ola biliyor arkadaşlar.
+
+31
+00:03:38,040 --> 00:03:47,040
+ Şimdi bugün ise tekrar ben bir işlem daha bahsetmek istiyorum size.
+
+32
+00:03:47,040 --> 00:03:56,040
+ Yine kanalı takip ediyorsanız arkadaşlar ben bu şekilde sizlerle işlem paylaşmaya devam edeceğim.
+
+33
+00:03:56,040 --> 00:03:59,040
+ Dediğim gibi bunlar tamamen eğitim amaçlıdır.
+
+34
+00:03:59,040 --> 00:04:08,040
+ Rica ediyorum farklı bir sermaye ile ya da sermaye yönetimi bilmeden bu işlemlere lirmeyiniz arkadaşlar.
+
+35
+00:04:08,040 --> 00:04:17,040
+ Şimdi bugün ben ikinci işlemde ise Rom isimli bir işlemden bahsettim hemen şimdi onu bir buluyorum size.
+
+36
+00:04:17,040 --> 00:04:21,040
+ Bulduktan sonra onun detayına da bakalım arkadaşlar.
+
+37
+00:04:21,040 --> 00:04:36,040
+ Evet bugün saat 13-14'de yani 21 Ocak tarihinde saat 13-14'de ben şu şekilde bir paylaşım yapmıştım sizlere gelin tekrar şu işlemi inceleyildim.
+
+38
+00:04:36,040 --> 00:04:51,040
+ Şimdi burada hemen bir şeyden bahsetmek istiyorum mum grafik mi heykin aşimi kafam çok karışıyor diyenler için bir saatlik grafiklerde bunu heykin aşi mum şekline getirebilirsiniz.
+
+39
+00:04:51,040 --> 00:05:00,040
+ Ve heykin aşilerle bakın nasıl güzel bir şekilde bizlere yol gösterebildiğini buradan da kendiniz görebiliyorsunuz.
+
+40
+00:05:00,040 --> 00:05:07,040
+ Diğer zaman dilimlerinde kafanız karışabilir. Bunun en temizi bir saatlik grafikleri heykin aşıya alırsınız.
+
+41
+00:05:07,040 --> 00:05:13,040
+ Diğer zaman aralıklarında da normal mum şeklinde kullanabilirsiniz arkadaşlar.
+
+42
+00:05:13,040 --> 00:05:21,040
+ Şimdi benim bugünkü yaptığım paylaşımda ise aslında bugün sabah saat 9 gibi bu alarm vermiş ama ben biraz daha geç kaldım.
+
+43
+00:05:21,040 --> 00:05:38,040
+ Geç kaldıktan sonra sizinle paylaştım ve bunun tamamen burası bir saatlik grafiklerde linreg'in üst bandının olabileceğinden de zaten bahsetmiştim.
+
+44
+00:05:38,040 --> 00:05:42,040
+ Paylaşımları tekrar okursanız kafanızda daha iyi netleşecektir.
+
+45
+00:05:42,040 --> 00:06:00,040
+ Bakın şu saat 16.53 olmasına rağmen coin artık yerinde kaldı. Fakat ben burada arkadaşlar bu işlemden çıktığımı sizlere zaten bildirmiştim.
+
+46
+00:06:00,040 --> 00:06:15,040
+ Bu işlem bir saatlik grafiklere göre yapılan bir swing trait. Yani bu işlem de yine bir saat 15 dakika falan sürdü ama günlük grafik o an kırmızının içindeydi.
+
+47
+00:06:15,040 --> 00:06:25,040
+ Yani ben bir saatlik grafiklere göre swing bıraktığım için hedefimde yine bir saatlik grafiklerde linreg'in üst bandı.
+
+48
+00:06:25,040 --> 00:06:40,040
+ Çünkü linreg bakın hala tepesi aşağıya görünüyor ve şu mumlarda da kırmızı tekrar yakıp aşağıya doğru 4 saatlik grafikte devam edebilir.
+
+49
+00:06:40,040 --> 00:06:44,040
+ Şimdi peki arkadaşlar şöyle bir şeyler soruluyor.
+
+50
+00:06:44,040 --> 00:06:57,040
+ Ben stop los kullanmıyorum. Kullanmak isteyenler kullanabilirler. Fakat eğer bizim öğrencimizseniz lütfen şu stop los kullanmamayı bir öğrenin.
+
+51
+00:06:57,040 --> 00:07:01,040
+ Bakın çok kıymetli bir şey söylüyorum. Bunu hiçbir yerde bulamazsınız.
+
+52
+00:07:01,040 --> 00:07:07,040
+ Öncelikle şu stop losu kullanmamayı öğrenin. Bunu kullanmayı öğrenmek çok basittir.
+
+53
+00:07:07,040 --> 00:07:16,040
+ Stop los diye bir yer var girersiniz zararınızı hesaplarsınız basarsınız koyun zaten oraya gelir zarar edersiniz ve öğrenmiş olursunuz.
+
+54
+00:07:16,040 --> 00:07:22,040
+ Bunu zaten herkes biliyor. Benim anlattığım şey stop los kullanmamayı öğrenmek.
+
+55
+00:07:22,040 --> 00:07:33,040
+ Bu gibi durumlarda uyunsuzluk olan yerlerde sermayenizi yöneterek stop los kullanmadan bir bırakmanızı sizden rica ediyorum.
+
+56
+00:07:33,040 --> 00:07:41,040
+ Bunlar tamamen eğitim amaçlıdır birer dolarlarla zaman kavramınızı kafanızda oturtmanız lazım.
+
+57
+00:07:41,040 --> 00:07:55,040
+ Bakın izlediğiniz ilk işlem swarm işleminde ben şu seviyelerden size söyledikten sonra bu koyun %740'lara yakın pmax'a kadar bir para verdi.
+
+58
+00:07:55,040 --> 00:08:06,040
+ Şimdi şu gibi durumlarda 4 saatliklerde uyumsuzluk varken bunun stop losunun nereye konulması gerek değil alakalı bir bilgi bende yok.
+
+59
+00:08:06,040 --> 00:08:17,040
+ Ben o bilgiyi bilmiyorum arkadaşlar. Yani ben sermayemi yönetirim bir uyumsuzluk görmüşüm gördükten sonra da bu işleme stop losuz giriyorum.
+
+60
+00:08:17,040 --> 00:08:25,040
+ Peki soru şu. Yani her zaman bu yukarı doğru çıkar mı? Yani bu iki kere iki dört mü? Hayır arkadaşlar öyle bir şey yok.
+
+61
+00:08:25,040 --> 00:08:32,040
+ Öyle olsa ben zaten sermaye yönetimini yapmam. Kafamıza göre böyle 50-100 bin dolarlarla işlemlere gireriz.
+
+62
+00:08:32,040 --> 00:08:37,040
+ Bu öyle bir dünya değil. Peki ters dönseydi. Ne olurdu?
+
+63
+00:08:37,040 --> 00:08:43,040
+ Yani uyumsuzluk falan dinlemez. Bitcoin'daki olası bir ters hareketle şimdi göstereceğim size.
+
+64
+00:08:43,040 --> 00:08:53,040
+ Bakın yukarı da açık. Melanie ve Trump ikilisi, Trump ailesinin neler yaptığını birazdan göstereceğim size de.
+
+65
+00:08:53,040 --> 00:09:00,040
+ Şimdi benim buradaki ters dönme durumunda ise benim risk anlayışım şu şekildedir.
+
+66
+00:09:00,040 --> 00:09:06,040
+ Ters döndüklerinde ben ikinci eklemelerimi yapıyorum arkadaşlar.
+
+67
+00:09:06,040 --> 00:09:15,040
+ Yine sermaye yönetimiyle. Burada siz eğer coininizi doğru seçtiyseniz ki bunların %90'ı gerçekten çok sağlıklı değildir.
+
+68
+00:09:15,040 --> 00:09:22,040
+ Siz bunun doğrusunu seçip kendiniz görüp inandıktan sonra da herhangi bir problem gerçekten çıkmıyor.
+
+69
+00:09:22,040 --> 00:09:34,040
+ Bunun çıkıp çıkmama kararın yani bir problem çıkıp çıkmama kararın da anlattığım gibi uyumsuzluk varken siz birer dolarlarla zaman kavramınızı bir oluşturun.
+
+70
+00:09:34,040 --> 00:09:45,040
+ Bak nereden dönüyormuş nasıl oluyormuş peki bu kadar bekleme süresine tahammül edebilecek miyim gibi soruların cevabı bende değil kendinizdedir arkadaşlar.
+
+71
+00:09:45,040 --> 00:09:56,040
+ Ve şimdi başka bir konu daha var. Ben şarkıyı yanlış anlayanlar olmuş bu şarkı ne alaka diyenler var.
+
+72
+00:09:56,040 --> 00:10:03,040
+ Arkadaşlar şarkı ne diyordu ne ileyim köşke ne ileyim sarayı içinde salınan yer olmayınca diyor.
+
+73
+00:10:03,040 --> 00:10:08,040
+ Bakın arkadaşlar o şarkının içinde bile bizimle alakalı bir durum var.
+
+74
+00:10:08,040 --> 00:10:13,040
+ Bizim hedefimiz yani daha doğrusu benim hedefim aylık %30 çıkartabilmek.
+
+75
+00:10:13,040 --> 00:10:18,040
+ Bunun da tek ve tek yöntemi sermaye yönetimidir.
+
+76
+00:10:18,040 --> 00:10:27,040
+ Bakın ekranda gördüğünüz tabloda her ay sermayesini %30 arttıran bir oyuncu nerelere kadar gidebildiğini kendiniz görebiliyorsunuz.
+
+77
+00:10:27,040 --> 00:10:33,040
+ Bu bazen sermaye büyükse %20 nere kadar düşüyor. Benim kol kestiğim videolar da var.
+
+78
+00:10:33,040 --> 00:10:36,040
+ Bakın zarar ettiğim videolar da var. Lütfen onları da izleyin.
+
+79
+00:10:36,040 --> 00:10:42,040
+ Nasıl bu şekilde swing traitlerle de aylık %30'umu destekliyorum.
+
+80
+00:10:42,040 --> 00:10:49,040
+ İşte o da swam gibi durumlarda 4 saatlik grafiklerde yine sermaye yönetimimi yaparak
+
+81
+00:10:49,040 --> 00:10:56,040
+ ben beklemeyi bildiğim için aylık %20 %30'ları çıkartmak gerçekten zor değil.
+
+82
+00:10:56,040 --> 00:11:04,040
+ Fakat bu süre içerisinde bakın arkadaşlar şimdi bu sürenin içerisinde kafanızı karıştıracak.
+
+83
+00:11:04,040 --> 00:11:14,040
+ Sizin dengenizi bozacak bazı haberler çıkacak bazı şeyler çıkacak ve çok fazla zarar eden arkadaşımız olmuş.
+
+84
+00:11:14,040 --> 00:11:16,040
+ Lütfen şu konuya dikkat edin.
+
+85
+00:11:16,040 --> 00:11:26,040
+ Şimdi Donald ve Melanie ikilisi yani Trump ailesinden çok ciddi zarar edenler oldu.
+
+86
+00:11:26,040 --> 00:11:28,040
+ Ne oldu ne olmuştu arkadaşlar?
+
+87
+00:11:28,040 --> 00:11:33,040
+ Yani Trump konuşma yaparken bakın şu mumunu içerisinde bit koyayım bile çöktü.
+
+88
+00:11:33,040 --> 00:11:37,040
+ Trump koyayım bile adam konuşma yapıyor bakın ayın 20'sinde.
+
+89
+00:11:37,040 --> 00:11:45,040
+ Şimdi ben tam Trump'ın konuşmasını izlerken bakın izleyin arkadaşlar cep telefonunu da çektim.
+
+90
+00:11:45,040 --> 00:11:53,040
+ Yine Binance borsasını da ben Binance ve Bybit borsasını da aynanda da kullanmaya çalışıyorum arkadaşlar.
+
+91
+00:11:53,040 --> 00:11:57,040
+ Bunun sebebini de size defalarca anlattım öbür videolardan bulabilirsiniz.
+
+92
+00:11:57,040 --> 00:12:10,040
+ Binance borsasını da da hem Trump koyun çökerken hem de bitcoin çökerken bakın saat 1,5'da ben başka bir koyunda hacım gördüğüm içinde
+
+93
+00:12:10,040 --> 00:12:18,040
+ çok güzel skaplarımı alabilir durumdayım. Bu duruma gelebilmeniz için tekrar üzerinde duruyorum arkadaşlar.
+
+94
+00:12:18,040 --> 00:12:27,040
+ 4 saatlik grafiklerde şu swing trade yani aynı spot gibidir bu spotta bir coin alıyor gibidir bu durum.
+
+95
+00:12:27,040 --> 00:12:39,040
+ Aynen o şekilde siz 4 saatlik grafiklerde şu swing trade'in tadına bir aldıktan sonra sizi aylık %30'umuza gazancınıza çok rahat götürecek.
+
+96
+00:12:39,040 --> 00:12:44,040
+ Bakın dolar bazında ben aylık %30 kazançlarını bahsediyorum.
+
+97
+00:12:44,040 --> 00:12:49,040
+ Yani bunu çok ciddi holdingler bile yapamıyor. Kaldı ki bu iş bireysel bir iştir.
+
+98
+00:12:49,040 --> 00:12:53,040
+ Seni sermayen ne kadarsa o kadarla ticaret yaparsın.
+
+99
+00:12:53,040 --> 00:12:59,040
+ Eğer 5000 dolar bir sermayen varsa zamanı geldiğinde tabi ben size 3 aşamadan bahsettim.
+
+100
+00:12:59,040 --> 00:13:07,040
+ Zamanı geldiğinde sen 5000 dolar sermayeye kendini yükseltirsin ve yükselttikten sonra da günde 50 dolar.
+
+101
+00:13:07,040 --> 00:13:16,040
+ Ayda 1500 dolar çok rahat alınır ama bunun arasına böyle küçük küçük de swing trade'leri eklersiniz.
+
+102
+00:13:16,040 --> 00:13:20,040
+ İşte o zaman çok rahat bu şekilde çıkabiliyor.
+
+103
+00:13:20,040 --> 00:13:29,040
+ Ama bunu anlayabilmek için maalesef işin içinde emek vermeniz lazım zaman harcamanız lazım.
+
+104
+00:13:29,040 --> 00:13:38,040
+ Gelelim Melanie'ye şimdi Trump'tan çıkanlar Melanie'ye böyle long girmişler yani adam konuşuyor koyun çöküyor.
+
+105
+00:13:38,040 --> 00:13:50,040
+ Bu olabilir biz daha önce de örneğini söylemiştim size yani Elon Musk Twitter'ın logosunu doge olarak değiştirdiğinde biz doge'den short işlem aldık doge çöktü.
+
+106
+00:13:50,040 --> 00:14:00,040
+ Yani bu haber traikler size illa Trump orada konuşuyor o orada kendi kendine gaz veriyor işte müzisyenler var şarkılar çalıyor derken bura çöküyor.
+
+107
+00:14:00,040 --> 00:14:17,040
+ Şimdi bunlar size gaza getirmesin bunu yavaş yavaş aynı bakın bugünkü promdaki gibi acele etmeden çıkış yerlerini birazcık kestirerek yine promda ve bakın saat diyorum hala bak şu an 17 oldu.
+
+108
+00:14:17,040 --> 00:14:22,040
+ Tam nokta atışı ben çıkışını yaptım kanaldanda gönderdim size.
+
+109
+00:14:22,040 --> 00:14:34,040
+ Yine Swarm'da da nokta atışı olarak zaten az önce gösterdiğim size otopivotlardan zaten emrimi verdim oradan da işlemden çıktım.
+
+110
+00:14:34,040 --> 00:14:55,040
+ Şimdi toparlayacak olursak arkadaşlar Swank Traitler bizi aylık yüzde 30 kazancımıza doğru güzel bir şekilde sermayemizi destekler sermaye yönetimiyle de girilen işlemlerde tecrübe kazandıktan sonra söylüyorum korkulacak bir durum yoktur.
+
+111
+00:14:55,040 --> 00:15:02,040
+ Bunlar içinde kendinizi birer dolarlarla mutlaka eğitmeniz gerekiyor.
+
+112
+00:15:04,040 --> 00:15:09,040
+ Bir sonraki videoda görüşürüz.
+

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Visivero Botları</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080a0c;--panel:#0d1117;--card:#12161f;--card-h:#171d28;--subtle:rgba(255,255,255,.03);
+  --border:rgba(255,255,255,.07);--border-b:rgba(255,255,255,.14);
+  --green:#0ecb81;--green-d:rgba(14,203,129,.14);--red:#f6465d;--red-d:rgba(246,70,93,.14);
+  --gold:#f0b90b;--gold-d:rgba(240,185,11,.14);--cyan:#00e5ff;--cyan-d:rgba(0,229,255,.12);--purple:#a855f7;
+  --text:#f8fafc;--dim:#94a3b8;--muted:#64748b;
+  --sans:'Inter',-apple-system,'Segoe UI',Roboto,Arial,sans-serif;--mono:'JetBrains Mono',Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font:12.5px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:var(--text);background:var(--card);border:1px solid var(--border);border-radius:7px;outline:none;padding:6px 10px}
+input:focus{border-color:var(--border-b)}
+#app{display:grid;grid-template-rows:auto 1fr;height:100vh}
+header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--panel);flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;letter-spacing:.6px;font-size:13px}
+.brand .mark{width:26px;height:26px;border-radius:7px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(240,185,11,.25),rgba(246,70,93,.2));border:1px solid rgba(240,185,11,.35)}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.seg button{padding:6px 14px;color:var(--dim);font-size:12px;font-weight:700;border-right:1px solid var(--border)}
+.seg button:last-child{border-right:0}
+.seg button.on{background:rgba(255,255,255,.08);color:var(--text)}
+.seg button[data-v="vv"].on{color:var(--gold)}.seg button[data-v="ours"].on{color:var(--cyan)}
+.hr{margin-left:auto;display:flex;gap:8px;align-items:center}
+.chip{display:flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;border:1px solid var(--border);background:var(--subtle);color:var(--dim);font-size:11px;white-space:nowrap;text-decoration:none}
+.chip.link{color:var(--cyan)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}.dot.ok{background:var(--green);box-shadow:0 0 8px var(--green)}.dot.warn{background:var(--gold)}.dot.bad{background:var(--red)}
+#search{width:170px}
+main{display:grid;grid-template-columns:92px 1fr;min-height:0}
+/* bot strip */
+.strip{border-right:1px solid var(--border);background:var(--panel);overflow:auto;padding:10px 8px;display:flex;flex-direction:column;gap:8px}
+.bb{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;height:58px;border-radius:10px;border:1px solid var(--border);background:linear-gradient(180deg,#161b25,#0f131b);font-weight:800;font-size:12px;letter-spacing:.3px;color:var(--dim)}
+.bb small{font-size:8.5px;font-weight:800;letter-spacing:.5px;opacity:.85}
+.bb:hover{border-color:var(--border-b);color:var(--text)}
+.bb.on{border-color:var(--bc);color:var(--text);box-shadow:0 0 0 1px var(--bc) inset,0 0 14px color-mix(in srgb,var(--bc) 30%,transparent)}
+.bb .ic{color:var(--bc)}
+.bb .cnt{position:absolute;top:-6px;right:-6px;min-width:20px;height:17px;padding:0 5px;border-radius:9px;background:var(--bc);color:#0b0e13;font:700 9.5px/17px var(--mono);text-align:center}
+.bb .cnt2{position:absolute;bottom:3px;font:600 8.5px var(--mono);color:var(--muted)}
+/* feeds */
+.feeds{display:grid;grid-template-columns:1fr;min-height:0}
+.feeds.split{grid-template-columns:1fr 1fr}
+.fcol{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--border)}
+.fcol:last-child{border-right:0}
+.fh{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--panel)}
+.fh .ico{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-weight:900;font-size:11px;border:1px solid var(--bc);color:var(--bc);background:color-mix(in srgb,var(--bc) 12%,transparent)}
+.fh .t{font-weight:800;font-size:14px}.fh .s{color:var(--muted);font-size:11px}
+.src{margin-left:auto;font-size:10.5px;font-weight:800;letter-spacing:.8px;padding:3px 9px;border-radius:999px}
+.src.vv{background:var(--gold-d);color:var(--gold)}.src.ours{background:var(--cyan-d);color:var(--cyan)}
+.band{display:flex;align-items:center;gap:8px;padding:6px 14px;border-bottom:1px solid var(--border);color:var(--muted);font-size:11px}
+.band .today{margin-left:auto;padding:2px 9px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--dim);font-weight:700}
+.list{overflow:auto;min-height:0;flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.list::-webkit-scrollbar{width:8px}.list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:4px}
+.msg{max-width:560px;background:var(--card);border:1px solid var(--border);border-radius:4px 12px 12px 12px;padding:10px 12px 6px;position:relative}
+.msg.up{border-left:3px solid var(--green)}.msg.down{border-left:3px solid var(--red)}
+.msg.new{animation:nw 2s}
+@keyframes nw{from{box-shadow:0 0 0 1px var(--bc),0 0 20px color-mix(in srgb,var(--bc) 35%,transparent)}}
+.m1{font-weight:800;font-size:13.5px;cursor:pointer}.m1:hover{text-decoration:underline}
+.mb{margin-top:4px;font-family:var(--mono);font-size:11.8px;color:#cbd5e1;white-space:pre-wrap;word-break:break-word;line-height:1.55}
+.mb b{color:var(--text)}
+.mf{display:flex;align-items:center;gap:8px;margin-top:5px;font-size:10.5px;color:var(--muted)}
+.mf .time{margin-left:auto;font-family:var(--mono)}
+.mk{font-weight:700;padding:1px 7px;border-radius:999px;font-size:10px}
+.mk.y{background:var(--green-d);color:var(--green)}.mk.n{background:var(--red-d);color:var(--red)}.mk.p{background:rgba(255,255,255,.06);color:var(--dim)}
+.cp{opacity:.5}.cp:hover{opacity:1}
+.empty{color:var(--muted);text-align:center;padding:50px 10px}
+.flt{display:none;align-items:center;gap:6px;padding:3px 6px 3px 10px;border-radius:999px;background:var(--gold-d);color:var(--gold);border:1px solid rgba(240,185,11,.35);font-weight:700;font-size:11px}
+.flt.on{display:inline-flex}.flt button{color:var(--gold);padding:0 4px}
+@media (max-width:900px){.feeds.split{grid-template-columns:1fr;grid-template-rows:1fr 1fr}.fcol{border-right:0;border-bottom:1px solid var(--border)}}
+@media (max-width:640px){main{grid-template-columns:64px 1fr}.bb{height:50px;font-size:10.5px}#search{width:120px}.hr .chip.hide-m{display:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand"><span class="mark">🤖</span>BOT AKIŞI</div>
+    <div class="seg" id="mode"><button data-v="vv">Visivero</button><button data-v="ours">Bizim</button><button data-v="split">Yan yana</button></div>
+    <input id="search" placeholder="Coin ara (örn. BTC)" autocomplete="off" spellcheck="false">
+    <span class="flt" id="flt"><span id="fltName"></span><button id="fltX" title="Filtreyi kaldır">✕</button></span>
+    <div class="hr">
+      <span class="chip hide-m" title="Visivero mesajlarının son geliş zamanı"><span class="dot" id="dVV"></span>Visivero <span id="tVV">—</span></span>
+      <span class="chip hide-m" title="Bizim motorun durumu"><span class="dot" id="dEng"></span>Motor <span id="tEng">—</span></span>
+    </div>
+  </header>
+  <main>
+    <nav class="strip" id="strip"></nav>
+    <section class="feeds" id="feeds"></section>
+  </main>
+</div>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const LS = { get(k, d) { try { const v = localStorage.getItem('bf.' + k); return v == null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('bf.' + k, JSON.stringify(v)); } catch { } } };
+const qs = new URLSearchParams(location.search);
+const BOTS = [
+  { id: 'm1', name: 'M1-A', ic: 'M1-A', sub: 'Küçük zaman diliminde odaklı içgörü', c: '#f0b90b', tol: 30e3 },
+  { id: 'm1-premium', name: 'M1 Premium', ic: 'M1P', sub: 'Momentum & Divergence', c: '#fbbf24', tol: 30e3 },
+  { id: 'fr', name: 'FR', ic: 'FR', sub: 'Funding Rate takibi', c: '#00e5ff', tol: 300e3 },
+  { id: 'v3', name: 'V3-A', ic: 'V3', sub: 'Gerçek zamanlı hacim takibi', c: '#0ecb81', tol: 70e3 },
+  { id: 'hammer', name: 'Hammer', ic: '🔨', small: 'HAMMER', sub: 'Dönüş formasyonu', c: '#94a3b8', tol: 60e3 },
+  { id: 'hammer-pro', name: 'Hammer Pro', ic: '🔨', small: 'PRO', sub: '#W1 / #S1 / #R1 dönüş stratejileri', c: '#e2e8f0', tol: 60e3 },
+  { id: 'hammer-pro-plus', name: 'Hammer Pro Plus', ic: '🔨', small: 'PRO+', sub: 'Gelişmiş yapısal formasyon çerçevesi', c: '#fdba74', tol: 60e3 },
+  { id: '1d-hammer-pro', name: '1D Hammer Pro', ic: '🔨', small: '1D PRO', sub: 'Günlük Hammer Pro', c: '#cbd5e1', tol: 900e3 },
+  { id: '4s', name: '4S', ic: '4S', sub: '4 saatlik yapıya çok açılı bakış', c: '#f6465d', tol: 900e3 },
+  { id: '4sniper', name: '4S Sniper', ic: '4S', small: 'SNIPER', sub: 'NW / RSI SMA / RSI Divergence (4s)', c: '#d97706', tol: 900e3 },
+  { id: '1dws', name: '1DWS', ic: '1D', small: 'WS', sub: 'Günlük NW / RSI sinyalleri', c: '#a855f7', tol: 1800e3 },
+  { id: 'div', name: 'Divergence', ic: 'DIV', sub: '1 saatlik RSI uyumsuzlukları', c: '#22d3ee', tol: 900e3 }
+];
+const B = Object.fromEntries(BOTS.map(b => [b.id, b]));
+const LOCK = 'vv';
+const S = { mode: LOCK || qs.get('mode') || LS.get('mode', 'vv'), bot: qs.get('bot') || LS.get('bot', 'm1-premium'), q: '', cols: [], counts: { vv: {}, ours: {} } };
+if (!B[S.bot]) S.bot = 'm1-premium';
+const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const pad = n => String(n).padStart(2, '0');
+const hms = t => { const d = new Date(t); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`; };
+const dayLbl = t => { const d = new Date(t), n = new Date(); return d.toDateString() === n.toDateString() ? 'Bugün' : d.toLocaleDateString('tr-TR', { day: '2-digit', month: 'long' }); };
+const ago = ms => ms < 60e3 ? Math.round(ms / 1e3) + ' sn' : ms < 3600e3 ? Math.round(ms / 60e3) + ' dk' : (ms / 3600e3).toFixed(1) + ' sa';
+const api = p => fetch(p).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+
+function render(m, other, isNew) {
+  const raw = esc(m.text || '').replace(/&lt;(\/?)b&gt;/g, '<$1b>');
+  const lines = raw.split('\n'); const first = lines.shift() || '';
+  let mark = '';
+  if (other) {
+    const tol = B[S.bot].tol, settled = Date.now() - m.t > tol + 90e3;
+    const hit = other.some(o => o.symbol === m.symbol && (o.dir || '') === (m.dir || '') && Math.abs(o.t - m.t) <= tol + 60e3);
+    const otherName = other.name;
+    const yes = otherName === 'Visivero' ? "Visivero'da da var" : 'Bizde de var', no = otherName === 'Visivero' ? "Visivero'da yok" : 'Bizde yok';
+    mark = hit ? `<span class="mk y">✓ ${yes}</span>` : settled ? `<span class="mk n">✗ ${no}</span>` : `<span class="mk p">⏳ bekleniyor</span>`;
+  }
+  return `<div class="msg ${m.dir || ''} ${isNew ? 'new' : ''}" data-seq="${m.seq}"><div class="m1" data-coin="${esc(m.symbol)}">${first}</div><div class="mb">${lines.join('\n')}</div>
+    <div class="mf">${mark}<button class="cp" data-copy="${esc(m.symbol)}" title="Coin adını kopyala">⧉</button><span class="time">${hms(m.t)}</span></div></div>`;
+}
+
+function buildCols() {
+  const srcs = S.mode === 'split' ? ['vv', 'ours'] : [S.mode];
+  const b = B[S.bot];
+  $('#feeds').className = 'feeds' + (S.mode === 'split' ? ' split' : '');
+  $('#feeds').style.setProperty('--bc', b.c);
+  $('#feeds').innerHTML = srcs.map(src => `<div class="fcol" data-src="${src}">
+    <div class="fh"><div class="ico">${esc(b.ic)}</div><div><div class="t">${esc(b.name)}</div><div class="s">${esc(b.sub)}</div></div><span class="src ${src}">${src === 'vv' ? 'VİSİVERO' : 'BİZİM'}</span></div>
+    <div class="band"><span class="cntline"></span><span class="today">Son 24 saat</span></div>
+    <div class="list"><div class="empty">Yükleniyor…</div></div></div>`).join('');
+  S.cols = srcs.map(src => ({ src, el: $(`.fcol[data-src="${src}"] .list`), band: $(`.fcol[data-src="${src}"] .cntline`), msgs: [], seq: 0, gen: (S.gen = (S.gen || 0) + 1) }));
+  S.cols.forEach(c => load(c, true));
+}
+function otherOf(c) { if (S.mode !== 'split') return null; const o = S.cols.find(x => x !== c); const arr = o.msgs.slice(); arr.name = o.src === 'vv' ? 'Visivero' : 'Bizim'; return arr; }
+async function load(c, initial) {
+  const gen = c.gen;
+  const r = await api(`/api/messages?src=${c.src}&bot=${encodeURIComponent(S.bot)}&after=${initial ? 0 : c.seq}&limit=${initial ? 300 : 500}&q=${encodeURIComponent(S.q)}`);
+  if (gen !== c.gen || !S.cols.includes(c)) return;
+  const fresh = r.messages;
+  if (initial) c.msgs = fresh; else if (fresh.length) c.msgs = fresh.concat(c.msgs).slice(0, 400);
+  c.msgs.sort((a, b) => b.t - a.t);
+  if (fresh.length) c.seq = Math.max(c.seq, ...fresh.map(m => m.seq));
+  if (initial || fresh.length) draw(c, initial ? new Set() : new Set(fresh.map(m => m.seq)));
+  return fresh.length;
+}
+function draw(c, newSet) {
+  const other = otherOf(c);
+  if (!c.msgs.length) { c.el.innerHTML = `<div class="empty">${S.q ? `"${esc(S.q)}" için mesaj yok.` : 'Son 24 saatte mesaj yok.'}</div>`; return; }
+  const keepTop = c.el.scrollTop > 40; const prevH = c.el.scrollHeight;
+  let html = '', lastDay = '';
+  for (const m of c.msgs) { const d = dayLbl(m.t); if (d !== lastDay) { html += `<div style="align-self:center;color:var(--muted);font-size:10.5px;font-weight:700;padding:2px 10px;border-radius:999px;background:rgba(255,255,255,.05)">${d}</div>`; lastDay = d; } html += render(m, other, newSet.has(m.seq)); }
+  c.el.innerHTML = html;
+  if (keepTop) c.el.scrollTop += c.el.scrollHeight - prevH; // keep reading position when new messages arrive on top
+}
+function redrawAll() { S.cols.forEach(c => draw(c, new Set())); }
+
+function buildStrip() {
+  $('#strip').innerHTML = BOTS.map(b => `<button class="bb ${b.id === S.bot ? 'on' : ''}" data-bot="${b.id}" style="--bc:${b.c}" title="${esc(b.name)} — ${esc(b.sub)}">
+    <span class="ic">${esc(b.ic)}</span>${b.small ? `<small>${b.small}</small>` : ''}<span class="cnt" data-cnt="${b.id}">0</span>${S.mode === 'split' ? `<span class="cnt2" data-cnt2="${b.id}"></span>` : ''}</button>`).join('');
+}
+async function loadCounts() {
+  const r = await api(`/api/msgcounts?hours=24&q=${encodeURIComponent(S.q)}`);
+  S.counts = r.counts;
+  const fmt = n => n >= 10000 ? Math.round(n / 1000) + 'k' : n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
+  for (const b of BOTS) {
+    const vv = r.counts.vv[b.id] || 0, ou = r.counts.ours[b.id] || 0;
+    const el = document.querySelector(`[data-cnt="${b.id}"]`); if (el) el.textContent = fmt(S.mode === 'ours' ? ou : vv);
+    const e2 = document.querySelector(`[data-cnt2="${b.id}"]`); if (e2) e2.textContent = `biz ${fmt(ou)}`;
+  }
+  for (const c of S.cols) c.band.textContent = `${(c.src === 'vv' ? r.counts.vv : r.counts.ours)[S.bot] || 0} mesaj${S.q ? ' · ' + S.q : ''}`;
+}
+async function loadStatus() {
+  const s = await api('/api/status');
+  const vvAge = s.lastVV ? s.now - s.lastVV : -1;
+  $('#dVV').className = 'dot ' + (vvAge >= 0 && vvAge < 300e3 ? 'ok' : vvAge >= 0 && vvAge < 3600e3 ? 'warn' : 'bad');
+  $('#tVV').textContent = vvAge >= 0 ? ago(vvAge) + ' önce' : 'yok';
+  const engAge = s.engine.at ? s.now - Date.parse(s.engine.at) : -1;
+  $('#dEng').className = 'dot ' + (engAge >= 0 && engAge < 30e3 ? 'ok' : engAge >= 0 && engAge < 600e3 ? 'warn' : 'bad');
+  $('#tEng').textContent = engAge >= 0 && engAge < 30e3 ? 'çalışıyor' : engAge >= 0 ? ago(engAge) + ' önce' : 'yok';
+}
+function setMode(m) { S.mode = m; LS.set('mode', m); $$('#mode button').forEach(b => b.classList.toggle('on', b.dataset.v === m)); buildStrip(); buildCols(); loadCounts().catch(() => { }); syncUrl(); }
+function setBot(b) { S.bot = b; LS.set('bot', b); $$('.bb').forEach(x => x.classList.toggle('on', x.dataset.bot === b)); buildCols(); loadCounts().catch(() => { }); syncUrl(); }
+function setQ(q) { S.q = q.toUpperCase(); $('#search').value = S.q; $('#flt').classList.toggle('on', !!S.q); $('#fltName').textContent = S.q ? '🔎 ' + S.q : ''; buildCols(); loadCounts().catch(() => { }); }
+function syncUrl() { try { history.replaceState(null, '', LOCK ? `?bot=${S.bot}` : `?mode=${S.mode}&bot=${S.bot}`); } catch { } }
+
+$('#mode').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setMode(b.dataset.v); });
+$('#strip').addEventListener('click', e => { const b = e.target.closest('[data-bot]'); if (b) setBot(b.dataset.bot); });
+let qT; $('#search').addEventListener('input', e => { clearTimeout(qT); qT = setTimeout(() => setQ(e.target.value.trim()), 350); });
+$('#fltX').onclick = () => setQ('');
+$('#feeds').addEventListener('click', e => {
+  const cp = e.target.closest('[data-copy]'); if (cp) { navigator.clipboard?.writeText(cp.dataset.copy).catch(() => { }); cp.textContent = '✓'; setTimeout(() => cp.textContent = '⧉', 900); return; }
+  const c = e.target.closest('[data-coin]'); if (c) setQ(S.q === c.dataset.coin ? '' : c.dataset.coin);
+});
+
+const loop = (fn, ms) => { const run = async () => { try { await fn(); } catch (e) { console.warn(e); } setTimeout(run, ms); }; run(); };
+$$('#mode button').forEach(b => b.classList.toggle('on', b.dataset.v === S.mode));
+if (LOCK) {
+  $('#mode').style.display = 'none';
+  document.title = LOCK === 'vv' ? 'Visivero Botları' : 'Bizim Botlar';
+  $('.brand').innerHTML = LOCK === 'vv' ? '<span class="mark">V</span>VİSİVERO BOTLARI' : '<span class="mark" style="background:linear-gradient(135deg,rgba(0,229,255,.25),rgba(14,203,129,.25));border-color:rgba(0,229,255,.4)">B</span>BİZİM BOTLAR';
+  $((LOCK === 'vv' ? '#dEng' : '#dVV')).parentElement.style.display = 'none';
+}
+buildStrip(); buildCols(); syncUrl();
+setTimeout(() => loop(async () => { let n = 0; for (const c of S.cols) n += (await load(c, false)) || 0; if (S.mode === 'split' && (n || Date.now() - (S.lastRd || 0) > 30e3)) { S.lastRd = Date.now(); redrawAll(); } }, 2500), 2500);
+loop(loadCounts, 10000);
+loop(loadStatus, 5000);
+})();
+</script>
+</body>
+</html>
