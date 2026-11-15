@@ -38,6 +38,12 @@ function start(file) {
   });
 }
 
+// Tek kopya: başka bir çalıştırıcı canlıysa (kalp atışı 15 sn'den taze ve süreci duruyor) bu kopya çıkar. İki çalıştırıcı aynı
+// klasörü izleyince {"kill":...} işleri yanlış kopyaya düşüp işe yaramıyordu (10.11.2026'da iki kopya bulundu).
+try {
+  const hb = JSON.parse(fs.readFileSync(path.join(JOBS, '_runner.json'), 'utf8'));
+  if (hb.pid !== process.pid && Date.now() - Date.parse(hb.at) < 15000) { let alive = true; try { process.kill(hb.pid, 0); } catch (e) { alive = false; } if (alive) { console.log('Baska bir calistirici zaten acik (pid ' + hb.pid + '). Bu kopya kapaniyor.'); process.exit(0); } }
+} catch (e) { }
 console.log('Parity runner started. Leave this window open. Folder:', JOBS);
 setInterval(() => {
   heartbeat();

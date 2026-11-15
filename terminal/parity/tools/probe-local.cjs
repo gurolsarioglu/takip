@@ -1,0 +1,1 @@
+(async () => { for (const u of ['http://127.0.0.1:3200/api/klines?symbol=BTCUSDT&interval=5m&limit=3', 'http://127.0.0.1:3200/api/messages?bot=all&sym=BTCUSDT&limit=2', 'http://127.0.0.1:3200/api/kasa']) { const r = await fetch(u); console.log(r.status, (await r.text()).slice(0, 300)); } })();

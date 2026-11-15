@@ -4,6 +4,7 @@
 // RSI(14) / StochRSI(14,14,3,3) on closed bars + live bar at current price (1m 94 %, 5m 87 % exact).
 // M1 Premium fires on the same tick as M1-A with >= 10 s spacing per symbol.
 const I = require('../lib/ind.cjs');
+const BTC = require('../lib/btc.cjs');
 
 const THR = 1.0;
 const A_SPACING_MS = 1000;   // M1-A re-emits while the condition holds (observed gaps 0.3–10 s)
@@ -55,6 +56,16 @@ function wtLine(bars, dir) {
   return slots.some(Boolean) ? `WT Cross: ${slots.join(' ')}` : null;
 }
 
+// "Volume:" satırı (2026-11-07 çözüldü, db/hacim-agg.cjs, 28.754 Visivero mesajı, saniye hassas aggTrades):
+// işaret = sinyal yönü; büyüklük = canlı 1 dk mumun o ana kadarki hacmi / önceki 60 kapanmış 1 dk mumun hacmi × 100 (adet/base hacim).
+// Uyum: korelasyon .96, ±0,5 puan içinde %90 (fark çoğunlukla mesaj anı ile hesap anı arasındaki saniyeler).
+function volPct(m, dir) {
+  if (m.length < 62) return null;
+  const live = m[m.length - 1]; let s = 0;
+  for (let i = m.length - 61; i < m.length - 1; i++) s += m[i].volume || 0;
+  if (!(s > 0) || !Number.isFinite(live.volume)) return null;
+  return (dir === 'up' ? 1 : -1) * live.volume / s * 100;
+}
 const r0 = v => (Number.isFinite(v) ? Math.round(v) : NaN);
 const fmtPx = p => String(+p);
 function lastClosed(bars) { return bars.length >= 2 ? bars[bars.length - 2] : null; }
@@ -89,18 +100,19 @@ module.exports = {
 
     if (!st.aT || ctx.t - st.aT >= A_SPACING_MS) {
       st.aT = ctx.t;
-      const rsi = r0(i1.rsi), k = r0(i1.k), d = r0(i1.d);
+      const rsi = r0(i1.rsi), k = r0(i1.k), d = r0(i1.d), vp = volPct(m, dir);
+      const bs = BTC.btcStatus(ctx.btc);
       const lines = [
         `${dot} #${ctx.symbol}`,
         `${dir === 'up' ? 'Boost' : 'Drop'} Value: ${boostTxt}`,
         `Current Price: ${fmtPx(ctx.price)}`,
         `Previous Price: ${fmtPx(prevPrice)}`,
-        `Volume: ?`,
+        `Volume: ${vp == null ? '?' : vp.toFixed(2) + '%'}`,
         `RSI: <b>${rsi}${mark(rsi, 30, 70, '⚠️')}</b>`,
         `Stochastic (K/D): <b>${k}/${d} ${(k <= 20 && d <= 20) || (k >= 80 && d >= 80) ? '⚠️' : ''}</b>`,
-        `BTC Status: Normal`
+        `BTC Status: ${bs.text}`
       ];
-      out.push({ botId: 'm1', symbol: ctx.symbol, direction: dir, strategy: null, boostPct: +boost.toFixed(2), price: ctx.price, prevPrice, rsi: { '1m': rsi }, srsi: { '1m': k }, fields: { stochD: d }, text: lines.join('\n') });
+      out.push({ botId: 'm1', symbol: ctx.symbol, direction: dir, strategy: null, boostPct: +boost.toFixed(2), price: ctx.price, prevPrice, rsi: { '1m': rsi }, srsi: { '1m': k }, fields: { stochD: d, volPct: vp == null ? null : +vp.toFixed(2), btcVolatile: bs.volatile, btcRange10m: bs.rangePct }, text: lines.join('\n') });
     }
     if (!st.pT || ctx.t - st.pT >= P_SPACING_MS) {
       st.pT = ctx.t;

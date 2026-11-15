@@ -4,7 +4,7 @@
 // node engine/live.cjs [--only m1,hammer] [--symbols BTCUSDT,ETHUSDT]
 const fs = require('node:fs');
 const path = require('node:path');
-const { Market } = require('./market.cjs');
+const { Market, barOpen } = require('./market.cjs');
 const { getJson, ROOT, sleep } = require('../lib/net.cjs');
 
 const arg = (k, d) => { const i = process.argv.indexOf('--' + k); return i > 0 ? process.argv[i + 1] : d; };
@@ -76,8 +76,44 @@ function watchModules(mods, onReload) {
           const [glob] = (await getJson(`https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=${s}&period=${period}&limit=1`)) || [];
           ratios.set(s, { topLongAccount: top ? +top.longAccount : NaN, globalLongAccount: glob ? +glob.longAccount : NaN, t: Date.now() });
         } catch (e) { }
+        await sleep(600);   // /futures/data uçlarının ayrı IP sınırı var (1.000 istek / 5 dk; OI geri doldurma ve db/turev.cjs ile ortak) → ~120 istek/dk, tam tur ~13 dk
       }
       await sleep(1000);
+    }
+  })();
+
+  // Açık pozisyon (OI), 11.11.2026 — her zaman toplanır (ucuz). Kurala ctx.oi = { oi, t, chg1h, chg4h, chg24h } (yüzde), ctx.oiSeries = [{t, oi}].
+  //  • canlı: /fapi/v1/openInterest (ağırlık 1), bütün evren 5 dakikada bir tam tur
+  //  • açılışta geri doldurma: /futures/data/openInterestHist 5m × 300 (≈25 sa). Bu uçların ayrı IP sınırı var (1.000 istek / 5 dk,
+  //    oran döngüsüyle ortak) → istekler arası 700 ms; tampon dolana kadar chg alanları null.
+  const OI5 = 300e3, oiBuf = new Map(), oiStat = { symbols: 0, lastCycleMs: null, cycles: 0, errors: 0, backfilled: 0 };
+  const oiPut = (s, t, v) => { if (!(v > 0)) return; let m = oiBuf.get(s); if (!m) { m = new Map(); oiBuf.set(s, m); } m.set(Math.floor(t / OI5) * OI5, v); };
+  const oiAt = (m, k) => m.get(k) ?? m.get(k - OI5) ?? m.get(k + OI5) ?? null;
+  function oiCtx(s) {
+    const m = oiBuf.get(s); if (!m || !m.size) return null;
+    let k = -Infinity; for (const x of m.keys()) if (x > k) k = x;
+    const v = m.get(k), chg = h => { const p = oiAt(m, k - h * 3600e3); return p ? +((v / p - 1) * 100).toFixed(2) : null; };
+    return { oi: v, t: k, chg1h: chg(1), chg4h: chg(4), chg24h: chg(24) };
+  }
+  const oiSeries = s => { const m = oiBuf.get(s); return m ? [...m.entries()].sort((a, b) => a[0] - b[0]).map(([t, oi]) => ({ t, oi })) : []; };
+  (async () => {
+    for (const s of symbols) {
+      try { for (const r of (await getJson(`https://fapi.binance.com/futures/data/openInterestHist?symbol=${s}&period=5m&limit=300`)) || []) oiPut(s, r.timestamp, +r.sumOpenInterest); oiStat.backfilled++; }
+      catch (e) { oiStat.errors++; }
+      await sleep(700);
+    }
+    log('oi backfill done', oiStat.backfilled, '/', symbols.length);
+  })();
+  (async () => {
+    for (;;) {
+      const t0 = Date.now(); let n = 0;
+      for (const s of symbols) {
+        try { const r = await getJson(`https://fapi.binance.com/fapi/v1/openInterest?symbol=${s}`); if (r) { oiPut(s, r.time || Date.now(), +r.openInterest); n++; } } catch (e) { oiStat.errors++; }
+        await sleep(150);
+      }
+      const lim = Date.now() - 26 * 3600e3; for (const m of oiBuf.values()) for (const k of m.keys()) if (k < lim) m.delete(k);
+      oiStat.symbols = n; oiStat.lastCycleMs = Date.now() - t0; oiStat.cycles++;
+      const w = 300e3 - (Date.now() - t0); if (w > 0) await sleep(w);
     }
   })();
 
@@ -97,7 +133,7 @@ function watchModules(mods, onReload) {
   function histBars(st, tf, T) {
     const ser = st.series[tf]; if (!ser) return [];
     const closed = ser.closed.filter(b => b.closeTime < T);
-    const ms = IMS[tf], open = Math.floor(T / ms) * ms;
+    const ms = IMS[tf], open = barOpen(tf, T);
     const src = ser.closed.find(b => b.openTime === open) || ser.view(st.minuteLive, st.price).at(-1);
     // price at T: close of the 1m bar ending just before T when available, else the bar open
     const m1 = st.series['1m']?.closed.find(b => b.closeTime < T && b.closeTime >= T - 60e3);
@@ -163,6 +199,7 @@ function watchModules(mods, onReload) {
         symbol: st.symbol, t: now, eventTime: ev.t, event: ev.closed ? 'close' : 'tick', price: st.price, priceStr: st.priceStr,
         bars: barsProxy, funding: st.funding ? { ...st.funding, intervalHours: market.fundingInfo?.[st.symbol]?.fundingIntervalHours || 8 } : null,
         ticker24h: st.ticker, ratios: ratios.get(st.symbol) || null, info: market.info[st.symbol],
+        oi: (m.extras || []).includes('oi') ? oiCtx(st.symbol) : null, get oiSeries() { return oiSeries(st.symbol); },
         btc: { price: btc?.price, bars: new Proxy({}, { get: (_, tf) => (typeof tf === 'string' && btc ? market.bars(btc, tf) : undefined) }) },
         state
       };
@@ -179,6 +216,6 @@ function watchModules(mods, onReload) {
   }
 
   setInterval(() => {
-    fs.writeFileSync(path.join(LIVE, 'status.json'), JSON.stringify({ at: new Date().toISOString(), startedAt: new Date(startedAt).toISOString(), readyAt: new Date(readyAt).toISOString(), symbols: symbols.length, modules: mods.map(m => m._file), ...stats, mem: Math.round(process.memoryUsage().rss / 1e6) + 'MB' }, null, 1));
+    fs.writeFileSync(path.join(LIVE, 'status.json'), JSON.stringify({ at: new Date().toISOString(), startedAt: new Date(startedAt).toISOString(), readyAt: new Date(readyAt).toISOString(), symbols: symbols.length, modules: mods.map(m => m._file), ...stats, oi: oiStat, mem: Math.round(process.memoryUsage().rss / 1e6) + 'MB' }, null, 1));
   }, 10000);
 })().catch(e => { console.error(e); process.exit(1); });

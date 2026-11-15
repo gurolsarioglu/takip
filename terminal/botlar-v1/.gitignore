@@ -1,3 +1,4 @@
 data/
 node_modules/
 telegram/ayarlar.json
+db/baglanti.json

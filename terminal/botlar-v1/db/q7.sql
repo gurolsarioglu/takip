@@ -1,0 +1,2 @@
+SELECT bot, left(message, 420) m FROM (SELECT DISTINCT ON (bot) bot, message, created_at FROM vv_messages WHERE bot IN ('hammer','hammer-pro','hammer-pro-plus','1d-hammer-pro','div') AND created_at > '2026-10-28' ORDER BY bot, created_at DESC) x;
+SELECT bot, count(*) n, min(created_at) ilk, max(created_at) son FROM vv_messages WHERE bot IN ('hammer','hammer-pro','hammer-pro-plus','1d-hammer-pro','div') AND created_at >= '2026-10-24' GROUP BY 1

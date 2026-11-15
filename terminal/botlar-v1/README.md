@@ -1,26 +1,29 @@
 # Botlar V1
 
-Kendi sinyal botlarımız — Visivero'dan bağımsız. 1.0.0 (30.10.2026) web · 1.1.0 (01.11.2026) Telegram.
+Kendi sinyal botlarımız — Binance USDⓈ-M vadeli, tamamen yerel, emir vermez. Site: http://localhost:3200
+
+Ayrıntılı teknik rehber (mimari, bot kuralları, veritabanı, geliştirme kuralları): **AGENTS.md**
+Tarihli proje günlüğü: `..\Takip.md`
 
 ## Botlar
-M1 · M1 Premium · 4S · 4S Sniper · 1DWS · DIV · FR · V3
-(Hammer ailesi V1'de yok; araştırma sürüyor.)
+M1 · M1 Premium · 4S · 4S Sniper · 1DWS · DIV · FR · V3 · Hammer
 
 ## Çalıştırma
-1. Node.js 20+ kurulu olmalı.
-2. `start-v1.bat` çift tıkla → iki pencere açılır (motor + web), tarayıcıda http://localhost:3200 açılır.
-3. Motor ilk açılışta ~8 dk geçmiş veriyi yükler; sonra sinyaller akmaya başlar.
+- Kurulum bir kez: `servis\servis-kur.bat` (yönetici onayı ister). Sonrasında her şey Windows açılışında kendiliğinden başlar:
+  PostgreSQL servisi **BotlarPostgres** + görev **Botlar V1 Denetci** (motor, web, veritabanı yazıcısı, mum toplayıcı, karne).
+- `start-v1.bat`: sistem çalışıyorsa yalnızca siteyi açar. (Servis kurulu değilse motor + web'i elle başlatır.)
+- Motor açılışta ~13 dk geçmiş veriyi yükler; sonra sinyaller akar.
+- Bilgisayar **uykuya** geçerse her şey durur: güç ayarında "takılıyken uyku: hiçbir zaman" olmalı.
 
-## Yapı
-- `engine/` canlı motor (Binance USDⓈ-M futures, WebSocket + REST). Emir vermez.
-- `rules/` bot kuralları (m1, four-s, div, flow).
-- `lib/` göstergeler, ağ katmanı, tarama zamanlaması (`scan-schedule.json`).
-- `web/` yerel arayüz (sadece bu bilgisayar: 127.0.0.1:3200).
-- `data/` sinyal kayıtları (`data/live/signals-YYYY-MM-DD.jsonl`) ve önbellek — git'e girmez.
+## Klasörler
+- `engine\` canlı motor · `rules\` bot kuralları · `lib\` göstergeler ve yardımcılar
+- `web\` yerel arayüz (yalnız 127.0.0.1:3200) · `db\` veritabanı betikleri ve araştırma · `servis\` otomatik başlatma
+- `data\` sinyal kayıtları (`data\live\signals-YYYY-AA-GG.jsonl`, asıl kayıt), veritabanı, yedekler, loglar — git'e girmez
 
-## Telegram (1.1.0)
-- M1 Premium'un ⭐ (yıldızlı) sinyalleri, aynı coin + yön 15 dk içinde bir kez, size özel sohbete gider.
-- 🟢 sinyalde Divergence 1m✅ 5m✅ varsa altına "Yorgunluk uyarısı" eklenir (31.10–01.11 ölçümü: bu sinyallerin yalnız %29'unda fiyat 60 dk sonra yukarıdaydı).
-- Kurulum: Telegram'da @BotFather → /newbot → tokeni al. `telegram\ayarlar.ornek.json` dosyasını `telegram\ayarlar.json` adıyla kopyala, tokeni yapıştır. Botunuza Telegram'da /start yazın. `start-v1.bat` gönderici penceresini de açar; ilk açılışta sohbetiniz kendiliğinden bulunur.
-- Deneme: `node telegram\sender.cjs --test`
-- `telegram\ayarlar.json` gizlidir, git'e girmez.
+## İşletme
+- Bir parçayı yeniden başlat: `data\kontrol\<motor|web|yazici|mumlar|karne>.yeniden` adında boş dosya oluştur.
+- Durum: `data\denetci.json`, `data\live\status.json` · Loglar: `data\log\` · Gece 03:30 yedeği: `data\yedek\` (son 7 gün).
+- Kural dosyası (`rules\*.cjs`) değişikliği yeniden başlatma gerektirmez (15 sn içinde yüklenir).
+
+## Gizli dosyalar (git'e girmez, paylaşılmaz)
+`db\baglanti.json` (veritabanı şifresi) · `telegram\ayarlar.json` (Telegram tokeni; gönderici şu an kapalı)

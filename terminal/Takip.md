@@ -240,3 +240,159 @@ Güncel değerler her zaman Sinyal Masası'nın sağ panelinde.
 - Parity laboratuvarı (me-100-live motor, me-094-web 3100–3102) şimdilik açık; V1 oturunca kapatılabilir (RAM: makine 85 GB, motor ~1,1 GB).
 - Sıradaki: V1.1 Telegram mesajları.
 - **31.10 — Kasa özelliği (V1):** Üst çubukta "Kasa" düğmesi (güncel kasa + dönem başı sermayeye göre %). Tıklayınca yarı saydam pencere: Yuzde30.xlsx'in aynısı (COIN/TARİH/SAAT/KAZANÇ/KASA/YÜZDE + NOT; özet: toplam kazanç, güncel kasa, kazanç %, hedef ×1,3, kalan, hedefe kalan %, günlük alınacak = kalan/kalan gün, maks. pozisyon = kasa×%10, işlem/kazanan, ilerleme çubuğu). Giriş: işlem sonrası kasa YA DA kazanç/zarar (kullanıcı kararı). 30 gün dolunca "Yeni dönem" (eski arşiv, yeni dönem güncel kasa ile). Raporlar sekmesi: yıllık / çeyreklik (Ç1–Ç4) / aylık. Excel'e aktar (ExcelJS CDN, orijinal formüllerle). Veri: botlar-v1\data\kasa.json (+ .yedek). API: GET/POST /api/kasa. Excel'deki Trader Club logosu bilerek konmadı.
+- **07.11 — V1.2.0:** (1) Sinyal kartında "📥 İşleme girdim": Kasa'yı coin/saat/not ile hazır doldurur, işleme bot + yön kaydedilir; Raporlar'a "Bota göre" tablosu. (2) Coin detay paneli: karttaki coin adına tıklayınca sağdan açılır — mum grafiği (1m/5m/15m/1h/4h, Binance vadeli, sunucu /api/klines üzerinden), grafikte bütün botların sinyal işaretleri (▲/▼), son 48 saatin sinyal listesi, TradingView linki. Telegram göndericisi kullanıcı isteğiyle kapalı (bot kullanıcı tarafından engellenmişti, 01.11–07.11 arası 0 gönderim). Motor 01.11'den beri kesintisiz, hata 0. Runner'dan web yeniden başlatma: tools/web-restart.cjs + v1-run web.
+- **07.11 18:30 — PostgreSQL 18.6** (19 henüz RC): zip kurulum C:\projeler\newbot\araclar\pgsql, veri botlar-v1\data\pg, 127.0.0.1:5433, kullanıcı/db "botlar", şifre botlar-v1\db\baglanti.json (otomatik, git'e girmez). Tablo signals (PK src_file+src_line), ingest_state, kasa_periods/kasa_trades (henüz boş; web hâlâ kasa.json kullanıyor). İlk aktarım: 9 dosya, 1.163.443 satır, bozuk 0, dosya=tablo ✓ (db/dogrula.cjs). DB 671 MB. db/yazici.cjs canlı izliyor (JSONL asıl kayıt olarak kalıyor). Servis: botlar-v1\servis\servis-kur.bat (UAC, kullanıcı çalıştırmalı) → BotlarPostgres servisi + "Botlar V1 Denetci" görevi (SYSTEM, açılışta; motor/web/yazıcı, çökerse yeniden başlatır, 03:30 pg_dump yedeği, data\kontrol\<parça>.yeniden ile yeniden başlatma) + çalıştırıcı Başlangıç klasöründe.
+- **07.11 19:05 — Eski veri de veritabanında** (db/eski-yukle.cjs, dosyalar yerinde): vv_messages = Visivero orijinal mesajları 656.885 tekil (12 bot; m1 dosyasında 2, m1-premium'da 1 tekrarlı satır vardı), parity_signals = eski motorun 25–31.10 sinyalleri 719.678 (Hammer dahil). Dosya=tablo ✓. DB toplam 1.351 MB. Yüklenmeyen: parity/data/cache (~3,9 GB Binance mum önbelleği, yeniden indirilebilir), analysis (ara çıktılar). Servisler 18:57'de kuruldu ve çalışıyor (BotlarPostgres AUTO, NetworkService; Botlar V1 Denetci SYSTEM).
+
+## V1.3.0 — Sinyal karnesi + veritabanı okuması (07.11.2026)
+- klines_5m: 815 coin, 24.10'dan beri 5 dk Binance mumları (~3,4 milyon). db/mumlar.cjs her 5 dk'da günceller.
+- karne_signals: db/karne.cjs tekrarsız sinyaller için 15dk/1sa/4sa getiri (sinyal yönünde), 1 sa MFE/MAE; 15 dk'da bir. fr'nin yönsüz özet mesajları hariç.
+- Web: 📊 Karne butonu (/api/karne?days=1|3|7|14); coin panelinde son 7 gün sinyaller + sonuçları (/api/coinhist).
+- Kasa: ana kayıt hâlâ data/kasa.json (+.yedek); her kayıtta kasa_periods/kasa_trades tablolarına da yansıtılır (gece pg_dump yedeğine girer).
+- Denetçi PARTS'a mumlar + karne eklendi → yeni denetçi bir sonraki Windows açılışında (ya da servis-kur.bat tekrar) devreye girer. O zamana kadar runner işleri: mm2 (mumlar sürekli). Karne sürekli: kr3.
+- İlk bulgular (30.10–07.11, tek piyasa dönemi, sinyaller aynı anda çok coinde geldiği için gerçek örnek sayısı daha az):
+  - 4S 🟢: 411 sinyal, 1 sa kazanan %69, 4 sa ort +0,59%. En iyi grup. 4S 🔴 kötü (%32).
+  - 4S Sniper "4H RSI DIVERGENCE": %68 (n=102).
+  - M1 / M1 Premium 🟢: %43 kazanan, 4 sa −0,35% → takip edilirse zarar.
+  - M1 Premium "1m✅5m✅" uyumsuzluk: 🟢'de %33, 🔴'de %26 → ters gösterge (sinyalin tersi %67–74).
+  - V3, DIV, FR, 1DWS: yazı-tura civarı (%50–55).
+
+## M1 Premium scalp testi (07.11.2026, 1 dk mumlar, 14.042 sinyal, 31.10–07.11) — data/rapor/scalp.json, db/scalp.cjs
+- Kullanıcı tarzı: stopsuz, 5x/10x, hedef +%3–8 ROE; teyit varsa +%20–40. Çoğu zaman TERS (yorulma) işlem: 🔴'de long, 🟢'de short.
+- +%3 ROE'ye 30 dk içinde ulaşma her grupta %70–90 → bu oran tek başına bir şey söylemiyor (oynaklık). Kalan işlemlerin zararı + komisyon ortalamayı eksiye çekiyor.
+- TAKİP neredeyse her grupta eksi. Düz TERS (uyumsuzluk yokken) de eksi.
+- Pozitif tek güçlü grup: 🔴 + 1m✅5m✅ (+ RSI5m≤20) → TERS long. Ama bu sinyallerin ~%65'i tek günden (05.11, piyasa çapında düşüş+toparlanma; 267 coin). 05.11 dışında ters-kazanan oranı ~%50 → kenar tek bir olaya dayanıyor, henüz kanıt değil.
+- Stopsuz risk: 4 saat içinde fiyatın %10 ters gitmesi (10x tasfiye) tüm sinyallerin ~%10'unda oldu. 30 dk'lık işlemde tasfiye %0–2.
+- Dar stop (−%10 ROE) kötü: %25–38 stopa takılıyor.
+
+## M1-A "Volume:" satırı çözüldü (07.11.2026, V1.3.1) — db/hacim-agg.cjs
+- Volume = (sinyal yönünün işareti) × canlı 1 dk mumun o ana kadarki hacmi (base) / önceki 60 kapanmış 1 dk mumun toplam hacmi × 100.
+- Yani "bu dakikada, son 1 saatin hacminin yüzde kaçı işlem gördü". Hacim değişimi DEĞİL; işareti fiyat yönünden geliyor.
+- Test: 28.754 Visivero mesajı (26.10 ve 29.10, 8 coin-gün), Binance aggTrades arşivi (data.binance.vision; 28.10 arşivde yok).
+  Korelasyon .96, işaret %100, ±0,5 puan içinde %90; kalan fark mesaj saniyesi farkı.
+- Elenen adaylar: 24s hacim değişimi, dk/önceki dk hacim değişimi, alış−satış akışı (işaret %88 ama büyüklük tutmuyor), VWAP.
+
+## 10.11.2026 — AI ajan rehberi
+- botlar-v1\AGENTS.md yazıldı: projenin tamamı (mimari, motor arayüzü, bot kuralları, veritabanı, web/API, Kasa, ölçüm bulguları, bilinen sorunlar, yol haritası önerileri). Yeni bir ajan önce onu okur; bu dosya (Takip.md) tarihli günlük olarak kalır.
+- Durum: motor 07.11 22:23'ten beri kesintisiz (hata 0), DB 3,0 GB, signals 1,43 milyon, karne 47 bin tekrarsız sinyal. mumlar + karne hâlâ çalıştırıcıdan çalışıyor (servis-kur.bat tekrar çalıştırılmadı). klines_1m 07.11'de kaldı.
+
+## 10.11.2026 — Orijinal Hammer + DIV sinyallerinin değeri (db/karne-vv.cjs, 15.09–30.10, 33.085 tekrarsız sinyal)
+- klines_5m geriye uzatıldı: 787 coin, 15.09'dan itibaren (+8,65 milyon mum; db/mumlar-gecmis.cjs).
+- Kontrol: aynı coinin 6 saat önceki anı. Ölçüler: 15dk/1sa/4sa getiri (sinyal yönünde), 1 sa MFE/MAE, ±%1'e hangisi önce, 1 sa oynama.
+- **Hammer = hareket uyarısı, yön tahmini değil.** Hammer Pro: 1 saatte lehte ≥%1 → %55–79 (kontrol %27–38); 1 sa oynama %2,8–8,2 (kontrol %1,8–2,6). Ama "önce lehte %1" ≈ "önce aleyhte %1" (44'e 44).
+- Yön kenarı olan alt gruplar: Hammer Pro #W1 🟢 (n=5.288): 15dk +0,25, 1sa kazanan %59 (kontrol %48), 7 haftanın 7'sinde 15dk ort. artı. #W1 🟢 + RSI1m ≤20 (n=713): %72, önce lehte %58 / aleyhte %26, 1sa +0,68. #W1 🟢 ⭐⭐⭐ (n=109): 15dk +1,14, %70. Pro+ #W1 🟢 (n=887): 15dk +0,60, %65, lehte ≥%1 %75.
+- 🔴 Hammer sinyalleri: ilk 15 dk sinyal yönünde ortalama EKSİ (#S1 🔴 −0,26; ⭐⭐⭐ −0,81), MAE −%4,8…−%9 → stopsuz short için tehlikeli.
+- #S1 🟢 yıldızsız (n=3.476): kenar yok (15dk +0,04, %54). #S1 🟢 hep RSI1m ≤30, #S1 🔴 hep RSI1m ≥70.
+- **DIV: ölçülebilir değer yok.** 9.050 sinyal: 15dk ~0, 1sa kazanan %46–49, lehte ≥%1 %24–32 (kontrol %16). RSI ucu, strateji, hafta fark etmiyor.
+- Günlük tekrarsız sinyal: Hammer Pro 315, DIV 224, Hammer 113, Pro+ 56, 1D Pro 22.
+
+## 10.11.2026 akşam — Hammer #W1 çalışması + "Pompa" botu fikri
+- Karar (kullanıcı): Hammer, #W1 üzerine kendi sürümümüz olarak kurulacak; ölçüt "aynı olayları yakala (±3 dk) + sinyal sonrası fırsat". DIV'e emek harcanmayacak. #S1 ertelendi.
+- İndirme: klines_1m 20–30.10 (746 coin, iş mg1). Test: db/hammer-w1.cjs (10 kural adayı, örtüşme + sonuç + fazladanların kalitesi).
+- Kullanıcı fikri: pompa başlangıcını yakalayan yeni bot (hacim girişi + OI + long/short + FR + uyumsuzluk). Binance OI/oran geçmişi yalnız 30 gün → db/turev-gecmis.cjs (oi_5m, ls_15m; iş tg1, mg1 bitince başlar, ~5 saat).
+
+## 10.11.2026 19:20 — Pompa botu: 1. örnek INITUSDT (kullanıcı), db/ornek.cjs
+- Kullanıcı işareti: giriş 09.11 18:25 TR (0,1308), çıkış 10.11 17:45 TR iğnesi (0,288, +%120). Çıkış kuralı (kullanıcı): short'lar likide olmuş, OI düşüyor / taze para yok, son iğne + yataya sarma → işlem biter, sonrası ilgilendirmez. Veriyi Binance "Data" sekmesinden 5 dk / 1 sa izliyor.
+- Başlangıç ÖNCESİ görünen (hacim değil, konumlanma): genel hesapların yalnız %31–33'ü long (kalabalık short), üst hesap POZİSYON oranı %57 long, funding merdiveni −0,005 → −0,011 → −0,039 → −0,069 → −0,294 (4 saatlik), prim −%0,2…−0,5, fiyat dipten (0,1213) düşük hacimle toparlanıyor, OI yatay.
+- Tetik: 19:25–19:40 TR, 15 dk'da +%3, hacim 3×→6× (önceki 24 sa ort.), OI artmaya başlıyor. Asıl kalkış 21:40–23:00: hacim 9–45×, OI +%6 → +%23.
+- Süresince: OI sürekli arttı (+%88), kalabalık short kaldı (long %35–45), funding −0,68 / −1,02 / −1,39. Bitiş: 17:45 iğnesi hacim 129×, ardından saatlik OI %88 → %75.
+- Alıcı payı (taker) hep ~%50 → bu örnekte ayırt edici değil.
+- Mevcut botlar: M1 Premium 18:33–19:32 arası 🟢 + "5m✅ uyumsuzluk" (yorulma uyarısı) verdi → pompa başında YANLIŞ uyarı; DIV 20:06 🔴 yanlış. FR 🟢 "deeper" 19:41 doğru yönde.
+- Hipotez (tek örnek, kanıt değil): "short sıkışması kurulumu" = kalabalık short + funding hızla negatifleşiyor + fiyat dip yapmış; tetik = ilk hacim genişlemesi + OI artışı.
+
+## 10.11.2026 20:25 — Hammer #W1 testi (db/hammer-w1.cjs, hammer-w1-izgara.cjs; 20–30.10, 746 coin, 1 dk mum)
+- klines_1m geriye uzatıldı: 20.10–30.10 (+11,6 milyon mum). Aday havuzu: data/rapor/hammer-w1-aday.json (485 bin WT kesişimi).
+- **Tetik doğru:** "kapanan 1 dk mumda WT(10,21,4) kesişimi + wt2 ±53 + son 5 mumda Boost ≥1" Visivero #W1 olaylarının %89'unu ±3 dk içinde yakalıyor (1.958'in yalnız 114'ü hiçbir adayla eşleşmiyor).
+- **İsabet tutturulamıyor ve tutturulması anlamsız:** Visivero'nun sinyal sayısı gizli bir durumla (yön nöbeti / 96 sa engel / yeniden başlatma seli) belirleniyor: 20–26.10'da 258/gün, 26–30.10'da 77/gün. Ayar döneminde isabet %57–60 iken sınama döneminde %15–18'e düşüyor; yakalama ise sabit (%73–80).
+- Seçilen aday: wt2 ≥57, Boost ≥1, son 5 mumda RSI ucu ≤26,5, 24 sa aralık ≤%23, haftalık pivot ≤%9, aynı coin+yön 6 sa soğuma → ayar 334/gün yak. %76; sınama 395/gün yak. %80. 24 sa soğuma + aralık ≤%15: ~265/gün, yak. %73.
+- Sonuç (sınama, bizim sinyaller): 🟢 15dk ~0, 1sa kazanan %56–59, lehte ≥%1 %66–70; 🔴 15dk +0,1–0,2, 1sa kazanan %60.
+- **DÜZELTME:** 6 haftalık ölçümde #W1 🟢 1sa kazanan %59 çıkmıştı; bu 10 günlük pencerede orijinal #W1 🟢 yalnız %42 (15dk +0,14). Yön kenarı istikrarlı değil → Hammer yön sinyali değil, hareket uyarısı sayılmalı.
+- Visivero'da olmayıp bizim verdiğimiz ("fazladan") sinyaller sonuç olarak daha kötü değil (🟢 %59'a karşı eşleşenler %42; lehte ≥%1 %72'ye karşı %49) — daha oynak coinlerden geliyorlar.
+- Türev geçmişi indirmesi (tg1) 20:10'da başladı: 811 coin, ~5,5 saat.
+
+## 10.11.2026 21:12 — V1.4.0: Hammer botu canlıda (rules\hammer.cjs, botId "hammer")
+- Kullanıcı onayı: canlıya al, aynı yön tekrarı 24 saat. Ayar: wt2 ±57, Boost ≥1, RSI ucu ≤26,5, 24 sa aralık ≤%15, pivot ≤%9, aynı coin+yön 24 sa. Test: ~265 sinyal/gün, Visivero #W1 olaylarının %73'ü.
+- Motor yeniden başlatılmadı (kural dosyası 15 sn içinde yüklendi, 21:11:43). Web BOTS'a eklendi (kart birleştirme 1 sa), karne GAP 1 sa (karne süreci yeniden başlayınca geçerli; o zamana kadar 15 dk).
+- Mesaj: Hammer Pro biçimi (Strategy: #W1, Boost, RSI/SRSI 1m|5m|1h, WT, Pivot, FR). "BTC Status" satırı yok (kuralı bilinmiyor).
+- Yapılacak: 1–2 hafta sonra Karne'den gerçek sonuç; #S1 yıldızlı sürümü ikinci aşama.
+
+## 10.11.2026 22:10 — V1.4.1: kod incelemesi ve hata düzeltmeleri
+- Ayrıntılı tablo: botlar-v1\AGENTS.md §13.1. Özet: (1) haftalık mum hizası perşembe → pazartesi (pivotlar yanlış haftadan hesaplanıyordu), (2) kopma sonrası geri doldurma 30 dk ile sınırlıydı, (3) mumlar.cjs Binance istek ağırlığını ~3 kat aşıyordu, (4) start-v1.bat ikinci motor başlatabiliyordu, (5) iki runner çalışıyordu, (6) web 48 saatten eski kartları atmıyordu, (7) BTC Status sabit yazıydı → kural: BTC son 10 dk aralık ≥ %0,5 = Volatilite (db/btc-durum.cjs: yakalama %99, yanlış alarm %3,4), (8) küçük sağlamlaştırmalar.
+- Motor 22:08'de yeniden başlatıldı (motor dosyaları değişti; ~13 dk sinyal yok). Web yeniden başlatıldı. mumlar → mm4, karne → kr5, türev geçmişi → tg2 (eski runner kapatılınca işleri de öldü, kaldığı yerden devam ediyor).
+- Excel'e aktarma tarayıcıda sınandı: dosya hatasız üretiliyor.
+- 10.11 22:40 — Video 6 (TrHqB9-aAEE, "Funding Rate Mucizesi") dökümü ve kural özeti: video\TrHqB9-aAEE.txt, video\analiz.md. Pompa botuna aday özellikler: FR merdiveni (ardışık derinleşme sayısı, hızı), sabitlenme (frenleme) = çıkış/tepe işareti, funding ödemesine kalan süre, 4 sa mum sınırları.
+- 11.11 00:55 — Video 7 (W7mkuLL7_AQ, "Canlı Yayında PUMP", REEF) dökümü + kural özeti + İDDİANIN ÖLÇÜMÜ (db\fr-seri.cjs): video\analiz.md. Sonuç: "funding merdiveni = long" tek başına tutmuyor; bağlam (24 sa değişim, funding seviyesi, ödemeye kalan süre) belirleyici; frenleme sonrası short küçük artı. Not: bu videonun parçaları (video\parca\W7_0x.txt) 10.11 22:43–22:54'te başka bir araçla zaten yazıya dökülmüştü; mevcut dökümler kullanıldı.
+
+## 11.11.2026 08:10 — V1.4.2: FR mesajına bağlam satırları (kullanıcı onayıyla)
+- rules\flow.cjs: 🟢 mesajlarına `Seri: N. 🟢 · X dk · toplam Δ`, `24s: ±x%` (+ günün ilk 10 yükseleninde 🔝 ve sırası), uyarılar (ödemeye < 30 dk, 24 saatte ≤ −%10, funding ≤ −1); 🔴 mesajına `Seri bitti`; yeni mesaj `⏸ FR serisi durdu` (3+ yeşillik seri 10 dk yeşil almayınca, yönsüz).
+- Hangi sinyalin geldiği değişmedi (Visivero uyumu aynı). Motor yeniden başlatılmadı; 08:08:56'da yüklendi, hata 0. İlk canlı örnek: INITUSDT "Seri: 2. 🟢 … 24s: +38,4% 🔝 günün 1. yükseleni".
+- Türev geçmişi indirmesi 01:46'da bitti: oi_5m 4,07 milyon satır, ls_15m 1,40 milyon satır (811 coin, ~30 gün). mumlar.cjs düzeltmesinden beri "Binance sınırı" beklemesi 0.
+
+## 11.11.2026 08:20 — V1.5.0: TEK KAYIT = PostgreSQL (kullanıcı kararı)
+- Web akışı artık signals tablosundan okunuyor (dosya okuma kaldırıldı); gecikme ~2 sn (yazıcı döngüsü 2 sn → 0,7 sn).
+- Kasa'nın asıl kaydı veritabanı (kasa_periods/kasa_trades); her değişiklik tek transaction, hata olursa kullanıcıya döner. kasa.json → data\kasa-arsiv-2026-11-11.json (dondurulmuş arşiv). Ekle/güncelle/sil API'si sınandı, durum eski haline döndü (35 $, 0 işlem).
+- JSONL günlük dosyaları motorun tamponu. Yazıcıya temizle() eklendi: data\ayar.json {"jsonlGun": N} varsa, tamamı aktarılmış ve N günden eski dosyaları siler (byte konumu = dosya boyutu VE tablodaki son satır = dosyadaki son satır şartıyla). AYAR DOSYASI HENÜZ YOK → hiçbir dosya silinmiyor; kullanıcı onayı bekleniyor (13 dosya, 656 MB; tabloda 1.496.650 satır; 11.11 gece yedeği var).
+- OLAY: 08:16:28'de çalıştırıcı (runner) penceresi kapandı (çıkış kodu 0xC000013A = konsol kapatıldı) → onun başlattığı mumlar (mm4) ve karne (kr5) de öldü. Motor/web/yazıcı (denetçi) etkilenmedi. Kalıcı çözüm: servis-kur.bat'ın tekrar çalıştırılması (mumlar+karne denetçiye geçer). Çalıştırıcı yeniden açılana kadar uzaktan iş çalıştırılamıyor.
+
+## 11.11.2026 12:05 — FR yakalamaları: liste + "hedefte çık" benzetimi
+- db\fr-yakalama.cjs → fr_yakalama tablosu + data\rapor\fr-yakalama.json: 30.10–11.11, 277 coin, 799 yakalama (12 sa sessizlikten sonraki ilk 🟢; sonraki 48 sa). En iyiler: AKE 05.11 12:33 0,002192 → 0,006615 (+%202, 07.11 12:05), INIT 09.11 11:17 0,13299 → 0,30298 (+%128), LYN +%68, LSK +%43, BMT +%38. Ortanca tepe +%3,4 / ortanca dip −%3,3. Funding dibi ≤ −1 olanlarda +%10 görme %50 ama ortanca dip −%9,8. "Eksiye döndü" türünün çoğu (hisse sözleşmeleri dahil) gürültü.
+- db\fr-islem.cjs (kullanıcının bakışı: hedefte çık, sonrasına bakma, aynı coine tekrar girme; stopsuz; 48 sa): 
+  - 10x, ilk yeşilde giriş, coin başına tek işlem (277): fiyat +%3 → hedef %56 / tasfiye %10; +%5 → %39 / %13; +%10 (ROE 100) → %15 / %16; +%15 → %6 / %18. İşlem başı ortalama ROE ≈ 0 (−4…+2).
+  - 10x, funding ≤ −0,10 olunca giriş (103): +%5 → %51 / %18 (ort +4); +%10 → %28 / %28 (ort −2). ≤ −0,50 (45): +%10 → %22 / %40 (ort −16).
+  - 5x aynı tetikler: tasfiye %2–7'ye iniyor; ortalama yine ≈ 0…+4.
+  - INIT örneği: funding −0,30'da giriş (09.11 11:31, 0,1365) → 3,4 saatte −%10,9 ile 10x tasfiye, +%128'lik yükselişten ÖNCE.
+- Sonuç: FR sinyalinde mekanik giriş + hedefte çıkış bu 12 günde başa baş; 10x stopsuzda tasfiye oranı kazancı siliyor. Büyük hareket var, ama önce çoğu zaman −%5…−%10 geliyor → giriş yeri ve kaldıraç belirleyici.
+
+## 11.11.2026 12:45 — FR + OI / long-short ölçümü (db\fr-oi.cjs) ve görev dosyası (botlar-v1\GOREV-FR-OI.md)
+- Veri: 13.10–10.11, 409 coin, 1.971 yakalama (ilk yeşil) / 391 (funding ilk kez ≤ −0,10). Sonuç ölçüsü: long 10x stopsuz 48 sa, −%9,5'ten önce +%10.
+- BEKLENENİN TERSİ: yakalama anında OI ve fiyat zaten artmışsa kötü (OI 4sa ≥ +%3,3 → hedef %19 / tasfiye %42 / ort −23,5; fiyat 24sa ≥ +%4 → %25 / %51 / −27,6); fiyat düşmüş ve OI şişmemişse iyi (fiyat 4sa ≤ −%2,7 → %41 / %26 / +12,6). Kalabalık SHORT (long ≤ %55) en kötü dilim; kalabalık long ≥ %66,5 iyi. Hacim 1sa ≥ 5× iyi. Funding ≤ −0,20 kötü, −0,10…−0,14 iyi.
+- Birleşik puan (6 koşul) iki dönemde de aynı yön: FR ≤ −0,10 & puan 5–6 → n=76 (51 coin): hedef %57 / tasfiye %13 / ort +43 ROE (1. dönem +61, 2. dönem +14); puan 0–2 → %16 / %37 / −20. Kaçın işareti 2+ → %19 / %43 / −24.
+- "OI zirveden −%5 → çık": fiyat zirveden −%5 kuralından iyi değil (tepenin ~%44'ü), çıkışların %62'sinde fiyat 4 sa sonra daha yukarıda → sinyal olarak yapılmayacak.
+- "OI ve fiyat birlikte artınca gir": hemen girmekten kötü (tasfiye %25–34) → yapılmayacak.
+- Uyarı: eşikler tüm veriye bakılarak seçildi; 30 gün tek dönem; olaylar kümeleniyor.
+- Büyük hesap POZİSYON oranı indiriliyor (db\turev-poz.cjs → lsp_15m, iş tp1); ölçümü sonra.
+- Görev dosyası başka bir ajanın kodlaması için: motor extras 'oi', flow.cjs bağlam satırları + Kurulum puanı + Kaçın işaretleri + "⭐ FR Kurulum" sinyali, türev verisinin sürekli güncellenmesi, kabul ölçütleri.
+
+## 11.11.2026 — V1.6.0: FR botuna OI / long-short bağlamı + ⭐ FR Kurulum
+- Görev: `botlar-v1\GOREV-FR-OI.md` (uygulandı). Ölçüm: `db\fr-oi.cjs` (30 gün, 799 yakalama).
+- Motor artık bütün coinlerin OI'sini topluyor (açılışta 25 sa geri doldurma ~10 dk, sonra 5 dk'da bir). Oran döngüsü 150 → 600 ms (IP sınırı).
+- 🟢 mesajlarına: OI 4sa/24sa, Fiyat 4sa/24sa, Long (kalabalık/büyükler), Hacim 1sa ×, Kurulum puanı (6 üzerinden) ve gerekiyorsa ⚠️ Kaçın.
+- Yeni sinyal ⭐ FR Kurulum: puan ≥ 5 + en çok 1 kaçın işareti. A = yakalamanın ilk yeşili; B = yakalama içinde funding ilk kez ≤ −0,10.
+  Geçmiş ölçüm (long 10x, stopsuz, 48 sa, hedef +%10): B n=76 → hedef %57, tasfiye %13; A n=155 → %25 / %12. Beklenen sıklık A ~5/gün, B ~2,7/gün.
+  Uyarı: eşikler aynı veriye bakarak seçildi; 2. yarıda B tasfiyesi %31'e çıktı. Canlı Karne ile izlenecek.
+- Yeni denetçi parçası `turev` (db\turev.cjs: oi_5m, ls_15m, lsp_15m 6 saatte bir). Kalıcı olması için servis\servis-kur.bat yeniden çalıştırılmalı.
+
+## 12.11.2026 — Özgün strateji araştırması: "Panik Dibi"
+- 24 aylık 5 dk mum arşivi indirildi (data.binance.vision, silinmiş coinler dahil; `botlar-v1\data\arastirma\k5`, `k5b`, `k5c`, ~5 GB). Betikler: `db\ozgun-arsiv.cjs`, `db\ozgun-arsiv-olay.cjs`, `db\ozgun-olay.cjs`, `db\panik-olcum.cjs`.
+- Denenip elenenler: tek başına düşen coini almak, hacimli zirve kırılımı, dar bant kırılımı, OI/long-short ile coin seçimi, pump'a short.
+- Tutan tek kalıp: piyasa paniğinde (coinlerin ≥ %20'si 24 sa'te −%10, ≥ %20'si 1 sa'te −%2, BTC 1 sa ≤ −%1) alıp 24 saat tutmak. 63 panik günü, 24 sa gün ortalaması +%4,1, günlerin %73'ü artı.
+- Küçük hedefle (+%3) aynı sinyal 24 ayda kasayı ×1,2 yaptı; 24 saat bekleyince ×2,1–2,9 (3x, 5–10 pozisyon), yolda −%15 ile −%29 düşüş.
+- Kullanım: `botlar-v1\KILAVUZ-PANIK.md`. Kodlama görevi (henüz yazılmadı): `botlar-v1\GOREV-PANIK.md`.
+
+## 14.11.2026 — AKE incelemesi ve "pump önceden bulunur mu" ölçümü (bot değişikliği yok)
+- AKE 13.11: 0,0026 → 0,0132. Öncesinde 16 saatte OI +%25 (fiyat yatay), iki deneme sıçraması; yükselişte kalabalık long %68 → %31, funding +0,005 → +0,10 (long'lar ödedi).
+- Betikler (salt okunur): `db\pump-ara.cjs` (24 ay, saatlik panel → `data\arastirma\pump-panel.csv`), `db\pump-oi.cjs` (30 gün OI/oran → `pump-oi.csv`), `db\fr-gecmis.cjs` (funding geçmişi → `funding.jsonl`), `db\fr-arti.cjs` (henüz çalıştırılmadı).
+- Sonuç: 24 ayda +%100 (48 sa) olayı 682, +%200 olayı 181. Sakin coinde taban olasılık +%50 için %0,9. Son 48 saatte ≥ %10 saatlik sıçrama varsa %4,3–6 (5–7 kat). "Fiyat yatayken OI artışı" tek başına olasılığı artırmıyor (%0,4). Kalkış saatinde giriş: %12–17'si +%50 görüyor ama %66–76'sı önce −%10 görüyor; hiçbir hedef/zarar yapısı iki yılda da artı değil.
+
+## 15.11.2026 — V1.7.0: Terminal sayfası (izleme listesi + 4 grafik + OI/hacim)
+- Görev: `botlar-v1\GOREV-TERMINAL.md`. Kodlama Opus 5.5, denetim: kod incelemesi, 67 ağsız test, sahte veriyle 1366×768 ve 1920×1080 ekran denemesi, gerçek sunucuda bütün `/api/t/*` uçları (`parity\tools\t-test.cjs`) ve tarayıcıda AKEUSDT.
+- Yeni: `web\terminal.cjs` (tek Binance kuyruğu: istek arası ≥150 ms, `/futures/data` ≥700 ms, ağırlık >1.500 bekleme, 429/418'de durma), `web\public\terminal.html` (kendi canvas grafiklerimiz, dış betik yok), `db\test-terminal.cjs`, `db\terminal-deneme.cjs` (sahte veriyle 127.0.0.1:3299).
+- Yeni tablo `izleme` (izleme listesi; ilk kurulumda BTC + ETH). `server.cjs` ve `index.html`'de yalnız yönlendirme ve iki bağlantı. Motor yeniden başlatılmadı; yalnız web.
+- Adres: http://localhost:3200/terminal.html · sinyal sayfasında "📈 Terminal" düğmesi ve coin panelinde "Terminalde aç".
+
+## 15.11.2026 — V1.7.1: Terminal dik düzen + RSI / SRSI / WT
+- Kullanıcı isteği (TradingView telefon görünümü örneğiyle): 4 grafik 2×2 yerine **yan yana 4 dik sütun**; her grafiğin altında RSI(14)+SMA14, Stokastik RSI K/D, WaveTrend(10,21,4) ve kesişim noktaları. `RSI · SRSI · WT` kutusuyla kapatılır. OI paneli 200 → 160 px.
+- Yalnız `web\public\terminal.html` değişti. Gösterge hesabı `lib\ind.cjs` ile 800 mumluk rastgele seride karşılaştırıldı: fark 0. 67 test geçti; sahte veriyle 1366×768 ve 1920×1080 ekran denemesi, konsol temiz.
+
+## 15.11.2026 — V1.8.0: Terminalde Trader Club katmanları
+- Kullanıcı isteği: TC 5in1 + S/R + Buy/Sell grafik üzerinde, tek tek açılıp kapanabilir. `TC göstergeleri ▾` menüsü: Buy/Sell, TP/SL, Mild X, uyumsuzluk ▲▼, Ribbon, Reversal Bands, S/R. Formüller `parity\pine\tc_klon_v2.pine`, `tc_sr_v1.pine` ve `parity\research\tc\rflib.cjs`'den taşındı.
+- Yalnız `web\public\terminal.html` değişti. Buy/Sell, `rflib.cjs` mantığıyla 3.000 mumluk rastgele seride karşılaştırıldı: 24 sinyal, fark 0. Diğer katmanlar (Mild X, uyumsuzluk, bantlar, S/R) yalnız Pine'dan birebir aktarıldı, TradingView ile yan yana karşılaştırılmadı. Pine'daki açık noktalar aynen geçerli (S/R seviye seçimi 5/6, bant adımı yaklaşık, ◇ Reversal yok).
+- 67 test geçti; sahte veriyle 1366×768 ve 1920×1080 ekran denemesi, konsol temiz.
+
+## 15.11.2026 — V1.9.0: Terminal — tüm evren + delist uyarısı, alt paneller (ME / Funding / OI / TP), piyasa özeti
+- Kullanıcı isteği 1 (12:38): izleme listesi motorun taradığı bütün coinler olsun, yeni/delist kendiliğinden güncellensin, delist olacaklarda uyarı. `GET /api/t/evren` (`exchangeInfo`, 5 dk). Liste kipleri `Tümü` / `Listem`; ☆ ile Listem'e ekleme. Delist kaynağı: Binance'in `deliveryDate` alanı (duyurudan sonra kapanış zamanına çekiliyor; normalde 2100).
+- Kullanıcı isteği 2 (23:16, TradingView ekran görüntüsüyle): WT'nin altına Market Exposure, Funding Rate, Open Interest, Trader Positioning; listenin altına "Market Overview" benzeri özet (OI, emir defteri, long/short poz., trader positioning, market exposure, funding + geri sayım, 24s hacim). Market cap yok (Binance vadeli API'sinde bulunmuyor).
+- Binance payı: motor `/futures/data` uçlarını ~200 istek/dk kullanıyor (oran döngüsü), bu yüzden alt paneller geçmişi veritabanından (`ls_15m`, `lsp_15m`, `oi_5m`; 796 coin, 12.10'dan beri, turev 6 saatte bir) alıyor; Binance'ten yalnız son 24 saat (coin başına 5 dk'da 4 istek). Emir defteri `depth` (ağırlık 5) 15 sn'de bir, yalnız seçili coin.
+- Değişen: `web\terminal.cjs`, `web\public\terminal.html`, `db\test-terminal.cjs` (74 test geçti), `db\terminal-deneme.cjs`. Sahte veriyle 1366×768 ve 1920×1080 ekran denemesi, konsol temiz. Motor yeniden başlatılmadı.
+- Denenmeyenler: gerçek bir delist duyurusu sırasında `deliveryDate` davranışı yalnız Binance belgesine dayanıyor; `topLongShortPositionRatio` yanıtındaki alan adı (`longAccount`) gerçek veride doğrulanacak.
+- Gerçek veride doğrulandı (15.11 23:27): evren 796 coin (motorla aynı; ilk sürümde yalnız tam `PERPETUAL` süzülüp 560 çıkmıştı, `TRADIFI_PERPETUAL` gibi türler eklendi), `topLongShortPositionRatio` alanı `longAccount` dolu geliyor, ARIA'da veritabanı + Binance birleşimi, funding aralığı 4 sa doğru. O an duyurulmuş delist yok.

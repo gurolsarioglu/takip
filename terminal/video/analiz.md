@@ -119,3 +119,32 @@ https://www.youtube.com/watch?v=SVLqZA8BT10
 - **"Ayda %30", "günde %1":** Doğrulanabilir bir performans kaydı yok. Videolar ayrıca eğitim satışı içeriyor (#reklam).
 - **Kurallar ölçülebilir değil:** "Gözünüze hoş görünen yer", "2×2=4 yok". Bir ajan ya da skill için eşiklerin (FR merdiveni, RSI 30/70, 4 saatlik kapanış saatleri, en fazla 2 işlem) netleştirilmesi gerekecek.
 - **FR işaret karmaşası:** Metinde "eksi" ve "0,0473" gibi değerler hem yüzde hem oran olarak geçiyor. Binance FR'si %0,01 (= 0,0001) birimindedir. Bizim FR botunun gösterdiği birimle eşleştirilip doğrulanmalı.
+
+## Video 6 — Funding Rate Mucizesi (TrHqB9-aAEE, 8:59) — 10.11.2026, yalnızca bilgi
+Anlatılan kurallar (videodaki sözlerden; uygulanmadı):
+1. **FR merdiveni = gizli sinyal.** Funding eksi yönde adım adım büyüyorsa (örnek: −1,45 → −1,55 → −1,68 → −1,80 → −2,0) short'tan kaçılır, long denenir ("en az 10 defa deneyin").
+2. **Hız önemli.** Artışlar ~10 dakikada bir geliyor (FR tarama mesajlarının aralığı); "pıtır pıtır artıyor" = devam.
+3. **Frenleme = olgunlaşma.** FR bir değerde sabitlenince (örnekte −2'de 10+10 dk aynı) hareket yoruluyor.
+4. **Referans borsa Binance** ("lokomotif").
+5. **Saat/mum yapısı:** 4 saatlik mum kapanışları (TR 23:00 vb.) dönüm noktası; bir sonraki funding ödemesine kalan süre uzunsa ("sabaha kadar ödeme yok") hareket sürebilir.
+6. **Tepeden short (videodaki işlem):** FR sabitlendi + 23:00 mumu açıldı + 5 dk grafikte fiyat "haddini aşmış" + fiyat DEMA9'a dokunurken short; düzeltme beklenir, düzeltme bitince çıkılır. Uyumsuzluk şartı aranmıyor.
+7. Trend takibi için 1 saatlik Heikin Ashi kullanıyor.
+Bizdeki karşılığı: FR botu tek adımı ("FR deeper", dakikada ≥0,009 puan) ve ≤ −%0,20 taramasını veriyor; MERDİVENİ (ardışık derinleşme, hız, sabitlenme) ölçmüyor. INIT örneğiyle uyumlu (−0,005 → −0,29 → −1,39).
+
+## Video 7 — Canlı Yayında PUMP işlemi (W7mkuLL7_AQ, 50:11, REEF örneği) — 11.11.2026, yalnızca bilgi
+Anlatılanlar:
+1. **Mekanizma:** çok yükselen coine inatla short açılır → hacim oluşur → long'lar bastırır → funding eksiye gider → coin pompalanır ("short'çuların inadı mesafeyi belirler").
+2. **FR botu "pump makinesi":** funding eksi yönde ilerlerken bot 🟢 mesaj atar; yeşiller **peş peşe, 2–3 dakika arayla** geliyorsa hareket sürüyor. Örnek: −0,16 (11:00) → −0,51 → −0,52 → −0,53 → −0,54 → −0,56 → −0,58. Yeşiller seyrekleşince "frene bastı". Botta filtre var ("her funding değil").
+3. **Short'a girmeme kontrol listesi:** (a) günün en yükseleni mi? (b) funding eksi yönde artıyor mu? (c) Fibonacci uzatması nereyi gösteriyor? İkisi de "evet" ise short açılmaz. Funding −1, −2 görürse short kurtarılamaz.
+4. **Zamanlama:** 4 saatlik mum kapanışları (TR 11:00, 15:00, 19:00, 23:00) referans; ideal giriş kapanışta, funding ilerlerken.
+5. **İşlem yönetimi:** stoplu giriş, hep 10x ve aynı tutar; 10x'te ~%110 (fiyat %11) görünce çıkış; üst Fibonacci seviyesine alarm; sonra funding durumu ve 4 sa kapanışına göre short aranır. Borsalar arası funding farklıdır; referans Binance.
+
+### Ölçüm: iddia veride tutuyor mu? (db/fr-seri.cjs — Visivero FR botunun 7.319 orijinal 🟢/🔴 mesajı, 15.09–30.10.2026, 432 coin, klines_5m)
+Seri = art arda 🟢 (arada 🔴 yok, iki yeşil arası ≤ 6 dk). Giriş: mesajın geldiği 5 dk mumunun kapanışı.
+- **Tek başına "merdiven = long" tutmuyor.** Serinin 3.–10+ yeşilinde long: 1 sa ort. −0,2…−0,4, 4 sa ort. −0,6…−2,0, 4 sa kazanan %44–49.
+- **Derin funding long için kötü:** funding < −1 iken 3.+ yeşilde long → 4 sa ort. −%6,5…−%7,7, kazanan %20–35 (13 ve 11 coin; küçük örnek).
+- **Bağlam belirleyici (3.+ yeşil):** coin son 24 saatte −%10…0 → 1 sa +%1,0, kazanan %76, 4 sa %73 (n=764, 73 coin). Coin ≤ −%10 düşmüşse → 4 sa −%4,3, kazanan %26. Günün yükseleni (≥ +%25) → 4 sa −%4,7 ama iki yöne de %5+ hareket %73–82 (çok oynak, yazı-tura).
+- **Funding ödemesine < 30 dk kala long kötü:** 1 sa −%4,0, kazanan %23 (n=137, 21 coin). > 120 dk: 1 sa +%0,43, kazanan %65.
+- **Erken ve hafif merdiven en iyisi:** funding 0…−0,2 arasında 3.+ yeşil → 1 sa +%0,55, kazanan %66, 4 sa %63 (n=668, 96 coin).
+- **"Frenleme sonrası short" küçük ama tutarlı artı:** seri bittikten 10 dk sonra short → 1 sa +%0,6…+%1,4, 4 sa +%1,7…+%3,3; önce +%2 / önce −%2: %31–44 / %22–26 (n=250).
+- **Haftadan haftaya çok değişken:** 7 haftanın 1'inde (12.10) %89 kazanan, 4'ünde %6–38. Örnekler birkaç coinde kümeleniyor → rakamlar gösterge, kanıt değil.

@@ -1,0 +1,2 @@
+SELECT symbol, dir, t, left(text, 900) txt, fields::text f FROM signals WHERE bot='m1-premium' AND text LIKE '%WT Cross%' AND text LIKE '%5m✅%' ORDER BY t DESC LIMIT 2;
+SELECT count(*) FILTER (WHERE text LIKE '%WT Cross%') wt, count(*) FILTER (WHERE text ~* 'open interest|OI') oi, count(*) FILTER (WHERE text ~* 'long/short|L/S') ls, count(*) FILTER (WHERE text ~* 'funding|FR') fr, count(*) n FROM signals WHERE bot='m1-premium' AND t > now() - interval '1 day'

@@ -31,6 +31,7 @@ main{padding:12px 16px}
 .card{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--mut);border-radius:10px;padding:10px 12px;animation:in .4s}
 .card.up{border-left-color:var(--up)}.card.down{border-left-color:var(--dn)}
 .card.fresh{box-shadow:0 0 0 1px var(--acc)}
+.card.kurulum{border-left-color:var(--warn);background:linear-gradient(90deg,rgba(240,185,11,.09),var(--panel) 45%)}
 @keyframes in{from{opacity:0;transform:translateY(-4px)}to{opacity:1}}
 .top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .badge{font-size:11px;padding:1px 7px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--mut)}
@@ -44,7 +45,9 @@ pre b{color:#fff}
 .kasa-btn{font-weight:600}.kasa-btn.up{border-color:#1f6b46;background:#0f2a1d}.kasa-btn.dn{border-color:#6b1f2b;background:#2a0f14}
 .kasa-btn small{margin-left:6px;font-weight:600}.kasa-btn.up small{color:var(--up)}.kasa-btn.dn small{color:var(--dn)}
 #kov{position:fixed;inset:53px 0 0 0;background:rgba(6,9,15,.55);backdrop-filter:blur(3px);display:none;justify-content:center;align-items:flex-start;padding:22px 12px;z-index:20;overflow:auto}
-#kov.open{display:flex}
+#kov.open,#rov.open{display:flex}
+#rov{position:fixed;inset:53px 0 0 0;background:rgba(6,9,15,.55);backdrop-filter:blur(3px);display:none;justify-content:center;align-items:flex-start;padding:22px 12px;z-index:21;overflow:auto}
+.rk{overflow-x:auto}.rk table{min-width:820px}.rk h3{margin:18px 0 6px;font-size:14px}.rk .khint{margin-top:4px}.rk td.bad{color:var(--dn)}.rk td.good{color:var(--up)}.rk .note{color:var(--mut);font-size:12px;line-height:1.55;margin:6px 0 0}
 .km{width:min(1240px,100%);background:rgba(18,24,38,.88);border:1px solid #2b3c66;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.5);padding:16px 18px}
 .kh{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}.kh h2{margin:0 6px 0 0;font-size:18px}
 .kmeta{display:flex;gap:16px;color:var(--mut);font-size:13px;flex-wrap:wrap}.kmeta b{color:var(--tx)}.kmeta .neg{color:var(--dn)}
@@ -63,6 +66,20 @@ pre b{color:#fff}
 .kset input{width:140px}
 .rep h3{font-size:14px;margin:14px 0 6px}
 @media (max-width:1000px){.kg{grid-template-columns:1fr}}
+.cact{display:flex;gap:6px;justify-content:flex-end;margin-top:8px}
+.mini{font-size:11px;padding:3px 8px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);color:var(--mut);text-decoration:none;cursor:pointer}
+.mini:hover{color:var(--tx);border-color:#2b3c66}
+#cov{position:fixed;inset:53px 0 0 0;background:rgba(6,9,15,.45);backdrop-filter:blur(2px);display:none;justify-content:flex-end;z-index:19}
+#cov.open{display:flex}
+.cp{width:min(760px,100%);height:100%;overflow:auto;background:rgba(18,24,38,.94);border-left:1px solid #2b3c66;box-shadow:-20px 0 60px rgba(0,0,0,.5);padding:16px 18px}
+.cph{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}.cph h2{margin:0 8px 0 0;font-size:18px}
+.cph .px{font-size:15px;font-weight:600}.tf button.on{border-color:var(--acc);background:#1d2b4d}
+.chart{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:6px;margin-bottom:12px}
+.chart svg{display:block;width:100%;height:300px}
+.legend{font-size:11px;color:var(--mut);margin:-6px 0 12px}
+.cl{width:100%;border-collapse:collapse;font-size:12px}.cl td,.cl th{padding:6px 8px;border-bottom:1px solid #1b2335;text-align:left;vertical-align:top}.cl th{color:var(--mut);font-weight:500}
+.cl tr{cursor:pointer}.cl tr:hover td{background:#18223a}.cl pre{font-size:11px;display:none;margin-top:6px}.cl tr.ex pre{display:block}
+.bstat{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.bstat span{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -73,6 +90,8 @@ pre b{color:#fff}
   <input id="q" placeholder="Coin ara (ör. BTC)" autocomplete="off">
   <button data-dir="" class="on">Tümü</button><button data-dir="up">🟢 Yukarı</button><button data-dir="down">🔴 Aşağı</button>
   <button id="snd" title="Yeni sinyalde ses">🔕 Ses</button>
+  <button id="tbtn" title="İzleme listesi, 4 grafik, OI ve hacim" onclick="location.href='/terminal.html'">📈 Terminal</button>
+  <button id="rbtn" title="Hangi bot sinyali gerçekten işe yarıyor?">📊 Karne</button>
   <button id="kbtn" class="kasa-btn" title="Kasa ve %30 hedef">💼 Kasa</button>
 </header>
 <div class="wrap">
@@ -83,6 +102,8 @@ pre b{color:#fff}
   </main>
 </div>
 <div id="kov"><div class="km" id="km"></div></div>
+<div id="cov"><div class="cp" id="cp"></div></div>
+<div id="rov"><div class="km" id="rm"></div></div>
 <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js" defer></script>
 <script>
 const $ = s => document.querySelector(s);
@@ -103,12 +124,16 @@ async function loadBots() {
 }
 function card(m, fresh) {
   const tv = `https://www.tradingview.com/chart/?symbol=BINANCE:${encodeURIComponent(m.symbol)}.P`;
-  return `<div class="card ${m.dir || ''} ${fresh ? 'fresh' : ''}"><div class="top"><span class="badge">${esc(nameOf(m.bot))}</span><a class="sym" href="${tv}" target="_blank" rel="noopener">${esc(m.symbol)}</a>${m.strategy ? `<span class="badge">${esc(m.strategy)}</span>` : ''}${m.n > 1 ? `<span class="badge" title="Aynı sinyal ${m.n} kez tekrarlandı; ilk: ${hhmm(m.first)}">×${m.n}</span>` : ''}<span class="tm">${hhmm(m.t)}</span></div><pre>${fmtText(m.text)}</pre></div>`;
+  return `<div class="card ${m.dir || ''} ${fresh ? 'fresh' : ''} ${m.strategy === 'FR Kurulum' ? 'kurulum' : ''}" data-id="${m.id}"><div class="top"><span class="badge">${esc(nameOf(m.bot))}</span><a class="sym" href="#" data-sym="${esc(m.symbol)}" title="Coin detayı">${esc(m.symbol)}</a>${m.strategy ? `<span class="badge">${esc(m.strategy)}</span>` : ''}${m.n > 1 ? `<span class="badge" title="Aynı sinyal ${m.n} kez tekrarlandı; ilk: ${hhmm(m.first)}">×${m.n}</span>` : ''}<span class="tm">${hhmm(m.t)}</span></div><pre>${fmtText(m.text)}</pre><div class="cact"><button class="mini" data-enter="${m.id}" title="Bu sinyalle işleme girdim — Kasa'ya hazır doldurur">📥 İşleme girdim</button><a class="mini" href="${tv}" target="_blank" rel="noopener">TradingView ↗</a></div></div>`;
 }
 function render(freshSeqs = new Set()) {
   $('#feed').innerHTML = S.items.length ? S.items.map(m => card(m, freshSeqs.has(m.seq))).join('') : '<div class="empty">Bu filtrede henüz sinyal yok.</div>';
   $('#info').textContent = `${S.bot === 'all' ? 'Hepsi' : nameOf(S.bot)} · ${S.items.length} mesaj gösteriliyor`;
 }
+$('#feed').addEventListener('click', e => {
+  const a = e.target.closest('[data-sym]'); if (a) { e.preventDefault(); cOpen(a.dataset.sym); return; }
+  const b = e.target.closest('[data-enter]'); if (b) { const m = S.items.find(x => String(x.id) === b.dataset.enter && (x.bot + x.id)); if (m) kEnter(m); }
+});
 function qs(extra = '') { return `/api/messages?bot=${S.bot}&dir=${S.dir}&q=${encodeURIComponent(S.q)}&limit=300${extra}`; }
 async function reload() { const r = await j(qs()); S.items = r.items; S.maxSeq = r.maxSeq; render(); }
 async function tick() {
@@ -136,14 +161,15 @@ const sb = () => { $('#snd').textContent = S.sound ? '🔔 Ses' : '🔕 Ses'; $(
 $('#snd').onclick = () => { S.sound = !S.sound; try { localStorage.setItem('v1.sound', S.sound ? '1' : '0'); } catch (e) {} sb(); }; sb();
 
 // ---------- Kasa ----------
-const K = { d: null, tab: 'kasa', edit: null, set: false, view: null, err: '' };
+const K = { d: null, tab: 'kasa', edit: null, set: false, view: null, err: '', pre: null };
+const dirIc = d => d === 'up' ? '🟢' : d === 'down' ? '🔴' : '';
 const usd = v => (v < 0 ? '−' : '') + '$' + Math.abs(v).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const sgn = v => (v > 0 ? '+' : '') + usd(v).replace('−', '−');
 const pct = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v * 100).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
 const trD = s => s ? s.split('-').reverse().join('.') : '';
 const today = () => new Date(Date.now() + 3 * 3600e3).toISOString().slice(0, 10);
 const nowHM = () => new Date(Date.now() + 3 * 3600e3).toISOString().slice(11, 16);
-async function kLoad(pid) { K.d = await j('/api/kasa' + (pid ? '?period=' + pid : '')); kBtn(); if ($('#kov').classList.contains('open')) kRender(); }
+async function kLoad(pid) { const d = await j('/api/kasa' + (pid ? '?period=' + pid : '')); if (!d || d.error || !d.period) { $('#kbtn').title = (d && d.error) || 'Kasa okunamadı'; return; } $('#kbtn').title = 'Kasa ve %30 hedef'; K.d = d; kBtn(); if ($('#kov').classList.contains('open')) kRender(); }
 async function kPost(body) {
   K.err = '';
   const r = await fetch('/api/kasa', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
@@ -160,7 +186,7 @@ function kRow(r, i) {
   if (K.edit === r.id) return `<tr class="add edit"><td>✎</td><td><input id="e_coin" value="${esc(r.coin)}"></td><td><input id="e_date" type="date" value="${r.date}"></td><td><input id="e_time" value="${r.time || ''}"></td>
     <td><input id="e_pnl" placeholder="kazanç/zarar" value="${r.pnl != null ? r.pnl : ''}"></td><td><input id="e_kasa" placeholder="kasa" value="${r.kasa != null ? r.kasa : ''}"></td><td></td><td><input id="e_note" value="${esc(r.note || '')}"></td></tr>
     <tr class="edit"><td></td><td colspan="7"><button id="e_save">Güncelle</button> <button id="e_del">Sil</button> <button id="e_cancel">Vazgeç</button> <span style="color:var(--mut);font-size:12px">Kasa ya da kazanç/zarar alanından birini doldurun.</span></td></tr>`;
-  return `<tr class="row" data-id="${r.id}"><td>${i + 1}</td><td>${esc(r.coin)}</td><td>${trD(r.date)}</td><td>${r.time || ''}</td><td class="n ${r.pnlCalc > 0 ? 'pos' : r.pnlCalc < 0 ? 'neg' : ''}">${sgn(r.pnlCalc)}</td><td class="n">${usd(r.kasaCalc)}</td><td class="n ${r.pct > 0 ? 'pos' : r.pct < 0 ? 'neg' : ''}">${pct(r.pct)}</td><td>${esc(r.note || '')}</td></tr>`;
+  return `<tr class="row" data-id="${r.id}"><td>${i + 1}</td><td>${esc(r.coin)}${r.bot ? `<div style="font-size:11px;color:var(--mut)">${dirIc(r.dir)} ${esc(nameOf(r.bot))}</div>` : ''}</td><td>${trD(r.date)}</td><td>${r.time || ''}</td><td class="n ${r.pnlCalc > 0 ? 'pos' : r.pnlCalc < 0 ? 'neg' : ''}">${sgn(r.pnlCalc)}</td><td class="n">${usd(r.kasaCalc)}</td><td class="n ${r.pct > 0 ? 'pos' : r.pct < 0 ? 'neg' : ''}">${pct(r.pct)}</td><td>${esc(r.note || '')}</td></tr>`;
 }
 function kRender() {
   const d = K.d; if (!d) return; const s = d.sum, p = d.period, ro = p.id !== d.active;
@@ -175,8 +201,8 @@ function kRender() {
     h += `<div class="kg"><div><table><thead><tr><th>#</th><th>COIN</th><th>TARİH</th><th>SAAT</th><th class="n">KAZANÇ</th><th class="n">KASA</th><th class="n">YÜZDE</th><th>NOT</th></tr></thead><tbody>
       <tr><td>–</td><td colspan="3" style="color:var(--mut)">Dönem başı sermaye</td><td class="n">0,00</td><td class="n">${usd(p.capital)}</td><td class="n">0,00%</td><td></td></tr>
       ${d.rows.map(kRow).join('')}
-      ${ro ? '' : `<tr class="add"><td>+</td><td><input id="a_coin" placeholder="COIN"></td><td><input id="a_date" type="date" value="${today()}"></td><td><input id="a_time" value="${nowHM()}"></td>
-      <td><input id="a_pnl" placeholder="kazanç/zarar $"></td><td><input id="a_kasa" placeholder="işlem sonrası kasa $"></td><td><button id="a_add">Ekle</button></td><td><input id="a_note" placeholder="not (isteğe bağlı)"></td></tr>`}
+      ${ro ? '' : `<tr class="add"><td>+</td><td><input id="a_coin" placeholder="COIN" value="${esc(K.pre ? K.pre.coin : '')}">${K.pre && K.pre.bot ? `<div style="font-size:11px;color:var(--acc);margin-top:3px">${dirIc(K.pre.dir)} ${esc(nameOf(K.pre.bot))} sinyalinden <a href="#" id="a_unpre" style="color:var(--mut)">(kaldır)</a></div>` : ''}</td><td><input id="a_date" type="date" value="${today()}"></td><td><input id="a_time" value="${nowHM()}"></td>
+      <td><input id="a_pnl" placeholder="kazanç/zarar $"></td><td><input id="a_kasa" placeholder="işlem sonrası kasa $"></td><td><button id="a_add">Ekle</button></td><td><input id="a_note" placeholder="not (isteğe bağlı)" value="${esc(K.pre ? K.pre.note : '')}"></td></tr>`}
       </tbody></table>${K.err ? `<div class="kerr">${esc(K.err)}</div>` : ''}
       <div class="khint">${ro ? 'Kapanmış dönem — sadece görüntüleme.' : 'İşlemden sonraki <b>kasa</b>yı ya da <b>kazanç/zarar</b> tutarını yazın (eksi için −5 ya da -5); diğeri kendiliğinden hesaplanır. Düzeltmek ya da silmek için satıra tıklayın.'} Kayıtlar <code>botlar-v1\\data\\kasa.json</code> dosyasında.</div></div>
       <div><div class="kk">
@@ -193,7 +219,7 @@ function kRender() {
   } else {
     const tbl = (title, a, lab) => `<h3>${title}</h3><table><thead><tr><th>${lab}</th><th class="n">İŞLEM</th><th class="n">KAZANAN</th><th class="n">İSABET</th><th class="n">BAŞ KASA</th><th class="n">SON KASA</th><th class="n">KAZANÇ</th><th class="n">BÜYÜME</th></tr></thead><tbody>${a.length ? a.map(x => `<tr><td>${esc(x.key)}</td><td class="n">${x.n}</td><td class="n">${x.wins}</td><td class="n">%${Math.round(100 * x.wins / x.n)}</td><td class="n">${usd(x.startKasa)}</td><td class="n">${usd(x.endKasa)}</td><td class="n ${x.pnl >= 0 ? 'pos' : 'neg'}">${sgn(x.pnl)}</td><td class="n ${x.pct >= 0 ? 'pos' : 'neg'}">${pct(x.pct)}</td></tr>`).join('') : '<tr><td colspan="8" style="color:var(--mut)">Henüz işlem yok.</td></tr>'}</tbody></table>`;
     const r = d.reports, mon = r.months.map(x => ({ ...x, key: new Date(x.key + '-01T12:00:00Z').toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' }) }));
-    h += `<div class="rep">${tbl('Yıllık', r.years, 'YIL')}${tbl('Çeyreklik (Ç1 = Ocak–Mart, Ç2 = Nisan–Haziran, Ç3 = Temmuz–Eylül, Ç4 = Ekim–Aralık)', r.quarters, 'ÇEYREK')}${tbl('Aylık', mon, 'AY')}
+    h += `<div class="rep">${tbl('Yıllık', r.years, 'YIL')}${tbl('Çeyreklik (Ç1 = Ocak–Mart, Ç2 = Nisan–Haziran, Ç3 = Temmuz–Eylül, Ç4 = Ekim–Aralık)', r.quarters, 'ÇEYREK')}${tbl('Aylık', mon, 'AY')}${tbl('Bota göre (hangi bottan girdiğiniz işlemler)', r.bots.map(x => ({ ...x, key: x.key === '-' ? 'Elle girilen' : nameOf(x.key) })), 'BOT')}
       <div class="khint">Bütün dönemlerin işlemleri tarih sırasıyla birleştirilir. Büyüme = kazanç ÷ o dönemin ilk işleminden önceki kasa.</div></div>`;
   }
   $('#km').innerHTML = h;
@@ -204,10 +230,12 @@ function kRender() {
   if ($('#k_set')) $('#k_set').onclick = () => { K.set = !K.set; kRender(); };
   if ($('#k_new')) $('#k_new').onclick = () => { if (confirm(`Bu dönem kapatılsın ve güncel kasa (${usd(s.current)}) ile bugün yeni 30 günlük dönem başlasın mı?`)) kPost({ action: 'newPeriod' }); };
   if ($('#s_save')) { $('#s_save').onclick = async () => { if (await kPost({ action: 'settings', start: val('s_start'), capital: val('s_cap') })) { K.set = false; kRender(); } }; $('#s_cancel').onclick = () => { K.set = false; kRender(); }; }
-  if ($('#a_add')) $('#a_add').onclick = () => kPost({ action: 'add', coin: val('a_coin'), date: val('a_date'), time: val('a_time'), pnl: val('a_pnl'), kasa: val('a_kasa'), note: val('a_note') });
+  if ($('#a_add')) $('#a_add').onclick = async () => { if (await kPost({ action: 'add', coin: val('a_coin'), date: val('a_date'), time: val('a_time'), pnl: val('a_pnl'), kasa: val('a_kasa'), note: val('a_note'), bot: K.pre && K.pre.bot, dir: K.pre && K.pre.dir })) { K.pre = null; kRender(); } };
+  if ($('#a_unpre')) $('#a_unpre').onclick = e => { e.preventDefault(); K.pre = null; kRender(); };
+  if (K.pre && $('#a_pnl')) $('#a_pnl').focus();
   document.querySelectorAll('tr.row').forEach(tr => tr.onclick = () => { if (ro) return; K.edit = Number(tr.dataset.id); kRender(); });
   if ($('#e_save')) {
-    $('#e_save').onclick = async () => { const kasa = val('e_kasa'), pnl = val('e_pnl'); if (await kPost({ action: 'update', id: K.edit, coin: val('e_coin'), date: val('e_date'), time: val('e_time'), kasa, pnl: kasa ? '' : pnl, note: val('e_note') })) { K.edit = null; kRender(); } };
+    $('#e_save').onclick = async () => { const kasa = val('e_kasa'), pnl = val('e_pnl'); const old = K.d.rows.find(x => x.id === K.edit) || {}; if (await kPost({ action: 'update', id: K.edit, coin: val('e_coin'), date: val('e_date'), time: val('e_time'), kasa, pnl: kasa ? '' : pnl, note: val('e_note'), bot: old.bot, dir: old.dir })) { K.edit = null; kRender(); } };
     $('#e_del').onclick = async () => { if (confirm('Bu işlem silinsin mi?')) { await kPost({ action: 'delete', id: K.edit }); K.edit = null; kRender(); } };
     $('#e_cancel').onclick = () => { K.edit = null; kRender(); };
   }
@@ -238,10 +266,97 @@ async function kExcel() {
   const buf = await wb.xlsx.writeBuffer(), a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })); a.download = `Kasa_${p.start}.xlsx`; a.click();
 }
+function kEnter(m) {
+  K.pre = { coin: m.symbol, bot: m.bot, dir: m.dir, note: `${nameOf(m.bot)} ${dirIc(m.dir)}${m.strategy ? ' ' + m.strategy : ''} sinyal ${new Date(m.t).toLocaleTimeString('tr-TR', { timeZone: 'Europe/Istanbul', hour: '2-digit', minute: '2-digit' })} @ ${m.price}` };
+  K.tab = 'kasa'; K.edit = null; $('#cov').classList.remove('open'); $('#kov').classList.add('open');
+  if (K.d && K.d.period.id !== K.d.active) kLoad(); else kRender();
+}
+// ---------- Coin detay paneli ----------
+const C = { sym: null, tf: '5m', items: [], kl: [], err: '', hist: [] };
+async function cOpen(sym) { C.sym = sym; C.err = ''; C.hist = []; $('#cov').classList.add('open'); $('#cp').innerHTML = '<div style="color:var(--mut)">Yükleniyor…</div>'; await cLoad(); }
+async function cLoad() {
+  const lim = { '1m': 240, '5m': 288, '15m': 192, '1h': 168, '4h': 180 }[C.tf];
+  const [m, k] = await Promise.all([j(`/api/messages?bot=all&sym=${encodeURIComponent(C.sym)}&limit=500`), j(`/api/klines?symbol=${encodeURIComponent(C.sym)}&interval=${C.tf}&limit=${lim}`).catch(e => ({ error: e.message }))]);
+  j(`/api/coinhist?symbol=${encodeURIComponent(C.sym)}&days=7`).then(h => { C.hist = Array.isArray(h) ? h : []; cRender(); }).catch(() => { });
+  C.items = m.items || []; C.kl = Array.isArray(k) ? k : []; C.err = Array.isArray(k) ? '' : (k.error || 'grafik verisi alınamadı'); cRender();
+}
+function cChart() {
+  const k = C.kl; if (!k.length) return `<div style="padding:30px;color:var(--mut);text-align:center">${esc(C.err || 'Grafik verisi yok')}</div>`;
+  const W = 720, H = 300, pl = 6, pr = 64, pt = 10, pb = 22, iw = W - pl - pr, ih = H - pt - pb;
+  const t0 = k[0].t, step = k.length > 1 ? k[1].t - k[0].t : 60e3, t1 = k[k.length - 1].t + step;
+  let lo = Math.min(...k.map(x => x.l)), hi = Math.max(...k.map(x => x.h)); const pad = (hi - lo) * 0.06 || hi * 0.01; lo -= pad; hi += pad;
+  const X = t => pl + (t - t0) / (t1 - t0) * iw, Y = p => pt + (hi - p) / (hi - lo) * ih, bw = Math.max(1, iw / k.length * 0.7);
+  let g = '';
+  for (let i = 0; i <= 4; i++) { const p = lo + (hi - lo) * i / 4, y = Y(p); g += `<line x1="${pl}" x2="${pl + iw}" y1="${y}" y2="${y}" stroke="#232c40"/><text x="${pl + iw + 6}" y="${y + 4}" fill="#8a94a8" font-size="10">${p.toPrecision(5)}</text>`; }
+  for (let i = 0; i < k.length; i += Math.ceil(k.length / 6)) g += `<text x="${X(k[i].t)}" y="${H - 6}" fill="#8a94a8" font-size="10">${new Date(k[i].t).toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul', hour: '2-digit', minute: '2-digit', ...(C.tf === '1h' || C.tf === '4h' ? { day: '2-digit', month: '2-digit' } : {}) })}</text>`;
+  for (const x of k) { const up = x.c >= x.o, col = up ? '#1fc77e' : '#f6465d', cx = X(x.t) + bw / 2; g += `<line x1="${cx}" x2="${cx}" y1="${Y(x.h)}" y2="${Y(x.l)}" stroke="${col}"/><rect x="${X(x.t)}" y="${Y(Math.max(x.o, x.c))}" width="${bw}" height="${Math.max(1, Math.abs(Y(x.o) - Y(x.c)))}" fill="${col}"/>`; }
+  for (const m of C.items) { if (m.first < t0 || m.first > t1) continue; const cx = X(m.first), up = m.dir === 'up', y = up ? pt + ih - 2 : pt + 2, col = up ? '#1fc77e' : m.dir === 'down' ? '#f6465d' : '#f0b90b';
+    g += `<g><title>${esc(nameOf(m.bot))} ${m.dir === 'up' ? 'yukarı' : m.dir === 'down' ? 'aşağı' : ''} · ${hhmm(m.first)}</title><line x1="${cx}" x2="${cx}" y1="${pt}" y2="${pt + ih}" stroke="${col}" stroke-opacity=".25" stroke-dasharray="2 3"/><path d="${up ? `M${cx} ${y - 8} l-5 8 h10z` : `M${cx} ${y + 8} l-5 -8 h10z`}" fill="${col}"/></g>`; }
+  const last = k[k.length - 1].c; g += `<line x1="${pl}" x2="${pl + iw}" y1="${Y(last)}" y2="${Y(last)}" stroke="#3b82f6" stroke-dasharray="4 3"/><rect x="${pl + iw + 2}" y="${Y(last) - 8}" width="60" height="16" rx="3" fill="#3b82f6"/><text x="${pl + iw + 6}" y="${Y(last) + 4}" fill="#fff" font-size="10">${last.toPrecision(5)}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${g}</svg>`;
+}
+function cRender() {
+  const k = C.kl, last = k.length ? k[k.length - 1].c : null, first = k.length ? k[0].o : null, ch = last && first ? last / first - 1 : null;
+  const tv = `https://www.tradingview.com/chart/?symbol=BINANCE:${encodeURIComponent(C.sym)}.P`;
+  const cnt = {}; for (const m of C.items) cnt[m.bot] = (cnt[m.bot] || 0) + 1;
+  const newest = C.items[0];
+  $('#cp').innerHTML = `<div class="cph"><h2>${esc(C.sym)}</h2>${last ? `<span class="px">${last}</span>` : ''}${ch != null ? `<span class="${ch >= 0 ? 'pos' : 'neg'}">${pct(ch)} <span style="color:var(--mut);font-size:11px">(grafik aralığında)</span></span>` : ''}
+    <span class="tf">${['1m', '5m', '15m', '1h', '4h'].map(t => `<button data-tf="${t}" class="${C.tf === t ? 'on' : ''}">${t}</button>`).join(' ')}</span>
+    <a class="mini" href="${tv}" target="_blank" rel="noopener">TradingView ↗</a><a class="mini" href="/terminal.html?s=${encodeURIComponent(C.sym)}">Terminalde aç</a>${newest ? `<button class="mini" id="c_enter">📥 İşleme girdim</button>` : ''}<button id="c_close" style="margin-left:auto">✕</button></div>
+    <div class="chart">${cChart()}</div><div class="legend">▲ yeşil = yukarı sinyal · ▼ kırmızı = aşağı sinyal · sarı = yönsüz (V3) · üzerine gelince bot ve saat görünür · fiyat Binance vadeli</div>
+    <div class="bstat">${Object.entries(cnt).map(([b, n]) => `<span>${esc(nameOf(b))}: <b>${n}</b></span>`).join('') || '<span>Son 48 saatte bu coinde sinyal yok</span>'}</div>
+    <table class="cl"><thead><tr><th>Saat</th><th>Bot</th><th>Yön / strateji</th><th>Fiyat</th><th>Tekrar</th></tr></thead><tbody>
+    ${C.items.slice(0, 200).map((m, i) => `<tr data-i="${i}"><td>${hhmm(m.first)}</td><td>${esc(nameOf(m.bot))}</td><td>${dirIc(m.dir)} ${esc(m.strategy || '')}<pre>${fmtText(m.text)}</pre></td><td>${m.price ?? ''}</td><td>${m.n > 1 ? '×' + m.n : ''}</td></tr>`).join('')}
+    </tbody></table><div class="khint">Satıra tıklayınca mesajın tamamı açılır. Son 48 saatin sinyalleri.</div>
+    ${C.hist.length ? `<h3 style="margin:16px 0 6px;font-size:14px">Son 7 gün — sinyaller ve sonuçları (veritabanı)</h3><table class="cl"><thead><tr><th>Saat</th><th>Bot</th><th>Yön / strateji</th><th>Fiyat</th><th>1 sa sonra</th><th>4 sa sonra</th></tr></thead><tbody>
+    ${C.hist.map(r => `<tr><td>${hhmm(r.t)}</td><td>${esc(nameOf(r.bot))}</td><td>${dirIc(r.dir)} ${esc(r.strategy || '')}</td><td>${r.price ?? ''}</td><td class="${r.r60 > 0 ? 'pos' : r.r60 < 0 ? 'neg' : ''}">${sg(r.r60)}</td><td class="${r.r240 > 0 ? 'pos' : r.r240 < 0 ? 'neg' : ''}">${sg(r.r240)}</td></tr>`).join('')}</tbody></table><div class="khint">Sonuç sinyal yönündedir (🔴 sinyalde düşüş artı yazar). Son 4 saatin sinyalleri henüz ölçülmedi.</div>` : ''}`;
+  $('#c_close').onclick = () => $('#cov').classList.remove('open');
+  document.querySelectorAll('[data-tf]').forEach(b => b.onclick = () => { C.tf = b.dataset.tf; cLoad(); });
+  document.querySelectorAll('.cl tr[data-i]').forEach(tr => tr.onclick = () => tr.classList.toggle('ex'));
+  if ($('#c_enter')) $('#c_enter').onclick = () => kEnter(newest);
+}
+$('#cov').onclick = e => { if (e.target.id === 'cov') $('#cov').classList.remove('open'); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('#cov').classList.remove('open'); });
+setInterval(() => { if ($('#cov').classList.contains('open') && C.sym) cLoad(); }, 30000);
 $('#kbtn').onclick = () => { $('#kov').classList.add('open'); kRender(); };
 $('#kov').onclick = e => { if (e.target.id === 'kov') $('#kov').classList.remove('open'); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape') $('#kov').classList.remove('open'); });
 kLoad(); setInterval(() => { if (!$('#kov').classList.contains('open')) kLoad(); }, 30000);
+
+
+// ---------- Sinyal karnesi ----------
+const RK = { days: 7, d: null, err: '' };
+const sg = v => v == null ? '–' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%';
+const cls = (v, lim = 0) => v == null ? '' : v > lim ? 'good' : v < -lim ? 'bad' : '';
+const wcls = v => v == null ? '' : v >= 55 ? 'good' : v <= 45 ? 'bad' : '';
+async function rLoad() { try { const d = await j('/api/karne?days=' + RK.days); if (d.error) throw new Error(d.error); RK.d = d; RK.err = ''; } catch (e) { RK.err = e.message; } rRender(); }
+function rRow(label, r) {
+  return `<tr><td>${label}</td><td class="n">${r.n.toLocaleString('tr-TR')}</td><td class="n ${cls(r.o15)}">${sg(r.o15)}</td><td class="n ${cls(r.o60)}">${sg(r.o60)}</td><td class="n ${wcls(r.k60)}">${r.k60 ?? '–'}%</td><td class="n ${cls(r.m60)}">${sg(r.m60)}</td><td class="n ${cls(r.o240)}">${sg(r.o240)}</td><td class="n ${wcls(r.k240)}">${r.k240 ?? '–'}%</td><td class="n">${r.tp1}%</td><td class="n">${r.sl1}%</td></tr>`;
+}
+const RH = `<thead><tr><th></th><th class="n">Sinyal</th><th class="n">15 dk ort.</th><th class="n">1 sa ort.</th><th class="n">1 sa kazanan</th><th class="n">1 sa medyan</th><th class="n">4 sa ort.</th><th class="n">4 sa kazanan</th><th class="n">1 sa içinde +%1</th><th class="n">1 sa içinde −%1</th></tr></thead>`;
+const dirTxt = d => d === 'up' ? '🟢 yukarı' : d === 'down' ? '🔴 aşağı' : 'yönsüz';
+function rRender() {
+  const d = RK.d, f = t => t ? new Date(t).toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '–';
+  let h = `<div class="kh"><h2>📊 Sinyal karnesi</h2><span class="ktabs">${[1, 3, 7, 14].map(n => `<button data-rd="${n}" class="${RK.days === n ? 'on' : ''}">${n} gün</button>`).join(' ')}</span>
+    <span class="kmeta">${d ? `<span>Aralık: <b>${f(d.ilk)}</b> → <b>${f(d.son)}</b></span>` : ''}</span><button id="r_close" style="margin-left:auto">✕</button></div>`;
+  if (RK.err) h += `<div class="empty">Karne okunamadı: ${esc(RK.err)}</div>`;
+  else if (!d) h += `<div class="empty">Yükleniyor…</div>`;
+  else {
+    h += `<p class="note">Her satır: sinyal geldiği fiyattan, fiyatın <b>sinyal yönünde</b> ne kadar gittiği. 🔴 sinyalde fiyat düşerse artı yazar. "Kazanan" = sonuç artıda kalan sinyallerin oranı (%50 yazı-tura demek). "+%1 / −%1" = ilk 1 saatte fiyat en az bir kez o seviyeye değdi mi. Aynı coinde kısa sürede tekrar eden mesajlar tek sinyal sayılır; komisyon ve kayma dahil değil. Son 4 saatin sinyalleri henüz ölçülmez.</p>`;
+    h += `<div class="rk"><h3>Botlara göre</h3><table>${RH}<tbody>${d.bots.map(r => rRow(esc(nameOf(r.bot)), r)).join('')}</tbody></table>`;
+    h += `<h3>Bot + yön</h3><table>${RH}<tbody>${d.dirs.map(r => rRow(`${esc(nameOf(r.bot))} ${dirTxt(r.dir)}`, r)).join('')}</tbody></table>`;
+    h += `<h3>M1 Premium ayrıntı (⭐, 1m✅+5m✅ uyumsuzluk, WT Cross)</h3><table>${RH}<tbody>${d.prem.filter(r => r.n >= 20).map(r => rRow(`${dirTxt(r.dir)} ${r.star ? '⭐' : ''} ${r.d15 ? '1m✅5m✅' : ''} ${r.wt ? 'WT' : ''}`, r)).join('')}</tbody></table>`;
+    h += `<h3>Diğer botlar — stratejiye göre (en az 10 sinyal)</h3><table>${RH}<tbody>${d.strat.map(r => rRow(`${esc(nameOf(r.bot))} · ${esc(r.strategy || '-')} ${dirTxt(r.dir)}`, r)).join('')}</tbody></table>`;
+    h += `<div class="khint">Kaynak: veritabanı (karne her 15 dakikada güncellenir). Fiyat: Binance vadeli 5 dakikalık mumlar.</div></div>`;
+  }
+  $('#rm').innerHTML = h;
+  $('#r_close').onclick = () => $('#rov').classList.remove('open');
+  document.querySelectorAll('[data-rd]').forEach(b => b.onclick = () => { RK.days = +b.dataset.rd; RK.d = null; rRender(); rLoad(); });
+}
+$('#rbtn').onclick = () => { $('#rov').classList.add('open'); rRender(); rLoad(); };
+$('#rov').onclick = e => { if (e.target.id === 'rov') $('#rov').classList.remove('open'); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') $('#rov').classList.remove('open'); });
+setInterval(() => { if ($('#rov').classList.contains('open')) rLoad(); }, 120000);
 
 (async () => { await status(); await loadBots(); await reload(); setInterval(tick, 3000); setInterval(loadBots, 30000); setInterval(status, 8000); })();
 </script>

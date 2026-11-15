@@ -6,6 +6,11 @@ const { getJson, toBar, IMS, sleep } = require('../lib/net.cjs');
 const FAPI = 'https://fapi.binance.com';
 const WS = process.env.BINANCE_WS || 'wss://fstream.binance.com/market/stream?streams=';
 
+// Bir zaman diliminde t anını içeren mumun açılışı. Haftalık mum Binance'te PAZARTESİ 00:00 UTC açılır; epoch (1.1.1970)
+// perşembe olduğu için düz floor() perşembeye hizalar → 10.11.2026'ya kadar haftalık seri bozuk üretiliyordu (pivot yanlış haftadan).
+const WEEK_SHIFT = 4 * 86400e3;
+function barOpen(tf, t) { const ms = IMS[tf]; return tf === '1w' ? Math.floor((t - WEEK_SHIFT) / ms) * ms + WEEK_SHIFT : Math.floor(t / ms) * ms; }
+
 class Series {
   constructor(tf, max) { this.tf = tf; this.ms = IMS[tf]; this.max = max; this.closed = []; this.agg = null; }
   // bootstrap: REST bars incl. the live one; minuteLive = REST live 1m bar at the same moment
@@ -22,7 +27,7 @@ class Series {
   // feed a CLOSED 1m bar
   pushMinute(m) {
     if (this.tf === '1m') { if (!this.closed.length || this.closed.at(-1).openTime < m.openTime) { this.closed.push(m); if (this.closed.length > this.max) this.closed.shift(); } return; }
-    const open = Math.floor(m.openTime / this.ms) * this.ms;
+    const open = barOpen(this.tf, m.openTime);
     if (this.agg && this.agg.openTime !== open) this.flush();
     if (!this.agg) this.agg = { openTime: open, open: m.open, high: m.high, low: m.low, close: m.close, volume: m.volume, quoteVolume: m.quoteVolume, closeTime: open + this.ms - 1 };
     else { const a = this.agg; a.high = Math.max(a.high, m.high); a.low = Math.min(a.low, m.low); a.close = m.close; a.volume += m.volume; a.quoteVolume += m.quoteVolume; }
@@ -39,7 +44,7 @@ class Series {
     if (this.tf === '1m') l = minuteLive ? { ...minuteLive } : null;
     else {
       const a = this.agg, m = minuteLive;
-      const open = m ? Math.floor(m.openTime / this.ms) * this.ms : (a ? a.openTime : null);
+      const open = m ? barOpen(this.tf, m.openTime) : (a ? a.openTime : null);
       if (a && a.openTime === open) l = { ...a, high: m ? Math.max(a.high, m.high) : a.high, low: m ? Math.min(a.low, m.low) : a.low, close: m ? m.close : a.close, volume: a.volume + (m ? m.volume : 0), quoteVolume: a.quoteVolume + (m ? m.quoteVolume : 0) };
       else if (m) l = { openTime: open, open: m.open, high: m.high, low: m.low, close: m.close, volume: m.volume, quoteVolume: m.quoteVolume, closeTime: open + this.ms - 1 };
     }
@@ -117,7 +122,7 @@ class Market {
     }, 15000);
     ws.onclose = ev => { clearInterval(ws.watch); if (ws.reopened) return; ws.reopened = true; this.log('ws closed, reconnecting', streams.length, 'code', ev?.code); setTimeout(() => this.openSocket(streams, true), 3000); };
     ws.onerror = () => { };
-    this.sockets.push(ws);
+    this.sockets = this.sockets.filter(x => x.readyState <= 1); this.sockets.push(ws);
   }
   handle(msg) {
     const d = msg.data; if (!d) return;
@@ -151,7 +156,10 @@ class Market {
     const one = async st => {
       try {
         const now = Date.now();
-        const raw = (await getJson(`${FAPI}/fapi/v1/klines?symbol=${st.symbol}&interval=1m&limit=30`)).map(toBar);
+        // kopukluk uzun sürdüyse (uyku, ağ kesintisi) eksik dakikaların hepsini iste; eskiden hep 30'du → uzun kesintide seri delik kalıyordu
+        const lim = Math.min(1500, Math.max(30, Math.ceil((now - (st.lastMinute || now)) / 60e3) + 5));
+        if (lim >= 1500) this.log('gapfill: kesinti 25 saatten uzun, seri eksik kalabilir (motoru yeniden başlatın)', st.symbol);
+        const raw = (await getJson(`${FAPI}/fapi/v1/klines?symbol=${st.symbol}&interval=1m&limit=${lim}`)).map(toBar);
         for (const b of raw) if (b.closeTime < now) this.closeMinute(st, b);
       } catch (e) { this.log('gapfill fail', st.symbol, e.message); }
       for (const b of st.buf) this.closeMinute(st, b);
@@ -168,4 +176,4 @@ class Market {
   }
 }
 
-module.exports = { Market, Series };
+module.exports = { Market, Series, barOpen };

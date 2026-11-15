@@ -4,6 +4,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
+const terminal = require('./terminal.cjs'); // Terminal sayfasının /api/t/* uçları (GOREV-TERMINAL.md)
 
 const VERSION = fs.readFileSync(path.join(__dirname, '..', 'VERSION'), 'utf8').trim();
 const ROOT = path.join(__dirname, '..', 'data');
@@ -21,6 +22,7 @@ const BOTS = [
   { id: 'div', gap: 3600e3, name: 'DIV', desc: '1H RSI uyumsuzluğu' },
   { id: 'fr', gap: 1800e3, name: 'FR', desc: 'Funding rate değişimi ve periyodik tarama' },
   { id: 'v3', gap: 120e3, name: 'V3', desc: '1 dakikalık hacim patlaması (V3-A)' },
+  { id: 'hammer', gap: 3600e3, name: 'Hammer', desc: 'Hareket uyarısı: 1 dk WaveTrend dönüşü + ani fitil (#W1). Yön tahmini değil.' },
 ];
 const IDS = new Set(BOTS.map(b => b.id));
 const log = (...a) => console.log(new Date().toISOString(), ...a);
@@ -30,38 +32,44 @@ let seq = 0, nextId = 1;
 const GAP = Object.fromEntries(BOTS.map(b => [b.id, b.gap]));
 const msgs = new Map(BOTS.map(b => [b.id, []])); // bot -> [{id,seq,t,first,n,symbol,dir,strategy,text,price}]
 const openEp = new Map(); // bot|symbol|dir|strategy -> item
-const tails = new Map();
-function tail(file, onLine) {
-  let st = tails.get(file); if (!st) { st = { pos: 0, rest: '' }; tails.set(file, st); }
-  let size; try { size = fs.statSync(file).size; } catch { return; }
-  if (size < st.pos) { st.pos = 0; st.rest = ''; }
-  if (size === st.pos) return;
-  const fd = fs.openSync(file, 'r');
-  try {
-    const CH = 8 << 20;
-    while (st.pos < size) {
-      const len = Math.min(CH, size - st.pos), buf = Buffer.alloc(len);
-      fs.readSync(fd, buf, 0, len, st.pos); st.pos += len;
-      const parts = (st.rest + buf.toString('utf8')).split('\n'); st.rest = parts.pop();
-      for (const l of parts) if (l) { try { onLine(JSON.parse(l)); } catch { } }
-    }
-  } finally { fs.closeSync(fd); }
-}
+// Akışın kaynağı VERİTABANI (11.11.2026'dan beri; eskiden data\live\signals-*.jsonl dosyaları okunuyordu).
+// signals tablosu (src_file, src_line) sırasıyla okunur: son 3 günün dosya adları için kalınan satırdan sonrası istenir (birincil anahtar dizini).
 const day = t => new Date(t).toISOString().slice(0, 10);
-function poll() {
-  const now = Date.now();
-  for (const d of [...new Set([day(now - 2 * 24 * 3600e3), day(now - 24 * 3600e3), day(now)])]) {
-    tail(path.join(ROOT, 'live', `signals-${d}.jsonl`), s => {
-      if (!IDS.has(s.botId) || now - s.t > KEEP_MS) return;
-      const a = msgs.get(s.botId), k = [s.botId, s.symbol, s.direction || '-', s.strategy || '-'].join('|'), o = openEp.get(k);
-      if (o && s.t - o.t <= GAP[s.botId] && s.t >= o.t) { o.t = s.t; o.n++; o.text = s.text || o.text; o.price = s.price; o.seq = ++seq; return; }
-      const it = { id: nextId++, seq: ++seq, t: s.t, first: s.t, n: 1, symbol: s.symbol, dir: s.direction || null, strategy: s.strategy || null, text: s.text || '', price: s.price };
-      a.push(it); openEp.set(k, it);
-      if (a.length > CAP * 1.2) a.splice(0, a.length - CAP);
-    });
-  }
+const feedPos = new Map(); let feedBusy = false, feedErrAt = 0, feedReady = false;
+function ingest(s, now) {
+  if (!IDS.has(s.botId) || now - s.t > KEEP_MS) return;
+  const a = msgs.get(s.botId), k = [s.botId, s.symbol, s.direction || '-', s.strategy || '-'].join('|'), o = openEp.get(k);
+  if (o && s.t - o.t <= GAP[s.botId] && s.t >= o.t) { o.t = s.t; o.n++; o.text = s.text || o.text; o.price = s.price; o.seq = ++seq; return; }
+  const it = { id: nextId++, seq: ++seq, t: s.t, first: s.t, n: 1, symbol: s.symbol, dir: s.direction || null, strategy: s.strategy || null, text: s.text || '', price: s.price };
+  a.push(it); openEp.set(k, it);
+  if (a.length > CAP * 1.2) a.splice(0, a.length - CAP);
 }
-poll(); setInterval(poll, 1000);
+async function poll() {
+  if (feedBusy) return; feedBusy = true;
+  try {
+    const now = Date.now();
+    for (const d of [...new Set([day(now - 2 * 24 * 3600e3), day(now - 24 * 3600e3), day(now)])]) {
+      const f = `signals-${d}.jsonl`; let pos = feedPos.get(f) || 0;
+      for (;;) {
+        const rows = await q('SELECT src_line, bot, symbol, dir, strategy, text, price, extract(epoch FROM t) * 1000 AS t FROM signals WHERE src_file = $1 AND src_line > $2 ORDER BY src_line LIMIT 20000', [f, pos]);
+        if (!rows.length) break;
+        for (const r of rows) ingest({ botId: r.bot, symbol: r.symbol, direction: r.dir, strategy: r.strategy, text: r.text, price: r.price, t: Math.round(Number(r.t)) }, now);
+        pos = rows[rows.length - 1].src_line; feedPos.set(f, pos);
+        if (rows.length < 20000) break;
+      }
+    }
+    if (!feedReady) { feedReady = true; log('akış veritabanından yüklendi'); }
+  } catch (e) { if (Date.now() - feedErrAt > 60e3) { feedErrAt = Date.now(); log('akış okunamadı (veritabanı):', e.message); } }
+  finally { feedBusy = false; }
+}
+// 48 saatten eski kartlar bellekten atılır (eskiden yalnız okurken süzülüyordu → sunucu günlerce açık kalınca az sinyalli botlarda
+// günler öncesinin kartları akışta kalıyor, "son 24 saat" sayaçları doğru ama liste eskiyi de gösteriyordu).
+function prune() {
+  const lim = Date.now() - KEEP_MS;
+  for (const [id, a] of msgs) { let k = 0; while (k < a.length && a[k].t < lim) k++; if (k) a.splice(0, k); }
+  for (const [k, it] of openEp) if (it.t < lim) openEp.delete(k);
+}
+setInterval(prune, 60e3);   // poll() zamanlayıcısı dosyanın sonunda başlatılır (veritabanı yardımcıları tanımlandıktan sonra)
 
 function versionStamp() {
   let m = 0;
@@ -72,18 +80,80 @@ function engineStatus() {
   try { const s = JSON.parse(fs.readFileSync(path.join(ROOT, 'live', 'status.json'), 'utf8')); return { ok: Date.now() - Date.parse(s.at) < 60e3, at: s.at, readyAt: s.readyAt, symbols: s.symbols, errors: s.errors, mem: s.mem }; }
   catch { return { ok: false }; }
 }
-// ---------- Kasa (kişisel işlem kaydı, %30 hedef) ----------
-// data/kasa.json: { active, periods:[{id,start:'YYYY-MM-DD',capital,closedAt,trades:[{id,coin,date,time,kasa|null,pnl|null,note}]}] }
+
+// ---------- Veritabanı (PostgreSQL) — karne, coin geçmişi, kasa yansıması ----------
+let pool = null;
+function db() {
+  if (pool) return pool;
+  try { const { Pool } = require('pg'); pool = new Pool({ ...JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'db', 'baglanti.json'), 'utf8')), max: 4 }); pool.on('error', e => log('pg', e.message)); }
+  catch (e) { log('pg yok:', e.message); pool = null; }
+  return pool;
+}
+const q = async (sql, args) => { const p = db(); if (!p) throw new Error('veritabanı bağlantısı yok'); return (await p.query(sql, args)).rows; };
+const KC = new Map(); // karne önbelleği (60 sn)
+const R = x => x == null ? null : Math.round(Number(x) * 100) / 100;
+async function karne(days) {
+  const key = 'k' + days, c = KC.get(key); if (c && Date.now() - c.at < 60e3) return c.data;
+  const W = `t >= now() - make_interval(days => $1::int)`;
+  const agg = `count(*)::int n, count(r60)::int n60, count(r240)::int n240,
+    avg(r15) o15, avg(r60) o60, avg(r240) o240, avg((r60>0)::int) k60, avg((r240>0)::int) k240,
+    percentile_cont(0.5) WITHIN GROUP (ORDER BY r60) m60, avg(mfe60) mfe, avg(mae60) mae,
+    avg((mfe60 >= 1)::int) tp1, avg((mae60 <= -1)::int) sl1`;
+  const [bots, dirs, prem, strat, last] = await Promise.all([
+    q(`SELECT bot, ${agg} FROM karne_signals WHERE ${W} GROUP BY 1 ORDER BY 1`, [days]),
+    q(`SELECT bot, dir, ${agg} FROM karne_signals WHERE ${W} GROUP BY 1,2 ORDER BY 1,2`, [days]),
+    q(`SELECT dir, star, (div1 AND div5) d15, wt, ${agg} FROM karne_signals WHERE bot='m1-premium' AND ${W} GROUP BY 1,2,3,4 ORDER BY 1,2,3,4`, [days]),
+    q(`SELECT bot, strategy, dir, ${agg} FROM karne_signals WHERE bot NOT IN ('m1','m1-premium') AND ${W} GROUP BY 1,2,3 HAVING count(*) >= 10 ORDER BY 1,2,3`, [days]),
+    q(`SELECT max(t) son, min(t) ilk FROM karne_signals WHERE ${W}`, [days])]);
+  const PCT = new Set(['k60', 'k240', 'tp1', 'sl1']), NUM = new Set(['o15', 'o60', 'o240', 'm60', 'mfe', 'mae']);
+  const fix = r => Object.fromEntries(Object.entries(r).map(([k, v]) => [k, v == null ? null : PCT.has(k) ? Math.round(Number(v) * 100) : NUM.has(k) ? R(v) : v]));
+  const data = { days, ilk: last[0].ilk, son: last[0].son, bots: bots.map(fix), dirs: dirs.map(fix), prem: prem.map(fix), strat: strat.map(fix) };
+  KC.set(key, { at: Date.now(), data }); return data;
+}
+async function coinHist(sym, days) {
+  return (await q(`SELECT s.bot, s.dir, s.strategy, extract(epoch FROM s.t) * 1000 AS t, s.price, k.r60, k.r240
+    FROM karne_signals k JOIN LATERAL (SELECT bot, dir, strategy, t, price FROM signals WHERE symbol = k.symbol AND bot = k.bot AND t = k.t LIMIT 1) s ON true
+    WHERE k.symbol = $1 AND k.t >= now() - make_interval(days => $2::int) ORDER BY k.t DESC LIMIT 400`, [sym, days])).map(r => ({ ...r, t: Number(r.t), r60: R(r.r60), r240: R(r.r240) }));
+}
+// ---------- Kasa (kişisel işlem kaydı, %30 hedef) — ASIL KAYIT VERİTABANI (kasa_periods, kasa_trades) ----------
+// 11.11.2026'ya kadar asıl kayıt data\kasa.json'du; artık dosya kullanılmıyor (ilk açılışta arşiv adına çevrilir).
+// Bellekteki biçim: { active, nextId, periods:[{id,start:'YYYY-MM-DD',capital,closedAt,trades:[{id,coin,date,time,kasa|null,pnl|null,note,bot,dir}]}] }
 const KASA = path.join(ROOT, 'kasa.json');
 const trDate = (t = Date.now()) => new Date(t + 3 * 3600e3).toISOString().slice(0, 10);
-function kasaLoad() {
-  try { return JSON.parse(fs.readFileSync(KASA, 'utf8')); }
-  catch { return { active: 1, nextId: 1, periods: [{ id: 1, start: trDate(), capital: 500, closedAt: null, trades: [] }] }; }
+const nn = v => v == null ? null : Number(v);
+async function kasaLoad(c) {
+  const run = (sql, a) => c ? c.query(sql, a).then(r => r.rows) : q(sql, a);
+  let ps = await run('SELECT id, start::text AS start, capital, closed_at::text AS closed_at FROM kasa_periods ORDER BY id');
+  if (!ps.length) { await run('INSERT INTO kasa_periods (id, start, capital, closed_at) VALUES (1, $1, 500, NULL) ON CONFLICT DO NOTHING', [trDate()]); ps = await run('SELECT id, start::text AS start, capital, closed_at::text AS closed_at FROM kasa_periods ORDER BY id'); }
+  const ts = await run('SELECT id, period_id, coin, date::text AS date, time, kasa, pnl, note, bot, dir FROM kasa_trades ORDER BY id');
+  const periods = ps.map(p => ({ id: p.id, start: p.start, capital: Number(p.capital), closedAt: p.closed_at || null, trades: ts.filter(t => t.period_id === p.id).map(t => ({ id: t.id, coin: t.coin || '', date: t.date, time: t.time || '', kasa: nn(t.kasa), pnl: nn(t.pnl), note: t.note || '', bot: t.bot || null, dir: t.dir || null })) }));
+  const open = periods.filter(p => !p.closedAt);
+  return { active: (open.length ? open[open.length - 1] : periods[periods.length - 1]).id, nextId: Math.max(0, ...ts.map(t => t.id)) + 1, periods };
 }
-function kasaSave(d) {
-  fs.mkdirSync(ROOT, { recursive: true });
-  try { if (fs.existsSync(KASA)) fs.copyFileSync(KASA, KASA + '.yedek'); } catch { }
-  fs.writeFileSync(KASA + '.tmp', JSON.stringify(d, null, 1)); fs.renameSync(KASA + '.tmp', KASA);
+async function kasaWrite(c, d) {
+  await c.query('DELETE FROM kasa_trades'); await c.query('DELETE FROM kasa_periods');
+  for (const per of d.periods) {
+    await c.query('INSERT INTO kasa_periods (id, start, capital, closed_at) VALUES ($1,$2,$3,$4)', [per.id, per.start, per.capital, per.closedAt || null]);
+    for (const t of per.trades) await c.query('INSERT INTO kasa_trades (id, period_id, coin, date, time, kasa, pnl, note, bot, dir) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)', [t.id, per.id, t.coin, t.date, t.time, t.kasa, t.pnl, t.note, t.bot || null, t.dir || null]);
+  }
+}
+// Değişiklikler sırayla ve tek işlemde (transaction): oku → değiştir → yaz. Hata olursa hiçbir şey değişmez ve kullanıcıya hata döner.
+let kasaQ = Promise.resolve();
+function kasaTx(fn) {
+  const run = async () => { const p = db(); if (!p) throw new Error('veritabanı bağlantısı yok'); const c = await p.connect();
+    try { await c.query('BEGIN'); await c.query('LOCK TABLE kasa_periods IN EXCLUSIVE MODE'); const d = await kasaLoad(c); fn(d); await kasaWrite(c, d); await c.query('COMMIT'); return d; }
+    catch (e) { await c.query('ROLLBACK').catch(() => { }); throw e; } finally { c.release(); } };
+  const r = kasaQ.then(run, run); kasaQ = r.catch(() => { }); return r;
+}
+// Tek seferlik: eski kasa.json → veritabanı (tablo boşsa) ve dosyanın arşive çevrilmesi
+async function kasaMigrate() {
+  if (!fs.existsSync(KASA)) return;
+  const j = JSON.parse(fs.readFileSync(KASA, 'utf8')), nJ = j.periods.reduce((a, p) => a + p.trades.length, 0);
+  const cur = await kasaLoad(), nD = cur.periods.reduce((a, p) => a + p.trades.length, 0);
+  if (nD < nJ || cur.periods.length < j.periods.length) { await kasaTx(d => { d.periods = j.periods; }); log('kasa.json veritabanına aktarıldı:', j.periods.length, 'dönem,', nJ, 'işlem'); }
+  const chk = await kasaLoad(), nC = chk.periods.reduce((a, p) => a + p.trades.length, 0);
+  if (nC >= nJ && chk.periods.length >= j.periods.length) { const arch = path.join(ROOT, `kasa-arsiv-${trDate()}.json`); fs.renameSync(KASA, arch); log('kasa artık yalnız veritabanında; eski dosya arşivlendi:', path.basename(arch)); }
+  else log('UYARI kasa aktarımı doğrulanamadı; kasa.json yerinde bırakıldı');
 }
 const num = v => { if (v === null || v === undefined || v === '') return null; const n = Number(String(v).replace(/[$\s]/g, '').replace(/\.(?=\d{3}(\D|$))/g, '').replace(',', '.')); return Number.isFinite(n) ? n : null; };
 const sortT = a => [...a].sort((x, y) => (x.date + ' ' + (x.time || '')).localeCompare(y.date + ' ' + (y.time || '')) || x.id - y.id);
@@ -104,24 +174,27 @@ function kasaReports(d) {
   const all = []; for (const p of d.periods) for (const r of kasaCalc(p).rows) all.push({ ...r, period: p.id });
   all.sort((x, y) => (x.date + ' ' + (x.time || '')).localeCompare(y.date + ' ' + (y.time || '')));
   const agg = key => { const m = new Map(); for (const r of all) { const k = key(r); let a = m.get(k); if (!a) m.set(k, a = { key: k, n: 0, wins: 0, pnl: 0, startKasa: r.kasaCalc - r.pnlCalc, endKasa: 0 }); a.n++; if (r.pnlCalc > 0) a.wins++; a.pnl += r.pnlCalc; a.endKasa = r.kasaCalc; } return [...m.values()].map(a => ({ ...a, pct: a.startKasa ? a.pnl / a.startKasa : 0 })); };
-  return { quarters: agg(r => `${r.date.slice(0, 4)} Ç${Math.floor((+r.date.slice(5, 7) - 1) / 3) + 1}`), months: agg(r => r.date.slice(0, 7)), years: agg(r => r.date.slice(0, 4)) };
+  return { quarters: agg(r => `${r.date.slice(0, 4)} Ç${Math.floor((+r.date.slice(5, 7) - 1) / 3) + 1}`), months: agg(r => r.date.slice(0, 7)), years: agg(r => r.date.slice(0, 4)), bots: agg(r => r.bot || '-') };
 }
 function kasaView(d, pid) {
   const p = d.periods.find(x => x.id === (pid || d.active)) || d.periods.find(x => x.id === d.active);
   const c = kasaCalc(p);
   return { active: d.active, period: { id: p.id, start: p.start, capital: p.capital, closedAt: p.closedAt }, periods: d.periods.map(x => ({ id: x.id, start: x.start, capital: x.capital, closedAt: x.closedAt, n: x.trades.length })), ...c, reports: kasaReports(d) };
 }
-function kasaAction(b) {
-  const d = kasaLoad(); const p = d.periods.find(x => x.id === d.active);
-  const clean = t => ({ coin: String(t.coin || '').toUpperCase().trim().slice(0, 30), date: /^\d{4}-\d{2}-\d{2}$/.test(t.date) ? t.date : trDate(), time: /^\d{1,2}:\d{2}$/.test(t.time || '') ? t.time.padStart(5, '0') : '', kasa: num(t.kasa), pnl: num(t.pnl), note: String(t.note || '').slice(0, 200) });
-  if (b.action === 'settings') { if (/^\d{4}-\d{2}-\d{2}$/.test(b.start)) p.start = b.start; if (num(b.capital) > 0) p.capital = num(b.capital); }
-  else if (b.action === 'add') { const t = clean(b); if (t.kasa == null && t.pnl == null) throw new Error('Kasa ya da kazanç/zarar girin'); if (t.kasa != null) t.pnl = null; d.nextId = (d.nextId || 1); p.trades.push({ id: d.nextId++, ...t }); }
-  else if (b.action === 'update') { const i = p.trades.findIndex(x => x.id === Number(b.id)); if (i < 0) throw new Error('kayıt yok'); const t = clean(b); if (t.kasa != null) t.pnl = null; p.trades[i] = { id: p.trades[i].id, ...t }; }
-  else if (b.action === 'delete') { p.trades = p.trades.filter(x => x.id !== Number(b.id)); }
-  else if (b.action === 'newPeriod') { const cur = kasaCalc(p).sum.current; p.closedAt = trDate(); const id = Math.max(...d.periods.map(x => x.id)) + 1; d.periods.push({ id, start: trDate(), capital: Math.round(cur * 100) / 100, closedAt: null, trades: [] }); d.active = id; }
-  else throw new Error('bilinmeyen işlem');
-  kasaSave(d); return kasaView(d);
+async function kasaAction(b) {
+  const clean = t => ({ coin: String(t.coin || '').toUpperCase().trim().slice(0, 30), date: /^\d{4}-\d{2}-\d{2}$/.test(t.date) ? t.date : trDate(), time: /^\d{1,2}:\d{2}$/.test(t.time || '') ? t.time.padStart(5, '0') : '', kasa: num(t.kasa), pnl: num(t.pnl), note: String(t.note || '').slice(0, 200), bot: IDS.has(t.bot) ? t.bot : null, dir: t.dir === 'up' || t.dir === 'down' ? t.dir : null });
+  const d = await kasaTx(d => {
+    const p = d.periods.find(x => x.id === d.active);
+    if (b.action === 'settings') { if (/^\d{4}-\d{2}-\d{2}$/.test(b.start)) p.start = b.start; if (num(b.capital) > 0) p.capital = num(b.capital); }
+    else if (b.action === 'add') { const t = clean(b); if (t.kasa == null && t.pnl == null) throw new Error('Kasa ya da kazanç/zarar girin'); if (t.kasa != null) t.pnl = null; p.trades.push({ id: d.nextId++, ...t }); }
+    else if (b.action === 'update') { const i = p.trades.findIndex(x => x.id === Number(b.id)); if (i < 0) throw new Error('kayıt yok'); const t = clean(b); if (t.kasa != null) t.pnl = null; p.trades[i] = { id: p.trades[i].id, ...t }; }
+    else if (b.action === 'delete') { p.trades = p.trades.filter(x => x.id !== Number(b.id)); }
+    else if (b.action === 'newPeriod') { const cur = kasaCalc(p).sum.current; p.closedAt = trDate(); const id = Math.max(...d.periods.map(x => x.id)) + 1; d.periods.push({ id, start: trDate(), capital: Math.round(cur * 100) / 100, closedAt: null, trades: [] }); d.active = id; }
+    else throw new Error('bilinmeyen işlem');
+  });
+  return kasaView(await kasaLoad());
 }
+const KL = new Map();
 const readBody = req => new Promise((ok, no) => { let s = ''; req.on('data', c => { s += c; if (s.length > 1e6) req.destroy(); }); req.on('end', () => { try { ok(JSON.parse(s || '{}')); } catch (e) { no(e); } }); });
 
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml', '.ico': 'image/x-icon' };
@@ -130,20 +203,34 @@ const send = (res, code, obj) => { res.writeHead(code, { 'content-type': 'applic
 http.createServer((req, res) => {
   try {
     const u = new URL(req.url, 'http://x');
+    if (u.pathname.startsWith('/api/t/') && terminal.handle(req, res, u, { q, send, readBody, log })) return;
     if (u.pathname === '/api/version') return send(res, 200, { version: VERSION, stamp: versionStamp() });
     if (u.pathname === '/api/status') return send(res, 200, { version: VERSION, engine: engineStatus(), now: Date.now() });
-    if (u.pathname === '/api/kasa' && req.method === 'GET') return send(res, 200, kasaView(kasaLoad(), Number(u.searchParams.get('period')) || null));
-    if (u.pathname === '/api/kasa' && req.method === 'POST') { readBody(req).then(b => send(res, 200, kasaAction(b))).catch(e => send(res, 400, { error: e.message })); return; }
+    if (u.pathname === '/api/kasa' && req.method === 'GET') { kasaLoad().then(d => send(res, 200, kasaView(d, Number(u.searchParams.get('period')) || null))).catch(e => send(res, 503, { error: 'Kasa okunamadı: ' + e.message })); return; }
+    if (u.pathname === '/api/kasa' && req.method === 'POST') { readBody(req).then(b => kasaAction(b)).then(v => send(res, 200, v)).catch(e => send(res, 400, { error: e.message })); return; }
+    if (u.pathname === '/api/karne') { const days = Math.min(30, Math.max(1, Number(u.searchParams.get('days') || 7))); karne(days).then(d => send(res, 200, d)).catch(e => send(res, 503, { error: e.message })); return; }
+    if (u.pathname === '/api/coinhist') { const sym = (u.searchParams.get('symbol') || '').toUpperCase().replace(/[^A-Z0-9]/g, ''), days = Math.min(14, Math.max(1, Number(u.searchParams.get('days') || 7))); coinHist(sym, days).then(d => send(res, 200, d)).catch(e => send(res, 503, { error: e.message })); return; }
+    if (u.pathname === '/api/klines') {
+      const sym = (u.searchParams.get('symbol') || '').toUpperCase().replace(/[^A-Z0-9]/g, ''), iv = ['1m', '5m', '15m', '1h', '4h'].includes(u.searchParams.get('interval')) ? u.searchParams.get('interval') : '5m';
+      const lim = Math.min(500, Number(u.searchParams.get('limit') || 200)), key = `${sym}|${iv}|${lim}`, c = KL.get(key);
+      if (c && Date.now() - c.at < 15e3) return send(res, 200, c.data);
+      fetch(`https://fapi.binance.com/fapi/v1/klines?symbol=${sym}&interval=${iv}&limit=${lim}`).then(r => r.json()).then(a => {
+        if (!Array.isArray(a)) return send(res, 400, { error: a.msg || 'Binance hata' });
+        const data = a.map(k => ({ t: k[0], o: +k[1], h: +k[2], l: +k[3], c: +k[4] })); KL.set(key, { at: Date.now(), data }); if (KL.size > 200) KL.delete(KL.keys().next().value); send(res, 200, data);
+      }).catch(e => send(res, 502, { error: e.message }));
+      return;
+    }
     if (u.pathname === '/api/bots') {
       const now = Date.now();
       return send(res, 200, BOTS.map(({ gap, ...b }) => { const a = msgs.get(b.id); const n24 = a.filter(m => now - m.first < 24 * 3600e3).length, n1 = a.filter(m => now - m.first < 3600e3).length; return { ...b, n24, n1, last: a.length ? a[a.length - 1].t : null }; }));
     }
     if (u.pathname === '/api/messages') {
-      const bot = u.searchParams.get('bot') || 'all', q = (u.searchParams.get('q') || '').toUpperCase().trim();
+      const bot = u.searchParams.get('bot') || 'all', q = (u.searchParams.get('q') || '').toUpperCase().trim(), sym = (u.searchParams.get('sym') || '').toUpperCase().trim();
       const dir = u.searchParams.get('dir') || '', after = Number(u.searchParams.get('after') || 0), limit = Math.min(500, Number(u.searchParams.get('limit') || 200));
       let list = [];
       for (const [id, a] of msgs) if (bot === 'all' || bot === id) for (const m of a) list.push({ bot: id, ...m });
       if (q) list = list.filter(m => m.symbol && m.symbol.includes(q));
+      if (sym) list = list.filter(m => m.symbol === sym);
       if (dir) list = list.filter(m => m.dir === dir);
       if (after) list = list.filter(m => m.seq > after);
       list.sort((x, y) => y.t - x.t || y.seq - x.seq);
@@ -154,4 +241,4 @@ http.createServer((req, res) => {
     res.writeHead(200, { 'content-type': MIME[path.extname(f)] || 'application/octet-stream', 'cache-control': 'no-cache' });
     fs.createReadStream(f).pipe(res);
   } catch (e) { send(res, 500, { error: e.message }); }
-}).listen(PORT, HOST, () => log(`Botlar ${VERSION} → http://localhost:${PORT}`));
+}).listen(PORT, HOST, () => { log(`Botlar ${VERSION} → http://localhost:${PORT}`); kasaMigrate().catch(e => log('kasa aktarım hatası:', e.message)); poll(); setInterval(poll, 1000); });

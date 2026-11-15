@@ -1,0 +1,1 @@
+(async () => { for (const u of ['http://127.0.0.1:3200/api/version', 'http://127.0.0.1:3200/api/karne?days=7', 'http://127.0.0.1:3200/api/coinhist?symbol=BTCUSDT&days=7', 'http://127.0.0.1:3200/']) { const r = await fetch(u); const t = await r.text(); console.log(r.status, t.length, t.slice(0, 700).replace(/\s+/g, ' ')); } })();
