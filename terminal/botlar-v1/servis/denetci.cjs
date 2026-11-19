@@ -1,7 +1,7 @@
 'use strict';
 // Botlar V1 denetçisi: Windows açılışında (Görev Zamanlayıcı, SYSTEM) başlar; motoru, web sunucusunu ve veritabanı
 // yazıcısını çalıştırır, çökerse yeniden başlatır, her gece veritabanı yedeği alır.
-// Bir parçayı yeniden başlatmak için: data\kontrol\<isim>.yeniden dosyası oluşturun (motor | web | yazici | mumlar | karne).
+// Bir parçayı yeniden başlatmak için: data\kontrol\<isim>.yeniden dosyası oluşturun (motor | web | yazici | mumlar | karne | turev | akis).
 const fs = require('node:fs'), path = require('node:path'), { spawn, execFile } = require('node:child_process');
 const V1 = path.resolve(__dirname, '..'), DATA = path.join(V1, 'data'), LOGD = path.join(DATA, 'log'), CTRL = path.join(DATA, 'kontrol'), BAK = path.join(DATA, 'yedek');
 const PGBIN = path.resolve(V1, '..', '..', 'araclar', 'pgsql', 'bin');
@@ -13,6 +13,7 @@ const PARTS = {
   mumlar: ['db/mumlar.cjs'],   // 5 dk'lık Binance mumları (karne için)
   karne: ['db/karne.cjs'],     // sinyal karnesi, 15 dk'da bir
   turev: ['db/turev.cjs'],     // OI + long/short geçmişi, 6 saatte bir (Binance yalnız 30 gün tutuyor)
+  akis: ['db/akis.cjs'],       // tasfiyeler + büyük işlemler, sürekli WebSocket (V1.16.0; Binance sonradan vermiyor)
 };
 const now = () => new Date().toLocaleString('tr-TR', { timeZone: 'Europe/Istanbul' });
 const DLOG = path.join(LOGD, 'denetci.log');
@@ -46,7 +47,7 @@ function writeStatus() {
 function control() {
   let files = []; try { files = fs.readdirSync(CTRL); } catch { return; }
   for (const f of files) {
-    const m = f.match(/^(motor|web|yazici|mumlar|karne|turev)\.yeniden$/); try { fs.unlinkSync(path.join(CTRL, f)); } catch { }
+    const m = f.match(/^(motor|web|yazici|mumlar|karne|turev|akis)\.yeniden$/); try { fs.unlinkSync(path.join(CTRL, f)); } catch { }
     if (m && st[m[1]] && st[m[1]].proc) { say('yeniden başlatma isteği', m[1]); st[m[1]].stopping = true; st[m[1]].proc.kill(); }
   }
 }

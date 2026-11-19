@@ -1,6 +1,7 @@
 'use strict';
 // 5 dakikalık Binance vadeli mumlarını (sinyal görülen bütün coinler) klines_5m tablosuna toplar ve güncel tutar.
 // İlk çalışmada 24.10.2026'dan bugüne doldurur; sonra her 5 dakikada eksik mumları ekler. Karne hesabı bu tabloyu kullanır.
+// V1.16.0: qb = piyasa ALIŞ tutarı (USDT, Binance 11. alan takerBuyQuoteVolume) → satış = qv − qb, CVD. Eski satırların qb'si db/mumlar-qb.cjs ile doldurulur.
 const fs = require('node:fs'), path = require('node:path'), { Pool } = require('pg');
 const pool = new Pool({ ...JSON.parse(fs.readFileSync(path.join(__dirname, 'baglanti.json'), 'utf8')), max: 3 });
 const START = Date.parse('2026-10-24T00:00:00Z'), STEP = 300e3, GAP_MS = 80;
@@ -32,8 +33,8 @@ async function fill(sym, lastT) {
     let k; try { k = await get(`https://fapi.binance.com/fapi/v1/klines?symbol=${sym}&interval=5m&startTime=${from}&limit=${lim}`); }
     catch (e) { if (e.code === -1121) return { added: -1, last }; throw e; }                 // geçersiz/delist sembol
     k = k.filter(x => x[0] <= closedUntil); if (!k.length) break;
-    const vals = [], ph = k.map((x, i) => { vals.push(sym, new Date(x[0]).toISOString(), +x[1], +x[2], +x[3], +x[4], +x[7]); const b = i * 7; return `($${b + 1},$${b + 2},$${b + 3},$${b + 4},$${b + 5},$${b + 6},$${b + 7})`; });
-    added += (await pool.query(`INSERT INTO klines_5m (symbol,t,o,h,l,c,qv) VALUES ${ph.join(',')} ON CONFLICT DO NOTHING`, vals)).rowCount;
+    const vals = [], ph = k.map((x, i) => { vals.push(sym, new Date(x[0]).toISOString(), +x[1], +x[2], +x[3], +x[4], +x[7], +x[10]); const b = i * 8; return `($${b + 1},$${b + 2},$${b + 3},$${b + 4},$${b + 5},$${b + 6},$${b + 7},$${b + 8})`; });
+    added += (await pool.query(`INSERT INTO klines_5m (symbol,t,o,h,l,c,qv,qb) VALUES ${ph.join(',')} ON CONFLICT (symbol,t) DO UPDATE SET qb = EXCLUDED.qb WHERE klines_5m.qb IS NULL`, vals)).rowCount;
     last = k[k.length - 1][0]; from = last + STEP; if (k.length < lim) break;
   }
   return { added, last };
@@ -55,6 +56,7 @@ async function cycle(first) {
 const BAD = new Set();   // geçersiz/delist semboller: tekrar tekrar sorulmaz (süreç yeniden başlayınca sıfırlanır)
 (async () => {
   await pool.query(`CREATE TABLE IF NOT EXISTS klines_5m (symbol text NOT NULL, t timestamptz NOT NULL, o double precision, h double precision, l double precision, c double precision, qv double precision, PRIMARY KEY (symbol, t))`);
+  await pool.query('ALTER TABLE klines_5m ADD COLUMN IF NOT EXISTS qb double precision');
   log('mum toplayıcı başladı');
   const r = await cycle(true); log('ilk doldurma bitti:', r.syms, 'coin,', r.tot, 'mum eklendi,', r.bad, 'geçersiz sembol');
   if (process.argv.includes('--bir-kez')) { await pool.end(); return; }

@@ -17,6 +17,12 @@ const SQL = {
   ls: `SELECT (extract(epoch FROM max(l.t)) * 1000)::float8 AS t, (array_agg(l.top_long ORDER BY l.t DESC))[1] AS a, (array_agg(l.global_long ORDER BY l.t DESC))[1] AS g,
        (array_agg(p.top_pos_long ORDER BY l.t DESC))[1] AS p FROM ls_15m l LEFT JOIN lsp_15m p ON p.symbol = l.symbol AND p.t = l.t
        WHERE l.symbol = $1 AND l.t >= $2 GROUP BY date_bin($3::interval, l.t, timestamptz 'epoch') ORDER BY 1`,
+  // akış toplayıcının (db/akis.cjs) tabloları
+  akisBig: `SELECT (extract(epoch FROM t) * 1000)::float8 AS t, fiyat, usd, yon FROM buyuk_islem WHERE symbol = $1 AND t > now() - interval '15 minutes' ORDER BY t`,
+  akisLiq: `SELECT (extract(epoch FROM t) * 1000)::float8 AS t, yon, usd FROM tasfiye WHERE symbol = $1 AND t > now() - interval '60 minutes' ORDER BY t`,
+  akisKap: `SELECT count(*) FILTER (WHERE t > now() - interval '16 minutes' AND bagli = toplam AND toplam > 0)::int AS d15,
+       count(*) FILTER (WHERE bagli = toplam AND toplam > 0)::int AS d60, (extract(epoch FROM max(t)) * 1000)::float8 AS son FROM akis_kapsam WHERE t > now() - interval '61 minutes'`,
+  liq1h: `SELECT symbol, coalesce(sum(usd) FILTER (WHERE yon = 'L'), 0)::float8 AS l, coalesce(sum(usd) FILTER (WHERE yon = 'S'), 0)::float8 AS s FROM tasfiye WHERE t > now() - interval '1 hour' GROUP BY symbol`,
   oi: `SELECT (extract(epoch FROM max(t)) * 1000)::float8 AS t, (array_agg(oi_usd ORDER BY t DESC))[1] AS v FROM oi_5m
        WHERE symbol = $1 AND t >= $2 GROUP BY date_bin($3::interval, t, timestamptz 'epoch') ORDER BY 1`,
 };
@@ -120,7 +126,7 @@ function create(opt = {}) {
     const path = `/fapi/v1/klines?symbol=${sym}&interval=${iv}&limit=${limit}${end ? `&endTime=${end}` : ''}`;
     return cached('k|' + path, end ? 300e3 : 4e3, path, deps, raw => {
       if (!Array.isArray(raw)) throw err(502, 'Binance mum yanıtı beklenen biçimde değil');
-      return raw.map(k => [Number(k[0]), Number(k[1]), Number(k[2]), Number(k[3]), Number(k[4]), Number(k[7])]);
+      return raw.map(k => [Number(k[0]), Number(k[1]), Number(k[2]), Number(k[3]), Number(k[4]), Number(k[7]), Number(k[10])]);   // 7. alan: piyasa ALIŞ tutarı (USDT) → CVD
     });
   }
   const oiTf = raw => { if (!Array.isArray(raw)) throw err(502, 'Binance OI yanıtı beklenen biçimde değil'); return raw.map(x => [Number(x.timestamp), num(x.sumOpenInterest), num(x.sumOpenInterestValue)]).filter(x => Number.isFinite(x[0])).sort((a, b) => a[0] - b[0]); };
@@ -132,7 +138,7 @@ function create(opt = {}) {
     return cached('o|' + path, 60e3, path, deps, oiTf);
   }
   // Grafik alt panelleri (Market Exposure, Funding, OI, Trader Positioning). Geçmiş veritabanından; veritabanının bittiği yerden bugüne
-  // Binance'ten küçük parçalar: 3 oran ucu (15m × 96) + openInterestHist 5m × 500 (OI paneliyle aynı anahtar) → coin başına 5 dk'da 4 /futures/data isteği.
+  // Binance'ten küçük parçalar: 3 oran ucu (5m × 288) + openInterestHist 5m × 500 (OI paneliyle aynı anahtar) → coin başına 5 dk'da 4 /futures/data isteği.
   // Funding geçmişi /fapi/v1/fundingRate (1.000 olay, 10 dk önbellek). Binance kısmı başarısız olursa veritabanı kısmı yine döner (eksik alanında neden).
   async function turev(p, deps) {
     const sym = cleanSym(p.get('symbol')); if (!sym) throw err(400, 'Geçersiz sembol');
@@ -147,9 +153,10 @@ function create(opt = {}) {
     } catch (e) { miss('veritabanı', e); }
     const f = deps.fetch || globalThis.fetch, lg = deps.log || console.log;
     // oranlar: veritabanının son kaydından sonrası
+    // oranlar 5 dk'lık: Binance bunları 5 dk'da bir hesaplar (daha sık değer yok); 288 × 5 dk = 24 sa
     try {
       const ser = [];
-      for (const [k, ep] of RATIO) { const path = `/futures/data/${ep}?symbol=${sym}&period=15m&limit=96`; ser.push([k, await cached('r|' + path, 300e3, path, { fetch: f, log: lg }, raw => { if (!Array.isArray(raw)) throw err(502, 'Binance oran yanıtı beklenen biçimde değil'); return raw.map(x => [Number(x.timestamp), num(x.longAccount != null ? x.longAccount : x.longPosition)]).filter(x => Number.isFinite(x[0])).sort((a, b) => a[0] - b[0]); })]); }
+      for (const [k, ep] of RATIO) { const path = `/futures/data/${ep}?symbol=${sym}&period=5m&limit=288`; ser.push([k, await cached('r|' + path, 300e3, path, { fetch: f, log: lg }, raw => { if (!Array.isArray(raw)) throw err(502, 'Binance oran yanıtı beklenen biçimde değil'); return raw.map(x => [Number(x.timestamp), num(x.longAccount != null ? x.longAccount : x.longPosition)]).filter(x => Number.isFinite(x[0])).sort((a, b) => a[0] - b[0]); })]); }
       const m = new Map(), col = { top: 1, glob: 2, pos: 3 };
       for (const [k, rows] of ser) for (const [ts, v] of rows) { let r = m.get(ts); if (!r) m.set(ts, r = [ts, null, null, null]); r[col[k]] = v == null ? null : v * 100; }
       const live = [...m.values()].sort((a, b) => a[0] - b[0]), lastDb = out.ls.length ? out.ls[out.ls.length - 1][0] : -1;
@@ -212,10 +219,160 @@ function create(opt = {}) {
     throw err(400, "Bilinmeyen işlem (ekle | sil)");
   }
 
+  // ---------- Canlı fiyat (V1.10.0) ----------
+  // Sayfa GET /api/t/canli?symbol=X ile SSE (text/event-stream) açar. Sunucu Binance'e TEK WebSocket bağlantısı tutar
+  // (wss://fstream.binance.com/market/stream; motorla aynı yol), yalnız izlenen coinlerin <sym>@aggTrade akışına SUBSCRIBE olur,
+  // işlemleri 100 ms'lik paketlerde toplar: { s, T (son işlem zamanı), c, h, l, q (USDT hacim), n (işlem sayısı) }.
+  // V1.12.0: aynı bağlantıdan <sym>@markPrice@1s → { s, typ: 'm', r (tahmini funding %), T (sonraki ödeme), p (mark) } ve
+  // <sym>@ticker (1 sn) → { s, typ: 't', c, P (24s %), q (24s USDT hacim) } doğrudan iletilir.
+  // V1.13.0 (kayan yazı): paket ayrıca qb / qs (piyasa ALIŞ / SATIŞ tutarı; aggTrade m=true → agresif taraf satıcı) ve
+  // big = [[T, fiyat, USD, 1 alış | -1 satış]] (≥ 10.000 USD tek işlemler, paket başına en çok 20) taşır.
+  // Tüm piyasanın tasfiyeleri (!forceOrder@arr; Binance coin başına saniyede en fazla 1 tasfiye bildirir → toplamlar ALT SINIRDIR)
+  // 60 dk tutulur: seçili coinin tasfiyesi { s, typ: 'l', k: 'L' long | 'S' short, usd, p, T }, piyasa özeti 15 sn'de bir ve bağlanınca
+  // { typ: 'g', since, m5: {L, S}, h1: {L, S}, top: [[sembol, USD]] } (izleyen yokken ölçülmez; since = ölçüm başlangıcı).
+  // REST ağırlığı yok. Bağlantı 45 sn sessiz kalırsa kapatılıp 3 sn sonra yeniden açılır; izleyen kalmayınca 60 sn sonra kapanır.
+  const WSURL = opt.wsUrl || 'wss://fstream.binance.com/market/stream', WS = opt.WebSocket || globalThis.WebSocket, PACK_MS = 100, MAX_SSE = 20;
+  const L = { liq: [], liqSince: 0, gliq: false, subs: new Map(), ws: null, live: new Set(), id: 0, lastMsg: 0, idleAt: 0, opened: 0, msgs: 0, sent: 0, err: '', acc: new Map(), timer: null, tick: null };
+  function lsend(m) { try { if (L.ws && L.ws.readyState === 1) L.ws.send(JSON.stringify(m)); } catch { } }
+  const streams = s => [s.toLowerCase() + '@aggTrade', s.toLowerCase() + '@markPrice@1s', s.toLowerCase() + '@ticker'];
+  const lpush = (s, o) => { const set = L.subs.get(s); if (!set) return; const line = 'data: ' + JSON.stringify(o) + '\n\n'; for (const r of set) { try { r.write(line); L.sent++; } catch { } } };
+  function lsync() {
+    if (!L.ws || L.ws.readyState !== 1) return;
+    if (!L.gliq) { lsend({ method: 'SUBSCRIBE', params: ['!forceOrder@arr'], id: ++L.id }); L.gliq = true; if (!L.liqSince) L.liqSince = now(); }
+    const add = [...L.subs.keys()].filter(s => !L.live.has(s)), rem = [...L.live].filter(s => !L.subs.has(s));
+    if (add.length) { lsend({ method: 'SUBSCRIBE', params: add.flatMap(streams), id: ++L.id }); add.forEach(s => L.live.add(s)); }
+    if (rem.length) { lsend({ method: 'UNSUBSCRIBE', params: rem.flatMap(streams), id: ++L.id }); rem.forEach(s => L.live.delete(s)); }
+  }
+  function lflush() {
+    L.timer = null;
+    for (const [s, a] of L.acc) { const set = L.subs.get(s); if (!set) continue; const line = 'data: ' + JSON.stringify(a) + '\n\n'; for (const r of set) { try { r.write(line); L.sent++; } catch { } } }
+    L.acc.clear();
+  }
+  function lconnect() {
+    if (L.ws || !WS) return;
+    let ws; try { ws = new WS(WSURL); } catch (e) { L.err = String(e && e.message || e); return; }
+    L.ws = ws; L.live.clear(); L.gliq = false; L.lastMsg = now(); L.opened++;
+    ws.onopen = () => { L.err = ''; lsync(); };
+    ws.onmessage = e => {
+      L.lastMsg = now(); let m; try { m = JSON.parse(typeof e.data === 'string' ? e.data : String(e.data)); } catch { return; }
+      const d = m && m.data; if (!d) return;
+      if (d.e === 'markPriceUpdate') { L.msgs++; const r = num(d.r); if (L.subs.has(d.s)) lpush(d.s, { s: d.s, typ: 'm', r: r == null ? null : r * 100, T: num(d.T), p: num(d.p) }); return; }
+      if (d.e === 'forceOrder' && d.o) {
+        L.msgs++; const o = d.o, px = num(o.ap) || num(o.p), qt = num(o.z) || num(o.q), usd = px && qt ? px * qt : null; if (!usd) return;
+        const T = num(o.T) || now(), k = o.S === 'SELL' ? 'L' : 'S'; L.liq.push([T, o.s, k, usd]);
+        const lim = now() - 3600e3; while (L.liq.length && (L.liq[0][0] < lim || L.liq.length > 50000)) L.liq.shift();
+        if (L.subs.has(o.s)) lpush(o.s, { s: o.s, typ: 'l', k, usd, p: px, T }); return;
+      }
+      if (d.e === '24hrTicker') { L.msgs++; if (L.subs.has(d.s)) lpush(d.s, { s: d.s, typ: 't', c: num(d.c), P: num(d.P), q: num(d.q) }); return; }
+      if (d.e !== 'aggTrade') return; L.msgs++;
+      const s = d.s, p = Number(d.p), q = Number(d.q); if (!L.subs.has(s) || !(p > 0)) return;
+      const v = p * q, sell = !!d.m; let a = L.acc.get(s);
+      if (a) { a.c = p; if (p > a.h) a.h = p; if (p < a.l) a.l = p; a.q += v; a.n++; a.T = d.T; } else L.acc.set(s, a = { s, T: d.T, c: p, h: p, l: p, q: v, n: 1, qb: 0, qs: 0, big: [] });
+      if (sell) a.qs += v; else a.qb += v; if (v >= 1e4 && a.big.length < 20) a.big.push([d.T, p, Math.round(v), sell ? -1 : 1]);
+      if (!L.timer) L.timer = setTimeout(lflush, PACK_MS);
+    };
+    ws.onerror = e => { L.err = String(e && e.message || 'WebSocket hatası'); };
+    ws.onclose = () => { if (L.ws === ws) { L.ws = null; L.live.clear(); } if (L.subs.size) setTimeout(lconnect, 3000); };
+  }
+  function liqSum() {
+    const t = now(), m5 = { L: 0, S: 0 }, h1 = { L: 0, S: 0 }, by = new Map();
+    for (const [T, s, k, usd] of L.liq) { if (T < t - 3600e3) continue; h1[k] += usd; if (T >= t - 300e3) m5[k] += usd; by.set(s, (by.get(s) || 0) + usd); }
+    return { typ: 'g', since: L.liqSince, m5, h1, top: [...by].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([s, v]) => [s, Math.round(v)]) };
+  }
+  function lbroadcast() { if (!L.liqSince) return; const line = 'data: ' + JSON.stringify(liqSum()) + '\n\n'; for (const set of L.subs.values()) for (const r of set) { try { r.write(line); } catch { } } }
+  function lwatch() {
+    const t = now(); lbroadcast();
+    for (const set of L.subs.values()) for (const r of set) { try { r.write(': canli\n\n'); } catch { } }   // tarayıcı/vekil bağlantıyı kapatmasın
+    if (L.ws && L.subs.size && t - L.lastMsg > 45e3) { try { L.ws.close(); } catch { } L.ws = null; L.live.clear(); lconnect(); }
+    if (!L.subs.size) { if (L.ws && t - L.idleAt > 60e3) { const w = L.ws; L.ws = null; L.live.clear(); L.liq = []; L.liqSince = 0; try { w.close(); } catch { } } if (!L.ws) { clearInterval(L.tick); L.tick = null; } }
+  }
+  function canli(req, res, u) {
+    const sym = cleanSym(u.searchParams.get('symbol'));
+    if (!sym) { res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify({ error: 'Geçersiz sembol' })); return; }
+    let total = 0; for (const s of L.subs.values()) total += s.size;
+    if (total >= MAX_SSE || !WS) { res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify({ error: WS ? 'Çok fazla canlı bağlantı' : 'WebSocket yok' })); return; }
+    res.writeHead(200, { 'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-cache, no-transform', Connection: 'keep-alive', 'X-Accel-Buffering': 'no' });
+    res.write('retry: 3000\n: açık\n\n');
+    let set = L.subs.get(sym); if (!set) L.subs.set(sym, set = new Set()); set.add(res);
+    const bye = () => { const st = L.subs.get(sym); if (st) { st.delete(res); if (!st.size) L.subs.delete(sym); } if (!L.subs.size) L.idleAt = now(); lsync(); };
+    req.on('close', bye); res.on('error', bye);
+    if (!L.tick) L.tick = setInterval(lwatch, 15e3);
+    if (!L.ws) lconnect(); else lsync();
+    if (L.liqSince) { try { res.write('data: ' + JSON.stringify(liqSum()) + '\n\n'); } catch { } }
+  }
+  // ---------- Tarama (V1.15.0): izleme listesinin sütunları, bütün evren için ----------
+  // GET /api/t/tarama istendiği sürece (son istekten 90 sn sonra kapanır) Binance'e en çok 200 akışlık birkaç WebSocket açılır
+  // (motorla aynı yöntem; REST ağırlığı yok): her coin <sym>@kline_1m (1 dk mumda piyasa ALIŞ tutarı Q var) + !markPrice@arr@1s (funding)
+  // + !forceOrder@arr (tasfiye). Coin başına son 6 dakikalık mum tutulur. Dönen satır: [5dk fiyat %, 5dk alış %, 5dk hacim $, funding %, 1 sa long tasfiye $, 1 sa short tasfiye $].
+  const Z = { socks: [], k: new Map(), fr: new Map(), liq: [], since: 0, lastReq: 0, tick: null, syms: [], msgs: 0, out: null, outAt: 0 };
+  function zstop() { for (const s of Z.socks) { s.dead = true; try { s.ws && s.ws.close(); } catch { } } Z.socks = []; Z.k.clear(); Z.fr.clear(); Z.liq = []; Z.since = 0; Z.out = null; if (Z.tick) { clearInterval(Z.tick); Z.tick = null; } }
+  function zsock(streams) {
+    const so = { streams, ws: null, last: 0, dead: false };
+    const open = () => {
+      if (so.dead || !WS) return; let ws; try { ws = new WS(WSURL + '?streams=' + streams.join('/')); } catch { setTimeout(open, 5000); return; }
+      so.ws = ws; so.last = now();
+      ws.onmessage = e => {
+        so.last = now(); let m; try { m = JSON.parse(typeof e.data === 'string' ? e.data : String(e.data)); } catch { return; } const d = m && m.data; if (!d) return; Z.msgs++;
+        if (Array.isArray(d)) { for (const x of d) if (x && x.e === 'markPriceUpdate') { const r = num(x.r); if (r != null) Z.fr.set(x.s, r * 100); } return; }
+        if (d.e === 'kline' && d.k) {
+          const k = d.k, t = Number(k.t); let a = Z.k.get(d.s); if (!a) Z.k.set(d.s, a = []);
+          const row = [t, Number(k.o), Number(k.c), Number(k.q), Number(k.Q)], L = a.length;
+          if (L && a[L - 1][0] === t) a[L - 1] = row; else if (!L || a[L - 1][0] < t) { a.push(row); if (a.length > 6) a.shift(); }
+          return;
+        }
+        if (d.e === 'forceOrder' && d.o) { const o = d.o, px = num(o.ap) || num(o.p), qt = num(o.z) || num(o.q); if (px && qt) { Z.liq.push([num(o.T) || now(), o.s, o.S === 'SELL' ? 0 : 1, px * qt]); const lim = now() - 3600e3; while (Z.liq.length && (Z.liq[0][0] < lim || Z.liq.length > 50000)) Z.liq.shift(); } }
+      };
+      ws.onclose = () => { if (so.ws === ws) so.ws = null; if (!so.dead) setTimeout(open, 3000); };
+      ws.onerror = () => { };
+    };
+    open(); return so;
+  }
+  function zstart(syms) {
+    Z.syms = syms; Z.since = now();
+    const st = syms.map(s => s.toLowerCase() + '@kline_1m'), groups = [];
+    for (let i = 0; i < st.length; i += 200) groups.push(st.slice(i, i + 200));
+    if (!groups.length) groups.push([]);
+    groups[0] = ['!markPrice@arr@1s', '!forceOrder@arr'].concat(groups[0]);
+    Z.socks = groups.map(zsock);
+    Z.tick = setInterval(() => {
+      const t = now(); if (t - Z.lastReq > 90e3) { zstop(); return; }
+      for (const so of Z.socks) if (so.ws && t - so.last > 45e3) { try { so.ws.close(); } catch { } }   // sessiz bağlantıyı yenile
+    }, 15e3);
+  }
+  function zrows() {
+    const t = now(); if (Z.out && t - Z.outAt < 2000) return Z.out;
+    let lq = Z.dbLiq; if (!lq) { lq = new Map(); for (const [T, s, k, u] of Z.liq) { if (T < t - 3600e3) continue; let x = lq.get(s); if (!x) lq.set(s, x = [0, 0]); x[k] += u; } }
+    const rows = {}, r1 = v => v == null || !Number.isFinite(v) ? null : Math.round(v * 100) / 100;
+    for (const s of Z.syms) {
+      const a = Z.k.get(s), fr = Z.fr.get(s), l = lq.get(s); let m5 = null, b5 = null, v5 = null;
+      if (a && a.length) { const w = a.slice(-5), q = w.reduce((x, r) => x + r[3], 0), Q = w.reduce((x, r) => x + r[4], 0); m5 = w[0][1] ? (w[w.length - 1][2] / w[0][1] - 1) * 100 : null; v5 = q; b5 = q > 0 ? Q / q * 100 : null; }
+      rows[s] = [r1(m5), r1(b5), v5 == null ? null : Math.round(v5), fr == null ? null : Math.round(fr * 1e4) / 1e4, l ? Math.round(l[0]) : 0, l ? Math.round(l[1]) : 0];
+    }
+    Z.out = { at: t, since: Z.dbLiq ? Math.min(Z.since, t - 3600e3) : Z.since, liqDb: !!Z.dbLiq, bagli: Z.socks.filter(s => s.ws && s.ws.readyState === 1).length, soket: Z.socks.length, rows }; Z.outAt = t; return Z.out;
+  }
+  async function tarama(d) {
+    Z.lastReq = now();
+    if (d.q && now() - (Z.dbLiqAt || 0) > 15e3) { Z.dbLiqAt = now(); try { const m = new Map(); for (const r of await d.q(SQL.liq1h, [])) m.set(r.symbol, [Number(r.l), Number(r.s)]); Z.dbLiq = m; Z.out = null; } catch { Z.dbLiq = null; } }
+    if (!Z.socks.length) { if (!WS) throw err(503, 'WebSocket yok'); const ev = await evren(d); zstart(Object.keys(ev.rows).filter(s => ev.rows[s][0])); }
+    return zrows();
+  }
+  // GET /api/t/akis?symbol → akış toplayıcının kaydettiği son 15 dk büyük işlem + 1 sa tasfiye; kapsam: son 15/60 dk'nın kaçı tam toplandı.
+  async function akis(p, deps) {
+    const sym = cleanSym(p.get('symbol')); if (!sym) throw err(400, 'Geçersiz sembol'); if (!deps.q) throw err(503, 'Veritabanı yok');
+    try {
+      const [b, l, k] = await Promise.all([deps.q(SQL.akisBig, [sym]), deps.q(SQL.akisLiq, [sym]), deps.q(SQL.akisKap, [])]);
+      const kp = k[0] || {};
+      return { big: b.map(r => [Number(r.t), Number(r.fiyat), Number(r.usd), r.yon === 'S' ? -1 : 1]), liq: l.map(r => [Number(r.t), r.yon, Number(r.usd)]), kapsam: { d15: Number(kp.d15) || 0, d60: Number(kp.d60) || 0, son: kp.son ? Number(kp.son) : null } };
+    } catch (e) { throw err(503, 'Akış kaydı okunamadı: ' + (e.message || e)); }
+  }
+  const canliDurum = () => ({ bagli: !!(L.ws && L.ws.readyState === 1), coin: [...L.subs.keys()], izleyen: [...L.subs.values()].reduce((a, s) => a + s.size, 0), acilis: L.opened, mesaj: L.msgs, gonderilen: L.sent, hata: L.err || null, tarama: { soket: Z.socks.length, bagli: Z.socks.filter(x => x.ws && x.ws.readyState === 1).length, coin: Z.k.size, funding: Z.fr.size, mesaj: Z.msgs, tasfiye1s: Z.liq.length } });
+
   function handle(req, res, u, deps) {
     const p = u.pathname, d = deps || {};
+    if (p === '/api/t/canli') { canli(req, res, u); return true; }
+    if (p === '/api/t/canli-durum') { d.send(res, 200, canliDurum()); return true; }
     const route = p === '/api/t/klines' ? () => klines(u.searchParams, d) : p === '/api/t/oi' ? () => oi(u.searchParams, d)
-      : p === '/api/t/coin' ? () => coin(u.searchParams, d) : p === '/api/t/tickers' ? () => tickers(d) : p === '/api/t/evren' ? () => evren(d) : p === '/api/t/turev' ? () => turev(u.searchParams, d) : p === '/api/t/ozet' ? () => ozet(u.searchParams, d)
+      : p === '/api/t/coin' ? () => coin(u.searchParams, d) : p === '/api/t/tickers' ? () => tickers(d) : p === '/api/t/evren' ? () => evren(d) : p === '/api/t/turev' ? () => turev(u.searchParams, d) : p === '/api/t/ozet' ? () => ozet(u.searchParams, d) : p === '/api/t/tarama' ? () => tarama(d) : p === '/api/t/akis' ? () => akis(u.searchParams, d)
         : p === '/api/t/izleme' && req.method === 'GET' ? () => list(d.q)
           : p === '/api/t/izleme' && req.method === 'POST' ? () => d.readBody(req).catch(() => { throw err(400, 'Gövde JSON değil'); }).then(b => izlemePost(b, d)) : null;
     if (!route) return false;
@@ -227,7 +384,7 @@ function create(opt = {}) {
     });
     return true;
   }
-  return { handle, B, cache, inflight, SQL };
+  return { handle, B, cache, inflight, SQL, L, lflush, lwatch, liqSum, Z, zstop };
 }
 
 const def = create();

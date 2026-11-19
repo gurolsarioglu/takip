@@ -396,3 +396,46 @@ Güncel değerler her zaman Sinyal Masası'nın sağ panelinde.
 - Değişen: `web\terminal.cjs`, `web\public\terminal.html`, `db\test-terminal.cjs` (74 test geçti), `db\terminal-deneme.cjs`. Sahte veriyle 1366×768 ve 1920×1080 ekran denemesi, konsol temiz. Motor yeniden başlatılmadı.
 - Denenmeyenler: gerçek bir delist duyurusu sırasında `deliveryDate` davranışı yalnız Binance belgesine dayanıyor; `topLongShortPositionRatio` yanıtındaki alan adı (`longAccount`) gerçek veride doğrulanacak.
 - Gerçek veride doğrulandı (15.11 23:27): evren 796 coin (motorla aynı; ilk sürümde yalnız tam `PERPETUAL` süzülüp 560 çıkmıştı, `TRADIFI_PERPETUAL` gibi türler eklendi), `topLongShortPositionRatio` alanı `longAccount` dolu geliyor, ARIA'da veritabanı + Binance birleşimi, funding aralığı 4 sa doğru. O an duyurulmuş delist yok.
+
+## 16.11.2026 — V1.10.0: Terminalde canlı fiyat
+- Kullanıcı isteği: "fiyatı anlık izleyebilir miyiz?" Önce: grafikler 5 sn'de bir REST yoklamasıyla güncelleniyordu.
+- Sunucu Binance'e tek WebSocket açar (`/market/stream`, motorla aynı yol), seçili coinin `aggTrade` akışına abone olur, 100 ms paketlerini SSE ile sayfaya iletir. Ön deneme (`parity\tools\ws-test.cjs`): bu yolda `SUBSCRIBE`/`UNSUBSCRIBE` çalışıyor, BTC'de ~20 işlem/sn.
+- Sayfa: 4 grafiğin canlı mumu, başlık fiyatı (CANLI işareti), liste satırı, özet her pakette; mum yoklaması 15 sn'ye indi (Binance REST yükü azaldı). Motor yeniden başlatılmadı.
+- `db\test-terminal.cjs` 83 test (9'u canlı akış, sahte WebSocket ile); `db\terminal-deneme.cjs` sahte işlem akışı üretir.
+
+## 16.11.2026 — V1.11.0: Terminalde DEMA 9
+- Kullanıcı isteği: DEMA 9, kalın sarı çizgi, değeri sağda fiyatın yanında. `Göstergeler ▾` menüsünde (eski adı "TC göstergeleri"), varsayılan açık. Formül bağımsız bir hesapla karşılaştırıldı (300 mum, fark 0). Yalnız `web\public\terminal.html` değişti.
+
+## 16.11.2026 — V1.12.0: Piyasa özetinde canlı funding / 24s, oranlar 5 dk'lık
+- Kullanıcı sordu: özette ne anlık güncellenebilir, doğru olur mu? Karar (kullanıcı bana bıraktı): funding + 24s hacim/% canlı (Binance saniyelik üretiyor, aynı WebSocket, ek yük yok); long/short oranları 15 dk → 5 dk veri (Binance 5 dk'da bir hesaplıyor, anlık değer yok; istek sayısı aynı); emir defteri 15 sn / 100 kademe kaldı (akış yalnız 20 kademe, oran manipülasyona açık); OI 10 sn (Binance akışı yok). 84 test geçti.
+
+## 16.11.2026 — V1.13.0: Terminalde kayan yazı
+- Kullanıcı isteği: kullanım ipucu yerine faydalı bilgi veren kayan yazı (ör. ne kadar long/short açıldı, alıcı mı satıcı mı fazla); içerik bana bırakıldı.
+- Ön deneme (`parity\tools\ws-test2.cjs`, 25 sn): `/market/stream`'de `!forceOrder@arr` geliyor (6 tasfiye), aggTrade'de `m` alanı var (BTC 25 sn: piyasa alışı ~380 bin $, satışı ~520 bin $).
+- "Ne kadar long / short açıldı" doğrudan ölçülemez (her pozisyonun iki tarafı var); onun yerine OI değişimi + fiyat yönüyle hangi tarafın açtığı/kapattığı yorumu, ve piyasa emriyle alış/satış tutarı gösteriliyor. Tasfiye toplamları alt sınır (Binance coin başına saniyede ≤1 bildirir). 87 test geçti.
+
+## 16.11.2026 — V1.14.0: CVD paneli, kayan yazıda BTC yönü + yalnız seçili coin
+- Kullanıcı isteği: kayan yazıda BTC yönü (yükseliş/düşüş) olsun, geri kalan her şey seçili coinle ilgili olsun; CVD eklensin.
+- Mumlara Binance'in piyasa alış tutarı (takerBuyQuoteVolume) eklendi → her zaman diliminde CVD + mum başına alış−satış farkı; ek Binance isteği yok. Kayan yazıdaki alış/satış artık 5 dk mumlarından (coin seçilir seçilmez son ~15 dk görünür).
+- BTC yönü kuralı: 1 sa ≥ %0,3 ve 4 sa aynı yönde → yükseliş/düşüş, değilse yatay (ölçülmüş bir kural değil, okuma kolaylığı). 87 test geçti.
+
+## 16.11.2026 — V1.15.0: İzleme listesine sütunlar ve sıralama
+- Kullanıcı isteği (öneri 4): izleme tahtasını zenginleştir. Seçilebilir sütunlar: Fiyat, 24s %, Hacim, 5dk %, Alış 5dk, Hacim 5dk, Funding, Tasfiye 1s; başlığa tıklayınca 796 coin sıralanır.
+- Veri: web sunucusu Binance'e 4 WebSocket (bütün coinlerin 1 dk mumu + funding dizisi + tasfiyeler; motorla aynı yöntem, REST ağırlığı yok), yalnız terminal açıkken. 15 dk OI sütunu eklenmedi: motor değişikliği + yeniden başlatma gerektirir, kullanıcıya soruldu.
+- 92 test geçti (5'i tarama, sahte WebSocket ile); sahte veriyle 1366×768 ve 1920×1080.
+
+## 16.11.2026 — V1.16.0: Akış sürekli toplanıyor (veritabanına)
+- Kullanıcı isteği (öneri 3): akışı sayfa kapalıyken de topla, veritabanını kullan; planla ve devreye al.
+- Yeni sürekli parça `db\akis.cjs` (denetçi `PARTS`'a eklendi; çalışan denetçi eski listeyle olduğu için şimdilik çalıştırıcı işi `akis1`): tasfiyeler (`tasfiye`), ≥ max(25 bin $, 24s hacmin %0,005'i) piyasa işlemleri (`buyuk_islem`), dakikalık kapsam (`akis_kapsam`). İlk 2 dk: 166 büyük işlem, 21 tasfiye, 5/5 soket, ~600 mesaj/sn.
+- `klines_5m.qb` (piyasa alış tutarı) eklendi: `db\mumlar.cjs` yeni mumlara yazıyor (mumlar yeniden başlatıldı), `db\mumlar-qb.cjs` eski 14,2 milyon satırı dolduruyor (çalıştırıcı işi `mqb1`, 650 ms aralık, ağırlık 5 → ~460/dk, ~3 sa).
+- Bilerek dışarıda: her coin için 1 dk ham akış (ayda ~4 GB; diskte 43 GB boş, %91 dolu).
+- Terminal: `/api/t/akis` → coin seçilince son 15 dk büyük işlem + 1 sa tasfiye hemen; liste `Tasfiye 1s` veritabanından. 95 test geçti. Motor yeniden başlatılmadı.
+
+## 19.11.2026 — V1.17.0: Terminal V2 düzeni ve gösterge motoru
+- Kullanıcı isteği: başka bilgisayarda başka bir ajanın yaptığı Terminal V2'yi (`codex/terminal-v2-workspace`, 0394dcb, 1.9.0 tabanlı) bizdeki hiçbir şeyi bozmadan uygula.
+- Yöntem: kopyalama değil üç yollu birleştirme (taban 1.9.0, bizim 1.16.0, V2). terminal.html'de 19 çakışma elle çözüldü; server.cjs ve terminal-deneme.cjs çakışmasız.
+- Gelen: sağ kenar çubuğu (izleme listesi + bot sinyalleri canlı/arşiv + açılır piyasa özeti), ayraçlar, grafit/bakır tema, gösterge motoru, 90 günlük sinyal arşivi API'si.
+- Korunan: canlı fiyat, kayan yazı, liste sütunları/sıralama, CVD, DEMA 9 (ikisi de motora kayıtlı gösterge oldu), TC katmanları, akış kaydı.
+- Düzeltilen risk: V2 motoru sonuçları önbelleğe alıyor, canlı tik son mumu yerinde değiştiriyordu → `touchLast()` ile önbellek boşaltılıyor.
+- Varsayılan alt paneller V2'deki gibi (ME/FR/OI/TP kapalı; CVD açık). Kayıtlı seçimi olanınki değişmez.
+- 95 + 40 V2 testi + Chromium kabul testi geçti; sahte veriyle 1366×768 ve 1920×1080. Yedek: `parity\yedek\1.16.0`. Motor yeniden başlatılmadı.

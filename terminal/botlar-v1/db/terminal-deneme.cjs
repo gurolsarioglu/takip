@@ -7,8 +7,25 @@ const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
 const terminal = require('../web/terminal.cjs');
+// sahte Binance işlem akışı (canlı fiyat denemesi): abone olunan coinlere ~8 işlem/sn, fiyat sahte mum serisinin etrafında
+class FakeLiveWS {
+  constructor(url) { this.readyState = 0; this.subs = new Set();
+    if (url && url.includes('streams=')) {   // tarama soketi: her coin için 1 dk mum + funding dizisi
+      const syms = url.split('streams=')[1].split('/').filter(x => x.endsWith('@kline_1m')).map(x => x.split('@')[0].toUpperCase());
+      setTimeout(() => { this.readyState = 1; }, 50);
+      this.iv = setInterval(() => { const t = Date.now(), m0 = Math.floor(t / 60e3) * 60e3;
+        for (const s of syms) { const o = price(s, m0), c = price(s, t), r = prng(hash(s) + Math.floor(t / 20e3)), q = (SYMS[s][0] > 100 ? 4e6 : 3e5) * (0.3 + r()); this.onmessage && this.onmessage({ data: JSON.stringify({ stream: s.toLowerCase() + '@kline_1m', data: { e: 'kline', s, k: { t: m0, o: String(o), c: String(c), q: String(q), Q: String(q * Math.min(0.85, Math.max(0.15, 0.5 + (c / o - 1) * 40 + (r() - 0.5) * 0.2))) } } }) }); }
+        this.onmessage && this.onmessage({ data: JSON.stringify({ stream: '!markPrice@arr@1s', data: syms.map(s => ({ e: 'markPriceUpdate', s, r: String(frVal(s, t)) })) }) }); }, 1000);
+      return;
+    } setTimeout(() => { this.readyState = 1; this.onopen && this.onopen(); }, 50);
+    this.iv = setInterval(() => { for (const s of this.subs) { if (s.includes('@')) continue; const t = Date.now(), r = Math.random(), p = price(s, t) * (1 + (r - 0.5) * 0.002); const big = Math.random() < 0.03 ? 40 : 1; this.onmessage && this.onmessage({ data: JSON.stringify({ stream: s.toLowerCase() + '@aggTrade', data: { e: 'aggTrade', s, p: String(p), q: String((50 + r * 500) * big * 1000 / p), T: t, m: Math.random() < 0.42 } }) }); }
+      if (this.liq && Math.random() < 0.15) { const ks = Object.keys(SYMS), s = ks[Math.floor(Math.random() * ks.length)], p = price(s, Date.now()); this.onmessage && this.onmessage({ data: JSON.stringify({ stream: '!forceOrder@arr', data: { e: 'forceOrder', o: { s, S: Math.random() < 0.65 ? 'SELL' : 'BUY', q: String(2e4 * Math.random() / p), p: String(p), ap: String(p), z: String(2e4 * Math.random() / p), T: Date.now() } } }) }); } }, 120); }
+  send(m) { const o = JSON.parse(m); for (const x of o.params) { if (x === '!forceOrder@arr') { this.liq = true; continue; } if (!x.endsWith('@aggTrade')) continue; const s = x.split('@')[0].toUpperCase(); if (o.method === 'SUBSCRIBE') this.subs.add(s); else this.subs.delete(s); } }
+  close() { clearInterval(this.iv); this.readyState = 3; this.onclose && this.onclose(); }
+}
+let TERM = null;
 
-const PORT = 3299, HOST = '127.0.0.1', PUB = path.join(__dirname, '..', 'web', 'public'), BOOT = Date.now();
+const PORT = Number(process.env.DENEME_PORT ?? 3299), HOST = '127.0.0.1', PUB = path.join(__dirname, '..', 'web', 'public'), BOOT = Date.now();
 const VERSION = (() => { try { return fs.readFileSync(path.join(__dirname, '..', 'VERSION'), 'utf8').trim(); } catch { return '?'; } })();
 const log = (...a) => console.log(new Date().toISOString(), ...a);
 const H = 3600e3, D = 24 * H;
@@ -18,7 +35,8 @@ const H = 3600e3, D = 24 * H;
 const SYMS = { BTCUSDT: [95000, 2400, 0.006], ETHUSDT: [3500, 2400, 0.008], SOLUSDT: [150, 1500, 0.011], BNBUSDT: [620, 2000, 0.007], XRPUSDT: [0.62, 2000, 0.01],
   DOGEUSDT: [0.16, 1800, 0.012], ADAUSDT: [0.45, 2000, 0.01], LINKUSDT: [14.2, 1900, 0.011], AVAXUSDT: [28, 1400, 0.012], SUIUSDT: [3.1, 700, 0.015],
   '1000PEPEUSDT': [0.0112, 900, 0.018], AKEUSDT: [0.001234, 300, 0.02], TINYUSDT: [0.00001234, 500, 0.02], NEWUSDT: [2.5, 10, 0.025], ARBUSDT: [0.55, 900, 0.013],
-  OPUSDT: [1.4, 1000, 0.013], APTUSDT: [6.2, 1000, 0.013], WIFUSDT: [1.9, 600, 0.02], TIAUSDT: [4.8, 700, 0.016], INJUSDT: [17, 1000, 0.014] };
+  OPUSDT: [1.4, 1000, 0.013], APTUSDT: [6.2, 1000, 0.013], WIFUSDT: [1.9, 600, 0.02], TIAUSDT: [4.8, 700, 0.016], INJUSDT: [17, 1000, 0.014],
+  ARCUSDT: [0.0486, 400, 0.022] };
 function prng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 const hash = s => { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; };
 const WALK = new Map(); // sembol → { t0, h: [saatlik log fiyat] }
@@ -52,7 +70,7 @@ function bar(sym, o, iv) {
   const r = prng(hash(sym + iv + o)), dur = Math.max(60e3, e - o) / H, base = SYMS[sym][0] > 1000 ? 4e8 : SYMS[sym][0] > 100 ? 8e7 : 6e6;
   const qv = base * dur * (0.4 + r() * 1.2) * (1 + 3 * Math.abs(pc / p0 - 1) * 50), vol = qv / ((p0 + pc) / 2);
   const ref = SYMS[sym][0];
-  return [o, str(p0, ref), str(hi, ref), str(lo, ref), str(pc, ref), vol.toFixed(3), nextOpen(o, iv) - 1, qv.toFixed(4), Math.round(qv / 3000), (vol * 0.5).toFixed(3), (qv * 0.5).toFixed(4), '0'];
+  return [o, str(p0, ref), str(hi, ref), str(lo, ref), str(pc, ref), vol.toFixed(3), nextOpen(o, iv) - 1, qv.toFixed(4), Math.round(qv / 3000), (vol * 0.5).toFixed(3), (qv * Math.min(0.85, Math.max(0.15, 0.5 + (pc / p0 - 1) * 25 + (r() - 0.5) * 0.16))).toFixed(4), '0'];
 }
 const lsVal = (sym, t, k) => { const s = hash(sym) % 1000 + k * 77; return 55 + 9 * Math.sin(t / (2.7 * D) + s) + 4 * Math.sin(t / (9 * H) + s * 2); };
 const frVal = (sym, t) => { const s = hash(sym) % 1000; return 0.0001 + 0.0003 * Math.sin(t / (3 * D) + s) - (sym === 'AKEUSDT' ? 0.003 : 0); };
@@ -113,6 +131,7 @@ function answer(url) {
 }
 
 // ---------- Bellek içi veritabanı (yalnız izleme tablosu) ----------
+setImmediate(() => { TERM = terminal._test.create({ WebSocket: FakeLiveWS }); });
 const DB = { exists: false, rows: [], seq: 0 };
 async function q(sql, args) {
   if (process.env.DENEME_DB === 'yok') throw new Error('deneme: veritabanı kapalı (DENEME_DB=yok)');
@@ -121,6 +140,7 @@ async function q(sql, args) {
   if (sql.startsWith('INSERT INTO izleme')) { if (!DB.rows.some(r => r.symbol === args[0])) DB.rows.push({ symbol: args[0], sira: ++DB.seq }); return []; }
   if (sql.startsWith('SELECT symbol FROM izleme')) return DB.rows.map(r => ({ symbol: r.symbol }));
   if (sql === 'DELETE FROM izleme WHERE symbol = $1') { DB.rows = DB.rows.filter(r => r.symbol !== args[0]); return []; }
+  if (/FROM (buyuk_islem|tasfiye|akis_kapsam)/.test(sql)) return sql.includes('akis_kapsam') ? [{ d15: 0, d60: 0, son: null }] : [];
   // alt panel tabloları: son 6 saat "veritabanında yok" (gerçekteki gibi Binance'ten tamamlanır)
   if (/FROM ls_15m|FROM oi_5m/.test(sql)) {
     const sym = args[0], from = +args[1], step = Number(String(args[2]).split(' ')[0]) * 1000, end = Date.now() - 6 * H, out = [], ls = sql.includes('ls_15m'), base = ls ? 900e3 : 300e3;
@@ -135,13 +155,58 @@ async function q(sql, args) {
 const BOTS = [['m1', 'M1'], ['m1-premium', 'M1 Premium'], ['4s', '4S'], ['4sniper', '4S Sniper'], ['1dws', '1DWS'], ['div', 'DIV'], ['fr', 'FR'], ['v3', 'V3'], ['hammer', 'Hammer']];
 function sigs(sym) {
   if (!SYMS[sym]) return [];
-  const r = prng(hash('sig' + sym + Math.floor(BOOT / H))), out = [], now = Date.now(); let id = 1;
+  const r = prng(hash('sig' + sym + Math.floor(BOOT / H))), out = [], now = BOOT; let id = 1;
   for (let t = now - 47 * H; t < now; t += (0.3 + r() * 2.5) * H) {
     const b = BOTS[Math.floor(r() * BOTS.length)][0], dir = b === 'v3' || r() < 0.08 ? null : r() < 0.5 ? 'up' : 'down';
     const strat = { '4sniper': r() < 0.5 ? 'NW UP' : '4H RSI DIVERGENCE', div: '1H RSI DIVERGENCE', fr: 'FR deeper', v3: 'V3-A', '1dws': 'NW DOWN' }[b] || null;
     out.push({ bot: b, id: id++, seq: id, t, first: t, n: b.startsWith('m1') ? 1 + Math.floor(r() * 6) : 1, symbol: sym, dir, strategy: strat, text: `deneme sinyali ${b}`, price: price(sym, t) });
   }
   return out.sort((a, b) => b.t - a.t);
+}
+
+const EPOCH = 'deneme-' + BOOT;
+const signals = Object.keys(SYMS).flatMap(sigs).sort((a, b) => a.t - b.t)
+  .map((row, i) => ({ ...row, id: i + 1, seq: i + 1 }));
+signals.push({
+  bot: 'm1-premium', id: signals.length + 1, seq: signals.length + 1,
+  symbol: 'ARCUSDT', t: BOOT, first: BOOT, n: 1,
+  dir: 'down', strategy: 'Deneme', price: 0.0486,
+  text: '#ARCUSDT SELL\nFiyat: 0.0486\n15dk RSI: 80\n1 Saatlik RSI: 85\n4 Saatlik RSI: 75\nStoch: 95(K)/92(D)\nÖrnek sinyal'
+});
+const newest = (a, b) => b.t - a.t || b.seq - a.seq;
+const readLimit = (params, max, fallback) => Math.min(max, Math.max(1, Math.floor(Number(params.get('limit')) || fallback)));
+
+function demoMessages(params) {
+  const bot = params.get('bot'), sym = (params.get('sym') || '').toUpperCase(), dir = params.get('dir');
+  const find = (params.get('q') || '').trim().toUpperCase(), after = Number(params.get('after') || 0);
+  const limit = readLimit(params, 500, 200), maxSeq = signals.length, lastPollOkAt = Date.now();
+  const base = { maxSeq, epoch: EPOCH, state: 'fresh', lastPollOkAt };
+  const items = signals.filter(row => (!bot || bot === 'all' || row.bot === bot) &&
+    (!sym || row.symbol === sym) && (!find || row.symbol.includes(find)) && (!dir || row.dir === dir) && row.seq > after);
+  if (params.get('mode') === 'delta') {
+    const reset = params.get('epoch') !== EPOCH || after > maxSeq;
+    if (reset) return { ...base, nextAfter: maxSeq, hasMore: false, reset, items: [] };
+    const page = items.slice(0, limit), hasMore = items.length > page.length;
+    return { ...base, nextAfter: hasMore ? page.at(-1).seq : maxSeq, hasMore, reset, items: page };
+  }
+  return { ...base, items: items.sort(newest).slice(0, limit) };
+}
+
+function demoArchive(params) {
+  const sym = (params.get('symbol') || '').toUpperCase(), requestedBot = params.get('bot'), direction = params.get('dir');
+  const bot = requestedBot === 'all' ? null : requestedBot;
+  const days = Number(params.get('days') || 90), offset = Number(params.get('cursor') || 0);
+  if (!Object.hasOwn(SYMS, sym) || !Number.isInteger(days) || days < 1 || days > 90 ||
+      !Number.isSafeInteger(offset) || offset < 0 || (bot && !BOTS.some(([id]) => id === bot)) ||
+      (direction && direction !== 'up' && direction !== 'down')) {
+    return { error: 'Geçersiz örnek arşiv sorgusu' };
+  }
+  const limit = readLimit(params, 100, 50), from = BOOT - days * D, to = BOOT;
+  const items = Array.from({ length: days }, (_, i) => {
+    const t = to - i * D - H, b = bot || BOTS[i % BOTS.length][0], dir = i % 2 ? 'up' : 'down';
+    return { id: 'deneme-' + b + '-' + i, bot: b, symbol: sym, dir, strategy: 'Deneme', text: 'Örnek arşiv sinyali', price: price(sym, t), t };
+  }).filter(row => !direction || row.dir === direction);
+  return { items: items.slice(offset, offset + limit), nextCursor: offset + limit < items.length ? String(offset + limit) : null, from, to };
 }
 
 // ---------- HTTP ----------
@@ -153,13 +218,23 @@ const stamp = () => { let m = 0; for (const f of fs.readdirSync(PUB)) { try { m 
 const server = http.createServer((req, res) => {
   try {
     const u = new URL(req.url, 'http://x');
-    if (u.pathname.startsWith('/api/t/') && terminal.handle(req, res, u, { q, send, readBody, log, fetch: fakeFetch })) return;
+    if (u.pathname.startsWith('/api/t/') && TERM.handle(req, res, u, { q, send, readBody, log, fetch: fakeFetch })) return;
     if (u.pathname === '/deneme/429' || u.pathname === '/deneme/418') { forced = { code: Number(u.pathname.slice(-3)), sn: Number(u.searchParams.get('sn') || 10) }; return send(res, 200, { tamam: true, sonrakiIstek: forced }); }
     if (u.pathname === '/deneme/durum') return send(res, 200, { sahteBinanceIstegi: nReq, agirlik: weight.w, izleme: DB.rows.map(r => r.symbol) });
     if (u.pathname === '/api/version') return send(res, 200, { version: VERSION + '-deneme', stamp: stamp() });
-    if (u.pathname === '/api/status') return send(res, 200, { version: VERSION + '-deneme', engine: { ok: false }, now: Date.now() });
-    if (u.pathname === '/api/bots') return send(res, 200, BOTS.map(([id, name]) => ({ id, name, desc: 'deneme', n24: 0, n1: 0, last: null })));
-    if (u.pathname === '/api/messages') { const s = (u.searchParams.get('sym') || '').toUpperCase(); const it = s ? sigs(s) : []; return send(res, 200, { maxSeq: it.length, items: it.slice(0, Math.min(500, Number(u.searchParams.get('limit') || 200))) }); }
+    if (u.pathname === '/api/status') return send(res, 200, { version: VERSION + '-deneme', engine: { ok: true, symbols: Object.keys(SYMS).length }, now: Date.now() });
+    if (u.pathname === '/api/bots') {
+      return send(res, 200, BOTS.map(([id, name]) => {
+        const feed = signals.filter(row => row.bot === id);
+        return { id, name, desc: 'Örnek sinyaller', n24: feed.filter(row => BOOT - row.first < 24 * H).length,
+          n1: feed.filter(row => BOOT - row.first < H).length, last: feed.at(-1)?.t ?? null };
+      }));
+    }
+    if (u.pathname === '/api/messages') return send(res, 200, demoMessages(u.searchParams));
+    if (u.pathname === '/api/t/signal-archive') {
+      const result = demoArchive(u.searchParams);
+      return send(res, result.error ? 400 : 200, result);
+    }
     if (u.pathname.startsWith('/api/')) return send(res, 503, { error: 'deneme sunucusunda yok' });
     const f = path.join(PUB, u.pathname === '/' ? 'terminal.html' : path.normalize(u.pathname).replace(/^([/\\])+/, ''));
     if (!f.startsWith(PUB) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); return res.end('yok'); }
@@ -167,4 +242,4 @@ const server = http.createServer((req, res) => {
     fs.createReadStream(f).pipe(res);
   } catch (e) { send(res, 500, { error: e.message }); }
 });
-server.listen(PORT, HOST, () => log(`Terminal deneme sunucusu → http://${HOST}:${PORT}/terminal.html  (sahte veri; Binance ve veritabanı kullanılmıyor)`));
+server.listen(PORT, HOST, () => log(`Terminal deneme sunucusu → http://${HOST}:${server.address().port}/terminal.html  (sahte veri; Binance ve veritabanı kullanılmıyor)`));

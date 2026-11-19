@@ -87,7 +87,7 @@ function fakeDb(o = {}) {
   {
     const E = env();
     const k = await E.call('/api/t/klines?symbol=BTCUSDT&interval=5m&limit=3');
-    ok(k.code === 200 && k.obj.length === 3 && JSON.stringify(k.obj[0]) === JSON.stringify([1e12, 1.5, 2, 1, 1.75, 17.5]), 'klines → [t,o,h,l,c,qv], qv = 8. alan, sayılar Number');
+    ok(k.code === 200 && k.obj.length === 3 && JSON.stringify(k.obj[0]) === JSON.stringify([1e12, 1.5, 2, 1, 1.75, 17.5, 7]), 'klines → [t,o,h,l,c,qv,alış], qv = 8., alış = 11. alan, sayılar Number');
     ok(k.obj.every(r => r.every(v => typeof v === 'number')), 'bütün alanlar number');
     const o = await E.call('/api/t/oi?symbol=BTCUSDT&period=5m');
     ok(JSON.stringify(o.obj) === JSON.stringify([[1000, 10, 20], [2000, 20, 40]]), 'oi → [[t, adet, usd]] eskiden yeniye');
@@ -207,6 +207,67 @@ function fakeDb(o = {}) {
     const E4 = env({ q: fakeDb({ down: true }).q }); r = await E4.call('/api/t/izleme'); ok(r.code === 503 && /veritabanı/.test(r.obj.error), 'veritabanı yok → 503');
     r = await E4.call('/api/t/izleme', 'POST', { action: 'sil', symbol: 'BTCUSDT' }); ok(r.code === 503, 'veritabanı yok, sil → 503');
     r = await E4.call('/api/t/klines?symbol=BTCUSDT&interval=5m'); ok(r.code === 200, 'veritabanı yokken grafik uçları çalışır');
+  }
+  section('Canlı fiyat (SSE + tek WebSocket)');
+  {
+    const socks = [];
+    class FakeWS { constructor(url) { this.url = url; this.readyState = 0; this.out = []; socks.push(this); } send(m) { this.out.push(JSON.parse(m)); } close() { this.readyState = 3; this.onclose && this.onclose(); } }
+    const inst = _test.create({ WebSocket: FakeWS, wsUrl: 'wss://x/market/stream' }), EventEmitter = require('node:events');
+    const mk = () => { const req = new EventEmitter(), res = new EventEmitter(); res.chunks = []; res.writeHead = (c, h) => { res.code = c; res.h = h; }; res.write = x => res.chunks.push(x); res.end = x => { res.ended = x; }; return { req, res }; };
+    const open = sym => { const c = mk(); inst.handle(c.req, c.res, new URL('http://h/api/t/canli?symbol=' + sym), {}); return c; };
+    const a = open('btcusdt'); ok(a.res.code === 200 && /event-stream/.test(a.res.h['Content-Type']) && socks.length === 1, 'SSE açıldı, tek WebSocket kuruldu');
+    const w = socks[0]; w.readyState = 1; w.onopen();
+    ok(w.out.length === 2 && w.out[0].params.join() === '!forceOrder@arr' && w.out[1].method === 'SUBSCRIBE' && w.out[1].params.join() === 'btcusdt@aggTrade,btcusdt@markPrice@1s,btcusdt@ticker', 'açılınca SUBSCRIBE: piyasa tasfiyeleri + işlem + funding + 24s özet');
+    const b = open('ETHUSDT'), b2 = open('ETHUSDT'); ok(socks.length === 1 && w.out.length === 3 && w.out[2].params.length === 3 && w.out[2].params[0] === 'ethusdt@aggTrade', 'ikinci coin aynı bağlantıya eklendi, aynı coin tekrar abone olmaz');
+    const tr = (s, p, q, T, m) => w.onmessage({ data: JSON.stringify({ stream: s.toLowerCase() + '@aggTrade', data: { e: 'aggTrade', s, p: String(p), q: String(q), T, m: !!m } }) });
+    tr('BTCUSDT', 100, 1, 1); tr('BTCUSDT', 103, 2, 2, true); tr('BTCUSDT', 99, 200, 3); tr('ETHUSDT', 10, 5, 4); tr('SOLUSDT', 5, 1, 5);
+    clearTimeout(inst.L.timer); inst.lflush();
+    const msgs = r => r.chunks.filter(x => x.startsWith('data: ')).map(x => JSON.parse(x.slice(6)));
+    const pk = r => msgs(r).filter(m => !m.typ);   // yalnız fiyat paketleri
+    const ma = msgs(a.res);
+    ok(ma.length === 1 && ma[0].c === 99 && ma[0].h === 103 && ma[0].l === 99 && ma[0].q === 100 + 206 + 19800 && ma[0].n === 3 && ma[0].T === 3, '100 ms paketi: son / en yüksek / en düşük / hacim / işlem sayısı');
+    ok(ma[0].qb === 100 + 19800 && ma[0].qs === 206 && ma[0].big.length === 1 && ma[0].big[0].join() === '3,99,19800,1', 'piyasa alış / satış ayrımı ve ≥10 bin $ büyük işlem');
+    ok(pk(b.res).length === 1 && pk(b2.res).length === 1 && pk(b.res)[0].c === 10 && msgs(b.res).some(m => m.typ === 'g') && !ma.some(m => m.s !== 'BTCUSDT'), 'her izleyen yalnız kendi coinini alır; abone olunmayan coin atılır');
+    w.onmessage({ data: JSON.stringify({ stream: 'btcusdt@markPrice@1s', data: { e: 'markPriceUpdate', s: 'BTCUSDT', p: '100.5', r: '-0.00012500', T: 1800 } }) });
+    w.onmessage({ data: JSON.stringify({ stream: 'btcusdt@ticker', data: { e: '24hrTicker', s: 'BTCUSDT', c: '99', P: '-1.25', q: '123456.7' } }) });
+    w.onmessage({ data: JSON.stringify({ stream: '!forceOrder@arr', data: { e: 'forceOrder', o: { s: 'BTCUSDT', S: 'SELL', q: '2', p: '90', ap: '95', z: '2', T: Date.now() } } }) });
+    w.onmessage({ data: JSON.stringify({ stream: '!forceOrder@arr', data: { e: 'forceOrder', o: { s: 'XRPUSDT', S: 'BUY', q: '1000', p: '1', ap: '1', z: '1000', T: Date.now() } } }) });
+    const lq = msgs(a.res).filter(m => m.typ === 'l'), gs = inst.liqSum();
+    ok(lq.length === 1 && lq[0].k === 'L' && lq[0].usd === 190, 'seçili coinin tasfiyesi iletildi (SELL = long tasfiyesi), başka coininki iletilmedi');
+    ok(gs.h1.L === 190 && gs.h1.S === 1000 && gs.m5.S === 1000 && gs.top[0][0] === 'XRPUSDT' && gs.since > 0, 'piyasa tasfiye özeti: 5 dk / 1 sa, en çok tasfiye olan');
+    const mm = msgs(a.res).filter(m => m.typ === 'm' || m.typ === 't');
+    ok(mm.length === 2 && mm[0].typ === 'm' && Math.abs(mm[0].r + 0.0125) < 1e-12 && mm[0].T === 1800 && mm[1].typ === 't' && mm[1].P === -1.25 && mm[1].q === 123456.7, 'funding (%) ve 24s özet hemen iletilir');
+    b.req.emit('close'); ok(w.out.length === 3, 'aynı coinde izleyen kaldıkça abonelik sürer');
+    b2.req.emit('close'); ok(w.out.length === 4 && w.out[3].method === 'UNSUBSCRIBE' && w.out[3].params.length === 3, 'son izleyen gidince UNSUBSCRIBE');
+    const bad = open('!!'); ok(bad.res.code === 400, 'geçersiz sembol → 400');
+    a.req.emit('close'); clearInterval(inst.L.tick); inst.L.tick = null;
+    ok(inst.L.subs.size === 0, 'izleyen kalmadı');
+  }
+  section('Tarama (liste sütunları)');
+  {
+    const socks = [];
+    class FakeWS { constructor(url) { this.url = url; this.readyState = 1; socks.push(this); } send() { } close() { this.readyState = 3; } }
+    const E = env();
+    const T0 = Date.now(), inst2 = _test.create({ WebSocket: FakeWS, wsUrl: 'wss://x/market/stream', now: () => T0 });
+    const call = async p => { let out; const res = {}; await new Promise(r => { inst2.handle({ method: 'GET' }, res, new URL('http://h' + p), { fetch: E.deps.fetch, log: () => { }, send: (_, c, o) => { out = { code: c, obj: o }; r(); } }); }); return out; };
+    let r = await call('/api/t/tarama');
+    ok(r.code === 200 && socks.length === 1 && /streams=!markPrice@arr@1s\/!forceOrder@arr\/btcusdt@kline_1m/.test(socks[0].url) && !/gidiyor|gitti|_261225|busd/i.test(socks[0].url.replace('gidiyorusdt@kline_1m', '')), 'işlem gören evren coinleri + funding + tasfiye akışı tek sokette');
+    const w = socks[0], kl = (s, t, o, c, q, Q) => w.onmessage({ data: JSON.stringify({ stream: s.toLowerCase() + '@kline_1m', data: { e: 'kline', s, k: { t, o: String(o), c: String(c), q: String(q), Q: String(Q) } } }) });
+    for (let i = 0; i < 7; i++) kl('BTCUSDT', i * 60e3, 100 + i, 101 + i, 1000, 600);
+    kl('BTCUSDT', 6 * 60e3, 106, 110, 2000, 1500);   // canlı mumun güncellemesi
+    w.onmessage({ data: JSON.stringify({ stream: '!markPrice@arr@1s', data: [{ e: 'markPriceUpdate', s: 'BTCUSDT', r: '-0.00050000' }] }) });
+    w.onmessage({ data: JSON.stringify({ stream: '!forceOrder@arr', data: { e: 'forceOrder', o: { s: 'BTCUSDT', S: 'BUY', q: '1', p: '100', ap: '100', z: '1', T: T0 } } }) });
+    inst2.Z.out = null; r = await call('/api/t/tarama'); const R = r.obj.rows.BTCUSDT;
+    ok(R && R[0] === Math.round((110 / 102 - 1) * 1e4) / 100 && R[2] === 6000 && R[1] === Math.round(3900 / 6000 * 1e4) / 100, '5 dk: son 5 mum (canlı dahil), fiyat %, alış %, hacim');
+    ok(R[3] === -0.05 && R[4] === 0 && R[5] === 100, 'funding % ve 1 sa tasfiye (short)');
+    ok(r.obj.rows.BTCUSDC && r.obj.rows.BTCUSDC[0] === null, 'verisi henüz gelmeyen coin: null');
+    const db2 = async (sql, a) => { if (sql.includes('buyuk_islem')) return [{ t: 1000, fiyat: 5, usd: 30000, yon: 'S' }]; if (sql.includes('akis_kapsam')) return [{ d15: 15, d60: 60, son: 2000 }]; if (sql.includes('FROM tasfiye WHERE symbol')) return [{ t: 900, yon: 'L', usd: 1200 }]; if (sql.includes('GROUP BY symbol')) return [{ symbol: 'BTCUSDT', l: 500, s: 7 }]; throw new Error('?'); };
+    const call2 = async p => { let out; await new Promise(r => { inst2.handle({ method: 'GET' }, {}, new URL('http://h' + p), { q: db2, fetch: E.deps.fetch, log: () => { }, send: (_, c, o) => { out = { code: c, obj: o }; r(); } }); }); return out; };
+    const ak = await call2('/api/t/akis?symbol=BTCUSDT');
+    ok(ak.code === 200 && ak.obj.big[0].join() === '1000,5,30000,-1' && ak.obj.liq[0].join() === '900,L,1200' && ak.obj.kapsam.d15 === 15, 'akis: büyük işlem (satış = −1), tasfiye, kapsam');
+    inst2.Z.dbLiqAt = 0; const tz = await call2('/api/t/tarama'); ok(tz.obj.liqDb === true && tz.obj.rows.BTCUSDT[4] === 500 && tz.obj.rows.BTCUSDT[5] === 7, 'tarama: tasfiye sütunu veritabanından');
+    ok((await call2('/api/t/akis?symbol=!!')).code === 400, 'akis: geçersiz sembol → 400');
+    inst2.zstop(); ok(inst2.Z.socks.length === 0 && socks[0].readyState === 3, 'durdurunca soketler kapanır');
   }
   console.log(`\n${passes} geçti, ${fails} kaldı`);
   if (fails) { console.log('BAŞARISIZ'); process.exit(1); } else console.log('hepsi TAMAM');

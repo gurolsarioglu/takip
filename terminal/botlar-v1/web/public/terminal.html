@@ -4,136 +4,74 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Botlar · Terminal</title>
-<!-- Botlar V1 — Terminal: izleme listesi + yan yana 4 dik mum grafiği (altında RSI, Stokastik RSI, WaveTrend) + OI/hacim paneli. Tek dosya, dış betik/stil/CDN yok; grafikler kendi canvas kodumuz.
-     Bütün veri web/terminal.cjs'nin /api/t/* uçlarından gelir (tarayıcı Binance'e bağlanmaz). Açılış: http://localhost:3200/terminal.html[?s=SEMBOL] -->
-<style>
-:root{--bg:#0b0f17;--panel:#121826;--panel2:#171f30;--line:#232c40;--tx:#e6ebf5;--mut:#8a94a8;--up:#1fc77e;--dn:#f6465d;--acc:#3b82f6;--warn:#f0b90b}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;flex-direction:column;overflow:hidden}
-header{display:flex;align-items:center;gap:10px;padding:7px 14px;border-bottom:1px solid var(--line);background:var(--panel);flex:0 0 auto;min-height:44px;flex-wrap:nowrap;overflow:hidden}
-.logo{font-weight:700;font-size:16px;letter-spacing:.2px;color:var(--tx);text-decoration:none}
-.ver{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:10px;padding:1px 8px}
-.ttl{font-weight:600;color:var(--mut)}
-.sp{flex:1}
-input,button,select{font:inherit;color:var(--tx);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:5px 9px}
-button,select{cursor:pointer}button.on{border-color:var(--acc);color:#fff;background:#1d2b4d}
-a.btn{font-size:13px;color:var(--tx);text-decoration:none;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:4px 10px;white-space:nowrap}
-a.btn:hover,button:hover{border-color:#2b3c66}
-.sum{display:flex;align-items:baseline;gap:14px;font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;min-width:0}
-.sum b{color:var(--tx);font-weight:600;font-variant-numeric:tabular-nums}.sum .sy{font-size:16px;font-weight:700;color:var(--tx)}
-.sum .pxl{font-size:16px;font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums}
-.up{color:var(--up)!important}.dn{color:var(--dn)!important}
-.warn{font-size:12px;color:#1a1300;background:var(--warn);border-radius:6px;padding:2px 8px;white-space:nowrap;font-weight:600}
-.wrap{flex:1;min-height:0;display:grid;grid-template-columns:290px 1fr}
-aside{border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
-.addb{position:relative;padding:8px 8px 4px}
-.addb input{width:100%}
-.sugg{position:absolute;left:8px;right:8px;top:calc(100% - 2px);background:var(--panel2);border:1px solid #2b3c66;border-radius:8px;z-index:30;display:none;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.5)}
-.sugg.open{display:block}
-.sugg div{padding:5px 10px;font-size:13px;cursor:pointer;display:flex;gap:8px}.sugg div.on,.sugg div:hover{background:#1d2b4d}
-.sugg small{color:var(--mut);margin-left:auto}.sugg .nt{color:var(--mut);cursor:default}
-.aerr{color:var(--dn);font-size:12px;padding:0 10px;min-height:0}
-.lh,.row{display:grid;grid-template-columns:1fr 78px 54px 46px 16px;gap:4px;align-items:center;padding:0 8px 0 10px}
-.lh{font-size:11px;color:var(--mut);padding-top:4px;padding-bottom:4px;border-bottom:1px solid var(--line);user-select:none}
-.lh span{cursor:pointer;white-space:nowrap}.lh span:hover{color:var(--tx)}.lh .n{text-align:right}
-.wl{flex:1;overflow:auto;min-height:0}
-.row{height:30px;font-size:12.5px;cursor:pointer;border-left:3px solid transparent;font-variant-numeric:tabular-nums}
-.row:hover{background:var(--panel2)}.row.sel{background:#1a2440;border-left-color:var(--acc)}
-.row .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.row .n{text-align:right;white-space:nowrap;overflow:hidden}
-.row .x{background:none;border:0;padding:0;color:var(--mut);font-size:12px;visibility:hidden;cursor:pointer}.row:hover .x{visibility:visible}.row .x:hover{color:var(--dn)}
-.row .nm{display:flex;align-items:center;gap:4px;min-width:0}.row .nm i{font-style:normal;overflow:hidden;text-overflow:ellipsis;min-width:0}.row.dl .nm i{color:var(--dn)}
-.bd{font-size:9.5px;font-weight:700;border-radius:4px;padding:0 3px;line-height:15px;flex:0 0 auto;letter-spacing:.2px;cursor:help}
-.bd.dl{background:var(--dn);color:#fff}.bd.nw{background:#1d4ed8;color:#fff}.bd.go{background:#5b6478;color:#fff}
-.row .st{background:none;border:0;padding:0;font-size:13px;color:#4b556d;cursor:pointer}.row .st.on{color:var(--warn)}.row .st:hover{color:var(--tx)}
-.modes{display:flex;gap:4px;padding:2px 8px 6px}.modes button{flex:1;font-size:12px;padding:3px 6px}
-.linfo{font-size:11px;color:var(--mut);padding:0 10px 5px;display:flex;gap:8px;align-items:center;min-height:0}.linfo .chip{cursor:pointer;color:var(--dn);font-weight:600}.linfo .chip.on{background:var(--dn);color:#fff;border-radius:4px;padding:0 5px}
-.row.tmp{border-left-color:var(--warn)}.row .plus{grid-column:2/6;justify-self:end;font-size:11px;padding:2px 7px;border-radius:6px}
-.lnote{font-size:12px;color:var(--mut);padding:10px;line-height:1.5}.lnote.bad{color:var(--warn)}
-main{display:flex;flex-direction:column;min-width:0;min-height:0;padding:6px 8px 8px;gap:6px}
-.tb{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mut);flex:0 0 auto}
-.tb button{font-size:12px;padding:3px 9px}
-.tb label{display:flex;align-items:center;gap:4px;cursor:pointer;user-select:none}.tb label input{margin:0}
-.grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:minmax(0,1fr);gap:6px}
-.grid.max{grid-template-columns:1fr;grid-template-rows:1fr}.grid.max .pane:not(.max){display:none}
-.pane,.oip{background:var(--panel);border:1px solid var(--line);border-radius:8px;display:flex;flex-direction:column;min-height:0;min-width:0;overflow:hidden}
-.ph{display:flex;align-items:center;gap:8px;padding:3px 6px;border-bottom:1px solid #1b2335;font-size:11.5px;color:var(--mut);white-space:nowrap;overflow:hidden;flex:0 0 auto;min-height:27px;user-select:none}
-.ph select{font-size:12px;padding:1px 4px;border-radius:6px}
-.ph .info{overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}.ph .info b{color:var(--tx);font-weight:500}
-.ph .hint{margin-left:auto;opacity:.5;font-size:10.5px}
-.cv{flex:1;position:relative;min-height:0}.cv canvas{position:absolute;left:0;top:0;display:block;cursor:crosshair}
-.cv canvas.drag{cursor:grabbing}
-.oip{flex:0 0 160px}
-.per button{font-size:11px;padding:1px 7px;border-radius:6px}
-.oist{margin-left:auto;font-variant-numeric:tabular-nums}.oist b{color:var(--tx);font-weight:600}
-.oinote{opacity:.6;font-size:10.5px}
-.tip{position:fixed;z-index:50;pointer-events:none;background:rgba(18,24,38,.96);border:1px solid #2b3c66;border-radius:8px;padding:6px 9px;font-size:12px;line-height:1.5;display:none;max-width:340px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
-.tip .m{color:var(--mut)}
-.dd{position:relative}.ddm{position:absolute;left:0;top:calc(100% + 4px);z-index:40;display:none;background:var(--panel2);border:1px solid #2b3c66;border-radius:8px;padding:6px 4px;min-width:250px;box-shadow:0 10px 30px rgba(0,0,0,.55)}
-.ddm.open{display:block}.ddm label{padding:4px 8px;border-radius:6px;color:var(--tx);font-size:12.5px;white-space:nowrap}.ddm label:hover{background:#1d2b4d}.ddm label small{color:var(--mut);margin-left:auto;padding-left:12px}
-.ddm .ddf{display:flex;gap:6px;padding:6px 8px 2px;border-top:1px solid var(--line);margin-top:4px}
-/* piyasa özeti (listenin altı) */
-.oz{flex:0 0 auto;border-top:1px solid var(--line);padding:8px 10px 9px;font-size:12px;background:var(--panel)}
-.oz .t1{display:flex;align-items:flex-start;gap:8px}.oz .cn{font-weight:700;font-size:13px}.oz .cn small{color:var(--mut);font-weight:500}
-.oz .bp{font-size:24px;font-weight:700;line-height:1.15;font-variant-numeric:tabular-nums}.oz .fr{margin-left:auto;text-align:right;color:var(--mut);font-size:11px;line-height:1.35}
-.oz .fr b{display:block;color:var(--tx);font-size:15px;font-variant-numeric:tabular-nums}.oz .fr span{border:1px solid var(--line);border-radius:5px;padding:0 5px;font-variant-numeric:tabular-nums}
-.oz .ln{display:flex;justify-content:space-between;margin-top:6px;color:var(--mut)}.oz .ln b{color:var(--tx);font-variant-numeric:tabular-nums}
-.oz .br{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:6px;margin-top:5px;color:var(--mut);font-size:11px}
-.oz .bar{display:flex;height:17px;border-radius:4px;overflow:hidden;font-size:10.5px;font-weight:600;font-variant-numeric:tabular-nums;background:#1b2335}
-.oz .bar i{font-style:normal;display:flex;align-items:center;padding:0 5px;white-space:nowrap;overflow:hidden}.oz .bar .l{background:rgba(31,199,126,.32);color:#c9f5df}.oz .bar .s{background:rgba(246,70,93,.32);color:#ffd5db;justify-content:flex-end}
-.oz .nt{color:var(--mut);font-size:10.5px;margin-top:5px;opacity:.75}
-@media (max-height:820px){.oz .bp{font-size:19px}.oz .br{margin-top:3px}}
-@media (max-width:1250px){.sum .opt{display:none}}
-@media (max-width:1700px){.tb .hint2{display:none}}
-</style>
+<link rel="stylesheet" href="/workspace.css">
+<link rel="stylesheet" href="/signal-panel.css">
+<link rel="stylesheet" href="/terminal-ek.css">
 </head>
 <body>
-<header>
-  <a class="logo" href="/">Botlar</a><span class="ver" id="ver">V1</span><span class="ttl">Terminal</span>
+<header class="workspace-top">
+  <div class="brand"><a class="logo" href="/">Botlar</a><span class="ver" id="ver">V1</span><span class="ttl">Terminal</span></div>
   <a class="btn" href="/">← Sinyaller</a>
-  <div class="sum" id="sum"></div>
-  <span class="sp"></span>
-  <span class="warn" id="warn" style="display:none"></span>
+  <div class="sum" id="sum" role="group" aria-label="Seçili sözleşme ve piyasa verileri"></div>
+  <span class="warn" id="warn" role="status" style="display:none"></span>
 </header>
-<div class="wrap">
-  <aside>
-    <div class="addb"><input id="addq" placeholder="Coin ekle (ör. SOL)" autocomplete="off" spellcheck="false"><div class="sugg" id="sugg"></div></div>
-    <div class="modes"><button data-mode="all">Tümü</button><button data-mode="mine">Listem</button></div>
-    <div class="linfo" id="linfo"></div>
-    <div class="aerr" id="aerr"></div>
-    <div class="lh"><span data-sort="sym">İZLEME</span><span class="n" data-sort="px">Fiyat</span><span class="n" data-sort="chg">24s %</span><span class="n" data-sort="vol">Hacim</span><span></span></div>
-    <div class="wl" id="wl"></div>
-    <div class="oz" id="oz"></div>
-  </aside>
-  <main>
-    <div class="tb">
-      <button data-lay="kisa" title="5dk · 15dk · 1s · 4s">Kısa: 5dk·15dk·1s·4s</button><button data-lay="uzun" title="4s · 1g · 1h · 1ay">Uzun: 4s·1g·1h·1ay</button>
-      <div class="dd"><button id="tcb" title="Trader Club klonları (5in1 + S/R): grafikte hangilerinin görüneceğini seç">TC göstergeleri ▾</button><div class="ddm" id="tcm"></div></div>
-      <span class="sp"></span>
-      <span class="hint2" style="opacity:.7">tekerlek: yakınlaştır · sürükle: kaydır · çift tık: sıfırla · başlığa çift tık: büyüt · saatler TR</span>
-      <div class="dd"><button id="pnb" title="Her grafiğin altındaki bölmeler">Alt paneller ▾</button><div class="ddm" id="pnm"></div></div>
-      <label title="Seçili coinin son 48 saatteki bot sinyalleri"><input type="checkbox" id="sigOn"> Sinyal işaretleri</label>
-      <label title="M1 ve M1 Premium çok sık sinyal verir; varsayılan olarak gösterilmez"><input type="checkbox" id="sigM1"> M1 dahil</label>
+<div class="wrap" id="workspace">
+  <main aria-label="Grafik çalışma alanı">
+    <div class="tb" role="group" aria-label="Grafik ayarları">
+      <span class="toolbar-label" title="Tekerlek: yakınlaştır · Sürükle: kaydır · Çift tık: sıfırla · Saatler TR">GRAFİKLER</span>
+      <button data-lay="kisa" aria-label="Kısa: 5 dakika, 15 dakika, 1 saat, 4 saat" title="5dk · 15dk · 1s · 4s">Kısa</button><button data-lay="uzun" aria-label="Uzun: 4 saat, 1 gün, 1 hafta, 1 ay" title="4s · 1g · 1h · 1ay">Uzun</button>
+      <div class="dd"><button id="tcb" aria-controls="tcm" aria-expanded="false" title="Fiyat grafiği üzerindeki çizimler: DEMA 9 ve Trader Club klonları (5in1 + S/R)">Katmanlar ▾</button><div class="ddm" id="tcm"></div></div>
+      <div class="dd"><button id="pnb" aria-controls="pnm" aria-expanded="false" title="Her grafiğin altındaki bölmeler">Göstergeler<span aria-hidden="true"> ▾</span></button><div class="ddm" id="pnm"></div></div>
+      <div class="tape" id="tape" title="Fareyi üstüne getirince durur"><div class="tape-in" id="tapeIn"></div><div class="tape-e" id="tapeE">Kayan yazı: coin seçilince canlı akış verisi toplanıyor…</div></div>
+      <label class="toggle" title="Seçili coinin son 48 saatteki bot sinyalleri"><input type="checkbox" id="sigOn"> Sinyal işaretleri</label>
+      <label class="toggle" title="M1 ve M1 Premium çok sık sinyal verir; varsayılan olarak gösterilmez"><input type="checkbox" id="sigM1"> M1 dahil</label>
     </div>
-    <div class="grid" id="grid"></div>
+    <div class="grid" id="grid">
+      <div class="splitter" data-split="0" role="separator" tabindex="0" aria-orientation="vertical" aria-controls="chart-1" aria-label="Grafik 1 ve 2 genişliği" title="Sürükle veya ok tuşlarını kullan; çift tıkla sıfırla"></div>
+      <div class="splitter" data-split="1" role="separator" tabindex="0" aria-orientation="vertical" aria-controls="chart-2" aria-label="Grafik 2 ve 3 genişliği" title="Sürükle veya ok tuşlarını kullan; çift tıkla sıfırla"></div>
+      <div class="splitter" data-split="2" role="separator" tabindex="0" aria-orientation="vertical" aria-controls="chart-3" aria-label="Grafik 3 ve 4 genişliği" title="Sürükle veya ok tuşlarını kullan; çift tıkla sıfırla"></div>
+    </div>
     <div class="oip" id="oip">
       <div class="ph"><b style="color:var(--tx)">OI ve hacim</b><span class="per" id="per"></span><span class="info" id="oiinfo"></span><span class="oist" id="oist"></span></div>
       <div class="cv"><canvas></canvas></div>
     </div>
   </main>
+  <div class="splitter" data-split="sidebar" role="separator" tabindex="0" aria-orientation="vertical" aria-controls="terminal-sidebar" aria-label="Kenar çubuğu genişliği" title="Sürükle veya ok tuşlarını kullan; çift tıkla sıfırla"></div>
+  <aside class="sidebar" id="terminal-sidebar" aria-label="İzleme ve sinyaller">
+    <section class="watchlist" id="watchlist" aria-labelledby="watchlist-title">
+      <h2 class="rail-head" id="watchlist-title">İzleme listesi</h2>
+      <div class="addb"><input id="addq" aria-label="Coin ara veya listeye ekle" placeholder="Coin ekle (ör. SOL)" autocomplete="off" spellcheck="false"><div class="sugg" id="sugg"></div></div>
+      <div class="modes"><button data-mode="all">Tümü</button><button data-mode="mine">Listem</button><div class="dd"><button id="colb" aria-controls="colm" aria-expanded="false" title="Listede görünecek sütunlar">Sütunlar ▾</button><div class="ddm" id="colm"></div></div></div>
+      <div class="linfo" id="linfo"></div>
+      <div class="aerr" id="aerr" role="status"></div>
+      <div class="lh" id="lh" role="group" aria-label="Sıralama"></div>
+      <div class="wl" id="wl"></div>
+    </section>
+    <section id="signal-panel" aria-label="Bot sinyalleri">
+      <h2 class="rail-head">Bot sinyalleri</h2>
+      <p class="lnote">Sinyal paneli kullanılamıyor.</p>
+    </section>
+    <details class="market-summary" id="market-summary"><summary class="rail-head">Piyasa özeti</summary><div class="oz" id="oz"></div></details>
+  </aside>
 </div>
 <div class="tip" id="tip"></div>
+<script src="/indicator-engine.js"></script>
+<script src="/terminal-indicators.js"></script>
+<script src="/workspace.js"></script>
+<script src="/signal-panel.js" id="signal-panel-script"></script>
 <script>
 'use strict';
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-const COL = { up: css('--up') || '#1fc77e', dn: css('--dn') || '#f6465d', mut: css('--mut') || '#8a94a8', line: css('--line') || '#232c40', acc: css('--acc') || '#3b82f6', warn: css('--warn') || '#f0b90b', tx: css('--tx') || '#e6ebf5', grid: '#182033', cross: '#6b7a99', lab: '#2b3c66' };
-const FONT = '11px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif';
+const COL = { up: css('--up') || '#73d5a5', dn: css('--dn') || '#ff8990', mut: css('--mut') || '#b2aba0', line: css('--line') || '#35393b', acc: css('--acc') || '#dda479', warn: css('--warn') || '#edc36d', tx: css('--tx') || '#eeebe5', grid: css('--chart-grid') || '#272b2d', cross: css('--chart-cross') || '#888078', lab: css('--chart-label') || '#464039' };
+const FONT = '11px "Cascadia Mono",Consolas,monospace';
 const TFS = ['5m', '15m', '1h', '4h', '1d', '1w', '1M'], TFL = { '5m': '5dk', '15m': '15dk', '1h': '1s', '4h': '4s', '1d': '1g', '1w': '1h', '1M': '1ay' };
 const IVMS = { '5m': 300e3, '15m': 900e3, '1h': 3600e3, '4h': 14400e3, '1d': 864e5, '1w': 7 * 864e5, '1M': 30 * 864e5 };
 const LAYOUTS = { kisa: ['5m', '15m', '1h', '4h'], uzun: ['4h', '1d', '1w', '1M'] }, PERIODS = ['5m', '15m', '1h', '4h', '1d'];
-const PANE_ORDER = ['rsi', 'srsi', 'wt', 'me', 'fr', 'oi', 'tp'];
+const { registry: indicatorRegistry } = globalThis.TerminalIndicators;
+const INDICATOR_PANELS = new Map(indicatorRegistry.panels().map(({ id, panel }) => [id, panel]));
+const PANE_ORDER = [...INDICATOR_PANELS.keys(), 'cvd', 'me', 'fr', 'oi', 'tp'];   // cvd: kendi çizimi olan panel (hesap motorda, bkz. terminal-indicators.js)
 const TR = 3 * 3600e3; // Türkiye saati sabit UTC+3 (yaz saati yok)
 const cleanSym = v => { const s = String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); return s.length >= 2 && s.length <= 30 ? s : null; };
 const short = s => s.endsWith('USDT') && s.length > 4 ? s.slice(0, -4) : s;
@@ -176,44 +114,39 @@ function bsT(d, T) { let lo = 0, hi = d.length - 1, r = -1; while (lo <= hi) { c
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const store = { get(k, def) { try { const v = localStorage.getItem('v1.t.' + k); return v == null ? def : JSON.parse(v); } catch (e) { return def; } }, set(k, v) { try { localStorage.setItem('v1.t.' + k, JSON.stringify(v)); } catch (e) { } } };
 
-// ---------- Göstergeler (lib/ind.cjs ile aynı hesap: Wilder RSI, Stoch RSI K/D, WaveTrend hlc3 + ilk değer tohumlu EMA) ----------
-const isN = v => typeof v === 'number' && Number.isFinite(v);
+const isN = Number.isFinite;
 const f1 = v => (Math.abs(v) < 0.05 ? 0 : v).toFixed(1);
-const TA = {
-  sma(src, n) { const out = new Array(src.length).fill(NaN); let sum = 0, cnt = 0; for (let i = 0; i < src.length; i++) { if (isN(src[i])) { sum += src[i]; cnt++; } if (i >= n) { const o = src[i - n]; if (isN(o)) { sum -= o; cnt--; } } if (i >= n - 1 && cnt === n) out[i] = sum / n; } return out; },
-  ema(src, n) { const out = new Array(src.length).fill(NaN), a = 2 / (n + 1); let prev = NaN; for (let i = 0; i < src.length; i++) { const v = src[i]; if (!isN(v)) { if (isN(prev)) out[i] = prev; continue; } prev = isN(prev) ? a * v + (1 - a) * prev : v; out[i] = prev; } return out; },
-  rma(src, n) { const out = new Array(src.length).fill(NaN); let prev = NaN, sum = 0, k = 0; for (let i = 0; i < src.length; i++) { const v = src[i]; if (!isN(v)) continue; if (!isN(prev)) { sum += v; if (++k === n) { prev = sum / n; out[i] = prev; } continue; } prev = (prev * (n - 1) + v) / n; out[i] = prev; } return out; },
-  rsi(cl, n) { const up = [NaN], dn = [NaN]; for (let i = 1; i < cl.length; i++) { const d = cl[i] - cl[i - 1]; up.push(Math.max(d, 0)); dn.push(Math.max(-d, 0)); } const ru = this.rma(up, n), rd = this.rma(dn, n); return cl.map((_, i) => !isN(ru[i]) || !isN(rd[i]) ? NaN : rd[i] === 0 ? (ru[i] === 0 ? 50 : 100) : ru[i] === 0 ? 0 : 100 - 100 / (1 + ru[i] / rd[i])); },
-  stochRsi(r, len, sk, sd) { const st = r.map((v, i) => { if (i < len - 1) return NaN; let lo = Infinity, hi = -Infinity; for (let j = i - len + 1; j <= i; j++) { if (!isN(r[j])) return NaN; if (r[j] < lo) lo = r[j]; if (r[j] > hi) hi = r[j]; } return hi - lo === 0 ? 0 : 100 * (v - lo) / (hi - lo); }); const k = this.sma(st, sk); return { k, d: this.sma(k, sd) }; },
-  emaS(src, n) { const out = new Array(src.length).fill(NaN), a = 2 / (n + 1); let prev = NaN, sum = 0, k = 0; for (let i = 0; i < src.length; i++) { const v = src[i]; if (!isN(v)) { if (isN(prev)) out[i] = prev; continue; } if (!isN(prev)) { sum += v; if (++k === n) { prev = sum / n; out[i] = prev; } continue; } prev = a * v + (1 - a) * prev; out[i] = prev; } return out; },
-  wma(src, n) { const out = new Array(src.length).fill(NaN), den = n * (n + 1) / 2; for (let i = n - 1; i < src.length; i++) { let q = 0; for (let k = 0; k < n; k++) q += src[i - k] * (n - k); out[i] = q / den; } return out; },
-  // TC Buy/Sell = Range Filter (parity/research/tc/rflib.cjs ile aynı): sig[i] 1 = Buy, -1 = Sell
-  rangeFilter(src, per, mult) {
-    const n = src.length, dd = src.map((v, i) => (i ? Math.abs(v - src[i - 1]) : 0)), sm = this.emaS(this.emaS(dd, per), per * 2 - 1), filt = new Array(n).fill(NaN), sig = new Int8Array(n);
-    for (let i = 0; i < n; i++) { const p = i ? filt[i - 1] : src[i], r = sm[i] * mult, x = src[i]; filt[i] = !isN(r) ? x : x > p ? (x - r < p ? p : x - r) : (x + r > p ? p : x + r); }
-    let up = 0, dn = 0, cond = 0, last = -1;
-    for (let i = 1; i < n; i++) {
-      up = filt[i] > filt[i - 1] ? up + 1 : filt[i] < filt[i - 1] ? 0 : up; dn = filt[i] < filt[i - 1] ? dn + 1 : filt[i] > filt[i - 1] ? 0 : dn;
-      const L = src[i] > filt[i] && src[i] !== src[i - 1] && up > 0, S2 = src[i] < filt[i] && src[i] !== src[i - 1] && dn > 0, prev = cond; cond = L ? 1 : S2 ? -1 : cond;
-      if (L && prev === -1) { sig[i] = 1; last = i; } else if (S2 && prev === 1) { sig[i] = -1; last = i; }
+
+function indicatorPanel(spec, result, i0, i1) {
+  let lo, hi;
+  if (Array.isArray(spec.range)) {
+    [lo, hi] = spec.range;
+  } else {
+    lo = Infinity; hi = -Infinity;
+    const include = value => { if (isN(value)) { lo = Math.min(lo, value); hi = Math.max(hi, value); } };
+    spec.levels.forEach(include);
+    for (const line of result?.series || []) for (let i = i0; i < i1; i++) include(line[i]);
+    if (spec.range === 'symmetric') {
+      const max = isN(hi) ? Math.max(Math.abs(lo), Math.abs(hi), 1) : 1;
+      lo = -max * 1.12; hi = max * 1.12;
+    } else if (!isN(hi)) {
+      lo = 0; hi = 1;
+    } else {
+      const pad = (hi - lo) * 0.08 || Math.abs(hi) * 0.05 || 1;
+      lo -= pad; hi += pad;
     }
-    return { sig, last };
-  },
-  // TC S/R (parity/pine/tc_sr_v1.pine): pivot(prd) seviyeleri, bölge = seviye ± son 300 mum aralığının %wPct'i, en çok maxSR seviye
-  sr(d, prd, look, wPct, maxSR) {
-    const n = d.length, last = n - 1, close = d[last][4], pv = [];
-    for (let c = last - prd; c >= Math.max(prd, last - look); c--) { let ph = true, pl = true; for (let k = 1; k <= prd && (ph || pl); k++) { if (d[c - k][2] > d[c][2] || d[c + k][2] >= d[c][2]) ph = false; if (d[c - k][3] < d[c][3] || d[c + k][3] <= d[c][3]) pl = false; } if (pl) pv.push(d[c][3]); if (ph) pv.push(d[c][2]); }
-    let hh = -Infinity, ll = Infinity; for (let i = Math.max(0, n - 300); i < n; i++) { if (d[i][2] > hh) hh = d[i][2]; if (d[i][3] < ll) ll = d[i][3]; }
-    const cw = (hh - ll) * wPct / 100, cnt = pv.map(v => pv.reduce((a, u) => a + (Math.abs(u - v) <= cw ? 1 : 0), 0)), used = pv.map(() => false), chosen = [];
-    for (let k = 0; k < maxSR; k++) { let best = -1; for (let i = 0; i < pv.length; i++) { const v = pv[i]; if (used[i] || (close >= v - cw && close <= v + cw) || chosen.some(u => Math.abs(u - v) < 2 * cw)) continue; if (best < 0 || cnt[i] > cnt[best]) best = i; } if (best < 0) break; used[best] = true; chosen.push(pv[best]); }
-    return { cw, lv: chosen.map(v => ({ v, res: v > close })) };
-  },
-  wt(d, n1, n2, sig) { const ap = d.map(r => (r[2] + r[3] + r[4]) / 3), esa = this.ema(ap, n1), dv = this.ema(ap.map((v, i) => Math.abs(v - esa[i])), n1); const wt1 = this.ema(ap.map((v, i) => isN(dv[i]) && dv[i] !== 0 ? (v - esa[i]) / (0.015 * dv[i]) : NaN), n2); return { wt1, wt2: this.sma(wt1, sig) }; }
-};
+  }
+  const s = result ? result.series.map((values, i) => {
+    const [color, text] = spec.colors[i];
+    return [values, COL[color] || color, text];
+  }) : [];
+  return { nm: spec.title, kind: 'line', lo, hi, lv: spec.levels, band: spec.band, marks: result?.marks, s,
+    head: result ? null : () => [['Hesaplanamadı', COL.mut]] };
+}
 
 // ---------- Ortak artı imleci ----------
 const HUB = { t: null, src: null, charts: [], set(src, t) { if (this.t === t && this.src === src) return; this.t = t; this.src = src; for (const c of this.charts) if (c !== src) c.requestDraw(); } };
-const tip = { el: null, owner: null, show(o, html, x, y) { const e = this.el || (this.el = $('#tip')); this.owner = o; e.innerHTML = html; e.style.display = 'block'; const w = e.offsetWidth, h = e.offsetHeight; e.style.left = Math.min(innerWidth - w - 8, x + 14) + 'px'; e.style.top = Math.max(4, Math.min(innerHeight - h - 8, y + 14)) + 'px'; }, hide(o) { if (this.el && (!o || this.owner === o)) { this.el.style.display = 'none'; this.owner = null; } } };
+const tip = { el: null, owner: null, show(o, html, x, y) { const e = this.el || (this.el = $('#tip')); this.owner = o; e.innerHTML = html; e.style.display = 'block'; const w = e.offsetWidth, h = e.offsetHeight; e.style.left = Math.max(8, Math.min(innerWidth - w - 8, x + 14)) + 'px'; e.style.top = Math.max(4, Math.min(innerHeight - h - 8, y + 14)) + 'px'; }, hide(o) { if (this.el && (!o || this.owner === o)) { this.el.style.display = 'none'; this.owner = null; } } };
 
 // ---------- Grafik bileşeni ----------
 // kind 'candle': satır [t,o,h,l,c,qv] · kind 'oi': satır [t, adet, usd, qv, o, c]. Görünür aralık view = { r: sağ kenar (mum indeksi), w: genişlik (mum) } → [i0, i1)
@@ -222,9 +155,11 @@ class Chart {
     this.wrap = wrap; this.cv = wrap.querySelector('canvas'); this.ctx = this.cv.getContext('2d');
     this.kind = o.kind; this.iv = o.iv || '5m'; this.infoEl = o.infoEl; this.onView = o.onView || null;
     this.data = []; this.msg = 'Yükleniyor…'; this.err = ''; this.view = null; this.follow = true; this.signals = []; this.hits = []; this.loadingOld = false;
-    this.panes = null; this.ext = null; this.predFr = null; this.tc = {}; this._ik = null; this._iv = null; this.W = 0; this.H = 0; this.dpr = 1; this.raf = 0; this.mouse = null; this.drag = null; this.g = null; this.aw = 0; this._info = null;
+    this.panes = null; this.ext = null; this.predFr = null; this.tc = {}; this.W = 0; this.H = 0; this.dpr = 1; this.raf = 0; this.mouse = null; this.drag = null; this.g = null; this.aw = 0; this._info = null;
+    this.indicators = this.kind === 'candle' ? indicatorRegistry.createSession() : null;
     HUB.charts.push(this);
-    if (window.ResizeObserver) new ResizeObserver(() => this.resize()).observe(wrap);
+    this.sizeDirty = false;
+    if (window.ResizeObserver) new ResizeObserver(() => this.requestResize()).observe(wrap);
     const cv = this.cv;
     cv.addEventListener('wheel', e => this.onWheel(e), { passive: false });
     cv.addEventListener('mousedown', e => { if (e.button !== 0 || !this.g || !this.data.length) return; this.drag = { x: e.clientX, r: this.view.r, moved: false }; cv.classList.add('drag'); tip.hide(this); e.preventDefault(); });
@@ -234,15 +169,25 @@ class Chart {
     cv.addEventListener('mouseleave', () => { this.mouse = null; if (HUB.src === this) HUB.set(null, null); tip.hide(this); this.requestDraw(); });
     cv.addEventListener('dblclick', () => { this.view = null; this.requestDraw(); });
   }
-  requestDraw() { if (!this.raf) this.raf = requestAnimationFrame(() => { this.raf = 0; this.draw(); }); }
+  requestDraw() {
+    if (!this.raf) this.raf = requestAnimationFrame(() => {
+      this.raf = 0;
+      if (this.sizeDirty) { this.sizeDirty = false; this.resize(); }
+      if (this.indDirty) { this.indDirty = false; this.indicators?.setCandles(this.data, this.iv); }
+      this.draw();
+    });
+  }
+  requestResize() { this.sizeDirty = true; this.requestDraw(); }
+  // canlı akış son mumu yerinde günceller: hesaplar bir sonraki çizimde (kare başına en çok bir kez) yeniden yapılır
+  touchLast() { this.indDirty = true; this.requestDraw(); }
   resize() {
     const r = this.wrap.getBoundingClientRect(), dpr = window.devicePixelRatio || 1, W = Math.max(0, Math.floor(r.width)), H = Math.max(0, Math.floor(r.height));
     if (W === this.W && H === this.H && dpr === this.dpr) return;
     this.W = W; this.H = H; this.dpr = dpr; this.cv.width = Math.max(1, Math.round(W * dpr)); this.cv.height = Math.max(1, Math.round(H * dpr)); this.cv.style.width = W + 'px'; this.cv.style.height = H + 'px';
-    this.draw();
   }
   setData(rows, keep) {
     const old = this.data, ov = this.view; this.data = rows || []; this.aw = 0;
+    this.indicators?.setCandles(this.data, this.iv);
     if (keep && ov && old.length && this.data.length) {
       if (this.follow) this.view = { w: ov.w, r: this.data.length + (ov.r - old.length) };
       else { const tR = old[clamp(Math.ceil(ov.r) - 1, 0, old.length - 1)][0], j = bsT(this.data, tR); this.view = { w: ov.w, r: Math.max(1, j + 1) + (ov.r - Math.ceil(ov.r)) }; }
@@ -251,18 +196,25 @@ class Chart {
     this.requestDraw();
   }
   merge(rows) {
-    const d = this.data; let added = 0;
+    const d = this.data; let added = 0, changed = false;
     for (const r of rows || []) {
-      if (!d.length || r[0] > d[d.length - 1][0]) { d.push(r); added++; }
-      else { const i = bsT(d, r[0]); if (i >= 0 && d[i][0] === r[0]) d[i] = r; }
+      if (!d.length || r[0] > d[d.length - 1][0]) { d.push(r); added++; changed = true; }
+      else {
+        const i = bsT(d, r[0]);
+        if (i >= 0 && d[i][0] === r[0] && (r.length !== d[i].length || r.some((value, j) => !Object.is(value, d[i][j])))) {
+          d[i] = r; changed = true;
+        }
+      }
     }
+    if (changed) this.indicators?.setCandles(d, this.iv);
     if (added && this.view && this.follow) this.view.r += added;
     this.requestDraw(); return added;
   }
   prepend(rows) {
     const d = this.data; if (!d.length) { this.setData(rows); return rows.length; }
     const add = (rows || []).filter(r => r[0] < d[0][0]); if (!add.length) return 0;
-    this.data = add.concat(d); if (this.view) this.view.r += add.length; this.requestDraw(); return add.length;
+    this.data = add.concat(d); this.indicators?.setCandles(this.data, this.iv);
+    if (this.view) this.view.r += add.length; this.requestDraw(); return add.length;
   }
   resetView(pw) { const n = this.data.length, w = Math.max(12, Math.min(Math.max(20, Math.round(pw / 5)), n + 3)); this.view = { w, r: n + 2 }; this.follow = true; }
   clampView() {
@@ -289,23 +241,7 @@ class Chart {
     } else { if (HUB.src === this) HUB.set(null, null); tip.hide(this); }
     this.requestDraw();
   }
-  calc() {
-    const d = this.data, n = d.length, l = d[n - 1], key = n + '|' + d[0][0] + '|' + l[0] + '|' + l[2] + '|' + l[3] + '|' + l[4];
-    if (this._ik === key) return this._iv;
-    const r = TA.rsi(d.map(x => x[4]), 14), st = TA.stochRsi(r, 14, 3, 3), wt = TA.wt(d, 10, 21, 4);
-    // Trader Club klonları (AGENTS.md §11): Buy/Sell, Mild X, uyumsuzluk ▲▼, Ribbon, Reversal Bands, S/R
-    const o4 = d.map(x => (x[1] + x[2] + x[3] + x[4]) / 4), rf = TA.rangeFilter(o4, 50, 2.2), mw = TA.wt(d, 9, 12, 4), w3 = TA.wt(d, 9, 12, 3).wt2, mild = new Int8Array(n), div = new Int8Array(n);
-    for (let i = 1; i < n; i++) { const a = mw.wt1, b = mw.wt2; if (!isN(a[i]) || !isN(b[i]) || !isN(a[i - 1]) || !isN(b[i - 1])) continue; if (a[i - 1] <= b[i - 1] && a[i] > b[i] && b[i] < -53) mild[i] = 1; else if (a[i - 1] >= b[i - 1] && a[i] < b[i] && b[i] > 53) mild[i] = -1; }
-    let tO = null, tH = 0, bO = null, bL = 0;
-    for (let i = 6; i < n; i++) {
-      const c = i - 3, v = w3[c]; if (!isN(w3[i - 6])) continue; let top = true, bot = true;
-      for (let k = -3; k <= 3; k++) { if (!k) continue; const u = w3[c + k]; if (!(v > u)) top = false; if (!(v < u)) bot = false; }
-      if (top && v >= 20) { if (tO != null && d[c][2] > tH && v < tO) div[i - 1] = -1; tO = v; tH = d[c][2]; }
-      if (bot && v <= -40) { if (bO != null && d[c][3] < bL && v > bO) div[i - 1] = 1; bO = v; bL = d[c][3]; }
-    }
-    this._ik = key; return this._iv = { rsi: r, rsiMa: TA.sma(r, 14), k: st.k, d: st.d, wt1: wt.wt1, wt2: wt.wt2,
-      bs: rf.sig, lastBs: rf.last, mild, div, riF: TA.sma(o4, 5), riS: TA.sma(o4, 8), rbMid: TA.sma(o4, 30), rbStep: TA.wma(d.map(x => x[2] - x[3]), 48).map(v => v * 1.12), sr: n > 25 ? TA.sr(d, 10, 300, 2, 6) : { cw: 0, lv: [] } };
-  }
+
   text(s, x, y, col, align) { const c = this.ctx; c.fillStyle = col; c.textAlign = align || 'left'; c.fillText(s, x, y); }
   label(s, x, y, bg, fg, align) { const c = this.ctx, w = c.measureText(s).width + 8; const lx = align === 'center' ? x - w / 2 : x; c.fillStyle = bg; c.fillRect(Math.round(lx), Math.round(y - 8), Math.ceil(w), 16); this.text(s, lx + 4, y, fg); }
   info(html) { if (this.infoEl && html !== this._info) { this._info = html; this.infoEl.innerHTML = html; } }
@@ -352,7 +288,9 @@ class Chart {
     for (const [p, s] of ticks) { const y = Y(p); if (y > 6 && y < bot1 + 2) this.text(s, plotW + 6, y, COL.mut); }
     let lastX = -1e9; for (const i of tt) { const x = X(i), s = this.tickLabel(i), w = c.measureText(s).width; if (x - w / 2 < lastX + 10 || x + w / 2 > plotW - 2 || x - w / 2 < 2) continue; this.text(s, x, plotH + 10, COL.mut, 'center'); lastX = x + w / 2; }
     // hacim
-    const T = this.tc, TCON = K && (T.bs || T.tp || T.mx || T.dv || T.rib || T.rb || T.sr), I = INDON || TCON ? this.calc() : null, j0 = Math.max(0, i0 - 1), j1 = Math.min(n, i1 + 1);
+    // TC + DEMA hesapları gösterge motorundan (terminal-indicators.js). TC hesabı hata verirse TC katmanları kapalı sayılır, DEMA ayrı.
+    const T0 = this.tc, TCw = K && (T0.bs || T0.tp || T0.mx || T0.dv || T0.rib || T0.rb || T0.sr), TI = TCw ? this.indicators.get('tc') : null, DM = K && T0.dema ? this.indicators.get('dema') : null;
+    const T = TI ? T0 : { dema: !!DM }, TCON = !!(TI || DM), I = TCON ? Object.assign({}, TI || {}, { dema: DM ? DM.dema : null }) : null, j0 = Math.max(0, i0 - 1), j1 = Math.min(n, i1 + 1);
     const ln = (arr, col, f) => { c.strokeStyle = col; c.beginPath(); let on = false; for (let i = j0; i < j1; i++) { const v = f ? f(i) : arr[i]; if (!isN(v)) { on = false; continue; } const x = X(i), y = Y(v); if (on) c.lineTo(x, y); else { c.moveTo(x, y); on = true; } } c.stroke(); };
     const vh = bot2 - top2, bw = Math.max(1, Math.min(barW * 0.72, barW - 1));
     c.save(); c.beginPath(); c.rect(0, 0, plotW, plotH); c.clip();
@@ -363,7 +301,7 @@ class Chart {
       c.fill();
     }
     // TC katmanları (mumların altında): S/R bölgeleri, Reversal Bands, Ribbon, TP/SL
-    if (TCON) {
+    if (I) {
       c.save(); c.beginPath(); c.rect(0, 0, plotW, bot1 + 3); c.clip();
       if (T.sr) for (const z of I.sr.lv) {
         const rgb = z.res ? '246,70,93' : '0,188,212', y1 = Y(z.v + I.sr.cw), y2 = Y(z.v - I.sr.cw); if (y2 < -20 || y1 > bot1 + 20) continue;
@@ -395,10 +333,12 @@ class Chart {
       if (started) { c.strokeStyle = COL.acc; c.lineWidth = 1.6; c.stroke(); c.lineTo(lx, bot1); c.lineTo(fx, bot1); c.closePath(); c.fillStyle = 'rgba(59,130,246,.12)'; c.fill(); c.lineWidth = 1; }
       else this.text('Bu aralıkta OI verisi yok', plotW / 2, (top1 + bot1) / 2, COL.mut, 'center');
     }
+    // DEMA 9: kalın sarı çizgi, mumların üstünde
+    if (TCON && T.dema) { c.save(); c.beginPath(); c.rect(0, 0, plotW, bot1 + 3); c.clip(); c.lineWidth = 2.6; c.lineJoin = 'round'; ln(I.dema, '#facc15'); c.lineWidth = 1; c.restore(); }
     // mum altı/üstü işaretler üst üste binmesin: slot() her mum için sıradaki boş yeri verir
     const stk = new Map(), slot = (idx, below, h) => { const key = idx * 2 + (below ? 1 : 0), o = stk.get(key) || 0, r = d[idx]; stk.set(key, o + h); return below ? Math.min(bot1 + 2, Y(r[3]) + 5 + o + h / 2) : Math.max(top1, Y(r[2]) - 5 - o - h / 2); };
     // TC işaretleri: Buy/Sell etiketi, uyumsuzluk (içi boş üçgen), Mild X (çarpı)
-    if (TCON) for (let i = i0; i < i1; i++) {
+    if (I) for (let i = i0; i < i1; i++) {
       const x = X(i), t = d[i][0];
       if (T.bs && I.bs[i]) { const up = I.bs[i] > 0, sx = up ? 'Buy' : 'Sell', w = c.measureText(sx).width + 8, y = slot(i, up, 17); c.fillStyle = up ? '#00e5ff' : COL.dn; c.fillRect(Math.round(x - w / 2), Math.round(y - 7), Math.ceil(w), 14); this.text(sx, x, y, up ? '#001018' : '#fff', 'center'); this.hits.push({ x, y, items: [{ dir: up ? 'up' : 'down', name: 'TC Buy/Sell', strategy: sx + ' (Range Filter)', t }] }); }
       if (T.dv && I.div[i]) { const up = I.div[i] > 0, y = slot(i, up, 11); c.strokeStyle = up ? '#00e5ff' : '#ff5c8a'; c.lineWidth = 1.6; c.beginPath(); if (up) { c.moveTo(x, y - 4); c.lineTo(x - 4.5, y + 4); c.lineTo(x + 4.5, y + 4); } else { c.moveTo(x, y + 4); c.lineTo(x - 4.5, y - 4); c.lineTo(x + 4.5, y - 4); } c.closePath(); c.stroke(); c.lineWidth = 1; this.hits.push({ x, y, items: [{ dir: up ? 'up' : 'down', name: 'TC Uyumsuzluk', strategy: up ? 'dip (▲)' : 'tepe (▼)', t }] }); }
@@ -440,9 +380,10 @@ class Chart {
       const lsDef = (nm, col) => { const a = step(E && E.ls, col, E ? E.lsStep : 900e3); let [lo, hi] = mm(a); if (!isN(lo)) { lo = 45; hi = 55; } lo = Math.min(lo, 50) - 2; hi = Math.max(hi, 50) + 2;
         return { nm, kind: 'ls', v: a, lo, hi, lv: [50], fmt: v => v.toFixed(1) + '%', head: i => isN(a[i]) ? [['L ' + a[i].toFixed(2) + '%', COL.up], ['S ' + (100 - a[i]).toFixed(2) + '%', COL.dn]] : [[st || 'veri yok', COL.mut]] }; };
       const DEF = {
-        rsi: () => ({ nm: 'RSI', kind: 'line', lo: 0, hi: 100, lv: [30, 70], band: 1, s: [[I.rsi, '#a78bfa', '#fff'], [I.rsiMa, COL.warn, '#1a1300']] }),
-        srsi: () => ({ nm: 'SRSI', kind: 'line', lo: 0, hi: 100, lv: [20, 80], band: 1, s: [[I.k, COL.acc, '#fff'], [I.d, '#f97316', '#fff']] }),
-        wt: () => { let wm = 60; for (let i = i0; i < i1; i++) { const x = Math.abs(I.wt1[i]), y = Math.abs(I.wt2[i]); if (x > wm) wm = x; if (y > wm) wm = y; } return { nm: 'WT', kind: 'line', lo: -wm * 1.12, hi: wm * 1.12, lv: [-60, 0, 60], cross: 1, s: [[I.wt1, COL.up, '#fff'], [I.wt2, COL.dn, '#fff']] }; },
+        cvd: () => { const CV = this.indicators.get('cvd') || { cvd: new Float64Array(n).fill(NaN), delta: new Float64Array(n).fill(NaN) }, v = CV.cvd, dl = CV.delta; let [lo, hi] = mm(v); if (!isN(lo)) { lo = -1; hi = 1; } const pd = (hi - lo) * 0.12 || Math.abs(hi) * 0.05 || 1; let dm = 0; for (let i = i0; i < i1; i++) if (isN(dl[i]) && Math.abs(dl[i]) > dm) dm = Math.abs(dl[i]);
+          const su = x => (x > 0 ? '+' : x < 0 ? '−' : '') + '$' + fmtBig(Math.abs(x));
+          return { nm: 'CVD', kind: 'cvd', v, dl, dm, lo: lo - pd, hi: hi + pd, lv: [], col: () => 'rgba(56,189,248,1)', fmt: su,
+            head: i => { const b = d[i][6], q = d[i][5]; return isN(v[i]) ? [[su(v[i]), '#38bdf8'], ['mum Δ ' + su(dl[i]), dl[i] >= 0 ? COL.up : COL.dn]].concat(isN(b) && q > 0 ? [['%' + (b / q * 100).toFixed(0) + ' alış', COL.mut]] : []) : [['veri yok', COL.mut]]; } }; },
         me: () => lsDef('Market Exposure', 2),
         tp: () => lsDef('Trader Positioning', 1),
         fr: () => { const a = avg(E && E.fr), pred = !isN(a[n - 1]) && isN(this.predFr) ? this.predFr : NaN; let [lo, hi] = mm(a); if (isN(pred)) { lo = Math.min(isN(lo) ? pred : lo, pred); hi = Math.max(isN(hi) ? pred : hi, pred); }
@@ -453,15 +394,22 @@ class Chart {
           return { nm: 'Open Interest', kind: 'bar', v: a, base: lo, lo, hi, lv: [], col: () => 'rgba(240,185,11,.78)', fmt: v => '$' + fmtBig(v), head: i => isN(a[i]) ? [['$' + fmtBig(a[i]), COL.warn]] : [[st || 'veri yok (Binance 30 gün)', COL.mut]] }; }
       };
       PL.forEach((key, k) => {
-        const p = DEF[key](), pt = pb + k * ph + 1, yb = pt + ph - 2, a = pt + 4, b = yb - 3, Yp = v => a + (p.hi - v) / (p.hi - p.lo) * (b - a);
+        const spec = INDICATOR_PANELS.get(key);
+        const p = spec ? indicatorPanel(spec, this.indicators.get(key), i0, i1) : DEF[key]();
+        const pt = pb + k * ph + 1, yb = pt + ph - 2, a = pt + 4, b = yb - 3, Yp = v => a + (p.hi - v) / (p.hi - p.lo) * (b - a);
         panes.push({ pt, yb, a, b, lo: p.lo, hi: p.hi, fmt: p.fmt });
         c.save(); c.beginPath(); c.rect(0, pt, plotW, ph - 1); c.clip();
         if (p.band) { c.fillStyle = 'rgba(138,148,168,.07)'; c.fillRect(0, Yp(p.lv[1]), plotW, Yp(p.lv[0]) - Yp(p.lv[1])); }
         c.strokeStyle = '#2c3852'; c.setLineDash([4, 4]); c.beginPath(); for (const v of p.lv) { const y = Math.round(Yp(v)) + 0.5; c.moveTo(0, y); c.lineTo(plotW, y); } c.stroke(); c.setLineDash([]);
         if (p.kind === 'line') {
           for (const [arr, col] of p.s.slice().reverse()) { c.strokeStyle = col; c.lineWidth = 1.4; c.beginPath(); let on = false; for (let i = j0; i < j1; i++) { const v = arr[i]; if (!isN(v)) { on = false; continue; } const x = X(i), y = Yp(v); if (on) c.lineTo(x, y); else { c.moveTo(x, y); on = true; } } c.stroke(); c.lineWidth = 1; }
-          if (p.cross) { const w1 = I.wt1, w2 = I.wt2, rad = clamp(barW * 0.45, 1.6, 3.2);
-            for (let i = Math.max(1, i0); i < i1; i++) { if (!isN(w1[i]) || !isN(w2[i]) || !isN(w1[i - 1]) || !isN(w2[i - 1])) continue; const up = w1[i - 1] <= w2[i - 1] && w1[i] > w2[i], dn = w1[i - 1] >= w2[i - 1] && w1[i] < w2[i]; if (!up && !dn) continue; c.fillStyle = up ? COL.up : COL.dn; c.beginPath(); c.arc(X(i), Yp(w2[i]), rad, 0, 6.2832); c.fill(); c.strokeStyle = 'rgba(0,0,0,.6)'; c.stroke(); } }
+          if (p.marks) { const values = p.s[1][0], rad = clamp(barW * 0.45, 1.6, 3.2);
+            for (let i = i0; i < i1; i++) { const mark = p.marks[i]; if ((mark !== 1 && mark !== -1) || !isN(values[i])) continue; c.fillStyle = mark === 1 ? COL.up : COL.dn; c.beginPath(); c.arc(X(i), Yp(values[i]), rad, 0, 6.2832); c.fill(); c.strokeStyle = 'rgba(0,0,0,.6)'; c.stroke(); } }
+        } else if (p.kind === 'cvd') {
+          // mum başına alış − satış farkı: soluk çubuklar (bölmenin ortasından), birikim: mavi çizgi
+          const mid = (pt + yb) / 2, hh = (yb - pt) * 0.42, w = Math.max(1, Math.min(barW * 0.7, barW - 1));
+          if (p.dm > 0) for (let i = j0; i < j1; i++) { const x = p.dl[i]; if (!isN(x)) continue; const hgt = x / p.dm * hh; c.fillStyle = x >= 0 ? 'rgba(31,199,126,.28)' : 'rgba(246,70,93,.3)'; c.fillRect(Math.round(X(i) - w / 2), Math.min(mid, mid - hgt), Math.max(1, Math.round(w)), Math.max(1, Math.abs(hgt))); }
+          const v = p.v; c.strokeStyle = '#38bdf8'; c.lineWidth = 1.6; c.beginPath(); let on = false; for (let i = j0; i < j1; i++) { if (!isN(v[i])) { on = false; continue; } const x = X(i), y = Yp(v[i]); if (on) c.lineTo(x, y); else { c.moveTo(x, y); on = true; } } c.stroke(); c.lineWidth = 1;
         } else if (p.kind === 'ls') {
           const y50 = Yp(50), v = p.v;
           for (let i = Math.max(1, j0); i < j1; i++) { const u0 = v[i - 1], u1 = v[i]; if (!isN(u0) || !isN(u1)) continue; c.fillStyle = (u0 + u1) / 2 >= 50 ? 'rgba(31,199,126,.22)' : 'rgba(246,70,93,.25)'; c.beginPath(); c.moveTo(X(i - 1), Yp(u0)); c.lineTo(X(i), Yp(u1)); c.lineTo(X(i), y50); c.lineTo(X(i - 1), y50); c.closePath(); c.fill(); }
@@ -490,7 +438,10 @@ class Chart {
     if (lastV != null) {
       const y = Y(lastV), col = K ? (last[4] >= last[1] ? COL.up : COL.dn) : COL.acc;
       if (y >= top1 - 2 && y <= bot1 + 2) { c.strokeStyle = col; c.globalAlpha = .7; c.setLineDash([3, 3]); c.beginPath(); c.moveTo(0, Math.round(y) + 0.5); c.lineTo(plotW, Math.round(y) + 0.5); c.stroke(); c.setLineDash([]); c.globalAlpha = 1; }
-      this.label(lastS, plotW + 1, clamp(y, top1, bot1), col, '#fff');
+      let yp = clamp(y, top1, bot1);
+      const dv = TCON && T.dema ? I.dema[n - 1] : NaN;
+      if (isN(dv)) { let yd = clamp(Y(dv), top1, bot1); if (Math.abs(yd - yp) < 17) { const sg = yd <= yp ? -1 : 1, m = (yd + yp) / 2; yd = m + sg * 8.5; yp = m - sg * 8.5; } this.label(fmtPx(dv), plotW + 1, yd, '#facc15', '#1a1300'); }
+      this.label(lastS, plotW + 1, yp, col, '#fff');
     }
     if (!K && vmax > 0) this.text('$' + fmtBig(vmax), plotW + 4, top2 + 6, COL.mut);
     // artı imleci
@@ -510,7 +461,7 @@ class Chart {
     if (L < -2 && this.oldDone && K) this.text('daha eski veri yok', Math.max(4, X(0) - barW / 2 - 4), (top1 + bot1) / 2, COL.mut, 'right');
     // başlık okuması
     const r = d[hov >= 0 ? hov : n - 1];
-    if (K) { const ch = r[1] ? (r[4] / r[1] - 1) * 100 : null; this.info(`<span>${fmtT(r[0], this.iv, true)}</span> A <b>${fmtPx(r[1])}</b> Y <b>${fmtPx(r[2])}</b> D <b>${fmtPx(r[3])}</b> K <b>${fmtPx(r[4])}</b> <span class="${pcls(ch)}">${fmtPct(ch)}</span> H <b>$${fmtBig(r[5])}</b>`); }
+    if (K) { const ch = r[1] ? (r[4] / r[1] - 1) * 100 : null; this.info(`<span>${fmtT(r[0], this.iv, true)}</span> A <b>${fmtPx(r[1])}</b> Y <b>${fmtPx(r[2])}</b> D <b>${fmtPx(r[3])}</b> K <b>${fmtPx(r[4])}</b> <span class="${pcls(ch)}">${fmtPct(ch)}</span> H <b>$${fmtBig(r[5])}</b>${(() => { const dm = this.tc && this.tc.dema ? this.indicators.get('dema') : null, v = dm && dm.dema[hov >= 0 ? hov : n - 1]; return isN(v) ? ` <span style="color:#facc15">DEMA ${fmtPx(v)}</span>` : ''; })()}`); }
     else this.info(`<span>${fmtT(r[0], this.iv, true)}</span> OI <b>$${fmtBig(r[2])}</b> · <b>${fmtBig(r[1])}</b> adet · hacim <b>$${fmtBig(r[3])}</b>`);
   }
   timeTicks(i0, i1, barW) {
@@ -533,9 +484,9 @@ class Chart {
 }
 
 // ---------- Uygulama durumu ----------
-const S = { uni: null, uniErr: '', mode: store.get('mode', 'all') === 'mine' ? 'mine' : 'all', filt: '', dlOnly: false, shown: [], sym: null, list: [], listErr: '', listOk: false, tick: null, tickErr: '', coin: null, coinErr: '', gen: 0, oiGen: 0,
-  tfs: store.get('tfs', LAYOUTS.kisa), oiP: store.get('oiP', '5m'), panes: Object.assign({ rsi: true, srsi: true, wt: true, me: true, fr: true, oi: true, tp: true }, store.get('ind', true) === false ? { rsi: false, srsi: false, wt: false } : {}, store.get('panes', {})), son: null, frIv: null, ob: null, tc: Object.assign({ bs: true, tp: false, mx: true, dv: true, rib: false, rb: false, sr: true }, store.get('tc', {})), sigOn: store.get('sig', true), sigM1: store.get('m1', false),
-  sort: { k: null, dir: 1 }, pauseUntil: 0, bots: {}, sigs: [], stamp: null, max: -1, oiRows: [] };
+const S = { flow: [], flowSince: 0, big: [], liqC: [], gliq: null, oiHist: [], tapeAt: 0, uiS: null, markAt: 0, es: null, liveAt: 0, livePx: null, liveDir: 0, uiT: null, uni: null, uniErr: '', mode: store.get('mode', 'all') === 'mine' ? 'mine' : 'all', filt: '', dlOnly: false, shown: [], sym: null, list: [], listErr: '', listOk: false, tick: null, tickErr: '', coin: null, coinErr: '', gen: 0, oiGen: 0,
+  tfs: store.get('tfs', LAYOUTS.kisa.slice()), oiP: store.get('oiP', '5m'), panes: Object.assign({ cvd: true, me: false, fr: false, oi: false, tp: false }, Object.fromEntries([...INDICATOR_PANELS].map(([id, panel]) => [id, panel.enabled])), store.get('ind', true) === false ? { rsi: false, srsi: false, wt: false } : {}, store.get('panes', {})), son: null, frIv: null, ob: null, tc: Object.assign({ bs: true, tp: false, mx: true, dv: true, rib: false, rb: false, sr: true }, store.get('tc', {})), sigOn: store.get('sig', true), sigM1: store.get('m1', false),
+  cols: (store.get('cols', null) || ['px', 'chg', 'b5', 'fr']).filter(k => ['px', 'chg', 'vol', 'm5', 'b5', 'v5', 'fr', 'lq'].includes(k)), zt: null, sort: { k: null, dir: 1 }, pauseUntil: 0, bots: {}, sigs: [], stamp: null, max: -1, oiRows: [] };
 if (!Array.isArray(S.tfs) || S.tfs.length !== 4 || !S.tfs.every(t => TFS.includes(t))) S.tfs = LAYOUTS.kisa.slice();
 if (!PERIODS.includes(S.oiP)) S.oiP = '5m';
 const paused = () => Date.now() < S.pauseUntil;
@@ -552,22 +503,35 @@ const errText = e => e.retryAfter ? 'Binance sınırı — süre dolunca yeniden
 const P = [];
 function buildPanes() {
   const g = $('#grid');
+  const toggleMax = i => {
+    S.max = S.max === i ? -1 : i;
+    g.classList.toggle('max', S.max >= 0);
+    for (const p of P) {
+      const active = p.i === S.max;
+      p.el.classList.toggle('max', active);
+      p.maxButton.setAttribute('aria-pressed', active);
+    }
+  };
   for (let i = 0; i < 4; i++) {
     const el = document.createElement('div'); el.className = 'pane'; el.dataset.i = i;
-    el.innerHTML = `<div class="ph" title="Çift tık: bu grafiği büyüt / geri al"><select>${TFS.map(t => `<option value="${t}">${TFL[t]}</option>`).join('')}</select><span class="info"></span></div><div class="cv"><canvas></canvas></div>`;
-    g.appendChild(el);
-    const p = { i, el, tf: S.tfs[i], tnext: 0, tbusy: false, gen: 0, busy: false, loaded: false, next: 0, oldBusy: false, oldDone: false };
+    const n = i + 1;
+    el.id = `chart-${n}`;
+    el.innerHTML = `<div class="ph" title="Çift tık: bu grafiği büyüt / geri al"><span class="pane-id" aria-hidden="true">0${n}</span><select aria-label="Grafik ${n} zaman dilimi">${TFS.map(t => `<option value="${t}">${TFL[t]}</option>`).join('')}</select><span class="info"></span><button class="chart-max" aria-label="Grafik ${n} büyütme" aria-pressed="false" title="Büyüt / geri al">⛶</button></div><div class="cv"><canvas role="img" aria-label="Mum grafiği ${n}"></canvas></div>`;
+    g.insertBefore(el, g.querySelector(`[data-split="${i}"]`));
+    const p = { i, el, maxButton: el.querySelector('.chart-max'), tf: S.tfs[i], tnext: 0, tbusy: false, gen: 0, busy: false, loaded: false, next: 0, oldBusy: false, oldDone: false };
     p.ch = new Chart(el.querySelector('.cv'), { kind: 'candle', iv: p.tf, infoEl: el.querySelector('.info'), onView: ch => { if (ch.g && ch.view.r - ch.view.w < 40) chartOld(p); } });
     p.ch.panes = S.panes; p.ch.tc = S.tc;
     const sel = el.querySelector('select'); sel.value = p.tf;
     sel.onchange = () => { setTf(p, sel.value); renderLay(); };
-    el.querySelector('.ph').addEventListener('dblclick', e => { if (e.target.tagName === 'SELECT') return; S.max = S.max === i ? -1 : i; g.classList.toggle('max', S.max >= 0); P.forEach(q => q.el.classList.toggle('max', q.i === S.max)); });
+    p.maxButton.onclick = () => toggleMax(i);
+    el.querySelector('.ph').addEventListener('dblclick', e => { if (!e.target.closest('button, select')) toggleMax(i); });
     P.push(p);
+    p.ch.requestResize();
   }
 }
 function setTf(p, tf) {
   p.tf = tf; S.tfs[p.i] = tf; store.set('tfs', S.tfs); p.el.querySelector('select').value = tf;
-  p.ch.iv = tf; p.loaded = false; p.gen++; p.busy = false; p.oldDone = p.ch.oldDone = false; p.oldBusy = false; p.ch.loadingOld = false; p.ch.err = ''; p.ch.msg = 'Yükleniyor…'; p.ch.signals = curSigs(); p.ch.setData([]); p.ch.ext = null; p.tnext = 0; p.next = 0; if (S.sym) chartFull(p);
+  p.ch.iv = tf; p.loaded = false; p.gen++; p.busy = false; p.tbusy = false; p.oldDone = p.ch.oldDone = false; p.oldBusy = false; p.ch.loadingOld = false; p.ch.err = ''; p.ch.msg = 'Yükleniyor…'; p.ch.signals = curSigs(); p.ch.setData([]); p.ch.ext = null; p.tnext = 0; p.next = 0; if (S.sym) chartFull(p);
 }
 async function chartFull(p) {
   if (!S.sym) return;
@@ -601,6 +565,13 @@ async function chartOld(p) {
 }
 // alt panellerin türev verisi (Market Exposure, Funding, OI, Trader Positioning): grafik başına 5 dk'da bir
 const needTurev = () => S.panes.me || S.panes.fr || S.panes.oi || S.panes.tp;
+let summaryPane = null;
+function summaryTurevPane() {
+  if (!$('#market-summary').open || P.some(p => p.tbusy)) return null;
+  // Keep one source as the other charts finish loading, and prefer already fetched data.
+  if (!summaryPane?.loaded) summaryPane = P.find(p => p.loaded && p.ch.ext) || P.find(p => p.loaded);
+  return summaryPane;
+}
 async function loadTurev(p) {
   if (!S.sym || !p.loaded || p.tbusy) return; const g = S.gen, pg = p.gen, from = p.ch.data[0][0]; p.tbusy = true; p.tnext = Date.now() + 300e3;
   try {
@@ -611,8 +582,138 @@ async function loadTurev(p) {
   } catch (e) { if (g === S.gen && pg === p.gen) p.tnext = Date.now() + (e.retryAfter ? e.retryAfter * 1000 : 60e3); }
   finally { if (pg === p.gen) p.tbusy = false; }
 }
+// ---------- Canlı fiyat: /api/t/canli (SSE). Sunucu Binance işlem akışını 100 ms'lik paketlerle iletir. ----------
+// Her pakette 4 grafiğin canlı mumu (kapanış, en yüksek, en düşük, hacim), başlık fiyatı, liste satırı ve özet güncellenir.
+// Mum dönemi bitince yeni mum yerelde açılır, 1,5 sn sonra REST ile düzeltilir. Canlı akış varken REST yoklaması 15 sn'ye iner.
+const periodEnd = (t, tf) => { if (tf === '1M') { const x = new Date(t); return Date.UTC(x.getUTCFullYear(), x.getUTCMonth() + 1, 1); } return t + IVMS[tf]; };
+function openLive() {
+  if (S.es) { S.es.close(); S.es = null; } if (!S.sym || document.hidden || typeof EventSource === 'undefined') return;
+  const sym = S.sym, es = new EventSource(`/api/t/canli?symbol=${sym}`); S.es = es;
+  es.onmessage = e => { if (S.es !== es || S.sym !== sym) return; let k; try { k = JSON.parse(e.data); } catch { return; } if (!k) return; if (k.typ === 'g') { S.gliq = k; return; } if (k.s !== sym) return; if (k.typ === 'm') onMark(k); else if (k.typ === 't') onTicker(k); else if (k.typ === 'l') { S.liqC.push([k.T, k.k, k.usd]); } else onTick(k); };
+  es.onerror = () => { if (S.es === es) { S.liveAt = 0; uiLive(); } };
+}
+function onTick(k) {
+  const tn = Date.now(); if (!S.flowSince) S.flowSince = tn; S.flow.push([tn, k.qb || 0, k.qs || 0]); if (k.big) for (const b of k.big) S.big.push(b);
+  while (S.flow.length && S.flow[0][0] < tn - 15 * 60e3) S.flow.shift(); while (S.big.length && S.big[0][0] < tn - 15 * 60e3) S.big.shift();
+  const prev = S.livePx; S.livePx = k.c; S.liveDir = prev == null || k.c === prev ? S.liveDir : k.c > prev ? 1 : -1; const was = S.liveAt; S.liveAt = Date.now();
+  for (const p of P) {
+    if (!p.loaded || !p.ch.data.length) continue;
+    const d = p.ch.data, last = d[d.length - 1];
+    if (k.T < last[0]) continue;
+    const end = periodEnd(last[0], p.tf);
+    if (k.T >= end) {   // yeni dönem: yerelde aç, REST kısa süre sonra düzeltir
+      const t0 = p.tf === '1M' ? end : last[0] + Math.floor((k.T - last[0]) / IVMS[p.tf]) * IVMS[p.tf], o = last[4];
+      p.ch.merge([[t0, o, Math.max(o, k.h), Math.min(o, k.l), k.c, k.q, k.qb || 0]]); p.next = Math.min(p.next, Date.now() + 1500); continue;
+    }
+    last[4] = k.c; if (k.h > last[2]) last[2] = k.h; if (k.l < last[3]) last[3] = k.l; last[5] = (last[5] || 0) + k.q; if (isN(last[6])) last[6] += k.qb || 0; p.ch.touchLast();
+  }
+  if (S.tick && S.tick[S.sym]) S.tick[S.sym][0] = k.c;
+  if (!was) for (const p of P) p.next = Math.max(p.next, Date.now() + 15e3);
+  uiLive();
+}
+// funding (saniyede bir) ve 24s özet (saniyede bir): başlık, özet paneli, liste satırı ve Funding alt panelinin tahmini çubuğu
+function onMark(k) {
+  if (!S.coin) S.coin = {}; if (k.r != null) S.coin.funding = k.r; if (k.T) S.coin.nextFunding = k.T; if (k.p) S.coin.mark = k.p;
+  if (S.coin.oi != null && k.p) S.coin.oiUsd = S.coin.oi * k.p;
+  for (const p of P) { p.ch.predFr = S.coin.funding; } S.markAt = Date.now(); uiSlow();
+}
+function onTicker(k) {
+  if (!S.tick) S.tick = {}; const t = S.tick[S.sym] || [null, null, null]; if (k.c != null) t[0] = k.c; if (k.P != null) t[1] = k.P; if (k.q != null) t[2] = k.q; S.tick[S.sym] = t; uiSlow();
+}
+function uiSlow() {
+  if (S.uiS) return; S.uiS = setTimeout(() => {
+    S.uiS = null; renderSum(); renderOz(); for (const p of P) if (p.ch.panes && p.ch.panes.fr) p.ch.requestDraw();
+    const t = S.tick && S.tick[S.sym], row = document.querySelector(`#wl .row[data-s="${S.sym}"]`);
+    if (row && t) { const a = row.querySelector('[data-c="chg"]'), v = row.querySelector('[data-c="vol"]'); if (a) { a.textContent = fmtPct(t[1]); a.className = 'n ' + pcls(t[1]); } if (v) v.textContent = volM(t[2]); }
+  }, 300);
+}
+// ---------- Kayan yazı ----------
+// Yalnız ölçülen veri: akış (piyasa emriyle alış/satış, büyük işlemler, tasfiyeler) coin seçildiğinden beri toplanır; pencere dolmadıysa
+// "N dk'dır izleniyor" yazar. OI + fiyat yorumu bir tahmindir (her pozisyonun bir long bir short tarafı vardır; yorum agresif tarafı söyler).
+// İçerik her tur bitişinde (animationiteration) yenilenir, okunurken yazı zıplamaz.
+const usd = v => v ? '$' + fmtBig(v) : '$0', sg = (v, f) => (v > 0 ? '+' : v < 0 ? '−' : '') + f(Math.abs(v));
+function seriesAt(ser, t) { const j = bsT(ser, t); return j >= 0 ? ser[j][1] : null; }
+// BTC yönü: 15 dk mumlarından (dakikada bir, ağırlık 1). Yön kuralı: 1 sa ve 4 sa aynı yöndeyse ve 1 sa ≥ %0,3 ise YÜKSELİŞ / DÜŞÜŞ, değilse YATAY.
+async function loadBtc() { try { S.btc = await api('/api/t/klines?symbol=BTCUSDT&interval=15m&limit=17'); } catch (e) { } }
+// Akış kaydı (db/akis.cjs sürekli toplar): coin seçilince son 15 dk büyük işlem + 1 sa tasfiye hemen dolar.
+// Kapsam tam değilse (toplayıcı kapalıydı / yeni başladı) eski davranış: canlı akıştan, coin seçildiğinden beri.
+async function loadAkis() {
+  const sym = S.sym, g = S.gen; let r; try { r = await api(`/api/t/akis?symbol=${sym}`); } catch (e) { return; } if (g !== S.gen || !r) return;
+  const kp = r.kapsam || {}, lastB = r.big.length ? r.big[r.big.length - 1][0] : 0, lastL = r.liq.length ? r.liq[r.liq.length - 1][0] : 0;
+  S.big = r.big.concat(S.big.filter(b => b[0] > lastB)); S.liqC = r.liq.concat(S.liqC.filter(x => x[0] > lastL));
+  if (kp.d15 >= 14) S.flowSince = Math.min(S.flowSince || Date.now(), Date.now() - 15 * 60e3);
+  S.liqFull = kp.d60 >= 58; S.tapeAt = 0;
+}
+function btcItem() {
+  const r = S.btc; if (!r || r.length < 17) return '';
+  const cur = S.sym === 'BTCUSDT' && S.livePx ? S.livePx : (S.tick && S.tick.BTCUSDT && S.tick.BTCUSDT[0]) || r[r.length - 1][4], n = r.length, ch = k => (cur / r[n - 1 - k][4] - 1) * 100, c15 = ch(1), c1 = ch(4), c4 = ch(16);
+  const dir = c1 >= 0.3 && c4 > 0 ? ['▲ YÜKSELİŞ', 'up'] : c1 <= -0.3 && c4 < 0 ? ['▼ DÜŞÜŞ', 'dn'] : ['◆ YATAY / KARARSIZ', 'k'];
+  return `<span title="BTC yönü: son 1 saat ve 4 saat aynı yöndeyse ve 1 saatlik hareket en az %0,3 ise yükseliş/düşüş, değilse yatay. Altcoinlerin çoğu BTC ile birlikte hareket eder."><span class="g">BTC</span><b class="${dir[1]}">${dir[0]}</b><b>${fmtPx(cur)}</b><span class="k">15 dk</span><b class="${pcls(c15)}">${fmtPct(c15, 2)}</b><span class="k">1 sa</span><b class="${pcls(c1)}">${fmtPct(c1, 2)}</b><span class="k">4 sa</span><b class="${pcls(c4)}">${fmtPct(c4, 2)}</b></span>`;
+}
+function tapeItems() {
+  const it = [], tn = Date.now(), sym = S.sym, nm = sym ? short(sym) : '', tk = S.tick || {}, t = sym && tk[sym], c = S.coin || {};
+  const mins = S.flowSince ? (tn - S.flowSince) / 60e3 : 0, bt = btcItem(); if (bt) it.push(bt);
+  if (!sym) return it;
+  it.push(`<span class="sep">${esc(nm)}</span>`);
+  const U = S.uni && S.uni.rows, u = U && U[sym]; if (u && u[1]) { const x = trDate(u[1]); it.push(`<span><b class="dn">⚠ DELİST: ${p2(x.getUTCDate())}.${p2(x.getUTCMonth() + 1)} ${p2(x.getUTCHours())}:${p2(x.getUTCMinutes())} (TR) — açık pozisyonlar o an kapatılır</b></span>`); }
+  // 1) alış / satış baskısı: 5 dk mumlarından son 15 dk (geçmişi de kapsar), son 1 dk canlı akıştan
+  const p5 = P.find(p => p.tf === '5m' && p.loaded && p.ch.data.length);
+  let b15 = null, s15 = null; if (p5) { b15 = 0; s15 = 0; const D = p5.ch.data; for (let i = D.length - 1; i >= 0 && D[i][0] > tn - 15 * 60e3 - 300e3; i--) { if (!isN(D[i][6])) continue; b15 += D[i][6]; s15 += D[i][5] - D[i][6]; } if (!(b15 + s15 > 0)) b15 = s15 = null; }
+  let sh1 = null; if (mins >= 0.5) { let b = 0, s2 = 0; for (const f of S.flow) if (f[0] >= tn - 60e3) { b += f[1]; s2 += f[2]; } if (b + s2 > 0) sh1 = b / (b + s2) * 100; }
+  if (b15 != null) {
+    const sh = b15 / (b15 + s15) * 100, lab = sh >= 55 ? `<b class="up">alıcılar baskın %${sh.toFixed(0)}</b>` : sh <= 45 ? `<b class="dn">satıcılar baskın %${(100 - sh).toFixed(0)}</b>` : `<b>dengeli (%${sh.toFixed(0)} alış)</b>`;
+    it.push(`<span title="Piyasa emriyle (agresif) alınan ve satılan tutar, 5 dk'lık mumlardan (son 3 mum + canlı mum). Satıcıların piyasa emirleri fiyatı düşürür, alıcılarınki yükseltir."><span class="k">~15 dk piyasa alışı</span><b class="up">${usd(b15)}</b><span class="k">satışı</span><b class="dn">${usd(s15)}</b>→ ${lab}${sh1 != null ? `<span class="k">· son 1 dk</span><b class="${sh1 >= 55 ? 'up' : sh1 <= 45 ? 'dn' : ''}">%${sh1.toFixed(0)} alış</b>` : ''}</span>`);
+  }
+  // 2) OI + fiyat → hangi taraf açıyor / kapatıyor
+  const p5o = P.find(p => p.tf === '5m' && p.ch.ext && p.ch.ext.oi && p.ch.ext.oi.length), oiSer = (p5o ? p5o.ch.ext.oi.map(r => [r[0], r[1]]) : []).concat(S.oiHist).sort((a, b) => a[0] - b[0]);
+  const f = fastest(), pxSer = f && f.loaded ? f.ch.data.map(r => [r[0], r[4]]) : [], oi0 = seriesAt(oiSer, tn - 15 * 60e3), px0 = seriesAt(pxSer, tn - 15 * 60e3), oi1 = c.oiUsd, px1 = S.livePx || (t && t[0]);
+  if (oi0 && oi1 && px0 && px1) {
+    const dO = (oi1 / oi0 - 1) * 100, dP = (px1 / px0 - 1) * 100, ou = Math.abs(dO) >= 0.2, pu = Math.abs(dP) >= 0.1;
+    const y = !ou ? ['OI yatay: yeni pozisyon girişi yok', ''] : dO > 0 ? (dP > 0 && pu ? ['yeni LONG girişi ağırlıkta', 'up'] : dP < 0 && pu ? ['yeni SHORT girişi ağırlıkta', 'dn'] : ['pozisyon birikiyor, fiyat yatay', 'g'])
+      : (dP > 0 && pu ? ['SHORTLAR kapatıyor (sıkışma)', 'up'] : dP < 0 && pu ? ['LONGLAR kapatıyor / tasfiye', 'dn'] : ['pozisyonlar kapanıyor, fiyat yatay', '']);
+    it.push(`<span title="Her yeni pozisyonun bir long bir short tarafı vardır. Bu yorum, fiyatı iten tarafın pozisyon açtığını mı kapattığını mı gösterir (OI ↑ fiyat ↑ = yeni long, OI ↑ fiyat ↓ = yeni short, OI ↓ fiyat ↑ = short kapanışı, OI ↓ fiyat ↓ = long kapanışı)."><span class="k">15 dk OI</span><b class="${pcls(dO)}">${sg(oi1 - oi0, usd)} (${fmtPct(dO, 1)})</b><span class="k">fiyat</span><b class="${pcls(dP)}">${fmtPct(dP, 2)}</b>→ <b class="${y[1]}">${y[0]}</b></span>`);
+  }
+  // 3) büyük işlemler (canlı akıştan, coin seçildiğinden beri en çok 15 dk)
+  if (mins >= 0.5) {
+    const th = Math.max(2.5e4, (t && t[2] || 0) * 5e-5), bb = S.big.filter(b => b[2] >= th), nb = bb.filter(b => b[3] > 0), ns = bb.filter(b => b[3] < 0), tot = a => a.reduce((x, b) => x + b[2], 0), last = bb[bb.length - 1], wm = Math.min(15, Math.ceil(mins));
+    if (bb.length) { const lt = trDate(last[0]); it.push(`<span title="Tek seferde ${usd(th)} ve üzeri piyasa emirleri (24 saatlik hacmin %0,005'i, en az 25 bin $). Son 15 dk (akış kaydından; kayıt yoksa coin seçildiğinden beri)."><span class="k">büyük işlem (≥${usd(th)}, ${wm} dk)</span><b class="up">${nb.length} alış ${usd(tot(nb))}</b>·<b class="dn">${ns.length} satış ${usd(tot(ns))}</b><span class="k">son:</span><b class="${last[3] > 0 ? 'up' : 'dn'}">${last[3] > 0 ? 'ALIŞ' : 'SATIŞ'} ${usd(last[2])}</b><span class="k">@ ${fmtPx(last[1])} ${p2(lt.getUTCHours())}:${p2(lt.getUTCMinutes())}:${p2(lt.getUTCSeconds())}</span></span>`); }
+    else it.push(`<span><span class="k">büyük işlem (≥${usd(th)}): ${wm} dk'dır yok</span></span>`);
+  }
+  // 4) tasfiyeler
+  if (mins >= 0.5) { const lq = S.liqC.filter(x => x[0] >= tn - 3600e3), L = lq.filter(x => x[1] === 'L').reduce((a, x) => a + x[2], 0), Sh = lq.filter(x => x[1] === 'S').reduce((a, x) => a + x[2], 0);
+    it.push(`<span title="Binance her coin için saniyede en fazla bir tasfiye bildirir; toplam en az bu kadardır. Coin seçildiğinden beri, en çok 1 saat."><span class="k">tasfiye (${S.liqFull || mins >= 60 ? '1 sa' : Math.ceil(mins) + ' dk'})</span>${L || Sh ? `<b class="dn">long ${usd(L)}</b>·<b class="up">short ${usd(Sh)}</b>` : '<span class="k">yok</span>'}</span>`); }
+  // 5) funding
+  if (c.funding != null) { const fr = c.funding, who = fr > 0 ? 'longlar shortlara öder' : fr < 0 ? 'shortlar longlara öder' : 'ödeme yok';
+    it.push(`<span><span class="k">funding</span><b class="${pcls(fr)}">${fmtPct(fr, 4)}</b>${Math.abs(fr) >= 0.1 ? '<b class="g">⚠ yüksek</b>' : ''}<span class="k">→ ${who}${S.frIv ? ', ' + S.frIv + ' saatte bir' : ''} · ödemeye ${cdText(c.nextFunding)}</span></span>`); }
+  // 6) long oranları ve 1 saatteki değişim
+  const o = S.son; if (o && isN(o.glob)) {
+    const pl = P.filter(p => p.ch.ext && p.ch.ext.ls && p.ch.ext.ls.length).sort((a, b) => IVMS[a.tf] - IVMS[b.tf])[0], ls = pl ? pl.ch.ext.ls : null;
+    let ch = null; if (ls) { const j = bsT(ls, (o.t || tn) - 3600e3); if (j >= 0 && isN(ls[j][2])) ch = o.glob - ls[j][2]; }
+    it.push(`<span title="Binance 5 dk'da bir hesaplar. Tüm hesaplar = kalabalık, büyük hesaplar = en büyük %20."><span class="k">long oranı: tüm hesaplar</span><b class="${o.glob >= 50 ? 'up' : 'dn'}">%${o.glob.toFixed(1)}</b>${ch != null ? `<span class="k">· 1 saatte</span><b class="${pcls(ch)}">${ch > 0 ? '+' : ch < 0 ? '−' : ''}${Math.abs(ch).toFixed(1)} puan</b>` : ''}${isN(o.top) ? `<span class="k">· büyük hesaplar</span><b class="${o.top >= 50 ? 'up' : 'dn'}">%${o.top.toFixed(1)}</b>` : ''}${isN(o.pos) ? `<span class="k">· büyüklerin pozisyonu</span><b class="${o.pos >= 50 ? 'up' : 'dn'}">%${o.pos.toFixed(1)}</b>` : ''}</span>`);
+  }
+  // 7) 24 saat
+  if (t) it.push(`<span><span class="k">24 saat</span><b class="${pcls(t[1])}">${fmtPct(t[1], 2)}</b><span class="k">hacim</span><b>${usd(t[2])}</b></span>`);
+  return it;
+}
+function renderTape() {
+  const el = $('#tapeIn'), items = tapeItems(); S.tapeAt = Date.now();
+  if (items.length < 2) { $('#tapeE').style.display = ''; el.innerHTML = ''; return; }
+  $('#tapeE').style.display = 'none';
+  const h = items.join(''); el.innerHTML = h + h;   // iki kopya: -%50'ye kayınca dikişsiz döner
+  const w = el.scrollWidth / 2; el.style.setProperty('--dur', Math.max(20, w / 55).toFixed(1) + 's');   // ~55 px/sn
+}
+$('#tapeIn')?.addEventListener('animationiteration', renderTape);
+function uiLive() {
+  if (S.uiT) return; S.uiT = setTimeout(() => {
+    S.uiT = null; const on = Date.now() - S.liveAt < 10e3, el = $('#pxl'), lv = $('#lv');
+    if (!el || !lv || lv.classList.contains('on') !== on) { renderSum(); renderOz(); return; }
+    el.textContent = fmtPx(S.livePx); el.classList.toggle('fu', S.liveDir > 0); el.classList.toggle('fd', S.liveDir < 0);
+    const row = document.querySelector(`#wl .row[data-s="${S.sym}"] [data-c="px"]`); if (row) row.textContent = fmtPx(S.livePx);
+    const bp = document.querySelector('#oz .bp'); if (bp) bp.textContent = fmtPx(S.livePx);
+  }, 200);
+}
 const fastest = () => P.reduce((a, b) => (b.loaded && (!a.loaded || IVMS[b.tf] < IVMS[a.tf]) ? b : a), P[0]);
-function renderLay() { document.querySelectorAll('[data-lay]').forEach(b => b.classList.toggle('on', LAYOUTS[b.dataset.lay].join() === S.tfs.join())); }
+function renderLay() { document.querySelectorAll('[data-lay]').forEach(b => { const on = LAYOUTS[b.dataset.lay].join() === S.tfs.join(); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); }
 document.querySelectorAll('[data-lay]').forEach(b => b.onclick = () => { LAYOUTS[b.dataset.lay].forEach((tf, i) => { if (P[i].tf !== tf) setTf(P[i], tf); }); renderLay(); });
 
 // ---------- OI paneli ----------
@@ -620,6 +721,7 @@ let OI = null;
 function buildOi() {
   const el = $('#oip');
   OI = new Chart(el.querySelector('.cv'), { kind: 'oi', iv: S.oiP, infoEl: $('#oiinfo') });
+  OI.requestResize();
   $('#per').innerHTML = PERIODS.map(p => `<button data-p="${p}">${TFL[p]}</button>`).join(' ');
   $('#per').onclick = e => { const b = e.target.closest('[data-p]'); if (!b || b.dataset.p === S.oiP) return; S.oiP = b.dataset.p; store.set('oiP', S.oiP); renderPer(); OI.iv = S.oiP; S.oiRows = []; OI.err = ''; OI.msg = 'Yükleniyor…'; OI.setData([]); renderOiStats(); loadOi(); };
   renderPer();
@@ -662,29 +764,38 @@ function applySigs() { const a = curSigs(); for (const p of P) { p.ch.signals = 
 async function loadSigs() { if (!S.sym) return; const g = S.gen; try { const r = await api(`/api/messages?bot=all&sym=${encodeURIComponent(S.sym)}&limit=500`); if (g !== S.gen) return; S.sigs = r.items || []; } catch (e) { } applySigs(); }
 async function loadBots() { try { const b = await api('/api/bots'); for (const x of b) S.bots[x.id] = x.name; applySigs(); } catch (e) { } }
 // TC göstergeleri menüsü
-const TCDEF = [['bs', 'Buy / Sell', 'Range Filter'], ['tp', 'TP / SL çizgileri', 'son Buy/Sell: SL %1, TP %1-2-3'], ['mx', 'Mild X', 'WT(9,12,4) ±53'], ['dv', 'Uyumsuzluk ▲▼', 'WT fraktal'], ['rib', 'Ribbon', 'SMA 5 / 8'], ['rb', 'Reversal Bands', '±3-6 adım'], ['sr', 'S/R bölgeleri', 'pivot 10']];
-function renderTc() { $('#tcm').innerHTML = TCDEF.map(([k, nm, ds]) => `<label><input type="checkbox" data-tc="${k}" ${S.tc[k] ? 'checked' : ''}> ${nm}<small>${ds}</small></label>`).join('') + '<div class="ddf"><button data-all="1">Hepsi</button><button data-all="0">Hiçbiri</button></div>'; const k = TCDEF.filter(x => S.tc[x[0]]).length; $('#tcb').textContent = `TC göstergeleri (${k}/${TCDEF.length}) ▾`; $('#tcb').classList.toggle('on', k > 0); }
+function bindMenu(button, menu, others) {   // others: aynı anda açık kalmaması gereken diğer menüler
+  const b = $(button), m = $(menu);
+  const show = open => { m.classList.toggle('open', open); b.setAttribute('aria-expanded', open); };
+  b.onclick = e => { e.stopPropagation(); for (const x of [].concat(others)) { const om = $(x); if (!om) continue; om.classList.remove('open'); om.previousElementSibling?.setAttribute('aria-expanded', false); } show(!m.classList.contains('open')); };
+  document.addEventListener('click', () => show(false));
+  b.parentElement.addEventListener('keydown', e => { if (e.key === 'Escape' && m.classList.contains('open')) { show(false); b.focus(); } });
+}
+const TCDEF = [['dema', 'DEMA 9', 'kalın sarı çizgi'], ['bs', 'Buy / Sell', 'TC Range Filter'], ['tp', 'TP / SL çizgileri', 'son Buy/Sell: SL %1, TP %1-2-3'], ['mx', 'Mild X', 'WT(9,12,4) ±53'], ['dv', 'Uyumsuzluk ▲▼', 'WT fraktal'], ['rib', 'Ribbon', 'SMA 5 / 8'], ['rb', 'Reversal Bands', '±3-6 adım'], ['sr', 'S/R bölgeleri', 'pivot 10']];
+function renderTc() { $('#tcm').innerHTML = TCDEF.map(([k, nm, ds]) => `<label><input type="checkbox" data-tc="${k}" ${S.tc[k] ? 'checked' : ''}> ${nm}<small>${ds}</small></label>`).join('') + '<div class="ddf"><button data-all="1">Hepsi</button><button data-all="0">Hiçbiri</button></div>'; const k = TCDEF.filter(x => S.tc[x[0]]).length; $('#tcb').textContent = `Katmanlar (${k}/${TCDEF.length}) ▾`; $('#tcb').classList.toggle('on', k > 0); }
 function tcChanged() { store.set('tc', S.tc); renderTc(); for (const p of P) p.ch.requestDraw(); }
-$('#tcb').onclick = e => { e.stopPropagation(); $('#pnm').classList.remove('open'); $('#tcm').classList.toggle('open'); };
-$('#tcm').addEventListener('click', e => { e.stopPropagation(); const a = e.target.closest('[data-all]'); if (a) { for (const x of TCDEF) S.tc[x[0]] = a.dataset.all === '1'; tcChanged(); $('#tcm').classList.add('open'); } });
-$('#tcm').addEventListener('change', e => { const k = e.target.dataset.tc; if (k) { S.tc[k] = e.target.checked; tcChanged(); } });
-document.addEventListener('click', () => $('#tcm').classList.remove('open'));
+bindMenu('#tcb', '#tcm', ['#pnm', '#colm']);
+$('#tcm').addEventListener('click', e => { e.stopPropagation(); const a = e.target.closest('[data-all]'); if (a) { for (const x of TCDEF) S.tc[x[0]] = a.dataset.all === '1'; tcChanged(); $(`#tcm [data-all="${a.dataset.all}"]`).focus({ preventScroll: true }); } });
+$('#tcm').addEventListener('change', e => { const k = e.target.dataset.tc; if (k) { S.tc[k] = e.target.checked; tcChanged(); $(`#tcm [data-tc="${k}"]`).focus({ preventScroll: true }); } });
 renderTc();
+// sütun menüsü
+bindMenu('#colb', '#colm', ['#pnm', '#tcm']);
+$('#colm').addEventListener('click', e => { e.stopPropagation(); if (e.target.closest('[data-cdef]')) { S.cols = ['px', 'chg', 'b5', 'fr']; store.set('cols', S.cols); applyCols(); renderList(); $('#colm').classList.add('open'); } });
+$('#colm').addEventListener('change', e => { const k = e.target.dataset.col; if (!k) return; S.cols = COLS.map(c => c.k).filter(x => x === k ? e.target.checked : S.cols.includes(x)); store.set('cols', S.cols); applyCols(); renderList(); });
 // alt panel menüsü
-const PNDEF = [['rsi', 'RSI', '14 + ortalama 14'], ['srsi', 'Stokastik RSI', 'K / D'], ['wt', 'WaveTrend', '10,21,4 + kesişim'], ['me', 'Market Exposure', 'tüm hesaplar long %'], ['fr', 'Funding Rate', 'ödeme başına %'], ['oi', 'Open Interest', 'USD'], ['tp', 'Trader Positioning', 'büyük hesaplar long %']];
-function renderPn() { $('#pnm').innerHTML = PNDEF.map(([k, nm, ds]) => `<label><input type="checkbox" data-pn="${k}" ${S.panes[k] ? 'checked' : ''}> ${nm}<small>${ds}</small></label>`).join('') + '<div class="ddf"><button data-pall="1">Hepsi</button><button data-pall="0">Hiçbiri</button></div>'; const k = PNDEF.filter(x => S.panes[x[0]]).length; $('#pnb').textContent = `Alt paneller (${k}/${PNDEF.length}) ▾`; $('#pnb').classList.toggle('on', k > 0); }
-function pnChanged() { store.set('panes', S.panes); renderPn(); for (const p of P) { if (needTurev() && !p.ch.ext) p.tnext = 0; p.ch.requestDraw(); } }
-$('#pnb').onclick = e => { e.stopPropagation(); $('#tcm').classList.remove('open'); $('#pnm').classList.toggle('open'); };
-$('#pnm').addEventListener('click', e => { e.stopPropagation(); const a = e.target.closest('[data-pall]'); if (a) { for (const x of PNDEF) S.panes[x[0]] = a.dataset.pall === '1'; pnChanged(); $('#pnm').classList.add('open'); } });
-$('#pnm').addEventListener('change', e => { const k = e.target.dataset.pn; if (k) { S.panes[k] = e.target.checked; pnChanged(); } });
-document.addEventListener('click', () => $('#pnm').classList.remove('open'));
+const PNDEF = [...[...INDICATOR_PANELS].map(([id, panel]) => [id, esc(panel.label), esc(panel.description)]), ['cvd', 'CVD', 'piyasa alış − satış birikimi'], ['me', 'Market Exposure', 'tüm hesaplar long %'], ['fr', 'Funding Rate', 'ödeme başına %'], ['oi', 'Open Interest', 'USD'], ['tp', 'Trader Positioning', 'büyük hesaplar long %']];
+function renderPn() { $('#pnm').innerHTML = PNDEF.map(([k, nm, ds]) => `<label><input type="checkbox" data-pn="${k}" ${S.panes[k] ? 'checked' : ''}> ${nm}<small>${ds}</small></label>`).join('') + '<div class="ddf"><button data-pall="1">Hepsi</button><button data-pall="0">Hiçbiri</button></div>'; $('#pnb').classList.toggle('on', PNDEF.some(([k]) => S.panes[k])); }
+function pnChanged() { store.set('panes', S.panes); renderPn(); for (const p of P) { if (needTurev() && !p.ch.ext && !p.tbusy) p.tnext = 0; p.ch.requestDraw(); } }
+bindMenu('#pnb', '#pnm', ['#tcm', '#colm']);
+$('#pnm').addEventListener('click', e => { e.stopPropagation(); const a = e.target.closest('[data-pall]'); if (a) { for (const x of PNDEF) S.panes[x[0]] = a.dataset.pall === '1'; pnChanged(); $(`#pnm [data-pall="${a.dataset.pall}"]`).focus({ preventScroll: true }); } });
+$('#pnm').addEventListener('change', e => { const k = e.target.dataset.pn; if (k) { S.panes[k] = e.target.checked; pnChanged(); const input = [...$('#pnm').querySelectorAll('[data-pn]')].find(el => el.dataset.pn === k); input?.focus({ preventScroll: true }); } });
 renderPn();
 $('#sigOn').checked = !!S.sigOn; $('#sigM1').checked = !!S.sigM1;
 $('#sigOn').onchange = e => { S.sigOn = e.target.checked; store.set('sig', S.sigOn); applySigs(); };
 $('#sigM1').onchange = e => { S.sigM1 = e.target.checked; store.set('m1', S.sigM1); applySigs(); };
 
 // ---------- Coin özeti, ticker, uyarı ----------
-async function loadCoin() { if (!S.sym) return; const g = S.gen; try { const c = await api(`/api/t/coin?symbol=${S.sym}`); if (g !== S.gen) return; S.coin = c; S.coinErr = ''; for (const p of P) { p.ch.predFr = c.funding; p.ch.requestDraw(); } } catch (e) { if (g !== S.gen) return; S.coinErr = errText(e); } renderSum(); renderOiStats(); renderOz(); }
+async function loadCoin() { if (!S.sym) return; const g = S.gen; try { const c = await api(`/api/t/coin?symbol=${S.sym}`); if (g !== S.gen) return; S.coin = c; S.coinErr = ''; if (c.oiUsd) { S.oiHist.push([Date.now(), c.oiUsd]); while (S.oiHist.length > 400) S.oiHist.shift(); } for (const p of P) { p.ch.predFr = c.funding; p.ch.requestDraw(); } } catch (e) { if (g !== S.gen) return; S.coinErr = errText(e); } renderSum(); renderOiStats(); renderOz(); }
 async function loadOb() { if (!S.sym) return; const g = S.gen; try { const o = await api(`/api/t/ozet?symbol=${S.sym}`); if (g !== S.gen) return; S.ob = o; } catch (e) { } renderOz(); }
 // piyasa özeti (listenin altında): fiyat, funding + geri sayım, OI, emir defteri ve üç long/short oranı
 function renderOz() {
@@ -702,7 +813,7 @@ function renderOz() {
     + bar('Trader positioning', o && o.top, 'Büyük hesapların hesap sayısına göre long oranı (topLongShortAccountRatio)')
     + bar('Market exposure', o && o.glob, 'Tüm hesapların hesap sayısına göre long oranı (globalLongShortAccountRatio)')
     + `<div class="ln"><span>24s hacim</span><b>$${t ? fmtBig(t[2]) : '—'}</b></div>`
-    + `<div class="nt">Oranlar 15 dk'lık${ot ? ', son ' + p2(ot.getUTCHours()) + ':' + p2(ot.getUTCMinutes()) : ''} · emir defteri 15 sn'de bir</div>`;
+    + `<div class="nt" title="Binance long/short oranlarını 5 dakikada bir hesaplar; daha sık güncel değer yoktur. Emir defteri ilk 100 kademe.">Fiyat, funding, hacim canlı · oranlar 5 dk'lık${ot ? ' (son ' + p2(ot.getUTCHours()) + ':' + p2(ot.getUTCMinutes()) + ')' : ''} · emir defteri 15 sn</div>`;
 }
 async function loadUni() { try { S.uni = await api('/api/t/evren'); S.uniErr = ''; } catch (e) { S.uniErr = errText(e); } renderList(); renderOz(); }
 async function loadTickers() { try { const t = await api('/api/t/tickers'); S.tick = t.rows; S.tickErr = ''; } catch (e) { S.tickErr = errText(e); } renderList(); renderSum(); renderOz(); }
@@ -712,7 +823,8 @@ function renderSum() {
   const t = S.tick && S.tick[S.sym], c = S.coin, f = fastest();
   const px = f && f.loaded && f.ch.data.length ? f.ch.data[f.ch.data.length - 1][4] : t ? t[0] : null;
   const fr = c && c.funding;
-  $('#sum').innerHTML = `<span class="sy">${esc(short(S.sym))}</span><span class="pxl">${fmtPx(px)}</span>`
+  const lvOn = Date.now() - S.liveAt < 10e3;
+  $('#sum').innerHTML = `<span class="sy">${esc(S.sym)}</span><span class="pxl" id="pxl">${fmtPx(px)}</span><span class="lv ${lvOn ? 'on' : ''}" id="lv" title="${lvOn ? 'Fiyat Binance işlem akışından canlı geliyor (100 ms paketler)' : 'Canlı akış yok: fiyat 5 sn\'de bir yoklanıyor'}">${lvOn ? 'CANLI' : '5 sn'}</span>`
     + `<span>24s <b class="${pcls(t && t[1])}">${t ? fmtPct(t[1]) : '—'}</b></span><span>24s hacim <b>$${t ? fmtBig(t[2]) : '—'}</b></span>`
     + `<span>OI <b>$${c ? fmtBig(c.oiUsd) : '—'}</b></span><span>Funding <b class="${pcls(fr)}">${fr == null ? '—' : fmtPct(fr, 4)}</b></span>`
     + `<span class="opt">Sonraki ödeme <b id="cd">${cdText(c && c.nextFunding)}</b></span>`
@@ -726,42 +838,102 @@ function renderWarn() {
 // ---------- İzleme listesi ----------
 async function loadList() { try { S.list = await api('/api/t/izleme'); S.listErr = ''; S.listOk = true; } catch (e) { S.listErr = e.message; S.listOk = false; } renderList(); }
 function renderList() {
-  const T = S.tick || {}, rows = S.list.map((s, i) => ({ s, i, t: T[s] }));
-  const k = S.sort.k, dir = S.sort.dir;
-  if (k) rows.sort((a, b) => { const va = k === 'sym' ? a.s : a.t ? a.t[k === 'px' ? 0 : k === 'chg' ? 1 : 2] : -Infinity, vb = k === 'sym' ? b.s : b.t ? b.t[k === 'px' ? 0 : k === 'chg' ? 1 : 2] : -Infinity; return (va < vb ? -1 : va > vb ? 1 : 0) * dir || a.i - b.i; });
+  const T = S.tick || {}, cols = (S.cols || ['px', 'chg', 'vol']).filter(k => COLD[k]);
+  // yenilemede klavye odağı kaybolmasın (V2): odaktaki satır düğmesini hatırla, sonra geri ver
+  const wl = $('#wl'), focused = document.activeElement;
+  const focusKind = wl.contains(focused) && focused.matches('button') ? focused.className.split(' ')[0] : null;
+  const focusSymbol = focusKind && focused.closest('[data-s]')?.dataset.s;
+  const delistFocused = focused?.id === 'dlchip';
   // Evren (motorun taradığı liste) rozetleri: DELİST = Binance kapanış tarihi verdi · YENİ = son 7 günde listelendi · KALKTI = artık listede yok
   const U = S.uni && S.uni.rows, nowT = Date.now(), all = S.mode === 'all';
-  const badge = s => { const u = U && U[s]; if (U && !u) return '<span class="bd go" title="Bu sözleşme artık Binance vadeli listesinde yok">KALKTI</span>'; if (!u) return ''; const d = u[1];
-    if (d) { const x = trDate(d), when = `${p2(x.getUTCDate())}.${p2(x.getUTCMonth() + 1)} ${p2(x.getUTCHours())}:${p2(x.getUTCMinutes())}`; return `<span class="bd dl" title="DELİST: Binance bu sözleşmeyi ${when} (TR) tarihinde kapatıyor; açık pozisyonlar o an otomatik kapatılır">⚠</span>`; }
-    return u[2] && nowT - u[2] < 7 * 864e5 ? '<span class="bd nw" title="Son 7 günde listelendi">YENİ</span>' : ''; };
+  const badge = s => {
+    const u = U && U[s];
+    if (!u) return U ? { label: 'Kapalı', html: '<span class="bd go" title="Bu sözleşme artık Binance vadeli listesinde yok">KALKTI</span>' } : null;
+    if (u[1]) {
+      const x = trDate(u[1]), when = `${p2(x.getUTCDate())}.${p2(x.getUTCMonth() + 1)} ${p2(x.getUTCHours())}:${p2(x.getUTCMinutes())}`;
+      return { label: 'Delist', html: `<span class="bd dl" title="DELİST: Binance bu sözleşmeyi ${when} (TR) tarihinde kapatıyor; açık pozisyonlar o an otomatik kapatılır">⚠</span>` };
+    }
+    return u[2] && nowT - u[2] < 7 * 864e5 ? { label: 'Yeni', html: '<span class="bd nw" title="Son 7 günde listelendi">YENİ</span>' } : null;
+  };
+  const symbolButton = s => {
+    const status = badge(s), name = status ? `${s}, ${status.label}` : s;
+    return `<button class="nm" aria-label="${esc(name)}"${s === S.sym ? ' aria-current="true"' : ''}><i>${esc(short(s))}</i>${status?.html || ''}</button>`;
+  };
+  const cells = s => cols.map(k => cell(s, k)).join('');
   if (all) {
     const keys = U ? Object.keys(U) : Object.keys(T), f = S.filt, dl = U ? keys.filter(s => U[s][1]) : [];
-    let arr = keys.filter(s => (!f || s.includes(f)) && (!S.dlOnly || (U && U[s][1]))).map((s, i) => ({ s, i, t: T[s] }));
-    const kk = k || 'chg', dd = k ? dir : -1, ix = kk === 'px' ? 0 : kk === 'chg' ? 1 : 2;
-    arr.sort((a, b) => { const va = kk === 'sym' ? a.s : a.t && a.t[ix] != null ? a.t[ix] : -Infinity, vb = kk === 'sym' ? b.s : b.t && b.t[ix] != null ? b.t[ix] : -Infinity; return (va < vb ? -1 : va > vb ? 1 : 0) * dd || (a.s < b.s ? -1 : 1); });
+    const arr = sortRows(keys.filter(s => (!f || s.includes(f)) && (!S.dlOnly || (U && U[s][1]))).map((s, i) => ({ s, i })), true);
     S.shown = arr.map(r => r.s);
     const inList = new Set(S.list);
     $('#wl').innerHTML = (S.uniErr && !U ? `<div class="lnote bad">Coin listesi alınamadı: ${esc(S.uniErr)}<br>Fiyat listesindeki coinler gösteriliyor; delist bilgisi yok.</div>` : '')
-      + arr.map(({ s, t }) => `<div class="row ${s === S.sym ? 'sel' : ''} ${U && U[s] && U[s][1] ? 'dl' : ''}" data-s="${esc(s)}" title="${esc(s)}"><span class="nm"><i>${esc(short(s))}</i>${badge(s)}</span><span class="n">${t ? fmtPx(t[0]) : '—'}</span><span class="n ${pcls(t && t[1])}">${t ? fmtPct(t[1]) : '—'}</span><span class="n" style="color:var(--mut)">${t ? volM(t[2]) : '—'}</span><button class="st ${inList.has(s) ? 'on' : ''}" data-star="${esc(s)}" title="${inList.has(s) ? 'Listemden çıkar' : 'Listeme ekle'}">${inList.has(s) ? '★' : '☆'}</button></div>`).join('')
+      + arr.map(({ s }) => `<div class="row ${s === S.sym ? 'sel' : ''} ${U && U[s] && U[s][1] ? 'dl' : ''}" data-s="${esc(s)}" title="${esc(s)}">${symbolButton(s)}${cells(s)}<button class="st ${inList.has(s) ? 'on' : ''}" data-star="${esc(s)}" aria-label="${esc(s)} ${inList.has(s) ? 'Listemden çıkar' : 'Listeme ekle'}" title="${inList.has(s) ? 'Listemden çıkar' : 'Listeme ekle'}">${inList.has(s) ? '★' : '☆'}</button></div>`).join('')
       + (!arr.length ? `<div class="lnote">${keys.length ? 'Eşleşen coin yok.' : 'Coin listesi yükleniyor…'}</div>` : '') + (S.tickErr ? `<div class="lnote bad">Fiyatlar güncellenemedi: ${esc(S.tickErr)}</div>` : '');
-    $('#linfo').innerHTML = `<span>${U ? S.uni.n : keys.length} coin${f || S.dlOnly ? ' · ' + arr.length + ' gösteriliyor' : ''}</span>` + (dl.length ? `<span class="chip ${S.dlOnly ? 'on' : ''}" id="dlchip" title="Yalnız delist olacakları göster / hepsini göster">⚠ ${dl.length} delist</span>` : '');
+    $('#linfo').innerHTML = `<span>${U ? S.uni.n : keys.length} coin${f || S.dlOnly ? ' · ' + arr.length + ' gösteriliyor' : ''}</span>` + (dl.length ? `<button class="chip ${S.dlOnly ? 'on' : ''}" id="dlchip" aria-pressed="${S.dlOnly}" title="Yalnız delist olacakları göster / hepsini göster">⚠ ${dl.length} delist</button>` : '') + zInfo();
   } else {
   const dlMine = U ? S.list.filter(s => !U[s] || U[s][1]).length : 0;
-  $('#linfo').innerHTML = `<span>${S.list.length} coin</span>` + (dlMine ? `<span style="color:var(--dn);font-weight:600">⚠ ${dlMine} delist / kalkmış</span>` : '');
-  const row = (s, t, tmp) => `<div class="row ${s === S.sym ? 'sel' : ''} ${tmp ? 'tmp' : ''} ${U && (!U[s] || U[s][1]) ? 'dl' : ''}" data-s="${esc(s)}" title="${esc(s)}"><span class="nm"><i>${esc(short(s))}</i>${badge(s)}</span>`
-    + (tmp ? `${S.listOk ? `<button class="plus" data-add="${esc(s)}">+ listeye ekle</button>` : '<span class="n" style="grid-column:2/6;color:var(--mut)">listede değil</span>'}`
-      : `<span class="n">${t ? fmtPx(t[0]) : '—'}</span><span class="n ${pcls(t && t[1])}">${t ? fmtPct(t[1]) : '—'}</span><span class="n" style="color:var(--mut)">${t ? volM(t[2]) : '—'}</span><button class="x" data-x="${esc(s)}" title="Listeden çıkar">✕</button>`) + '</div>';
+  $('#linfo').innerHTML = `<span>${S.list.length} coin</span>` + (dlMine ? `<span style="color:var(--dn);font-weight:600">⚠ ${dlMine} delist / kalkmış</span>` : '') + zInfo();
+  const rows = sortRows(S.list.map((s, i) => ({ s, i })), false);
+  const row = (s, tmp) => `<div class="row ${s === S.sym ? 'sel' : ''} ${tmp ? 'tmp' : ''} ${U && (!U[s] || U[s][1]) ? 'dl' : ''}" data-s="${esc(s)}" title="${esc(s)}">${symbolButton(s)}`
+    + (tmp ? `${S.listOk ? `<button class="plus" data-add="${esc(s)}" style="grid-column:2/-1">+ listeye ekle</button>` : '<span class="n" style="grid-column:2/-1;color:var(--mut)">listede değil</span>'}`
+      : `${cells(s)}<button class="x" data-x="${esc(s)}" aria-label="${esc(s)} listeden çıkar" title="Listeden çıkar">✕</button>`) + '</div>';
   let h = '';
   if (S.listErr) h += `<div class="lnote bad">⚠ ${esc(S.listErr)}<br>Grafikler çalışmaya devam eder; yalnız seçili coin gösteriliyor.</div>`;
-  if (S.sym && !S.list.includes(S.sym)) h += row(S.sym, T[S.sym], true);
-  h += rows.map(r => row(r.s, r.t, false)).join('');
+  if (S.sym && !S.list.includes(S.sym)) h += row(S.sym, true);
+  h += rows.map(r => row(r.s, false)).join('');
   if (S.listOk && !S.list.length) h += '<div class="lnote">Liste boş. Yukarıdaki kutuya coin adı yazıp ekleyin.</div>';
   if (S.tickErr) h += `<div class="lnote bad">Fiyatlar güncellenemedi: ${esc(S.tickErr)}</div>`;
   $('#wl').innerHTML = h;
   }
-  document.querySelectorAll('[data-mode]').forEach(b => { b.classList.toggle('on', b.dataset.mode === S.mode); b.textContent = b.dataset.mode === 'all' ? `Tümü${U ? ' (' + S.uni.n + ')' : ''}` : `Listem (${S.list.length})`; });
+  document.querySelectorAll('.modes [data-mode]').forEach(b => { const on = b.dataset.mode === S.mode; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); b.textContent = b.dataset.mode === 'all' ? `Tümü${U ? ' (' + S.uni.n + ')' : ''}` : `Listem (${S.list.length})`; });
   $('#addq').placeholder = all ? 'Coin ara (ör. SOL)' : 'Coin ekle (ör. SOL)';
-  document.querySelectorAll('.lh [data-sort]').forEach(e => { const on = S.sort.k === e.dataset.sort; e.style.color = on ? 'var(--tx)' : ''; e.textContent = e.textContent.replace(/ [▲▼]$/, '') + (on ? (S.sort.dir > 0 ? ' ▲' : ' ▼') : ''); });
+  const sk = S.sort.k || (all ? 'chg' : null), sd = S.sort.k ? S.sort.dir : -1, ar = k => sk === k ? (sd > 0 ? ' ▲' : ' ▼') : '';
+  const lh = $('#lh'); if (lh) lh.innerHTML = `<button data-sort="sym" title="Ada göre sırala">${all ? 'Coin' : 'Listem'}${ar('sym')}</button>` + cols.map(k => `<button class="n" data-sort="${k}" title="${esc(COLD[k].ds)} — tıkla: sırala"${sk === k ? ' style="color:var(--tx)"' : ''}>${COLD[k].nm}${ar(k)}</button>`).join('') + '<span></span>';
+  if (delistFocused) $('#dlchip')?.focus({ preventScroll: true });
+  if (focusSymbol) {
+    const row = [...wl.children].find(el => el.dataset.s === focusSymbol);
+    (row?.querySelector('.' + focusKind) || row?.querySelector('.nm') || $('#addq')).focus({ preventScroll: true });
+  }
+}
+function zInfo() { const z = S.zt; if (!S.cols || !S.cols.some(k => COLD[k] && COLD[k].z)) return ''; if (!z) return '<span class="zinfo">5 dk verisi bekleniyor…</span>'; const m = (z.at - z.since) / 60e3; return m < 5 ? `<span class="zinfo" title="5 dk sütunları sayfa açıldığından beri toplanıyor">5 dk verisi: ${Math.max(0, m).toFixed(0)}/5 dk</span>` : ''; }
+async function loadZt() { if (!S.cols.some(k => COLD[k] && COLD[k].z)) return; try { S.zt = await api('/api/t/tarama'); } catch (e) { } renderList(); }
+// ---------- İzleme listesi: sütunlar (V1.15.0) ----------
+// 24s sütunları ticker'dan (20 sn); 5 dk sütunları, funding ve tasfiye /api/t/tarama'dan (sunucu Binance akışlarından toplar, 5 sn'de bir sorulur).
+const ZI = { m5: 0, b5: 1, v5: 2, fr: 3 };
+const COLS = [
+  { k: 'px', nm: 'Fiyat', w: 76, ds: 'son fiyat', v: (s, t) => t && t[0], f: v => fmtPx(v) },
+  { k: 'chg', nm: '24s %', w: 56, ds: '24 saatlik değişim', v: (s, t) => t && t[1], f: v => fmtPct(v), c: v => pcls(v) },
+  { k: 'vol', nm: 'Hacim', w: 46, ds: '24 saatlik hacim (USDT)', v: (s, t) => t && t[2], f: v => volM(v), c: () => 'mu' },
+  { k: 'm5', nm: '5dk %', w: 54, ds: 'son 5 dakikadaki değişim', z: 1, f: v => fmtPct(v, 2), c: v => pcls(v) },
+  { k: 'b5', nm: 'Alış 5dk', w: 54, ds: 'son 5 dk piyasa ALIŞ payı (≥55 alıcı, ≤45 satıcı baskın)', z: 1, f: v => '%' + v.toFixed(0), c: v => v >= 55 ? 'up' : v <= 45 ? 'dn' : '' },
+  { k: 'v5', nm: 'Hacim 5dk', w: 54, ds: 'son 5 dakikanın hacmi', z: 1, f: v => volM(v), c: () => 'mu' },
+  { k: 'fr', nm: 'Funding', w: 64, ds: 'anlık tahmini funding', z: 1, f: v => fmtPct(v, 3), c: v => Math.abs(v) >= 0.1 ? (v > 0 ? 'up hl' : 'dn hl') : pcls(v) },
+  { k: 'lq', nm: 'Tasfiye 1s', w: 56, ds: 'son 1 saatte tasfiye (long + short; Binance saniyede ≤1 bildirir, alt sınır)', z: 1, f: v => v ? volM(v) : '—', c: () => 'mu' },
+];
+const COLD = Object.fromEntries(COLS.map(c => [c.k, c]));
+function val(s, k) {
+  const c = COLD[k], t = S.tick && S.tick[s]; if (!c) return null;
+  if (!c.z) { const v = c.v(s, t); return v == null || !isFinite(v) ? null : v; }
+  const r = S.zt && S.zt.rows && S.zt.rows[s]; if (!r) return null;
+  if (k === 'lq') return (r[4] || 0) + (r[5] || 0); const v = r[ZI[k]]; return v == null ? null : v;
+}
+function cell(s, k) {
+  const c = COLD[k], v = val(s, k); let tip = '';
+  if (k === 'lq') { const r = S.zt && S.zt.rows && S.zt.rows[s]; if (r && (r[4] || r[5])) tip = ` title="long ${volM(r[4])} · short ${volM(r[5])}"`; }
+  if (k === 'b5') { const r = S.zt && S.zt.rows && S.zt.rows[s]; if (r && r[2]) tip = ` title="5 dk hacim ${volM(r[2])}"`; }
+  return `<span class="n ${v == null ? 'mu' : c.c ? c.c(v) : ''}" data-c="${k}"${tip}>${v == null ? '—' : c.f(v)}</span>`;
+}
+function applyCols() {
+  const cs = S.cols.map(k => COLD[k]).filter(Boolean), w = cs.reduce((a, c) => a + c.w, 0);
+  document.documentElement.style.setProperty('--cols', ['minmax(52px,1fr)'].concat(cs.map(c => c.w + 'px'), ['16px']).join(' '));
+  // sağ panel genişliği ayraçla ayarlanır (workspace.js); ayraç hiç sürüklenmediyse varsayılan seçili sütunlara sığacak kadar olur
+  $('#workspace')?.style.setProperty('--sidebar-default', Math.max(324, Math.min(480, w + 52 + 16 + 64)) + 'px');
+  $('#colm').innerHTML = COLS.map(c => `<label title="${esc(c.ds)}"><input type="checkbox" data-col="${c.k}" ${S.cols.includes(c.k) ? 'checked' : ''}> ${c.nm}<small>${c.ds.split(' (')[0]}</small></label>`).join('') + '<div class="ddf"><button data-cdef="1">Varsayılan</button></div>';
+  for (const c of HUB.charts) c.requestResize();
+  if (S.cols.some(k => COLD[k].z)) TASKS.zt.next = 0;
+}
+function sortRows(arr, all) {
+  const k = S.sort.k || (all ? 'chg' : null), dir = S.sort.k ? S.sort.dir : -1; if (!k) return arr;
+  return arr.sort((a, b) => { if (k === 'sym') return (a.s < b.s ? -1 : 1) * dir; const va = val(a.s, k), vb = val(b.s, k); if (va == null && vb == null) return a.i - b.i; if (va == null) return 1; if (vb == null) return -1; return (va - vb) * dir || a.i - b.i; });
 }
 $('#wl').addEventListener('click', e => {
   const st = e.target.closest('[data-star]'); if (st) { e.stopPropagation(); listAct(S.list.includes(st.dataset.star) ? 'sil' : 'ekle', st.dataset.star); return; }
@@ -769,8 +941,9 @@ $('#wl').addEventListener('click', e => {
   const a = e.target.closest('[data-add]'); if (a) { e.stopPropagation(); listAct('ekle', a.dataset.add); return; }
   const r = e.target.closest('[data-s]'); if (r && r.dataset.s !== S.sym) select(r.dataset.s);
 });
-document.querySelectorAll('.lh [data-sort]').forEach(e => e.onclick = () => {
-  const k = e.dataset.sort, first = k === 'sym' ? 1 : -1;
+$('#lh').addEventListener('click', ev => { const e = ev.target.closest('[data-sort]'); if (!e) return;
+  const k = e.dataset.sort, first = k === 'sym' ? 1 : -1, all = S.mode === 'all';
+  if (!S.sort.k && all && k === 'chg') { S.sort = { k, dir: 1 }; renderList(); return; }
   if (S.sort.k !== k) S.sort = { k, dir: first }; else if (S.sort.dir === first) S.sort.dir = -first; else S.sort = { k: null, dir: 1 };
   renderList();
 });
@@ -779,7 +952,7 @@ async function listAct(action, sym) {
   try { S.list = await api('/api/t/izleme', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action, symbol: sym }) }); S.listErr = ''; S.listOk = true; renderList(); return true; }
   catch (e) { $('#aerr').textContent = (action === 'ekle' ? 'Eklenemedi: ' : 'Çıkarılamadı: ') + e.message; return false; }
 }
-document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => { S.mode = b.dataset.mode; store.set('mode', S.mode); S.filt = ''; S.dlOnly = false; $('#addq').value = ''; $('#sugg').classList.remove('open'); $('#wl').scrollTop = 0; renderList(); });
+document.querySelectorAll('.modes [data-mode]').forEach(b => b.onclick = () => { S.mode = b.dataset.mode; store.set('mode', S.mode); S.filt = ''; S.dlOnly = false; $('#addq').value = ''; $('#sugg').classList.remove('open'); $('#wl').scrollTop = 0; renderList(); });
 $('#linfo').addEventListener('click', e => { if (e.target.closest('#dlchip')) { S.dlOnly = !S.dlOnly; $('#wl').scrollTop = 0; renderList(); } });
 // coin ekle kutusu ("Tümü" kipinde arama kutusu olarak çalışır)
 const A = { items: [], sel: 0 };
@@ -812,36 +985,50 @@ $('#addq').addEventListener('keydown', e => {
 $('#sugg').addEventListener('mousedown', e => { const d = e.target.closest('[data-i]'); if (d) { e.preventDefault(); addPick(A.items[+d.dataset.i]); } });
 
 // ---------- Coin seçimi ve yoklama ----------
+let signalPanel = null;
+function mountSignals() {
+  const root = $('#signal-panel'), panel = globalThis.TerminalSignalPanel;
+  if (root && typeof panel?.mount === 'function') {
+    signalPanel = panel.mount({ root, api, getSymbol: () => S.sym, onSelectSymbol: select });
+  }
+}
 function select(sym) {
-  sym = cleanSym(sym); if (!sym) return;
+  sym = cleanSym(sym); if (!sym || sym === S.sym) return;
   S.sym = sym; S.gen++; store.set('sym', sym); S.coin = null; S.coinErr = ''; S.sigs = []; S.oiRows = [];
   document.title = `${short(sym)} · Botlar Terminal`;
-  S.son = null; S.frIv = null; S.ob = null; for (const p of P) { p.loaded = false; p.busy = false; p.next = 0; p.tnext = 0; p.ch.ext = null; p.ch.predFr = null; p.ch.err = ''; p.ch.msg = 'Yükleniyor…'; p.ch.signals = []; p.ch.setData([]); }
+  S.son = null; S.frIv = null; S.ob = null; for (const p of P) { p.gen++; p.loaded = false; p.busy = false; p.tbusy = false; p.next = 0; p.tnext = 0; p.ch.ext = null; p.ch.predFr = null; p.ch.err = ''; p.ch.msg = 'Yükleniyor…'; p.ch.signals = []; p.ch.setData([]); }
   OI.err = ''; OI.msg = 'Yükleniyor…'; OI.setData([]); S.oiGen++;
   TASKS.coin.next = TASKS.oi.next = TASKS.sig.next = TASKS.ob.next = 0;
+  S.livePx = null; S.liveAt = 0; S.flow = []; S.flowSince = 0; S.big = []; S.liqC = []; S.oiHist = []; S.tapeAt = 0; S.liqFull = false; openLive(); loadAkis();
   renderList(); renderSum(); renderOiStats(); renderOz(); loop();
+  signalPanel?.setSymbol(sym);
 }
 async function checkVer() { try { const v = await api('/api/version'); $('#ver').textContent = 'V' + v.version; if (S.stamp && S.stamp !== v.stamp) location.reload(); S.stamp = v.stamp; } catch (e) { } }
 // Binance'e giden yoklamalar sınır beklemesinde ve sekme gizliyken durur; yerel uçlar (sinyal, sürüm) yalnız sekme gizliyken durur.
-const TASKS = { coin: { ms: 10e3, fn: loadCoin, next: 0 }, tick: { ms: 20e3, fn: loadTickers, next: 0 }, oi: { ms: 60e3, fn: loadOi, next: 0 }, uni: { ms: 300e3, fn: loadUni, next: 0 }, ob: { ms: 15e3, fn: loadOb, next: 0 }, sig: { ms: 30e3, fn: loadSigs, next: 0, local: true }, ver: { ms: 10e3, fn: checkVer, next: 0, local: true }, list: { ms: 60e3, fn: loadList, next: 0, local: true } };
+const TASKS = { coin: { ms: 10e3, fn: loadCoin, next: 0 }, tick: { ms: 20e3, fn: loadTickers, next: 0 }, oi: { ms: 60e3, fn: loadOi, next: 0 }, uni: { ms: 300e3, fn: loadUni, next: 0 }, ob: { ms: 15e3, fn: loadOb, next: 0 }, zt: { ms: 5e3, fn: loadZt, next: 0, local: true }, btc: { ms: 60e3, fn: loadBtc, next: 0 }, sig: { ms: 30e3, fn: loadSigs, next: 0, local: true }, ver: { ms: 10e3, fn: checkVer, next: 0, local: true }, list: { ms: 60e3, fn: loadList, next: 0, local: true } };
 function loop() {
+  { const lv = $('#lv'); if (lv && lv.classList.contains('on') !== (Date.now() - S.liveAt < 10e3)) { renderSum(); renderOz(); } }
+  { const ti = $('#tapeIn'); if (ti && !document.hidden && (!ti.innerHTML || Date.now() - S.tapeAt > 120e3)) renderTape(); }
   renderWarn(); const cd = $('#cd'); if (cd) cd.textContent = cdText(S.coin && S.coin.nextFunding); const cd2 = $('#cd2'); if (cd2) cd2.textContent = cdText(S.coin && S.coin.nextFunding);
   if (document.hidden) return;
   const now = Date.now(), pz = paused();
   for (const t of Object.values(TASKS)) if (now >= t.next && !t.busy && (t.local || !pz)) { t.next = now + t.ms; t.busy = true; Promise.resolve().then(t.fn).catch(() => { }).finally(() => { t.busy = false; }); }
   if (!S.sym) return;
+  const derivativePanes = needTurev(), summary = pz || derivativePanes ? null : summaryTurevPane();
   for (const p of P) {
     if (pz) { if (!p.loaded && !p.busy) { p.ch.msg = 'Binance sınırı nedeniyle bekleniyor…'; p.ch.requestDraw(); } continue; }
-    if (p.loaded && needTurev() && now >= p.tnext && !p.tbusy) loadTurev(p);
+    if (p.loaded && (derivativePanes || p === summary) && now >= p.tnext && !p.tbusy) loadTurev(p);
     if (p.busy || now < p.next) continue;
-    p.next = now + 5000; if (p.loaded) chartLive(p); else chartFull(p);
+    p.next = now + (now - S.liveAt < 10e3 ? 15000 : 5000); if (p.loaded) chartLive(p); else chartFull(p);
   }
 }
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { for (const t of Object.values(TASKS)) t.next = 0; for (const p of P) p.next = 0; loop(); } });
-window.addEventListener('resize', () => { for (const c of HUB.charts) c.resize(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { for (const t of Object.values(TASKS)) t.next = 0; for (const p of P) p.next = 0; openLive(); loop(); } else if (S.es) { S.es.close(); S.es = null; S.liveAt = 0; } });
+window.addEventListener('resize', () => { for (const c of HUB.charts) c.requestResize(); });
 
 // ---------- Açılış ----------
-buildPanes(); buildOi(); renderLay();
+buildPanes(); buildOi(); renderLay(); applyCols();
+globalThis.TerminalWorkspace?.mount({ root: $('#workspace'), grid: $('#grid'), store });
+mountSignals();
 (async () => {
   let qs = null; try { qs = cleanSym(new URLSearchParams(location.search).get('s')); if (location.search) history.replaceState(null, '', location.pathname); } catch (e) { }
   loadBots();
