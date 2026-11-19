@@ -396,3 +396,13 @@ Güncel değerler her zaman Sinyal Masası'nın sağ panelinde.
 - Değişen: `web\terminal.cjs`, `web\public\terminal.html`, `db\test-terminal.cjs` (74 test geçti), `db\terminal-deneme.cjs`. Sahte veriyle 1366×768 ve 1920×1080 ekran denemesi, konsol temiz. Motor yeniden başlatılmadı.
 - Denenmeyenler: gerçek bir delist duyurusu sırasında `deliveryDate` davranışı yalnız Binance belgesine dayanıyor; `topLongShortPositionRatio` yanıtındaki alan adı (`longAccount`) gerçek veride doğrulanacak.
 - Gerçek veride doğrulandı (15.11 23:27): evren 796 coin (motorla aynı; ilk sürümde yalnız tam `PERPETUAL` süzülüp 560 çıkmıştı, `TRADIFI_PERPETUAL` gibi türler eklendi), `topLongShortPositionRatio` alanı `longAccount` dolu geliyor, ARIA'da veritabanı + Binance birleşimi, funding aralığı 4 sa doğru. O an duyurulmuş delist yok.
+
+## 19.11.2026 — V1.9.1: Grafik gösterge motoru
+- RSI, Stoch RSI, WaveTrend/WT Cross ve TC hesapları çizimden ayrıldı. Mum ve sonuç önbelleği grafik başına tutulur. Sayfa açılışında kaydedilen çizgi göstergeleri Alt paneller menüsünde görünür.
+- V1.9.0 çıktısıyla 7 zaman dilimi × 500 örnek mum karşılaştırıldı. RSI, Stoch RSI, WaveTrend ve TC hesaplarında fark çıkmadı. Dört ayrı zaman dilimi, gecikmiş yanıt, eski mum düzeltmesi ve hatalı gösterge ağsız testlerle sınandı.
+
+## 19.11.2026 — V1.10.0: Dört grafik ve sağ panel
+- Onaylanan düzen uygulandı. Grafikler solda yan yana, sağda izleme listesi ve altında dokuz bot. Ayırıcılar fare veya klavyeyle çalışır ve genişlikler yerelde saklanır. Seçilen botun akışı tek satırlı ve en yeni öncedir. Sembol tıklaması dört grafiği günceller.
+- `Göstergeler` menüsünde taze profilde RSI, Stoch RSI ve WT Cross açık gelir. Kayıtlı tercihler korunur. Piyasa özeti açılınca gerektiğinde yalnız bir grafikten türev verisi yüklenir.
+- Canlı akış oturum, gecikme ve sıralı güncelleme bilgisi taşır. PostgreSQL arşivinde sembole göre, isteğe bağlı bot/yön ile 90 güne kadar sayfalı salt okunur sorgu eklendi. Bu kopyada canlı arşiv kapsamı ölçülmedi.
+- 42 otomatik test başarılı (mevcut 74 terminal kontrolü dahil). Yerel örnek verili Chromium testinde sinyal seçimi, ham mesaj, arşiv sayfalama, göstergeler, zaman dilimleri, fare/klavye ayraçları ve genişlik kalıcılığı doğrulandı. 1366, 1920, 1024 ve 390 piksel genişlikler sınandı.

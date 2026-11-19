@@ -4,6 +4,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
+const { createFeed } = require('./signal-feed.cjs');
+const { createArchive } = require('./signal-archive.cjs');
 const terminal = require('./terminal.cjs'); // Terminal sayfasının /api/t/* uçları (GOREV-TERMINAL.md)
 
 const VERSION = fs.readFileSync(path.join(__dirname, '..', 'VERSION'), 'utf8').trim();
@@ -11,7 +13,6 @@ const ROOT = path.join(__dirname, '..', 'data');
 const PUB = path.join(__dirname, 'public');
 const PORT = Number(process.env.PORT || 3200);
 const HOST = process.env.HOST || '127.0.0.1';
-const KEEP_MS = 48 * 3600e3, CAP = 5000;
 const BOOT = Date.now();
 const BOTS = [
   { id: 'm1', gap: 60e3, name: 'M1', desc: '1 dakikalık ani yükseliş/düşüş, RSI ve Stochastic ile' },
@@ -27,49 +28,13 @@ const BOTS = [
 const IDS = new Set(BOTS.map(b => b.id));
 const log = (...a) => console.log(new Date().toISOString(), ...a);
 
-// Aynı bot + coin + yön (+ strateji) kısa sürede tekrar ederse tek kart: n artar, metin/zaman güncellenir.
-let seq = 0, nextId = 1;
-const GAP = Object.fromEntries(BOTS.map(b => [b.id, b.gap]));
-const msgs = new Map(BOTS.map(b => [b.id, []])); // bot -> [{id,seq,t,first,n,symbol,dir,strategy,text,price}]
-const openEp = new Map(); // bot|symbol|dir|strategy -> item
-// Akışın kaynağı VERİTABANI (11.11.2026'dan beri; eskiden data\live\signals-*.jsonl dosyaları okunuyordu).
-// signals tablosu (src_file, src_line) sırasıyla okunur: son 3 günün dosya adları için kalınan satırdan sonrası istenir (birincil anahtar dizini).
-const day = t => new Date(t).toISOString().slice(0, 10);
-const feedPos = new Map(); let feedBusy = false, feedErrAt = 0, feedReady = false;
-function ingest(s, now) {
-  if (!IDS.has(s.botId) || now - s.t > KEEP_MS) return;
-  const a = msgs.get(s.botId), k = [s.botId, s.symbol, s.direction || '-', s.strategy || '-'].join('|'), o = openEp.get(k);
-  if (o && s.t - o.t <= GAP[s.botId] && s.t >= o.t) { o.t = s.t; o.n++; o.text = s.text || o.text; o.price = s.price; o.seq = ++seq; return; }
-  const it = { id: nextId++, seq: ++seq, t: s.t, first: s.t, n: 1, symbol: s.symbol, dir: s.direction || null, strategy: s.strategy || null, text: s.text || '', price: s.price };
-  a.push(it); openEp.set(k, it);
-  if (a.length > CAP * 1.2) a.splice(0, a.length - CAP);
-}
+const feed = createFeed({ bots: BOTS });
+let feedErrAt = 0;
 async function poll() {
-  if (feedBusy) return; feedBusy = true;
-  try {
-    const now = Date.now();
-    for (const d of [...new Set([day(now - 2 * 24 * 3600e3), day(now - 24 * 3600e3), day(now)])]) {
-      const f = `signals-${d}.jsonl`; let pos = feedPos.get(f) || 0;
-      for (;;) {
-        const rows = await q('SELECT src_line, bot, symbol, dir, strategy, text, price, extract(epoch FROM t) * 1000 AS t FROM signals WHERE src_file = $1 AND src_line > $2 ORDER BY src_line LIMIT 20000', [f, pos]);
-        if (!rows.length) break;
-        for (const r of rows) ingest({ botId: r.bot, symbol: r.symbol, direction: r.dir, strategy: r.strategy, text: r.text, price: r.price, t: Math.round(Number(r.t)) }, now);
-        pos = rows[rows.length - 1].src_line; feedPos.set(f, pos);
-        if (rows.length < 20000) break;
-      }
-    }
-    if (!feedReady) { feedReady = true; log('akış veritabanından yüklendi'); }
-  } catch (e) { if (Date.now() - feedErrAt > 60e3) { feedErrAt = Date.now(); log('akış okunamadı (veritabanı):', e.message); } }
-  finally { feedBusy = false; }
+  try { await feed.poll(q); }
+  catch (e) { if (Date.now() - feedErrAt > 60e3) { feedErrAt = Date.now(); log('akış okunamadı (veritabanı):', e.message); } }
 }
-// 48 saatten eski kartlar bellekten atılır (eskiden yalnız okurken süzülüyordu → sunucu günlerce açık kalınca az sinyalli botlarda
-// günler öncesinin kartları akışta kalıyor, "son 24 saat" sayaçları doğru ama liste eskiyi de gösteriyordu).
-function prune() {
-  const lim = Date.now() - KEEP_MS;
-  for (const [id, a] of msgs) { let k = 0; while (k < a.length && a[k].t < lim) k++; if (k) a.splice(0, k); }
-  for (const [k, it] of openEp) if (it.t < lim) openEp.delete(k);
-}
-setInterval(prune, 60e3);   // poll() zamanlayıcısı dosyanın sonunda başlatılır (veritabanı yardımcıları tanımlandıktan sonra)
+setInterval(feed.prune, 60e3);
 
 function versionStamp() {
   let m = 0;
@@ -90,6 +55,7 @@ function db() {
   return pool;
 }
 const q = async (sql, args) => { const p = db(); if (!p) throw new Error('veritabanı bağlantısı yok'); return (await p.query(sql, args)).rows; };
+const archive = createArchive({ bots: IDS, query: q });
 const KC = new Map(); // karne önbelleği (60 sn)
 const R = x => x == null ? null : Math.round(Number(x) * 100) / 100;
 async function karne(days) {
@@ -204,6 +170,11 @@ http.createServer((req, res) => {
   try {
     const u = new URL(req.url, 'http://x');
     if (u.pathname.startsWith('/api/t/') && terminal.handle(req, res, u, { q, send, readBody, log })) return;
+    if (u.pathname === '/api/t/signal-archive') {
+      if (req.method !== 'GET') return send(res, 405, { error: 'GET gerekli' });
+      archive(u.searchParams).then(data => send(res, 200, data)).catch(e => send(res, e.status || 500, { error: e.message }));
+      return;
+    }
     if (u.pathname === '/api/version') return send(res, 200, { version: VERSION, stamp: versionStamp() });
     if (u.pathname === '/api/status') return send(res, 200, { version: VERSION, engine: engineStatus(), now: Date.now() });
     if (u.pathname === '/api/kasa' && req.method === 'GET') { kasaLoad().then(d => send(res, 200, kasaView(d, Number(u.searchParams.get('period')) || null))).catch(e => send(res, 503, { error: 'Kasa okunamadı: ' + e.message })); return; }
@@ -220,22 +191,8 @@ http.createServer((req, res) => {
       }).catch(e => send(res, 502, { error: e.message }));
       return;
     }
-    if (u.pathname === '/api/bots') {
-      const now = Date.now();
-      return send(res, 200, BOTS.map(({ gap, ...b }) => { const a = msgs.get(b.id); const n24 = a.filter(m => now - m.first < 24 * 3600e3).length, n1 = a.filter(m => now - m.first < 3600e3).length; return { ...b, n24, n1, last: a.length ? a[a.length - 1].t : null }; }));
-    }
-    if (u.pathname === '/api/messages') {
-      const bot = u.searchParams.get('bot') || 'all', q = (u.searchParams.get('q') || '').toUpperCase().trim(), sym = (u.searchParams.get('sym') || '').toUpperCase().trim();
-      const dir = u.searchParams.get('dir') || '', after = Number(u.searchParams.get('after') || 0), limit = Math.min(500, Number(u.searchParams.get('limit') || 200));
-      let list = [];
-      for (const [id, a] of msgs) if (bot === 'all' || bot === id) for (const m of a) list.push({ bot: id, ...m });
-      if (q) list = list.filter(m => m.symbol && m.symbol.includes(q));
-      if (sym) list = list.filter(m => m.symbol === sym);
-      if (dir) list = list.filter(m => m.dir === dir);
-      if (after) list = list.filter(m => m.seq > after);
-      list.sort((x, y) => y.t - x.t || y.seq - x.seq);
-      return send(res, 200, { maxSeq: seq, items: list.slice(0, limit) });
-    }
+    if (u.pathname === '/api/bots') return send(res, 200, feed.summary());
+    if (u.pathname === '/api/messages') return send(res, 200, feed.messages(u.searchParams));
     const f = path.join(PUB, u.pathname === '/' ? 'index.html' : path.normalize(u.pathname).replace(/^([/\\])+/, ''));
     if (!f.startsWith(PUB) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); return res.end('yok'); }
     res.writeHead(200, { 'content-type': MIME[path.extname(f)] || 'application/octet-stream', 'cache-control': 'no-cache' });
