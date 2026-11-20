@@ -27,6 +27,22 @@
       if (content != null) node.textContent = content;
       return node;
     };
+    // Bot mesajı Telegram HTML'i taşır (<b>, <i>, <code> …). innerHTML KULLANILMAZ: yalnız bu etiketler öğeye çevrilir,
+    // geri kalan her şey (başka etiketler dahil) düz metin kalır.
+    const TAGS = { b: 'b', strong: 'b', i: 'i', em: 'i', u: 'u', s: 's', code: 'code' };
+    const ENT = { '&lt;': '<', '&gt;': '>', '&quot;': '"', '&#39;': "'", '&amp;': '&' };
+    const plain = t => t.replace(/&(?:lt|gt|quot|#39|amp);/g, m => ENT[m]);
+    const richText = (node, text) => {
+      const stack = [node];
+      node.replaceChildren();
+      for (const part of String(text).split(/(<\/?(?:b|strong|i|em|u|s|code)>)/i)) {
+        if (!part) continue;
+        const tag = /^<(\/?)(\w+)>$/.exec(part), top = stack[stack.length - 1];
+        if (tag && !tag[1]) { const el = make(TAGS[tag[2].toLowerCase()], ''); top.append(el); stack.push(el); }
+        else if (tag) { if (stack.length > 1) stack.pop(); }
+        else top.append(make('span', '', plain(part)));
+      }
+    };
     const button = (cls, label, action) => {
       const node = make('button', cls, label);
       node.type = 'button';
@@ -74,7 +90,7 @@
       paintStatus();
       pump();
     });
-    body.append(controls, status, list, detail, more);
+    body.append(controls, status, list, more);   // V1.17.1: mesajlar satırda doğrudan görünür; ayrı ayrıntı kutusu yok
     body.addEventListener('keydown', event => {
       if (event.key === 'Escape' && !detail.hidden) { event.preventDefault(); closeDetail(true); }
     });
@@ -208,10 +224,8 @@
       row.symbol = make('span', 'sp-symbol');
       row.dir = make('span', 'sp-dir');
       row.select.append(row.time, row.symbol, row.dir);
-      row.detailButton = button('sp-detail-trigger', 'Mesaj', () => openDetail(row));
-      row.detailButton.setAttribute('aria-controls', detail.id);
-      row.detailButton.setAttribute('aria-expanded', 'false');
-      row.node.append(row.select, row.detailButton);
+      row.text = make('div', 'sp-text');
+      row.node.append(row.select, row.text);
       return row;
     }
 
@@ -225,9 +239,8 @@
       setText(row.dir, direction);
       row.dir.setAttribute('data-dir', item.dir === 'up' || item.dir === 'down' ? item.dir : 'none');
       row.select.setAttribute('aria-label', `${item.symbol} grafiğini aç · ${shortTime(item.t)} · ${direction}`);
-      row.detailButton.setAttribute('aria-label', `${item.symbol} orijinal mesajını aç · ${shortTime(item.t)}`);
+      if (row.shown !== item.text) { row.shown = item.text; richText(row.text, item.text || 'Mesaj metni yok.'); }
       markCurrent(row);
-      if (opened === row) paintDetail(row);
     }
 
     function reconcile(items, append, cap) {

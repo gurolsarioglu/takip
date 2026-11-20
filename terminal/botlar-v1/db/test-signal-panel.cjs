@@ -111,14 +111,13 @@ test('mount preserves bot order, opens Premium, and separates chart selection fr
   assert.deepEqual(app.calls[1].params, { bot: 'm1-premium', limit: '50' });
   assert.deepEqual(app.rows(), ['COIN2USDT', 'COIN3USDT', 'COIN1USDT']);
   assert.deepEqual(app.all('sp-dir').map(n => n.textContent), ['Aşağı', 'Yukarı', 'Yönsüz']);
-  const detailTrigger = app.one('sp-detail-trigger');
-  detailTrigger.focus(); detailTrigger.click();
-  assert.equal(app.one('sp-message').textContent, message);
-  assert.equal(app.one('sp-message').children.length, 0);
+  // V1.17.1: mesaj satırda doğrudan; yalnız <b>/<i>/<code> gibi Telegram etiketleri öğe olur, gerisi düz metin
+  const text = app.one('sp-text');
+  assert.equal(text.textContent, message);
+  const tags = n => [n.tag, ...n.children.flatMap(tags)];
+  assert.ok(!tags(text).includes('img'), 'mesajdaki <img> öğe olmaz');
+  assert.equal(app.all('sp-detail-trigger').length, 0);
   assert.deepEqual(app.selected, []);
-  app.one('sp-close').click();
-  assert.equal(app.doc.activeElement, detailTrigger);
-  assert.equal(app.one('sp-detail').hidden, true);
   app.one('sp-signal').click();
   assert.deepEqual(app.selected, ['COIN2USDT']);
   app.panel.setSymbol('COIN2USDT');

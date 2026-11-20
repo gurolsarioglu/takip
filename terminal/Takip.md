@@ -446,3 +446,7 @@ Güncel değerler her zaman Sinyal Masası'nın sağ panelinde.
 - 19.11'deki ilk deneme hiç çalışmamıştı: PowerShell node'dan `detached` başlatılınca hemen kapanıyor. Düzeltildi (AGENTS.md §12).
 - Kullanıcı isteği: projeye dışarıdan erişim. Port açma/herkese açık tünel yerine Tailscale Serve (yalnız kullanıcının tailnet'i, HTTPS). Kullanıcı hesabı açtı ve Serve'ü etkinleştirdi; site tailnet adresinden 200 döndü. AGENTS.md §2 kural 3'e istisna olarak yazıldı.
 - Ayrıca: eski mumlara alış verisi (mumlar-qb) 17.11'de bitmiş (14,2 milyon mum). Akış kaydı artık denetçide tek kopya.
+
+## 20.11.2026 — V1.17.1: Bot mesajları satırda
+- Kullanıcı isteği (telefondan): `Mesaj` düğmesine basmadan mesajlar görünsün. Her sinyal satırında mesaj metni; `<b>` gibi Telegram etiketleri artık kalın görünüyor (önceden düz `<b>` yazıyordu), başka HTML çalışmaz.
+- 19.11 paketinden açılan 18 dosyada Windows salt okunur işareti vardı (yazma EPERM) → kaldırıldı.

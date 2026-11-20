@@ -66,10 +66,7 @@ test('masaüstü terminalinde grafikler, botlar, ayırıcı ve arşiv birlikte �
   await arc.click();
   await page.waitForFunction(() => S.sym === 'ARCUSDT' && P.every(p => p.loaded && p.ch.data.length > 100), null, { timeout: 15_000 });
   assert.equal(await botPanel.getByRole('button', { name: /^M1 Premium\b/ }).first().getAttribute('aria-expanded'), 'true');
-  const detail = botPanel.getByRole('button', { name: /ARCUSDT orijinal mesajını/ }).first();
-  await detail.click();
-  await botPanel.getByText('Stoch: 95(K)/92(D)', { exact: false }).waitFor();
-  await botPanel.getByRole('button', { name: 'Kapat' }).click();
+  await botPanel.getByText('Stoch: 95(K)/92(D)', { exact: false }).first().waitFor();   // V1.17.1: mesaj satırda
   const div = botPanel.getByRole('button', { name: /^DIV\b/ }).first();
   await div.click();
   assert.equal(await div.getAttribute('aria-expanded'), 'true');

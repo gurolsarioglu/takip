@@ -124,7 +124,7 @@
   overflow: auto;
   overflow-anchor: none;
   scrollbar-width: thin;
-  max-height: clamp(90px, 16vh, 150px);
+  max-height: clamp(220px, 48vh, 560px);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -132,7 +132,7 @@
 
 #signal-panel .sp-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   gap: 3px;
   min-height: 29px;
@@ -187,3 +187,16 @@
   overflow-wrap: anywhere;
   font: 11px/1.45 Consolas, monospace;
 }
+
+/* V1.17.1: mesaj satırın içinde, başlığın altında */
+#signal-panel .sp-text {
+  margin: 0 3px 5px;
+  padding: 4px 6px;
+  border-inline-start: 2px solid var(--sp-line);
+  background: var(--sp-wash);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: 11px/1.45 Consolas, monospace;
+}
+#signal-panel .sp-text b { font-weight: 700; }
+#signal-panel .sp-text code { color: var(--sp-copper); }
