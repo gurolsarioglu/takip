@@ -439,3 +439,10 @@ Güncel değerler her zaman Sinyal Masası'nın sağ panelinde.
 - Düzeltilen risk: V2 motoru sonuçları önbelleğe alıyor, canlı tik son mumu yerinde değiştiriyordu → `touchLast()` ile önbellek boşaltılıyor.
 - Varsayılan alt paneller V2'deki gibi (ME/FR/OI/TP kapalı; CVD açık). Kayıtlı seçimi olanınki değişmez.
 - 95 + 40 V2 testi + Chromium kabul testi geçti; sahte veriyle 1366×768 ve 1920×1080. Yedek: `parity\yedek\1.16.0`. Motor yeniden başlatılmadı.
+
+## 20.11.2026 — Node 26 ve dışarıdan erişim (Tailscale)
+- Kullanıcı sorusu: kullandığımız sürüm eski mi? Dil ve kod güncel; bilgisayardaki Node 25.2.1'in desteği 1.6.2026'da bitmişti → Node 26.12.1 LTS (Nisan 2029'a kadar).
+- Önce taşınabilir Node 26 ile bütün testler (2 dosya + V2'nin 40 testi, 66 dosya sözdizimi, `pg`) geçti; kaldırılan eski API kullanımı yok. Sonra winget ile kuruldu, servisler Node 26'da (denetçi 18:37). Motor ~12 dk sonra sinyale döndü.
+- 19.11'deki ilk deneme hiç çalışmamıştı: PowerShell node'dan `detached` başlatılınca hemen kapanıyor. Düzeltildi (AGENTS.md §12).
+- Kullanıcı isteği: projeye dışarıdan erişim. Port açma/herkese açık tünel yerine Tailscale Serve (yalnız kullanıcının tailnet'i, HTTPS). Kullanıcı hesabı açtı ve Serve'ü etkinleştirdi; site tailnet adresinden 200 döndü. AGENTS.md §2 kural 3'e istisna olarak yazıldı.
+- Ayrıca: eski mumlara alış verisi (mumlar-qb) 17.11'de bitmiş (14,2 milyon mum). Akış kaydı artık denetçide tek kopya.

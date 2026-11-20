@@ -39,7 +39,8 @@ Telegram gönderici yazıldı ama kullanıcı tarafından durduruldu; şimdilik 
    İkisi de `.gitignore`'dadır; `..\parity\tools\push-takip.cjs` bunlar görünürse göndermeyi durdurur.
 2. **Emir/işlem yok.** Borsaya emir gönderen, API anahtarı isteyen ya da para hareketi yapan kod yazma.
    Kullanıcı açıkça istemedikçe bu kapsam dışıdır. Yatırım tavsiyesi verme; ölçüm sonucunu sayılarla anlat.
-3. **Yalnızca yerel.** Sunucular `127.0.0.1`'e bağlanır. Dışarı açma (tünel, 0.0.0.0, port yönlendirme) yok.
+3. **Yalnızca yerel.** Sunucular `127.0.0.1`'e bağlanır. Dışarı açma (0.0.0.0, port yönlendirme, herkese açık tünel, Tailscale **Funnel**) yok.
+   **Tek istisna (kullanıcı onayı 20.11.2026):** Tailscale **Serve** ile site yalnız kullanıcının kendi Tailscale ağına (tailnet) HTTPS ile açık; ayrıntı §12 "Dışarıdan erişim". Sunucu yine `127.0.0.1`'i dinler, Serve oraya bilgisayarın içinden bağlanır.
    Kullanıcı bunu bilerek istedi.
 4. **Veri kaybı yok. Asıl kayıt PostgreSQL'dir** (kullanıcı kararı, 11.11.2026: "tek kayıt, hep PostgreSQL").
    Sinyaller `signals` tablosunda, Kasa `kasa_periods` / `kasa_trades` tablolarında yaşar; web ikisini de veritabanından okur.
@@ -699,7 +700,7 @@ TradingView'e ajan erişimi yoktur; kullanıcı Pine'ı kendisi yapıştırır v
 
 ### Ortam
 
-- **Node.js v25** (Windows). Dosyalar **CommonJS, `.cjs` uzantılı**, `'use strict'`. TypeScript, derleyici, paketleyici yok.
+- **Node.js v26 LTS** (Windows, `C:\Program Files\nodejs`; 20.11.2026'da 25.2.1 → 26.12.1, winget `OpenJS.NodeJS`; destek Nisan 2029'a kadar). Dosyalar **CommonJS, `.cjs` uzantılı**, `'use strict'`. TypeScript, derleyici, paketleyici yok.
 - Tek dış bağımlılık `pg`. Yeni bağımlılık eklemeden önce düşün; `fetch`, `WebSocket`, `node:http`, `node:fs`
   yerleşik olarak yetiyor. Gerçekten gerekiyorsa gerekçesini kullanıcıya söyle.
 - Test çatısı ve otomatik test **yok**. Doğrulama şimdiye kadar şöyle yapıldı: `node -c dosya.cjs` (sözdizimi),
@@ -747,6 +748,22 @@ doğrudan çalıştır (`node db\sorgu.cjs …`, `node -c …`). Aşağıdaki "�
 | Depoya gönder | `..\parity\tools\push-takip.cjs` (önce kullanıcıya sor) |
 
 ---
+
+### Dışarıdan erişim (Tailscale, 20.11.2026)
+
+- Bilgisayarda Tailscale (winget `Tailscale.Tailscale`, Windows hizmeti, açılışta kendiliğinden başlar), kullanıcının kendi hesabıyla giriş yapılı.
+- `tailscale serve --bg http://127.0.0.1:3200` → `https://<makine>.<tailnet>.ts.net/` yalnız tailnet'e (`tailnet only`), sertifika Tailscale'den. Ayar kalıcıdır.
+  Adres: `tailscale serve status`. Kapatmak: `tailscale serve --https=443 off`.
+- Erişim yalnız aynı Tailscale hesabıyla giriş yapmış cihazlardan (kullanıcının telefonu). Sitede kullanıcı girişi YOK; güvenlik tamamen tailnet'e dayanır →
+  **Funnel açma, cihaz paylaşma (share), başka kullanıcı davet etme kullanıcıya sorulmadan yapılmaz.**
+- Sayfa göreli yollar kullanır (`/api/...`), canlı akış (SSE) Serve üzerinden çalışır; ek ayar gerekmez.
+
+### Windows'ta yönetici adımı (öğrenilen)
+
+- Çalıştırıcıdan yönetici gerektiren iş: `parity\kur\*-baslat.ps1` (kullanıcı) → `Start-Process -Verb RunAs` ile `*-yonetici.ps1`. Bu hesapta UAC onayı otomatik veriliyor (pencere çıkmaz).
+- PowerShell'i node'dan **`detached: true` ile başlatma**: hiçbir şey yapmadan kapanır (19.11'deki Node 26 denemesi bu yüzden hiç çalışmadı). `detached: false, windowsHide: true` + çıktıyı dosyaya.
+- Servisleri durdururken yalnız `C:\Program Files\nodejs\node.exe` süreçlerini kapat (makinede Codex uygulamasının kendi node'u da var). `Stop-ScheduledTask 'Botlar V1 Denetci'` alt süreçleri de kapatır.
+- `Start-Process -Wait`, başlatılan sürecin açtığı alt süreçleri de bekler (ör. kurulumun açtığı Tailscale penceresi) → sonraki adımlar takılabilir; çalıştırıcıyı yeniden açma adımı bu yüzden elle yapıldı.
 
 ## 13. Bilinen sorunlar ve eksikler
 
