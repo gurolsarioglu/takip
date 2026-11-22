@@ -88,6 +88,7 @@ test('masaüstü terminalinde grafikler, botlar, ayırıcı ve arşiv birlikte �
   assert.ok(olderRecords.length > 0 && olderRecords[0].t < records.at(-1).t);
 
   const summary = page.locator('#market-summary summary');
+  await page.evaluate(() => { document.querySelector('#market-summary').open = false; });   // V1.19.0: özet varsayılan açık; kapalıdan aç
   const summaryReply = page.waitForResponse(res => res.url().includes('/api/t/turev?symbol=ARCUSDT'));
   await summary.click();
   assert.equal((await summaryReply).status(), 200);

@@ -9,8 +9,9 @@ const vm = require('node:vm');
 const dir = join(__dirname, '../web/public');
 const html = readFileSync(join(dir, 'terminal.html'), 'utf8');
 
-test('terminal places the signal root directly after the watchlist and loads workspace assets', () => {
-  assert.match(html, /<aside\b[^>]*>\s*<section\b[^>]*id="watchlist"[\s\S]*?<div class="wl" id="wl"[^>]*><\/div>\s*<\/section>\s*<section\b[^>]*id="signal-panel"/);
+test('terminal places the market summary, then the signal root after the watchlist and loads workspace assets', () => {
+  // V1.19.0: izleme listesi → piyasa özeti → bot sinyalleri
+  assert.match(html, /<aside\b[^>]*>\s*<section\b[^>]*id="watchlist"[\s\S]*?<div class="wl" id="wl"[^>]*><\/div>\s*<\/section>\s*<details\b[^>]*id="market-summary"[\s\S]*?<\/details>\s*<section\b[^>]*id="signal-panel"/);
   assert.equal([...html.matchAll(/data-split="[0-2]"/g)].length, 3);
   assert.match(html, /data-split="sidebar"/);
   assert.match(html, /href="\/workspace\.css"/);

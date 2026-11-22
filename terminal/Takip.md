@@ -450,3 +450,17 @@ Güncel değerler her zaman Sinyal Masası'nın sağ panelinde.
 ## 20.11.2026 — V1.17.1: Bot mesajları satırda
 - Kullanıcı isteği (telefondan): `Mesaj` düğmesine basmadan mesajlar görünsün. Her sinyal satırında mesaj metni; `<b>` gibi Telegram etiketleri artık kalın görünüyor (önceden düz `<b>` yazıyordu), başka HTML çalışmaz.
 - 19.11 paketinden açılan 18 dosyada Windows salt okunur işareti vardı (yazma EPERM) → kaldırıldı.
+
+## 22.11.2026 — V1.18.0: Panel yükseklikleri ve fiyat ekseni ölçeği
+- Kullanıcı isteği: RSI/SRSI/WT ve alttaki panelleri aşağı-yukarı daraltıp genişletebilmek; sağdaki fiyat ekseninden grafiği dikeyde sıkıştırıp genişletebilmek.
+- Panel sınırları sürüklenir (4 grafikte ortak, kalıcı; sınırda çift tık varsayılan). Fiyat ekseni sürüklenir (eksende çift tık otomatik). Testler + Chromium'da sürükleme denemesi geçti.
+
+## 23.11.2026 — V1.19.0: Coin kartı
+- Kullanıcı isteği (ekran görüntüsüyle): izleme listesinin altında, botların üstünde dört çubuklu kart — emir defteri, long/short pozisyonlar, trader positioning, market exposure. Coin adına tıklayınca açılır. Ayrı pencere istenmedi.
+- CoinGecko'dan arz bilgisi (dolaşım/maks arz, piyasa değeri) ayrı iş: kullanıcı daha sonra.
+
+## 23.11.2026 — V1.20.0: Piyasa özeti yukarıda, coin kartı ayrı pencerede
+- Kullanıcı isteği: piyasa özeti coin kartının yerine (liste ile botlar arası); özetteki ⧉ ikonuyla coin kartı ayrı pencerede açılsın, laptopa bağlı ikinci ekrana taşınabilsin.
+- `kart.html` + `/api/t/oranlar` (önbellek ortak, Binance'e ek yük yok). Pencere ana sayfanın coin seçimini takip ediyor, yerini hatırlıyor; ikinci ekranda açılması için tarayıcı izni bir kez verilmeli.
+- Testler + Chromium'da açılır pencere ve coin eşitleme denendi.
+

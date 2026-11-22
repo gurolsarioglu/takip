@@ -140,6 +140,22 @@ function create(opt = {}) {
   // Grafik alt panelleri (Market Exposure, Funding, OI, Trader Positioning). Geçmiş veritabanından; veritabanının bittiği yerden bugüne
   // Binance'ten küçük parçalar: 3 oran ucu (5m × 288) + openInterestHist 5m × 500 (OI paneliyle aynı anahtar) → coin başına 5 dk'da 4 /futures/data isteği.
   // Funding geçmişi /fapi/v1/fundingRate (1.000 olay, 10 dk önbellek). Binance kısmı başarısız olursa veritabanı kısmı yine döner (eksik alanında neden).
+  // Binance'in 5 dk'lık üç long/short oranı (son 24 sa) → [[t, top, glob, pos] …] (%). Önbellek 5 dk, anahtarlar turev ile ortak.
+  async function ratiosLive(sym, f, lg) {
+    const ser = [];
+    for (const [k, ep] of RATIO) { const path = `/futures/data/${ep}?symbol=${sym}&period=5m&limit=288`; ser.push([k, await cached('r|' + path, 300e3, path, { fetch: f, log: lg }, raw => { if (!Array.isArray(raw)) throw err(502, 'Binance oran yanıtı beklenen biçimde değil'); return raw.map(x => [Number(x.timestamp), num(x.longAccount != null ? x.longAccount : x.longPosition)]).filter(x => Number.isFinite(x[0])).sort((a, b) => a[0] - b[0]); })]); }
+    const m = new Map(), col = { top: 1, glob: 2, pos: 3 };
+    for (const [k, rows] of ser) for (const [ts, v] of rows) { let r = m.get(ts); if (!r) m.set(ts, r = [ts, null, null, null]); r[col[k]] = v == null ? null : v * 100; }
+    return [...m.values()].sort((a, b) => a[0] - b[0]);
+  }
+  // V1.19.0: GET /api/t/oranlar?symbol → { son: { t, top, glob, pos } } — coin kartı penceresi için (veritabanı/OI/funding yok)
+  async function oranlar(p, deps) {
+    const sym = cleanSym(p.get('symbol')); if (!sym) throw err(400, 'Geçersiz sembol');
+    const L = await ratiosLive(sym, deps.fetch || globalThis.fetch, deps.log || console.log);
+    if (!L.length) return { son: null };
+    const last = c => { for (let i = L.length - 1; i >= 0; i--) if (L[i][c] != null) return L[i][c]; return null; };
+    return { son: { t: L[L.length - 1][0], top: last(1), glob: last(2), pos: last(3) } };
+  }
   async function turev(p, deps) {
     const sym = cleanSym(p.get('symbol')); if (!sym) throw err(400, 'Geçersiz sembol');
     const tf = p.get('tf') || ''; if (!TF_SEC[tf]) throw err(400, 'Geçersiz zaman dilimi');
@@ -155,11 +171,7 @@ function create(opt = {}) {
     // oranlar: veritabanının son kaydından sonrası
     // oranlar 5 dk'lık: Binance bunları 5 dk'da bir hesaplar (daha sık değer yok); 288 × 5 dk = 24 sa
     try {
-      const ser = [];
-      for (const [k, ep] of RATIO) { const path = `/futures/data/${ep}?symbol=${sym}&period=5m&limit=288`; ser.push([k, await cached('r|' + path, 300e3, path, { fetch: f, log: lg }, raw => { if (!Array.isArray(raw)) throw err(502, 'Binance oran yanıtı beklenen biçimde değil'); return raw.map(x => [Number(x.timestamp), num(x.longAccount != null ? x.longAccount : x.longPosition)]).filter(x => Number.isFinite(x[0])).sort((a, b) => a[0] - b[0]); })]); }
-      const m = new Map(), col = { top: 1, glob: 2, pos: 3 };
-      for (const [k, rows] of ser) for (const [ts, v] of rows) { let r = m.get(ts); if (!r) m.set(ts, r = [ts, null, null, null]); r[col[k]] = v == null ? null : v * 100; }
-      const live = [...m.values()].sort((a, b) => a[0] - b[0]), lastDb = out.ls.length ? out.ls[out.ls.length - 1][0] : -1;
+      const live = await ratiosLive(sym, f, lg), lastDb = out.ls.length ? out.ls[out.ls.length - 1][0] : -1;
       for (const r of live) if (r[0] > lastDb && r[0] >= from) out.ls.push(r);
     } catch (e) { miss('long/short', e); }
     // son değerler: üç uç farklı anlarda güncellenebilir → her alan için en yeni dolu değer
@@ -372,7 +384,7 @@ function create(opt = {}) {
     if (p === '/api/t/canli') { canli(req, res, u); return true; }
     if (p === '/api/t/canli-durum') { d.send(res, 200, canliDurum()); return true; }
     const route = p === '/api/t/klines' ? () => klines(u.searchParams, d) : p === '/api/t/oi' ? () => oi(u.searchParams, d)
-      : p === '/api/t/coin' ? () => coin(u.searchParams, d) : p === '/api/t/tickers' ? () => tickers(d) : p === '/api/t/evren' ? () => evren(d) : p === '/api/t/turev' ? () => turev(u.searchParams, d) : p === '/api/t/ozet' ? () => ozet(u.searchParams, d) : p === '/api/t/tarama' ? () => tarama(d) : p === '/api/t/akis' ? () => akis(u.searchParams, d)
+      : p === '/api/t/coin' ? () => coin(u.searchParams, d) : p === '/api/t/tickers' ? () => tickers(d) : p === '/api/t/evren' ? () => evren(d) : p === '/api/t/turev' ? () => turev(u.searchParams, d) : p === '/api/t/ozet' ? () => ozet(u.searchParams, d) : p === '/api/t/oranlar' ? () => oranlar(u.searchParams, d) : p === '/api/t/tarama' ? () => tarama(d) : p === '/api/t/akis' ? () => akis(u.searchParams, d)
         : p === '/api/t/izleme' && req.method === 'GET' ? () => list(d.q)
           : p === '/api/t/izleme' && req.method === 'POST' ? () => d.readBody(req).catch(() => { throw err(400, 'Gövde JSON değil'); }).then(b => izlemePost(b, d)) : null;
     if (!route) return false;

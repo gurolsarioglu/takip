@@ -47,11 +47,11 @@
       <div class="lh" id="lh" role="group" aria-label="Sıralama"></div>
       <div class="wl" id="wl"></div>
     </section>
+    <details class="market-summary" id="market-summary" open><summary class="rail-head">Piyasa özeti</summary><div class="oz" id="oz"></div></details>
     <section id="signal-panel" aria-label="Bot sinyalleri">
       <h2 class="rail-head">Bot sinyalleri</h2>
       <p class="lnote">Sinyal paneli kullanılamıyor.</p>
     </section>
-    <details class="market-summary" id="market-summary"><summary class="rail-head">Piyasa özeti</summary><div class="oz" id="oz"></div></details>
   </aside>
 </div>
 <div class="tip" id="tip"></div>
@@ -150,6 +150,8 @@ const tip = { el: null, owner: null, show(o, html, x, y) { const e = this.el || 
 
 // ---------- Grafik bileşeni ----------
 // kind 'candle': satır [t,o,h,l,c,qv] · kind 'oi': satır [t, adet, usd, qv, o, c]. Görünür aralık view = { r: sağ kenar (mum indeksi), w: genişlik (mum) } → [i0, i1)
+// V1.18.0: alt panel yükseklikleri (px, panel anahtarına göre; 4 grafikte ortak, kalıcı). Boşsa varsayılan eşit dağılım.
+const PANEH = store.get('paneh', {}) || {}, PMIN = 100, PHMIN = 24;
 class Chart {
   constructor(wrap, o) {
     this.wrap = wrap; this.cv = wrap.querySelector('canvas'); this.ctx = this.cv.getContext('2d');
@@ -162,12 +164,38 @@ class Chart {
     if (window.ResizeObserver) new ResizeObserver(() => this.requestResize()).observe(wrap);
     const cv = this.cv;
     cv.addEventListener('wheel', e => this.onWheel(e), { passive: false });
-    cv.addEventListener('mousedown', e => { if (e.button !== 0 || !this.g || !this.data.length) return; this.drag = { x: e.clientX, r: this.view.r, moved: false }; cv.classList.add('drag'); tip.hide(this); e.preventDefault(); });
-    window.addEventListener('mousemove', e => { if (!this.drag) return; const dx = e.clientX - this.drag.x; if (Math.abs(dx) > 1) this.drag.moved = true; this.view.r = this.drag.r - dx / this.g.barW; this.clampView(); this.changed(); });
-    window.addEventListener('mouseup', () => { if (this.drag) { this.drag = null; cv.classList.remove('drag'); this.requestDraw(); } });
+    cv.addEventListener('mousedown', e => {
+      if (e.button !== 0 || !this.g || !this.data.length) return;
+      const z = this.zone(e.offsetX, e.offsetY);
+      if (z && z.t === 'pane') { this.pdrag = { k: z.k, y: e.clientY, PH: this.g.PH.slice(), PL: this.g.PL.slice(), room: this.g.room }; tip.hide(this); e.preventDefault(); return; }
+      if (z && z.t === 'axis') { this.ydrag = { y: e.clientY, z: this.yz || 1 }; tip.hide(this); e.preventDefault(); return; }
+      this.drag = { x: e.clientX, r: this.view.r, moved: false }; cv.classList.add('drag'); tip.hide(this); e.preventDefault(); });
+    window.addEventListener('mousemove', e => { if (this.pdrag) { this.paneDrag(e.clientY); return; } if (this.ydrag) { this.yz = clamp(this.ydrag.z * Math.exp((e.clientY - this.ydrag.y) * 0.006), 0.05, 20); this.requestDraw(); return; } if (!this.drag) return; const dx = e.clientX - this.drag.x; if (Math.abs(dx) > 1) this.drag.moved = true; this.view.r = this.drag.r - dx / this.g.barW; this.clampView(); this.changed(); });
+    window.addEventListener('mouseup', () => { if (this.pdrag) { this.pdrag = null; store.set('paneh', PANEH); } if (this.ydrag) this.ydrag = null; if (this.drag) { this.drag = null; cv.classList.remove('drag'); this.requestDraw(); } });
     cv.addEventListener('mousemove', e => this.onMove(e));
     cv.addEventListener('mouseleave', () => { this.mouse = null; if (HUB.src === this) HUB.set(null, null); tip.hide(this); this.requestDraw(); });
-    cv.addEventListener('dblclick', () => { this.view = null; this.requestDraw(); });
+    // çift tık: fiyat ekseninde → otomatik ölçek; panel sınırında → panel yükseklikleri varsayılana; grafikte → görünüm + ölçek sıfırlanır
+    cv.addEventListener('dblclick', e => {
+      const z = this.g && this.zone(e.offsetX, e.offsetY);
+      if (z && z.t === 'axis') { this.yz = null; this.requestDraw(); return; }
+      if (z && z.t === 'pane') { for (const k of Object.keys(PANEH)) delete PANEH[k]; store.set('paneh', PANEH); for (const ch of HUB.charts) ch.requestDraw(); return; }
+      this.view = null; this.yz = null; this.requestDraw();
+    });
+  }
+  // imlecin altındaki etkileşim bölgesi: panel sınırı (fiyat|panel ya da panel|panel) veya fiyat ekseni
+  zone(x, y) {
+    const g = this.g; if (!g) return null;
+    if (g.PT) for (let k = 0; k < g.PT.length; k++) if (Math.abs(y - g.PT[k]) <= 4 && x < this.W) return { t: 'pane', k };
+    if (x >= g.plotW && y < g.bot1 + 3) return { t: 'axis' };
+    return null;
+  }
+  // sınır k'nin üstündeki ile altındaki panel arasında pay aktarılır; k = 0 ise fiyat alanıyla ilk panel arasında
+  paneDrag(cy) {
+    const D = this.pdrag, dy = cy - D.y, PH = D.PH.slice();
+    if (D.k === 0) { const others = PH.reduce((a, b) => a + b, 0) - PH[0]; PH[0] = clamp(D.PH[0] - dy, PHMIN, Math.max(PHMIN, D.room - others)); }
+    else { const tot = D.PH[D.k - 1] + D.PH[D.k], a = clamp(D.PH[D.k - 1] + dy, PHMIN, tot - PHMIN); PH[D.k - 1] = a; PH[D.k] = tot - a; }
+    D.PL.forEach((key, i) => { PANEH[key] = Math.round(PH[i]); });
+    for (const ch of HUB.charts) ch.requestDraw();
   }
   requestDraw() {
     if (!this.raf) this.raf = requestAnimationFrame(() => {
@@ -233,6 +261,8 @@ class Chart {
   }
   onMove(e) {
     this.mouse = { x: e.offsetX, y: e.offsetY }; const g = this.g;
+    { const z = this.pdrag ? { t: 'pane' } : this.ydrag ? { t: 'axis' } : this.drag ? null : this.zone(e.offsetX, e.offsetY), cur = z ? (z.t === 'pane' ? 'row-resize' : 'ns-resize') : '';
+      if (this.cv.style.cursor !== cur) this.cv.style.cursor = cur; }
     if (!this.drag && g && this.data.length && this.mouse.x < g.plotW && this.mouse.y < g.plotH) {
       const idx = clamp(Math.floor(g.L + this.mouse.x / g.barW), 0, this.data.length - 1); HUB.set(this, this.data[idx][0]);
       const h = this.hits.find(o => Math.abs(o.x - this.mouse.x) <= 7 && Math.abs(o.y - this.mouse.y) <= 8);
@@ -255,9 +285,20 @@ class Chart {
     const BOT = 18, plotH = H - BOT;
     // mum grafiğinde alt kısım 3 gösterge bölmesine ayrılır (RSI, SRSI, WT); pb = fiyat+hacim alanının alt sınırı
     // alt bölmeler: fiyat alanına en az 140 px kalır; sığmayan bölmeler gösterilmez
-    let PL = K && this.panes ? PANE_ORDER.filter(k => this.panes[k]) : [], ph = 0;
-    if (PL.length) { const fit = Math.max(0, Math.floor((plotH - 140) / 24)); if (PL.length > fit) PL = PL.slice(0, fit); if (PL.length) ph = clamp(Math.floor(Math.min(plotH * Math.min(0.64, 0.13 * PL.length), plotH - 140) / PL.length), 24, 120); }
-    const INDON = PL.length > 0, pb = plotH - PL.length * ph;
+    // V1.18.0: her panelin yüksekliği PANEH'ten (sınır sürüklenerek); toplam fiyat alanına en az PMIN px bırakır, sığmazsa orantılı küçülür
+    let PL = K && this.panes ? PANE_ORDER.filter(k => this.panes[k]) : [], PH = [];
+    const room = Math.max(0, plotH - PMIN);
+    if (PL.length) {
+      const fit = Math.max(0, Math.floor(room / PHMIN)); if (PL.length > fit) PL = PL.slice(0, fit);
+      if (PL.length) {
+        const ph0 = clamp(Math.floor(Math.min(plotH * Math.min(0.64, 0.13 * PL.length), plotH - 140) / PL.length), PHMIN, 120);
+        PH = PL.map(k => clamp(Math.round(PANEH[k] || ph0), PHMIN, 2000));
+        let sum = PH.reduce((a, b) => a + b, 0);
+        if (sum > room) { const f = room / sum; PH = PH.map(h => Math.max(PHMIN, Math.floor(h * f))); sum = PH.reduce((a, b) => a + b, 0); }
+        while (sum > room) { const j = PH.indexOf(Math.max(...PH)); if (PH[j] <= PHMIN) break; const cut = Math.min(sum - room, PH[j] - PHMIN); PH[j] -= cut; sum -= cut; }
+      }
+    }
+    const INDON = PL.length > 0, pb = plotH - PH.reduce((a, b) => a + b, 0), PT = []; { let y = pb; for (const h of PH) { PT.push(y); y += h; } }
     const top1 = 8, bot1 = K ? Math.round(pb * 0.82) - 4 : Math.round(plotH * 0.6), top2 = K ? Math.round(pb * 0.82) + 2 : Math.round(plotH * 0.66), bot2 = pb - 1;
     let lo = Infinity, hi = -Infinity, vmax = 0;
     for (let i = i0; i < i1; i++) {
@@ -268,6 +309,8 @@ class Chart {
     if (!Number.isFinite(lo)) { lo = 0; hi = 1; }
     if (hi - lo <= 0) { const p = Math.abs(hi) * 0.01 || 1; lo -= p; hi += p; }
     const pad = (hi - lo) * 0.06; lo -= pad; hi += pad;
+    // V1.18.0: fiyat ekseni sürüklenerek ölçek (yz > 1 sıkıştırır, < 1 genişletir); merkez otomatik aralığın ortası
+    if (this.yz) { const mid = (lo + hi) / 2, half = (hi - lo) / 2 * this.yz; lo = mid - half; hi = mid + half; }
     const Y = p => top1 + (hi - p) / (hi - lo) * (bot1 - top1);
     const step = niceStep(hi - lo, Math.max(2, Math.floor((bot1 - top1) / 42))), dec = decFor(step);
     const fmtA = K ? x => x.toFixed(dec) : x => '$' + fmtBig(x);
@@ -277,14 +320,14 @@ class Chart {
     let need = c.measureText(lastS).width; for (const t of ticks) need = Math.max(need, c.measureText(t[1]).width);
     need = Math.max(46, Math.ceil(need) + 14); if (need > this.aw || need < this.aw - 12) this.aw = need;
     const aw = this.aw, plotW = W - aw, barW = plotW / v.w, X = i => (i - L + 0.5) * barW;
-    this.g = { L, barW, plotW, plotH, i0, i1, top1, bot1, top2, bot2, lo, hi };
+    this.g = { L, barW, plotW, plotH, i0, i1, top1, bot1, top2, bot2, lo, hi, PL, PH, PT: K ? PT : null, room };
     // ızgara + fiyat ekseni
     c.strokeStyle = COL.grid; c.beginPath();
     for (const [p] of ticks) { const y = Math.round(Y(p)) + 0.5; c.moveTo(0, y); c.lineTo(plotW, y); }
     // zaman çizgileri
     const tt = this.timeTicks(i0, i1, barW); for (const i of tt) { const x = Math.round(X(i)) + 0.5; c.moveTo(x, 0); c.lineTo(x, plotH); }
     c.stroke();
-    c.strokeStyle = COL.line; c.beginPath(); c.moveTo(plotW + 0.5, 0); c.lineTo(plotW + 0.5, plotH); c.moveTo(0, plotH + 0.5); c.lineTo(W, plotH + 0.5); c.moveTo(0, Math.round(top2 - 3) + 0.5); c.lineTo(plotW, Math.round(top2 - 3) + 0.5); for (let k = 0; k < PL.length; k++) { c.moveTo(0, pb + k * ph + 0.5); c.lineTo(W, pb + k * ph + 0.5); } c.stroke();
+    c.strokeStyle = COL.line; c.beginPath(); c.moveTo(plotW + 0.5, 0); c.lineTo(plotW + 0.5, plotH); c.moveTo(0, plotH + 0.5); c.lineTo(W, plotH + 0.5); c.moveTo(0, Math.round(top2 - 3) + 0.5); c.lineTo(plotW, Math.round(top2 - 3) + 0.5); for (let k = 0; k < PL.length; k++) { c.moveTo(0, PT[k] + 0.5); c.lineTo(W, PT[k] + 0.5); } c.stroke();
     for (const [p, s] of ticks) { const y = Y(p); if (y > 6 && y < bot1 + 2) this.text(s, plotW + 6, y, COL.mut); }
     let lastX = -1e9; for (const i of tt) { const x = X(i), s = this.tickLabel(i), w = c.measureText(s).width; if (x - w / 2 < lastX + 10 || x + w / 2 > plotW - 2 || x - w / 2 < 2) continue; this.text(s, x, plotH + 10, COL.mut, 'center'); lastX = x + w / 2; }
     // hacim
@@ -320,6 +363,7 @@ class Chart {
       }
       c.restore();
     }
+    c.save(); c.beginPath(); c.rect(0, 0, plotW, this.yz ? bot1 + 3 : plotH); c.clip();
     if (K) {
       for (const up of [true, false]) {
         const col = up ? COL.up : COL.dn; c.strokeStyle = col; c.fillStyle = col; c.beginPath();
@@ -333,6 +377,7 @@ class Chart {
       if (started) { c.strokeStyle = COL.acc; c.lineWidth = 1.6; c.stroke(); c.lineTo(lx, bot1); c.lineTo(fx, bot1); c.closePath(); c.fillStyle = 'rgba(59,130,246,.12)'; c.fill(); c.lineWidth = 1; }
       else this.text('Bu aralıkta OI verisi yok', plotW / 2, (top1 + bot1) / 2, COL.mut, 'center');
     }
+    c.restore();
     // DEMA 9: kalın sarı çizgi, mumların üstünde
     if (TCON && T.dema) { c.save(); c.beginPath(); c.rect(0, 0, plotW, bot1 + 3); c.clip(); c.lineWidth = 2.6; c.lineJoin = 'round'; ln(I.dema, '#facc15'); c.lineWidth = 1; c.restore(); }
     // mum altı/üstü işaretler üst üste binmesin: slot() her mum için sıradaki boş yeri verir
@@ -396,9 +441,9 @@ class Chart {
       PL.forEach((key, k) => {
         const spec = INDICATOR_PANELS.get(key);
         const p = spec ? indicatorPanel(spec, this.indicators.get(key), i0, i1) : DEF[key]();
-        const pt = pb + k * ph + 1, yb = pt + ph - 2, a = pt + 4, b = yb - 3, Yp = v => a + (p.hi - v) / (p.hi - p.lo) * (b - a);
+        const pt = PT[k] + 1, yb = pt + PH[k] - 2, a = pt + 4, b = yb - 3, Yp = v => a + (p.hi - v) / (p.hi - p.lo) * (b - a);
         panes.push({ pt, yb, a, b, lo: p.lo, hi: p.hi, fmt: p.fmt });
-        c.save(); c.beginPath(); c.rect(0, pt, plotW, ph - 1); c.clip();
+        c.save(); c.beginPath(); c.rect(0, pt, plotW, PH[k] - 1); c.clip();
         if (p.band) { c.fillStyle = 'rgba(138,148,168,.07)'; c.fillRect(0, Yp(p.lv[1]), plotW, Yp(p.lv[0]) - Yp(p.lv[1])); }
         c.strokeStyle = '#2c3852'; c.setLineDash([4, 4]); c.beginPath(); for (const v of p.lv) { const y = Math.round(Yp(v)) + 0.5; c.moveTo(0, y); c.lineTo(plotW, y); } c.stroke(); c.setLineDash([]);
         if (p.kind === 'line') {
@@ -801,14 +846,14 @@ async function loadOb() { if (!S.sym) return; const g = S.gen; try { const o = a
 function renderOz() {
   const el = $('#oz'); if (!S.sym) { el.innerHTML = ''; return; }
   const t = S.tick && S.tick[S.sym], c = S.coin, f = fastest(), px = f && f.loaded && f.ch.data.length ? f.ch.data[f.ch.data.length - 1][4] : t ? t[0] : null, o = S.son, ob = S.ob;
-  const bar = (lab, l, tip) => { const ok = isN(l), L = ok ? clamp(l, 0, 100) : 50; return `<div class="br" title="${esc(tip)}"><span>${lab}</span><div class="bar">${ok ? `<i class="l" style="width:${L}%">L ${L.toFixed(2)}%</i><i class="s" style="width:${100 - L}%">${(100 - L).toFixed(2)}% S</i>` : '<i style="color:var(--mut)">—</i>'}</div></div>`; };
+  const bar = (lab, l, tip, a = 'L') => { const ok = isN(l), L = ok ? clamp(l, 0, 100) : 50; return `<div class="br" title="${esc(tip)}"><span>${lab}</span><div class="bar">${ok ? `<i class="l" style="width:${L}%">${a} ${L.toFixed(2)}%</i><i class="s" style="width:${100 - L}%">${(100 - L).toFixed(2)}% S</i>` : '<i style="color:var(--mut)">—</i>'}</div></div>`; };
   let arrow = ''; const R = S.oiRows; if (R && R.length > 2 && c && c.oi != null) { const j = bsT(R, Date.now() - 3600e3); if (j >= 0 && R[j][1]) { const ch = (c.oi / R[j][1] - 1) * 100; arrow = ` <span class="${pcls(ch)}" title="son 1 saatte">${ch >= 0 ? '↗' : '↘'} ${fmtPct(ch, 1)}</span>`; } }
   const ot = o && o.t ? trDate(o.t) : null, obb = ob && ob.bid + ob.ask > 0 ? ob.bid / (ob.bid + ob.ask) * 100 : NaN;
-  el.innerHTML = `<div class="t1"><div><div class="cn">${esc(short(S.sym))}<small>/USDT.P</small></div><div class="bp ${pcls(t && t[1])}">${fmtPx(px)}</div></div>`
+  el.innerHTML = `<div class="t1"><div><div class="cn">${esc(short(S.sym))}<small>/USDT.P</small><button type="button" class="cc-pop" title="Coin kartını ayrı pencerede aç (ikinci ekrana taşınabilir)" aria-label="${esc(short(S.sym))} coin kartını ayrı pencerede aç">⧉</button></div><div class="bp ${pcls(t && t[1])}">${fmtPx(px)}</div></div>`
     + `<div class="fr">Funding${S.frIv ? ' (' + S.frIv + 's)' : ''}<b class="${pcls(c && c.funding)}">${c && c.funding != null ? fmtPct(c.funding, 4) : '—'}</b><span id="cd2">${cdText(c && c.nextFunding)}</span></div></div>`
     + (() => { const u = S.uni && S.uni.rows && S.uni.rows[S.sym]; if (S.uni && S.uni.rows && !u) return '<div class="ln" style="color:var(--dn);font-weight:600">⚠ Bu sözleşme artık Binance listesinde yok</div>'; if (!u || !u[1]) return ''; const x = trDate(u[1]); return `<div class="ln" style="color:var(--dn);font-weight:600" title="Binance o an açık pozisyonları otomatik kapatır">⚠ DELİST: ${p2(x.getUTCDate())}.${p2(x.getUTCMonth() + 1)}.${x.getUTCFullYear()} ${p2(x.getUTCHours())}:${p2(x.getUTCMinutes())} (TR)</div>`; })()
     + `<div class="ln"><span>Open interest</span><span><b>$${c ? fmtBig(c.oiUsd) : '—'}</b>${arrow}</span></div>`
-    + bar('Emir defteri', obb, 'İlk 100 kademedeki alış (B) / satış (S) emirlerinin tutar payı')
+    + bar('Emir defteri', obb, 'İlk 100 kademedeki alış (B) / satış (S) emirlerinin tutar payı', 'B')
     + bar('Long/short poz.', o && o.pos, 'Büyük hesapların pozisyon büyüklüğüne göre long oranı (topLongShortPositionRatio)')
     + bar('Trader positioning', o && o.top, 'Büyük hesapların hesap sayısına göre long oranı (topLongShortAccountRatio)')
     + bar('Market exposure', o && o.glob, 'Tüm hesapların hesap sayısına göre long oranı (globalLongShortAccountRatio)')
@@ -984,6 +1029,17 @@ $('#addq').addEventListener('keydown', e => {
 });
 $('#sugg').addEventListener('mousedown', e => { const d = e.target.closest('[data-i]'); if (d) { e.preventDefault(); addPick(A.items[+d.dataset.i]); } });
 
+// ---------- Coin kartı penceresi (V1.19.0): /kart.html, coin değişince BroadcastChannel ile haber verilir ----------
+const cardBus = (() => { try { return new BroadcastChannel('v1-terminal'); } catch (e) { return null; } })();
+let cardWin = null;
+function openCardWin() {
+  if (!S.sym) return;
+  if (cardWin && !cardWin.closed) { try { cardBus?.postMessage({ sym: S.sym }); cardWin.focus(); return; } catch (e) { } }
+  // son konum/boyut (pencerenin kendisi kaydeder); başka ekrandaki konuma açmak tarayıcının pencere yönetimi iznini ister
+  const w = store.get('kartWin', null), ok = w && [w.x, w.y, w.w, w.h].every(Number.isFinite);
+  const f = `popup=yes,width=${ok ? Math.round(clamp(w.w, 280, 1200)) : 380},height=${ok ? Math.round(clamp(w.h, 300, 1400)) : 470}` + (ok ? `,left=${Math.round(w.x)},top=${Math.round(w.y)}` : '');
+  cardWin = window.open(`/kart.html?s=${encodeURIComponent(S.sym)}`, 'botlar-kart', f);
+}
 // ---------- Coin seçimi ve yoklama ----------
 let signalPanel = null;
 function mountSignals() {
@@ -993,7 +1049,9 @@ function mountSignals() {
   }
 }
 function select(sym) {
-  sym = cleanSym(sym); if (!sym || sym === S.sym) return;
+  sym = cleanSym(sym); { const ms = $('#market-summary'); if (sym && ms && !ms.open) ms.open = true; }
+  if (!sym || sym === S.sym) return;
+  try { cardBus?.postMessage({ sym }); } catch (e) { }
   S.sym = sym; S.gen++; store.set('sym', sym); S.coin = null; S.coinErr = ''; S.sigs = []; S.oiRows = [];
   document.title = `${short(sym)} · Botlar Terminal`;
   S.son = null; S.frIv = null; S.ob = null; for (const p of P) { p.gen++; p.loaded = false; p.busy = false; p.tbusy = false; p.next = 0; p.tnext = 0; p.ch.ext = null; p.ch.predFr = null; p.ch.err = ''; p.ch.msg = 'Yükleniyor…'; p.ch.signals = []; p.ch.setData([]); }
@@ -1027,6 +1085,9 @@ window.addEventListener('resize', () => { for (const c of HUB.charts) c.requestR
 
 // ---------- Açılış ----------
 buildPanes(); buildOi(); renderLay(); applyCols();
+// V1.19.0: piyasa özeti açılınca hemen doldur; ⧉ → coin kartı ayrı pencerede
+$('#market-summary').addEventListener('toggle', () => { if ($('#market-summary').open) { renderOz(); loop(); } });
+$('#oz').addEventListener('click', e => { if (e.target.closest('.cc-pop')) openCardWin(); });
 globalThis.TerminalWorkspace?.mount({ root: $('#workspace'), grid: $('#grid'), store });
 mountSignals();
 (async () => {
