@@ -35,6 +35,8 @@ const clampInt = (v, lo, hi, def) => { if (v == null || v === '') return def; co
 const num = v => { const n = Number(v); return Number.isFinite(n) ? n : null; };
 
 function create(opt = {}) {
+  // V1.21.0: CoinGecko arz/değer (web/coingecko.cjs). opt.coingecko = { keyFile, cacheFile } (deneme ve testler için)
+  const CG = require('./coingecko.cjs').create(Object.assign({ now: opt.now }, opt.coingecko || {}));
   const now = opt.now || Date.now, sleep = opt.sleep || (ms => new Promise(r => setTimeout(r, ms))), timeoutMs = opt.timeoutMs || 10e3;
   // ---------- Binance kuyruğu ----------
   const B = { queue: [], busy: false, lastAt: -1e15, lastFdAt: -1e15, weight: 0, weightUntil: 0, blockUntil: 0, blockWhy: '', sent: 0 };
@@ -147,6 +149,12 @@ function create(opt = {}) {
     const m = new Map(), col = { top: 1, glob: 2, pos: 3 };
     for (const [k, rows] of ser) for (const [ts, v] of rows) { let r = m.get(ts); if (!r) m.set(ts, r = [ts, null, null, null]); r[col[k]] = v == null ? null : v * 100; }
     return [...m.values()].sort((a, b) => a[0] - b[0]);
+  }
+  // V1.21.0: GET /api/t/arz?symbol → CoinGecko arz/değer (piyasa değeri, FDV, dolaşım/toplam/maks arz, ATH, 7/30 g). Bekletmez; tazeleme arka planda.
+  async function arz(p, deps) {
+    const sym = cleanSym(p.get('symbol')); if (!sym) throw err(400, 'Geçersiz sembol');
+    const prices = async () => { const tk = lastTickers && now() - lastTickers.at < 120e3 ? lastTickers : await tickers(deps); const o = {}; for (const [s, r] of Object.entries(tk.rows)) if (r[0] > 0) o[s] = r[0]; return o; };
+    return CG.get(sym, deps.fetch || globalThis.fetch, prices);
   }
   // V1.19.0: GET /api/t/oranlar?symbol → { son: { t, top, glob, pos } } — coin kartı penceresi için (veritabanı/OI/funding yok)
   async function oranlar(p, deps) {
@@ -384,7 +392,7 @@ function create(opt = {}) {
     if (p === '/api/t/canli') { canli(req, res, u); return true; }
     if (p === '/api/t/canli-durum') { d.send(res, 200, canliDurum()); return true; }
     const route = p === '/api/t/klines' ? () => klines(u.searchParams, d) : p === '/api/t/oi' ? () => oi(u.searchParams, d)
-      : p === '/api/t/coin' ? () => coin(u.searchParams, d) : p === '/api/t/tickers' ? () => tickers(d) : p === '/api/t/evren' ? () => evren(d) : p === '/api/t/turev' ? () => turev(u.searchParams, d) : p === '/api/t/ozet' ? () => ozet(u.searchParams, d) : p === '/api/t/oranlar' ? () => oranlar(u.searchParams, d) : p === '/api/t/tarama' ? () => tarama(d) : p === '/api/t/akis' ? () => akis(u.searchParams, d)
+      : p === '/api/t/coin' ? () => coin(u.searchParams, d) : p === '/api/t/tickers' ? () => tickers(d) : p === '/api/t/evren' ? () => evren(d) : p === '/api/t/turev' ? () => turev(u.searchParams, d) : p === '/api/t/ozet' ? () => ozet(u.searchParams, d) : p === '/api/t/oranlar' ? () => oranlar(u.searchParams, d) : p === '/api/t/arz' ? () => arz(u.searchParams, d) : p === '/api/t/tarama' ? () => tarama(d) : p === '/api/t/akis' ? () => akis(u.searchParams, d)
         : p === '/api/t/izleme' && req.method === 'GET' ? () => list(d.q)
           : p === '/api/t/izleme' && req.method === 'POST' ? () => d.readBody(req).catch(() => { throw err(400, 'Gövde JSON değil'); }).then(b => izlemePost(b, d)) : null;
     if (!route) return false;

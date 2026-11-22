@@ -6,7 +6,7 @@ const run = (args, env) => spawnSync(EXE, args, { cwd: V1, encoding: 'utf8', tim
 console.log('node', run(['-v']).stdout.trim());
 let bad = 0;
 for (const [args, env] of [[['db/test-terminal.cjs']], [['db/test-fr-kurulum.cjs']],
-  [['--test', 'db/test-indicator-engine.cjs', 'db/test-signal-archive.cjs', 'db/test-signal-feed.cjs', 'db/test-signal-panel.cjs', 'db/test-workspace-layout.cjs']],
+  [['--test', 'db/test-indicator-engine.cjs', 'db/test-signal-archive.cjs', 'db/test-signal-feed.cjs', 'db/test-signal-panel.cjs', 'db/test-workspace-layout.cjs', 'db/test-coingecko.cjs']],
   [['--test', 'db/test-workspace-browser.cjs'], { TERMINAL_PLAYWRIGHT: '' }]]) {
   const r = run(args, env || {}), out = (r.stdout + r.stderr);
   const sum = out.split('\n').filter(l => /^# (tests|pass|fail)|hepsi|HATA |not ok|Error/.test(l)).slice(0, 8).join(' | ');

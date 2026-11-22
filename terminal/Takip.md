@@ -464,3 +464,8 @@ Güncel değerler her zaman Sinyal Masası'nın sağ panelinde.
 - `kart.html` + `/api/t/oranlar` (önbellek ortak, Binance'e ek yük yok). Pencere ana sayfanın coin seçimini takip ediyor, yerini hatırlıyor; ikinci ekranda açılması için tarayıcı izni bir kez verilmeli.
 - Testler + Chromium'da açılır pencere ve coin eşitleme denendi.
 
+## 23.11.2026 — V1.21.0: CoinGecko arz ve değer (piyasa özeti)
+- Kullanıcı CoinGecko Demo anahtarı aldı (`db\coingecko.json`, git'e girmez). İstek: piyasa özetine düzeni bozmadan faydalı veri, özellikle arz.
+- Eklenen: piyasa değeri + sıra, FDV (PD'nin katı), dolaşım / maks arz + dolaşım oranı, OI / piyasa değeri (Binance OI ile), hacim / PD, ATH'den uzaklık, 7 g · 30 g.
+- Eşleme fiyatla doğrulanıyor (±%12); ilk eşleme 682/807 sembol, 9 istek. Eşlenmeyenler çoğunlukla tokenize hisse/ETF. Aylık ~6–7 bin istek (sınır 10 bin).
+

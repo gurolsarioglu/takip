@@ -40,3 +40,8 @@
 /* V1.19.0: piyasa özetinde coin kartını ayrı pencerede açan düğme */
 .oz .cn .cc-pop { margin-left: 6px; padding: 0 5px; font-size: 12px; line-height: 17px; vertical-align: 1px; color: var(--acc); background: transparent; border: 1px solid var(--line); border-radius: 3px; cursor: pointer; }
 .oz .cn .cc-pop:hover { border-color: var(--acc); background: var(--accent-fill); }
+
+/* V1.21.0: piyasa özetinde CoinGecko arz ve değer bölümü */
+.oz .oh { display: flex; justify-content: space-between; align-items: baseline; margin: 9px 0 1px; padding-top: 6px; border-top: 1px solid var(--line); color: var(--acc); font-size: 10px; font-weight: 700; letter-spacing: .08em; }
+.oz .oh span { color: var(--mut); font-weight: 400; letter-spacing: 0; cursor: help; }
+.oz .ln b.wa { color: var(--warn); }

@@ -137,7 +137,7 @@ test('signal mount uses terminal API and selection, while unchanged symbols do n
   let options;
   const context = vm.createContext({
     $: () => root, api, S: { sym: null, gen: 0 }, P: [], OI: { setData() {} },
-    TASKS: { coin: {}, oi: {}, sig: {}, ob: {} }, document: {}, store: { set() {} },
+    TASKS: { coin: {}, oi: {}, sig: {}, ob: {}, arz: {} }, document: {}, store: { set() {} },
     cleanSym: s => /^[A-Z]+USDT$/.test(s) ? s : null, short: s => s,
     renderList() {}, renderSum() {}, renderOiStats() {}, renderOz() {}, loop() {},
     openLive() {}, loadAkis() {}   // V1.10 canlı akış ve V1.16 akış kaydı: seçimde açılır

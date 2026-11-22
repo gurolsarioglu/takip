@@ -94,6 +94,14 @@ function answer(url) {
   const J = (code, body) => new Response(JSON.stringify(body), { status: code, headers: hd });
   if (forced) { const f = forced; forced = null; log(`deneme: zorlanmış HTTP ${f.code} (retry-after ${f.sn})`); return new Response(JSON.stringify({ code: -1003, msg: 'deneme sınırı' }), { status: f.code, headers: { ...hd, 'retry-after': String(f.sn) } }); }
   const sym = q('symbol');
+  // V1.21.0: sahte CoinGecko (anahtar deneme için geçici dosyada). AKE ve TINY bilerek eşleşmez ("—" görünümü)
+  if (u.hostname === 'api.coingecko.com') {
+    const cg = s => s.replace(/USDT$/, '').replace(/^1000/, '').toLowerCase(), ok = Object.keys(SYMS).filter(s => !/^(AKE|TINY)/.test(s));
+    if (p.endsWith('/coins/list')) return J(200, ok.map(s => ({ id: cg(s) + '-coin', symbol: cg(s), name: cg(s).toUpperCase() })));
+    if (p.endsWith('/coins/markets')) return J(200, q('ids').split(',').map(id => { const s = ok.find(x => cg(x) + '-coin' === id); if (!s) return null; const r = prng(hash(s) + 7), px = price(s, now) / (s.startsWith('1000') ? 1000 : 1), circ = 1e6 * (1 + r() * 9000), mx = r() < 0.3 ? null : circ / (0.2 + r() * 0.8);
+      return { id, name: cg(s).toUpperCase(), current_price: px, market_cap: px * circ, market_cap_rank: 1 + Math.floor(r() * 900), fully_diluted_valuation: mx ? px * mx : null, total_volume: px * circ * (0.02 + r() * 0.3), circulating_supply: circ, total_supply: mx || circ * 1.4, max_supply: mx, ath: px * (1.2 + r() * 8), ath_change_percentage: -100 * (1 - 1 / (1.2 + r() * 8)), ath_date: '2025-03-1' + Math.floor(r() * 9) + 'T00:00:00Z', price_change_percentage_7d_in_currency: (r() - 0.5) * 30, price_change_percentage_30d_in_currency: (r() - 0.5) * 80 }; }).filter(Boolean));
+    return J(404, {});
+  }
   if (p === '/fapi/v1/ticker/24hr') {
     const rows = Object.keys(SYMS).map(s => { const last = price(s, now), prev = price(s, now - D); return { symbol: s, priceChange: String(last - prev), priceChangePercent: ((last / prev - 1) * 100).toFixed(3), lastPrice: str(last, SYMS[s][0]), quoteVolume: (bar(s, openOf(now, '1d'), '1d')[7] * 1).toFixed(2), openTime: now - D, closeTime: now }; });
     rows.push({ symbol: 'BTCUSDC', lastPrice: '95000', priceChangePercent: '0', quoteVolume: '1', closeTime: now }, { symbol: 'ESKIUSDT', lastPrice: '1', priceChangePercent: '0', quoteVolume: '1', closeTime: now - 40 * D });
@@ -131,7 +139,11 @@ function answer(url) {
 }
 
 // ---------- Bellek içi veritabanı (yalnız izleme tablosu) ----------
-setImmediate(() => { TERM = terminal._test.create({ WebSocket: FakeLiveWS }); });
+setImmediate(() => {
+  // sahte CoinGecko anahtarı ve önbelleği geçici klasörde (gerçek db/coingecko.json ve data/cache'e dokunulmaz)
+  const os = require('node:os'), d = fs.mkdtempSync(path.join(os.tmpdir(), 'cg-deneme-')); fs.writeFileSync(path.join(d, 'k.json'), '{"key":"CG-deneme-sahte-anahtar"}');
+  TERM = terminal._test.create({ WebSocket: FakeLiveWS, coingecko: { keyFile: path.join(d, 'k.json'), cacheFile: path.join(d, 'c.json'), log } });
+});
 const DB = { exists: false, rows: [], seq: 0 };
 async function q(sql, args) {
   if (process.env.DENEME_DB === 'yok') throw new Error('deneme: veritabanı kapalı (DENEME_DB=yok)');

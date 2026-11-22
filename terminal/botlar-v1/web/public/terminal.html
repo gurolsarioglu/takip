@@ -842,6 +842,25 @@ $('#sigM1').onchange = e => { S.sigM1 = e.target.checked; store.set('m1', S.sigM
 // ---------- Coin özeti, ticker, uyarı ----------
 async function loadCoin() { if (!S.sym) return; const g = S.gen; try { const c = await api(`/api/t/coin?symbol=${S.sym}`); if (g !== S.gen) return; S.coin = c; S.coinErr = ''; if (c.oiUsd) { S.oiHist.push([Date.now(), c.oiUsd]); while (S.oiHist.length > 400) S.oiHist.shift(); } for (const p of P) { p.ch.predFr = c.funding; p.ch.requestDraw(); } } catch (e) { if (g !== S.gen) return; S.coinErr = errText(e); } renderSum(); renderOiStats(); renderOz(); }
 async function loadOb() { if (!S.sym) return; const g = S.gen; try { const o = await api(`/api/t/ozet?symbol=${S.sym}`); if (g !== S.gen) return; S.ob = o; } catch (e) { } renderOz(); }
+// V1.21.0: CoinGecko arz ve değer (/api/t/arz; sunucu 30 dk'da bir tazeler). Eşleşme yoksa yanlış rakam yerine "—".
+async function loadArz() { if (!S.sym) return; const g = S.gen; try { const a = await api(`/api/t/arz?symbol=${S.sym}`); if (g !== S.gen) return; S.arz = a; if (a.none === 'bekle') TASKS.arz.next = Date.now() + 10e3; } catch (e) { if (g === S.gen) S.arz = { none: 'hata', msg: errText(e) }; } renderOz(); }
+function arzHtml(c) {
+  const a = S.arz, head = `<div class="oh">Arz ve değer <span title="CoinGecko verisi; piyasa değeri ve hacim tüm borsalar (spot dahil)">CoinGecko${a && a.at ? ' · ' + p2(trDate(a.at).getUTCHours()) + ':' + p2(trDate(a.at).getUTCMinutes()) : ''}</span></div>`;
+  if (!a) return head + '<div class="ln"><span>yükleniyor…</span></div>';
+  if (!a.ok) return head + `<div class="ln"><span>${esc(a.msg || '—')}</span></div>`;
+  const ln = (k, v, tip, cls) => `<div class="ln"${tip ? ` title="${esc(tip)}"` : ''}><span>${k}</span><b${cls ? ` class="${cls}"` : ''}>${v}</b></div>`;
+  const cap = a.max || a.total, circPct = a.circ && cap ? a.circ / cap * 100 : NaN, fdvX = a.fdv && a.mcap ? a.fdv / a.mcap : NaN, oiMc = c && c.oiUsd && a.mcap ? c.oiUsd / a.mcap * 100 : NaN, vMc = a.vol && a.mcap ? a.vol / a.mcap * 100 : NaN;
+  const sup = v => v == null ? '—' : fmtBig(v), ath = a.athDate ? trDate(Date.parse(a.athDate)) : null;
+  return head
+    + ln('Piyasa değeri', `$${fmtBig(a.mcap)}${a.rank ? ' · #' + a.rank : ''}`, `${a.name || ''}${a.mult > 1 ? ` — 1 sözleşme = ${a.mult.toLocaleString('tr-TR')} token; arz token cinsinden` : ''}`)
+    + ln('FDV', `$${fmtBig(a.fdv)}${isN(fdvX) ? ' · ' + fdvX.toFixed(1) + '×' : ''}`, 'Tam seyreltilmiş değer = fiyat × maksimum (yoksa toplam) arz. Piyasa değerinin katı büyüdükçe piyasaya çıkacak token çok (açılım/satış baskısı riski).', isN(fdvX) && fdvX >= 2 ? 'wa' : '')
+    + ln('Dolaşım', `${sup(a.circ)} / ${a.max ? 'maks ' + sup(a.max) : a.total ? 'toplam ' + sup(a.total) + ' · maks yok' : '—'}`, a.max ? 'Dolaşımdaki / maksimum arz' : 'Maksimum arz tanımlı değil (sınırsız ya da bilinmiyor); oran toplam arza göre')
+    + (isN(circPct) ? `<div class="br" title="Arzın yüzde kaçı dolaşımda. Düşükse ileride piyasaya çıkacak çok token var."><span>Dolaşımda</span><div class="bar"><i class="l" style="width:${clamp(circPct, 0, 100)}%">%${circPct.toFixed(0)}</i><i style="width:${100 - clamp(circPct, 0, 100)}%;background:var(--panel2)"></i></div></div>` : '')
+    + ln('OI / piyasa değeri', isN(oiMc) ? '%' + oiMc.toFixed(oiMc < 10 ? 1 : 0) : '—', 'Binance açık pozisyonu ÷ piyasa değeri. Yüksekse coin kaldıraçla şişmiş: tasfiye zinciri ve sert iğne olasılığı artar. (Yalnız Binance OI; diğer borsalar dahil değil.)', isN(oiMc) && oiMc >= 10 ? 'wa' : '')
+    + ln('Hacim / piyasa değeri', isN(vMc) ? '%' + vMc.toFixed(vMc < 10 ? 1 : 0) : '—', '24 saatlik hacim (tüm borsalar) ÷ piyasa değeri: coinin ne kadar hızlı el değiştirdiği')
+    + ln('ATH\'den', `<span class="${pcls(a.athChg)}">${fmtPct(a.athChg, 0)}</span>${ath ? ' · ' + p2(ath.getUTCDate()) + '.' + p2(ath.getUTCMonth() + 1) + '.' + ath.getUTCFullYear() : ''}`, a.ath ? 'Tüm zamanların en yükseği: $' + a.ath : '')
+    + ln('7 g · 30 g', `<span class="${pcls(a.ch7)}">${fmtPct(a.ch7, 1)}</span> · <span class="${pcls(a.ch30)}">${fmtPct(a.ch30, 1)}</span>`);
+}
 // piyasa özeti (listenin altında): fiyat, funding + geri sayım, OI, emir defteri ve üç long/short oranı
 function renderOz() {
   const el = $('#oz'); if (!S.sym) { el.innerHTML = ''; return; }
@@ -858,6 +877,7 @@ function renderOz() {
     + bar('Trader positioning', o && o.top, 'Büyük hesapların hesap sayısına göre long oranı (topLongShortAccountRatio)')
     + bar('Market exposure', o && o.glob, 'Tüm hesapların hesap sayısına göre long oranı (globalLongShortAccountRatio)')
     + `<div class="ln"><span>24s hacim</span><b>$${t ? fmtBig(t[2]) : '—'}</b></div>`
+    + arzHtml(c)
     + `<div class="nt" title="Binance long/short oranlarını 5 dakikada bir hesaplar; daha sık güncel değer yoktur. Emir defteri ilk 100 kademe.">Fiyat, funding, hacim canlı · oranlar 5 dk'lık${ot ? ' (son ' + p2(ot.getUTCHours()) + ':' + p2(ot.getUTCMinutes()) + ')' : ''} · emir defteri 15 sn</div>`;
 }
 async function loadUni() { try { S.uni = await api('/api/t/evren'); S.uniErr = ''; } catch (e) { S.uniErr = errText(e); } renderList(); renderOz(); }
@@ -1056,14 +1076,14 @@ function select(sym) {
   document.title = `${short(sym)} · Botlar Terminal`;
   S.son = null; S.frIv = null; S.ob = null; for (const p of P) { p.gen++; p.loaded = false; p.busy = false; p.tbusy = false; p.next = 0; p.tnext = 0; p.ch.ext = null; p.ch.predFr = null; p.ch.err = ''; p.ch.msg = 'Yükleniyor…'; p.ch.signals = []; p.ch.setData([]); }
   OI.err = ''; OI.msg = 'Yükleniyor…'; OI.setData([]); S.oiGen++;
-  TASKS.coin.next = TASKS.oi.next = TASKS.sig.next = TASKS.ob.next = 0;
+  TASKS.coin.next = TASKS.oi.next = TASKS.sig.next = TASKS.ob.next = TASKS.arz.next = 0; S.arz = null;
   S.livePx = null; S.liveAt = 0; S.flow = []; S.flowSince = 0; S.big = []; S.liqC = []; S.oiHist = []; S.tapeAt = 0; S.liqFull = false; openLive(); loadAkis();
   renderList(); renderSum(); renderOiStats(); renderOz(); loop();
   signalPanel?.setSymbol(sym);
 }
 async function checkVer() { try { const v = await api('/api/version'); $('#ver').textContent = 'V' + v.version; if (S.stamp && S.stamp !== v.stamp) location.reload(); S.stamp = v.stamp; } catch (e) { } }
 // Binance'e giden yoklamalar sınır beklemesinde ve sekme gizliyken durur; yerel uçlar (sinyal, sürüm) yalnız sekme gizliyken durur.
-const TASKS = { coin: { ms: 10e3, fn: loadCoin, next: 0 }, tick: { ms: 20e3, fn: loadTickers, next: 0 }, oi: { ms: 60e3, fn: loadOi, next: 0 }, uni: { ms: 300e3, fn: loadUni, next: 0 }, ob: { ms: 15e3, fn: loadOb, next: 0 }, zt: { ms: 5e3, fn: loadZt, next: 0, local: true }, btc: { ms: 60e3, fn: loadBtc, next: 0 }, sig: { ms: 30e3, fn: loadSigs, next: 0, local: true }, ver: { ms: 10e3, fn: checkVer, next: 0, local: true }, list: { ms: 60e3, fn: loadList, next: 0, local: true } };
+const TASKS = { arz: { ms: 120e3, fn: loadArz, next: 0, local: true }, coin: { ms: 10e3, fn: loadCoin, next: 0 }, tick: { ms: 20e3, fn: loadTickers, next: 0 }, oi: { ms: 60e3, fn: loadOi, next: 0 }, uni: { ms: 300e3, fn: loadUni, next: 0 }, ob: { ms: 15e3, fn: loadOb, next: 0 }, zt: { ms: 5e3, fn: loadZt, next: 0, local: true }, btc: { ms: 60e3, fn: loadBtc, next: 0 }, sig: { ms: 30e3, fn: loadSigs, next: 0, local: true }, ver: { ms: 10e3, fn: checkVer, next: 0, local: true }, list: { ms: 60e3, fn: loadList, next: 0, local: true } };
 function loop() {
   { const lv = $('#lv'); if (lv && lv.classList.contains('on') !== (Date.now() - S.liveAt < 10e3)) { renderSum(); renderOz(); } }
   { const ti = $('#tapeIn'); if (ti && !document.hidden && (!ti.innerHTML || Date.now() - S.tapeAt > 120e3)) renderTape(); }

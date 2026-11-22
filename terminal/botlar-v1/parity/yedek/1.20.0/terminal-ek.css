@@ -1,0 +1,42 @@
+/* Botlar V1.10–1.16 eklemeleri, Terminal V2 temasına (workspace.css) uyarlanmış hali.
+   Canlı fiyat işareti, izleme listesi sütunları, kayan yazı. workspace.css'ten sonra yüklenir. */
+
+/* canlı fiyat (V1.10.0) */
+.sum .pxl { transition: color .35s; }
+.sum .pxl.fu { color: var(--up); }
+.sum .pxl.fd { color: var(--dn); }
+.sum .lv { font: 700 10px var(--mono); color: var(--mut); letter-spacing: .06em; }
+.sum .lv.on { color: var(--up); }
+.sum .lv.on::before { content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--up); margin-right: 4px; animation: lvp 1.6s infinite; }
+@keyframes lvp { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+
+/* izleme listesi sütunları (V1.15.0): sütun ızgarası seçilen sütunlara göre (applyCols → --cols) */
+.lh, .row { grid-template-columns: var(--cols, minmax(0, 1fr) 62px 53px 42px 18px); }
+.modes .dd { flex: 0 0 auto; }
+.modes .dd > button { flex: none; padding: 3px 8px; }
+.modes .ddm { left: auto; right: 0; }
+.zinfo { font-size: 10.5px; color: var(--mut); opacity: .8; }
+.row .n.mu { color: var(--mut); }
+.row .n.hl { font-weight: 700; }
+
+/* kayan yazı (V1.13.0 / 1.14.0): araç çubuğunda, menülerle sinyal kutuları arasında */
+.tape { flex: 1 1 260px; min-width: 160px; overflow: hidden; position: relative; height: 25px; border: 1px solid var(--line); border-radius: 5px; background: #151718;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent); }
+.tape-in { position: absolute; left: 0; top: 0; height: 100%; display: flex; align-items: center; white-space: nowrap; will-change: transform; animation: tape var(--dur, 60s) linear infinite; }
+.tape:hover .tape-in { animation-play-state: paused; }
+.tape-in > span { display: inline-flex; align-items: center; gap: 5px; padding: 0 14px; font-size: 12px; color: var(--tx); }
+.tape-in > span + span { border-left: 1px solid var(--line); }
+.tape-in b { font-family: var(--mono); font-weight: 600; }
+.tape-in .k { color: var(--mut); }
+.tape-in .g { color: var(--acc); font-weight: 700; }
+.tape-in .up { color: var(--up); }
+.tape-in .dn { color: var(--dn); }
+.tape-in .sep { color: var(--acc); font-weight: 700; letter-spacing: .08em; }
+.tape-in .sep::before { content: '◆'; margin-right: 6px; }
+.tape-e { position: absolute; inset: 0; display: flex; align-items: center; padding: 0 12px; color: var(--mut); font-size: 12px; }
+@keyframes tape { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .tape-in { animation-duration: 0s; } }
+
+/* V1.19.0: piyasa özetinde coin kartını ayrı pencerede açan düğme */
+.oz .cn .cc-pop { margin-left: 6px; padding: 0 5px; font-size: 12px; line-height: 17px; vertical-align: 1px; color: var(--acc); background: transparent; border: 1px solid var(--line); border-radius: 3px; cursor: pointer; }
+.oz .cn .cc-pop:hover { border-color: var(--acc); background: var(--accent-fill); }
